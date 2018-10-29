@@ -579,7 +579,7 @@ begin
     if readfirstmain(CUr,1,true) then begin
     	logtext(0,"TchChangePage3 " & CUr.Code);
       if readrecordlink(CUr,1,Tchr,RLr) or FindTchrRecord(cCUr.Code,Tchr) then begin
-      	logtext(0,"TchChangePage4 " & Tchr.Code);
+      	logtext(0,"TchChangePage4 " & Tchr.CustCode);
         if (cust == CurrentCust or  cCUr.Code == Tchr.CustCode) then begin
           WebOutStringFormatNL("<form method=""POST"" action=""/WebChangeCompEmp.hal"">");
           WebOutStringFormatNL("<input type=""hidden"" name=""smu"" value=""" & Tchr.TeacherCode & """>");
