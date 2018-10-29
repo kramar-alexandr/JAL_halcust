@@ -258,7 +258,7 @@ begin
 
   BlockLoad(JCbl);
 
-
+	logtext(0,"ShowProfileCorrectionInfo " & CurrentCust);
   if nonblank(CurrentCust) then begin
     CUr.Code = CurrentCust;
     if readfirstmain(CUr,1,true) then begin
