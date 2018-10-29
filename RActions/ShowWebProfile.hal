@@ -573,9 +573,13 @@ begin
   if nonblank(cust) then begin
     CUr.Code = cust;
     cCUr.Code = CurrentCust;
+    logtext(0,"TchChangePage1 " & cust);
     if readfirstmain(cCUr,1,true) then begin end;
+    logtext(0,"TchChangePage2 " & cCUr.Code);
     if readfirstmain(CUr,1,true) then begin
+    	logtext(0,"TchChangePage3 " & CUr.Code);
       if readrecordlink(CUr,1,Tchr,RLr) or FindTchrRecord(cCUr.Code,Tchr) then begin
+      	logtext(0,"TchChangePage4 " & Tchr.Code);
         if (cust == CurrentCust or  cCUr.Code == Tchr.CustCode) then begin
           WebOutStringFormatNL("<form method=""POST"" action=""/WebChangeCompEmp.hal"">");
           WebOutStringFormatNL("<input type=""hidden"" name=""smu"" value=""" & Tchr.TeacherCode & """>");
