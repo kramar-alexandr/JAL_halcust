@@ -39,6 +39,7 @@ external procedure ShowAfterDeletePage();
 external procedure ShowProfileCorrectionInfo();
 external procedure AddEmpPage();
 external procedure EmpChangePage();
+external procedure TchChangePage();// Edit ************************** BPI Ukraine - KramarAlexandr - Monday, 29 October 2018 13:41:27
 external procedure DrawPasswordRecoveryPage();
 external procedure WebShowEntry();
 external procedure ExtractObjWithSeparator(string,string,Boolean,var Integer,var string);
@@ -208,6 +209,8 @@ begin
     AddEmpPage; res = true;
   case "EmpChangePage":
     EmpChangePage; res = true;
+  case "TchChangePage":// Edit ************************** BPI Ukraine - KramarAlexandr - Monday, 29 October 2018 13:41:22
+    TchChangePage; res = true;// Edit ************************** BPI Ukraine - KramarAlexandr - Monday, 29 October 2018 13:41:23
   case "DrawPasswordRecoveryPage":
     DrawPasswordRecoveryPage; res = true;
   case "WebShowEntry":

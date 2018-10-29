@@ -248,6 +248,20 @@ begin
   return;
 end;
 
+global
+function Boolean FindTchrRecord(string code,var record TeacherVc Tchr)// Edit ************************** BPI Ukraine - KramarAlexandr - Monday, 29 October 2018 13:43:14
+begin
+  Boolean res;
+  
+  Tchr.CustCode = code;
+  if (ReadFirstKey("CustCode",Tchr,1,true)) then begin
+    res = true;
+  end;
+
+  FindSMURecord = res;
+  return;
+end;
+
 global procedure ShowProfileCorrectionInfo()
 begin
   record CUVc CUr,tCUr;
@@ -493,6 +507,78 @@ begin
         if (cust == CurrentCust or  cCUr.Code == SMFr.CustCode) then begin
           WebOutStringFormatNL("<form method=""POST"" action=""/WebChangeCompEmp.hal"">");
           WebOutStringFormatNL("<input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");
+          WebOutStringFormatNL("<input type=""hidden"" name=""cust"" value=""" & CUr.Code & """>");
+          WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path")& """>");
+          WebOutStringFormatNL("<div class=""addinput""><input type=""text"" name=""name"" value=""" & CUr.Name & """></div>");
+          WebOutStringFormatNL("<div class=""addlabel"">" & ToolWebNGTranslateText(20030) & "</div>");
+          WebOutStringFormatNL("<div class=""addinput""><input type=""text"" name=""email"" value=""" & CUr.eMail & """></div>");
+          WebOutStringFormatNL("<div class=""addlabel"">" & ToolWebNGTranslateText(20033) & "</div>");
+          WebOutStringFormatNL("<div class=""addinput""><input type=""password"" name=""passw1""></div>");
+          WebOutStringFormatNL("<div class=""addlabel"">" & ToolWebNGTranslateText(23010) & "</div>");
+          WebOutStringFormatNL("<div class=""addinput""><input type=""password"" name=""passw2""></div>");
+          WebOutStringFormatNL("<div class=""addlabel"">" & ToolWebNGTranslateText(23011) & "</div>");
+          //error
+          err = StringToLongInt(getSessionString("err"));
+          PutSessionString("err","");
+          if err > 0 then begin
+            WebOutStringFormatNL("<div id=""error"">");
+            if (BitAnd(err,2)==2) then begin
+              WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20200) & "</li>");
+            end;
+            if (BitAnd(err,4)==4) then begin
+              WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20201) & "</li>");
+            end;
+            if (BitAnd(err,8)==8) then begin
+              WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20202) & "</li>");
+            end;
+            if (BitAnd(err,16)==16) then begin
+              WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20203) & "</li>");
+            end;
+            if (BitAnd(err,64)==64) then begin
+              WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20205) & "</li>");
+            end;
+            WebOutStringFormatNL("</div>");
+          end;
+          WebOutStringFormatNL("<table><tr><td><div class=""addbutton""><input type=""submit"" value=""" & ToolWebNGTranslateText(20212) & """ ></div></td><td><div class=""addbutton""><a href=""" & FormatSimpleLink(GetLinkToStruct(JCbl.ProfileCorrectionStruct,true),true) & """>" & ToolWebNGTranslateText(20211) & "</a></div></td></tr></table>");
+          WebOutStringFormatNL("</form>");
+        end else begin
+          ShowRedirectHTML(FormatSimpleLink(GetLinkToStruct(JCbl.ProfileCorrectionStruct,true),true),false);
+        end;
+      end else begin
+        ShowFailPage;
+      end;
+    end else begin
+      ShowFailPage;
+    end;
+  end else begin
+    ShowFailPage;
+  end;
+return;
+end;
+
+
+global procedure TchChangePage()
+begin
+  integer err;
+  record CUVc CUr,cCUr;
+  record TeacherVc Tchr;
+  record RLinkVc RLr;
+  integer i;
+  record JALClassBlock JCbl;
+  string 30 cust;
+
+  BlockLoad(JCbl);
+
+  cust = WebGetArg("cust");
+  if nonblank(cust) then begin
+    CUr.Code = cust;
+    cCUr.Code = CurrentCust;
+    if readfirstmain(cCUr,1,true) then begin end;
+    if readfirstmain(CUr,1,true) then begin
+      if readrecordlink(CUr,1,SMFr,RLr) or FindTchrRecord(cCUr.Code,Tchr) then begin
+        if (cust == CurrentCust or  cCUr.Code == Tchr.CustCode) then begin
+          WebOutStringFormatNL("<form method=""POST"" action=""/WebChangeCompEmp.hal"">");
+          WebOutStringFormatNL("<input type=""hidden"" name=""smu"" value=""" & Tchr.SMFCode & """>");
           WebOutStringFormatNL("<input type=""hidden"" name=""cust"" value=""" & CUr.Code & """>");
           WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path")& """>");
           WebOutStringFormatNL("<div class=""addinput""><input type=""text"" name=""name"" value=""" & CUr.Name & """></div>");
