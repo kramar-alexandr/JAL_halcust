@@ -39,7 +39,7 @@ external procedure ShowAfterDeletePage();
 external procedure ShowProfileCorrectionInfo();
 external procedure AddEmpPage();
 external procedure EmpChangePage();
-external outer procedure TchChangePage();// Edit ************************** BPI Ukraine - KramarAlexandr - Monday, 29 October 2018 13:41:27
+external procedure TchChangePage();// Edit ************************** BPI Ukraine - KramarAlexandr - Monday, 29 October 2018 13:41:27
 external procedure DrawPasswordRecoveryPage();
 external procedure WebShowEntry();
 external procedure ExtractObjWithSeparator(string,string,Boolean,var Integer,var string);
