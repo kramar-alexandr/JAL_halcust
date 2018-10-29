@@ -571,7 +571,7 @@ begin
 
   cust = WebGetArg("cust");
   logtext(0,"TchChangePage0 " & cust);
-  if nonblank(cust) then begin
+  if nonblank(cust) or nonblank(CurrentCust) then begin
     CUr.Code = cust;
     cCUr.Code = CurrentCust;
     logtext(0,"TchChangePage1 " & cust);
