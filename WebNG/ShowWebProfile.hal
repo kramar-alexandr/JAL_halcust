@@ -586,13 +586,17 @@ begin
       	logtext(0,"TchChangePage4 " & Tchr.CustCode);
         if (cust == CurrentCust or  cCUr.Code == Tchr.CustCode) then begin
           WebOutStringFormatNL("<form method=""POST"" action=""/WebChangeCompEmp.hal"">");
-          WebOutStringFormatNL("<input type=""hidden"" name=""smu"" value=""" & Tchr.TeacherCode & """>");
+          WebOutStringFormatNL("<input type=""hidden"" name=""tch"" value=""" & Tchr.TeacherCode & """>");
           WebOutStringFormatNL("<input type=""hidden"" name=""cust"" value=""" & CUr.Code & """>");
           WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path")& """>");
           WebOutStringFormatNL("<div class=""addinput""><input type=""text"" name=""name"" value=""" & CUr.Name & """></div>");
-          WebOutStringFormatNL("<div class=""addlabel"">" & ToolWebNGTranslateText(20030) & "</div>");
+          WebOutStringFormatNL("<span">Vārds, Uzvārds :</span>");
+          WebOutStringFormatNL("<div class=""addinput""><input type=""text"" name=""skola"" value=""" & CUr.eMail & """></div>");
+          WebOutStringFormatNL("<span>Skola :</span>");
+          WebOutStringFormatNL("<div class=""addinput""><input type=""text"" name=""telephone"" value=""" & CUr.eMail & """></div>");
+          WebOutStringFormatNL("<span>Telefona nr. :</span>");
           WebOutStringFormatNL("<div class=""addinput""><input type=""text"" name=""email"" value=""" & CUr.eMail & """></div>");
-          WebOutStringFormatNL("<div class=""addlabel"">" & ToolWebNGTranslateText(20033) & "</div>");
+          WebOutStringFormatNL("<span>E-pasts :</span>");
           //error
           err = StringToLongInt(getSessionString("err"));
           PutSessionString("err","");
