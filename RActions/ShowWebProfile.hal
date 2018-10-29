@@ -570,6 +570,7 @@ begin
   BlockLoad(JCbl);
 
   cust = WebGetArg("cust");
+  logtext(0,"TchChangePage0 " & cust);
   if nonblank(cust) then begin
     CUr.Code = cust;
     cCUr.Code = CurrentCust;
