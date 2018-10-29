@@ -1,0 +1,69 @@
+
+global 
+updating function longint JALEventVcRecordDefaults(var record JALEventVc JEr,record JALEventVc JE2r,LongInt stat,LongInt long4)
+begin
+  longint res;
+
+  JEr.TransDate = CurrentDate;
+
+  JALEventVcRecordDefaults = res;
+return;
+end;
+
+global 
+updating function longint JALEventVcRecordDuplicate(var record JALEventVc JEr,record JALEventVc JE2r,LongInt stat,LongInt long4)
+begin
+  longint res;
+  
+  JEr.TransDate = CurrentDate;
+
+  JALEventVcRecordDuplicate = res;
+return;
+end;
+
+
+global 
+updating function longint JALEventVcRecordCheck(var record JALEventVc JEr,record JALEventVc JE2r,LongInt stat,LongInt long4)
+begin
+  LongInt res;
+  integer rwcnt,i;
+  row JALEventVc JErw;
+  record JALEventFieldVc JFr;
+  
+  res = 0;
+
+  if JEr.SerNr < 0 then begin
+    if JE2r.SerNr < 0 then begin
+      JEr.SerNr = NextSerNr("JALEventVc",CurrentDate,-1,false,"");
+    end else begin
+      RecordCheckError(1058,"",-1,"SerNr");      
+      res = -1; 
+      goto LJALEventVcRecordCheck;
+    end;
+  end;
+
+  rwcnt = MatRowCnt(JEr);
+  for (i = 0; i < rwcnt;i = i + 1) begin
+    MatRowGet(JEr,i,JErw);
+    JFr.SerNr = JErw.Field;
+    if readfirstmain(JFr,1,true) then begin
+      if JFr.Type == 3 then begin
+        if JErw.Show != 1 then begin
+          RecordCheckError(32470,"",i,"Show");      
+          res = -1; 
+          goto LJALEventVcRecordCheck;
+        end;
+        if JErw.Req != 0 then begin
+          RecordCheckError(32471,"",i,"Req");      
+          res = -1; 
+          goto LJALEventVcRecordCheck;
+        end;
+      end;
+    end;
+  end;
+    
+LJALEventVcRecordCheck:;
+  JALEventVcRecordCheck = res;
+  return;
+end;
+

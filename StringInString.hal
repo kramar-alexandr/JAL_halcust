@@ -1,0 +1,43 @@
+// Copyright © RIXTAR Ltd. 2010. All rights reserved
+
+global
+function boolean StringInString(string Search,string Content,boolean CaseSens)
+begin
+  boolean res;
+  integer cntS,cntI;
+  integer iS,iI;
+  string 1 cS,cI;
+  string 255 iStr,sStr;
+  
+  if (CaseSens) then Begin
+    sStr = Search;
+    iStr = Content;
+  end else Begin
+    sStr = UpperCase(Search);
+    iStr = UpperCase(Content);
+  end;
+  res = false;
+  cntS = len(sStr);
+  cntI = len(iStr);
+  iS = 0;
+  cS = Mid(sStr,iS,1);
+  for (iI=0;iI<cntI;iI=iI+1) begin
+    cI = Mid(iStr,iI,1);
+    if (cI == cS) then begin
+      if (iS < cntS-1) then begin
+        iS = iS + 1;
+        cS = Mid(sStr,iS,1);
+      end else begin
+        res = true;
+        goto EOFStringInString;
+      end;
+    end else begin
+      iS = 0;
+      cS = Mid(sStr,iS,1);
+    end;
+  end;
+
+  EOFStringInString:;
+  StringInString = res;
+  return;
+end;

@@ -1,0 +1,1 @@
+globalprocedure OnApplicationStartupComplete()begin  inner.OnApplicationStartupComplete;  //NewPeriodicTask("Make zip archive","SMU_ZipArchive","SMU_ZipArchive","",5);  NewPeriodicTask("SaveAttachments","Saglabat epastus","SaveAttachmentsMn","",60,"");  return;end;

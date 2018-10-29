@@ -1,0 +1,117 @@
+/*KZS adrese uz video- C:\Documents and Settings\zogo\Desktop\hwJAL jauns\webcust\gallery\news\*/
+/*KZS visa rinda testam "c:\ffmpeg\ffmpeg -i C:\Docume~1\zogo\Desktop\hwJALj~1\webcust\gallery\news\4-test.avi -ab 56 -ar 22050 -b 500 -r 15 -s 320x240 C:\Docume~1\zogo\Desktop\hwJALj~1\webcust\gallery\news\4-test.flv;*/
+/*c:\\ffmpeg\\ffmpeg  -itsoffset -4  -i C:\\Docume~1\\zogo\\Desktop\\hwJALj~1\\webcust\\gallery\\news\\4-test.avi -vcodec mjpeg -vframes 1 -an -f rawvideo -s 320x240 C:\\Docume~1\\zogo\\Desktop\\hwJALj~1\\webcust\\gallery\\news\\4-test.jpg */
+
+
+external function boolean FileNameIsImage(string);
+external function string 100 ChangeVideoName(string,string);
+
+
+global
+function boolean FileNameIsVideo(string filename)
+begin
+  boolean res;
+  
+  res = true;
+  if (right(filename,4)==".flv")  then begin goto LFileNameIsVideo; end;  
+  if (right(filename,4)==".avi")  then begin goto LFileNameIsVideo; end;
+  if (right(filename,5)==".mpeg")  then begin goto LFileNameIsVideo; end;
+  if (right(filename,4)==".swf")  then begin goto LFileNameIsVideo; end;
+  /*if (right(filename,4)==".bmp")  then begin goto LFileNameIsImage; end;
+  if (right(filename,4)==".gif")  then begin goto LFileNameIsImage; end;
+  if (right(filename,5)==".jpeg") then begin goto LFileNameIsImage; end;
+  if (right(filename,5)==".pict") then begin goto LFileNameIsImage; end;*/
+  res = false;
+  
+LFileNameIsVideo:;
+  FileNameIsVideo = res;
+  return;
+end;
+
+global
+procedure DeleteOldVid(string filename)
+begin
+  //Delete_File("webcust/gallery/news/" & filename);
+return;
+end;
+
+
+global 
+procedure RemotePublishWC(record WebNGContentVc WCr)
+begin
+  area a_area;
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+  string 255 link,FName,prog;
+  integer i;
+  time t
+  t = CurrentTime;
+  t.minute = t.minute + 1;
+  i = 1;
+  while (ReadRecordLink(WCr,i,Attachr,RLr)) begin
+	  if FileNameIsVideo(Attachr.FileName) then begin
+	    SetAreaZeroSize(a_area);
+        AddAttachFileToArea(Attachr,a_area,false);
+		FName = ChangeVideoName(Attachr.FileName,"flv");
+		
+        WriteAreaToFile(a_area,"webcust/gallery/news/" & WCr.SerNr & "-" & Attachr.FileName,0);
+		prog = "-i C:\\Docume~1\\zogo\\Desktop\\hwJALj~1\\webcust\\gallery\\news\\" & WCr.SerNr & "-" & Attachr.FileName & " -ab 56 -ar 22050 -b 500 -r 15 -s 320x240 C:\\Docume~1\\zogo\\Desktop\\hwJALj~1\\webcust\\gallery\\news\\" & WCr.SerNr & "-" & FName;
+		//RunProgram("c:\\ffmpeg\\ffmpeg",prog);
+        FName = ChangeVideoName(Attachr.FileName,"jpg");
+		prog = "-itsoffset -4  -i C:\\Docume~1\\zogo\\Desktop\\hwJALj~1\\webcust\\gallery\\news\\" & WCr.SerNr & "-" & Attachr.FileName & " -vcodec mjpeg -vframes 1 -an -f rawvideo -s 320x240 C:\\Docume~1\\zogo\\Desktop\\hwJALj~1\\webcust\\gallery\\news\\" & WCr.SerNr & "-" & FName;
+		
+		//RunProgram("c:\\ffmpeg\\ffmpeg",prog);
+		//stopalert(prog);
+		FName = WCr.SerNr & "-" & Attachr.FileName ;
+		NewTimedTask("DeleteOldVid","Delete old vid from folder","DeleteOldVid",FName,CurrentDate,t,"","");
+	    //Delete_File("webcust/gallery/news/" & WCr.SerNr & "-" & Attachr.FileName);
+	  end;
+	i = i+1;
+  end;
+
+return;
+end;
+
+global 
+procedure RemoteUnPublishWC(record WebNGContentVc WCr)
+begin
+  area a_area;
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+  string 255 link,FName;
+  integer i;
+  i = 1;
+  while (ReadRecordLink(WCr,i,Attachr,RLr)) begin
+	  if (FileNameIsVideo(Attachr.FileName)) then begin
+        FName =  ChangeVideoName(Attachr.FileName,"jpg");
+        Delete_File("webcust/gallery/news/" & WCr.SerNr & "-" & FName);
+        FName =  ChangeVideoName(Attachr.FileName,"flv");
+        Delete_File("webcust/gallery/news/" & WCr.SerNr & "-" & FName);
+      end;
+    i = i+1;
+  end;
+
+return;
+end;
+
+
+global 
+procedure PublishGalleryDsm()
+begin
+  record WebNGContentVc WCr;
+  
+  GetWindowRecord(CurWindow,WCr);
+  RemotePublishWC(WCr);
+return;
+end;
+
+global
+procedure UnPublishGalleryDsm()
+begin
+  record WebNGContentVc WCr;
+  
+  GetWindowRecord(CurWindow,WCr);
+  RemoteUnPublishWC(WCr);
+
+return;
+end;

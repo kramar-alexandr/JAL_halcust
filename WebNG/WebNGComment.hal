@@ -1,0 +1,167 @@
+external function boolean FileNameIsImage(string);
+//external procedure WebOutStringFormatNL(string);
+external function boolean FileNameIsVideo(string);
+external function string 255 ToolWebNGtranslateText(integer);
+external function string 255 FormatSimpleLink(string,boolean);
+//external procedure WebOutTagOpen(string);
+//external procedure WebOutTagClose(string);
+//external procedure WebOutStringFormat(string);
+
+
+
+global
+function string 100 ChangeVideoName(string name,string ext)
+begin
+  integer i,l;
+  string 100 res;
+
+  for (i = len(name) - 1; i > 0; i = i - 1) begin
+    if (mid(name,i,1) == ".") then begin
+	  res = left(name,i+1) & ext;
+	end;
+  end;
+  ChangeVideoName = res;
+return;
+end;
+
+global
+function string 50 GetFirstImage(string sernr,string sublink)
+begin
+  record WebNGContentVc WCr;
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+  string 50 res,FName;
+  string 255 link;
+  integer i;
+  //stopalert("aaa " & sernr & " " & sublink)
+  i = 1;
+  res = "";
+  WCr.SerNr = sernr;
+  if readfirstmain(WCr,1,true) then begin 
+    while (ReadRecordLink(WCr,i,Attachr,RLr)and res == "") begin
+      if (FileNameIsImage(Attachr.FileName)) then begin
+		link = "/WebShowImg.hal?sernr=" & WCr.SerNr & "&num=" & i;
+		
+        res = link;
+      end else begin 
+	   
+        if (FileNameIsVideo(Attachr.FileName)) then begin
+          FName =  ChangeVideoName(Attachr.FileName,"jpg");
+		  
+          link = "/gallery/news/" & WCr.SerNr & "-" & FName;
+          if FileExists("webcust" & link) then begin
+			res = link;
+		  end;
+        end;
+	  end;
+      i = i + 1;
+    end;
+  end;
+  if res == "" then begin
+    res = "/images/graylogo2.png";
+  end;
+  GetFirstImage = res;
+  return;
+end;
+/*
+global
+procedure ShowContentFB(record WebNGTranslateVc WebNGTranslater)
+begin
+  WebOutStringFormatNL("<div id=""blog-head"">");  
+  WebOutStringFormatNL("</div>");  
+  WebOutStringFormatNL("<div id=""blog-head"">");
+  WebOutStringFormatNL("<div id=""blog-head-item"">" & "<a href=""" & WebGetArg("path") & "hwindex.htm?sernr=" & WebNGTranslater.Code & "&detlevel=2&compage=1"" id=""comment""> " & ToolWebNGtranslateText(21040) & " (" & RecordsInIndex("WebNGBlogCommentVc","MailSerNr:" & WebNGTranslater.Code) & ")</a></div>");
+ // WebOutString("<div id=""blog-head-item"" style=""width:100px; text-align: right;"">" & ToolWebNGtranslateText(21164) & "</div>");
+ // WebOutString("<div id=""blog-head-item"" style=""top: -4px; position: relative;""><a  href=""/WebContentChangeFB.hal?sernr=" & WebNGTranslater.Code & "&fb=up&contpath=" & WebGetArg("path") & """>");
+ // WebOutString("<img src=""/2009/blog/up.png""> </a> </div>");
+ // WebOutString("<div id=""blog-head-item"" style=""color:#00cc00; font-weight:bold; margin-left:0;"">" & " " & pcnt & "</div>");
+ // WebOutString("<div id=""blog-head-item""  style=""top: -2px; position: relative;""><a href=""/WebContentChangeFB.hal?sernr=" & WebNGTranslater.Code & "&fb=down&contpath=" & WebGetArg("path") & """>");
+ // WebOutString("<img src=""/2009/blog/down.png""> </a></div>");
+ // WebOutString("<div id=""blog-head-item"" style=""color:#cc0000; font-weight:bold; margin-left:0;""> " & ncnt  & "</div>");
+ // WebOutString("<div id=""blog-head-item-right""> <a target=""_blank"" href=""http://www.facebook.com/share.php?u=" & "http://www.hansaworld.lv" & FormatSimpleLink(WebGetArg("path"),true) & """>" & "<img src=""http://www.hansaworld.lv/2009/blog/facebook1.png""></a></div>");
+  WebOutString("<div id=""blog-head-item-right"">");
+  WebOutString("<a target=""_blank""  href=""http://twitter.com/home?status=" & ToolWebNGtranslateText(21045) & " http://www.hansaworld.lv" & FormatSimpleLink(WebGetArg("path"),true) & """><img src=""http://www.hansaworld.lv/2009/blog/twitter.png"" alt=""Tweet Me From HansaWorld.lv"" title=""""></a></div>");  
+  WebOutString("<div id=""blog-head-item-right"">");
+  WebOutString("<a target=""_blank"" href=""http://www.draugiem.lv/say/ext/add.php?title=" & WebNGTranslater.Comment);
+  WebOutString("&link=" & "http://www.hansaworld.lv" & FormatSimpleLink(WebGetArg("path"),true) & "&titlePrefix=hansaworld.lv""> <img src=""http://www.hansaworld.lv/2009/blog/draugiem.png"" title=""""></a></div>");
+  WebOutStringFormatNL("</div>"); 
+return;
+end;
+*/
+Global
+procedure AddComment(boolean putf,string sernr,string proc,string compnr)
+begin
+  integer errorflags;
+
+  if (CurrentCust == "") then begin
+    WebOutStringFormatNL(ToolWebNGTranslateText(25914));
+  end else begin
+
+
+    if (putf) then begin
+      PutSessionString("cname","");      
+      PutSessionString("cemail","");      
+      PutSessionString("ctext","");      
+      //PutSessionString("chead","");      
+      PutSessionString("err",getSessionString("err"));  
+    end;
+    WebOutStringFormatNL("<form method=""POST"" action=""/" & proc & """>");
+    WebOutStringFormatNL("<input type=""hidden"" name=""sernr"" value=""" & sernr & """>");
+    WebOutStringFormatNL("<input type=""hidden"" name=""contpath"" value=""" & WebGetArg("path") & """>");
+    WebOutStringFormatNL("<input type=""hidden"" name=""compnr"" value=""" & compnr & """>");
+    errorflags = StringToLongint(GetSessionString("err"));
+    if errorflags > 0 then begin
+      
+      if (BitAnd(errorflags,4)==4) then begin
+        WebOutStringFormatNL("<li>" & ToolWebNGtranslateText(21047) & "</li>");
+      end;
+      
+      if (BitAnd(errorflags,16)==16) then begin
+        WebOutStringFormatNL("<li>" & ToolWebNGtranslateText(21049) & "</li>");
+      end;
+    if (BitAnd(errorflags,32)==32) then begin
+        WebOutStringFormatNL("<li>" & ToolWebNGtranslateText(21051) & "</li>");
+     // stopalert("afd");
+      end;
+      if (BitAnd(errorflags,64)==64) then begin
+        WebOutStringFormatNL("<li>" & ToolWebNGtranslateText(21052) & "</li>");
+      end;
+
+    /*
+    if (BitAnd(errorflags,2)==2) then begin
+       // WebOutStringFormatNL("<li>" & ToolWebNGtranslateText(21046) & "</li>");
+      end;
+    if (BitAnd(errorflags,8)==8) then begin
+      //  WebOutStringFormatNL("<li>" & ToolWebNGtranslateText(21048) & "</li>");
+      end;
+    */
+    end;
+    PutSessionString("err","");
+    WebOutStringFormatNL("<hr/>");
+    WebOutStringFormatNL("<div id=""blog-title"">");  
+    WebOutStringFormatNL("<div id=""blog-title-item"">" & toolwebngtranslatetext(21043) & "</div>");
+    WebOutStringFormatNL("</div><br/>");
+    WebOutStringFormatNL("<div id=""blog-comment-inp"">");
+    WebOutStringFormatNL("<div id=""blog-head-item"">" & ToolWebNGtranslateText(21161) & "<input type=""text"" class=""blog-head-item"" name=""name"" value=""" & getSessionString("cname") & """>" & "</div>");
+    WebOutStringFormatNL("<div id=""blog-head-item"">" & ToolWebNGtranslateText(21162) & "<input type=""text"" class=""blog-head-item"" name=""e-mail"" value=""" & getSessionString("cemail") & """>" & "</div>");
+   // WebOutStringFormatNL("<div id=""blog-head-item"">" & ToolWebNGtranslateText(21162) & "<input type=""text"" class=""blog-head-item"" name=""result"" value=""" & getSessionString("cres") & """>" & "</div>");
+    WebOutStringFormatNL("</div>");
+    //WebOutStringFormatNL("<div id=""blog-comment-inp"">");
+    
+    //WebOutStringFormatNL("<input type=""text"" Maxlength=""40"" class=""blog-head-item2"" name=""subject"" value=""" & getSessionString("chead") & """>");
+    //WebOutStringFormatNL("</div>");
+    WebOutStringFormatNL("<div id=""blog-comment-inp"">");
+    WebOutStringFormatNL("<textarea name=""comment-text"" class=""blog-head-item2"" value="" "">" & getSessionString("ctext") & "</textarea>");
+    WebOutStringFormatNL("</div>");
+    //WebOutStringFormatNL("<input type=""hidden"" class=""blogok"" id=""s1"" name=""sl"" value=""" & ToolWebNGtranslateText(21042) & """>"); 
+    WebOutStringFormatNL("<input type=""submit"" class=""blogok"" id=""sl"" name=""sl"" value=""" & ToolWebNGtranslateText(21042) & """>"); 
+    WebOutStringFormatNL("<input type=""submit"" class=""blogok"" id=""sl"" name=""sl"" value=""" & ToolWebNGtranslateText(22000) & """>");  
+    WebOutStringFormatNL("</form>");
+  end;
+  if putf==false then begin
+    WebOutStringFormatNL("</div>");  
+  end;
+
+  return;
+end;
+

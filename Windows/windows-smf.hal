@@ -1,0 +1,122 @@
+
+event DefineWindows
+begin
+
+  real h,h2,h3,h4,hc,v,v2,vs,vm;
+  record SMFVc SMFr;
+  integer wn;
+  
+  SetLangMode(LangLatvian,"LAT",0);
+
+
+
+  WindowBegin("Skol•nu m‚c´bu uzÀ•mumi",SMFLClass,CGmlist,-);
+  SpawnClass(SMFDClass);
+  SetWRect(64,80,890,350);
+  Sizeable(-1,-1,0,0);
+  UseView(SMFVc);
+  RecordList(4,17,-21,-39);
+  RlColKey(4,2,"SMU kods",SMFCode,false,SMFCode);
+  RlColKey(94,94,"Nosaukums",SMFName,false,SMFName);
+  RlColKey(-520,-520,"Skola",SchoolName,false,SchoolName);
+  //RlColKey(-280,-280,"Skolot‚js",TeacherName,false,TeacherName);
+  RlColKey(-390,-390,"Tips",TypeName,false,Type);
+  RlColKey(-300,-300,"Statuss",StatusName,false,Status);
+  RlCol   (-200,-200,"Serveris",ServerCode,false);
+  RlCol   (-140,-140,"Komp.",CompNr,false);
+  RlColKey(-100,-100,"Datums",TransDate,false,TransDate);
+  SearchField("Mekl•t");
+  EndWindow;
+
+  WindowBegin("Skol•nu m‚c´bu uzÀ•mums",SMFDClass,CGview,-);
+  DynamicWindow;
+  AutoSizeWindow(false);
+  SetWRect(64,80,960,670);
+  UseView(SMFVc);
+  v = 6; vs = 22; h = 100; h2 = 230; h3 = 420;h4 = 560; v2 = 25;
+  //Tile(0,100,false,"",SMFCode);
+  EditField(h,v, 90,"SMU kods",Normal,SMFCode,false,0);
+  CheckBox(h+120,v,0,"Pab. re®.",ReadyFlag);
+  //EditField(290,v,30,"Komp‚nija",ViewOnly,CompNr,false,0);
+  EditField(h,v+=vs,220,"Nosaukums",Normal,SMFName,false,0);
+  /*TileButton(1,"Inform‚cija");
+  TileButton(2,"Iesðt´tie dokumenti");
+  Tile(1,400,true,"",Manager);*/
+  EditField(h,v+=vs,220,"Vad´t‚js",Normal,Manager,false,0);
+  EditField(h,v+=vs,220,"E-pasts",Normal,Email,false,0);
+  EditField(h,v+=vs,50,"Skol•na lietot. kods",Normal,CustCode,false,0);
+  EditField(h2,v, 90,"Re®ions",Normal,Region,false,JALRegionSClass);
+  EditField(h,v+=vs,50,"Serveris",ViewOnly,ServerCode,false,0);
+  EditField(h2,v,90,"Komp‚nija",ViewOnly,CompNr,false,0);
+  //EditField(h,v+=vs,50,"Serveris",Normal,ServerCode,false,0);
+  //EditField(h2,v,90,"Komp‚nija",Normal,CompNr,false,0);
+
+  ButtonFrame(h,v=(vm+=(v+40)),90,4,"Statuss");
+  RadioButton(h,v,0,0,"Neapstiprin‚ta",StatusFlag);
+  RadioButton(h,v+=16,1,0,"Akt´va",StatusFlag);
+  RadioButton(h,v+=16,2,0,"Neakt´va",StatusFlag);
+  RadioButton(h,v+=16,3,0,"Likvid•ta",StatusFlag);
+  ButtonFrame(h2,v=vm,90,3,"Tips");
+  RadioButton(h2,v,0,0,"Raìoäana",TypeFlag);
+  RadioButton(h2,v+=16,1,0,"Pakalpojumi",TypeFlag);
+  RadioButton(h2,v+=16,2,0,"Abi",TypeFlag);
+// Edit Start ---------------------------------------------- Edit Start
+	//Friday, 5 October 2018 18:00:16
+	
+	v = v + 32;
+	StaticText(h,v+=vs,"Vec‚ka vai aizbildÀa v‚rds, uzv‚rds",false);
+	EditField(h,v,120,"V‚rds",Normal,ParentName,false,0);
+  EditField(h,v+=vs,120,"Uzv‚rds",Normal,ParentSurName,false,0);
+  EditField(h,v+=vs,120,"E-pasts",Normal,ParenteMail,false,0);
+  v = v + 16;
+  ButtonFrame(h,v+=vs,160,2,"Age");
+  RadioButton(h,v,0,0,"Man jau ir 13 gadu",AgeFlag);
+  RadioButton(h,v+=16,1,0,"Man v•l nav 13 gadu",AgeFlag);
+  vm = vm + 150;
+	// Edit End ---------------------------------------------- Edit End
+	
+  EditField(h3,v=6,30,"Objekti",Normal,Objects,false,ObjSClass);
+  EditField(h4,v,20,"Klase",Normal,ClassNum,false,0);
+  EditField(h4+30,v,20,"",Normal,ClassChar,false,0);
+
+  /*EditField(h3,v+=vs, 30,"Skolot‚ja kods",Normal,TeacherCode,false,TeacherSClass);
+  EditField(h4,v,-40,"V‚rds, Uzv‚rds",Normal,TeacherName,false,0);*/
+  EditField(h3,v+=vs, 30,"Skolas kods",Normal,SchoolCode,false,SchoolSClass);
+  EditField(h4,v,-40,"Nosaukums",Normal,SchoolName,false,0);
+  
+  //EditField(h2,v,-30,"Klients",ViewOnly,CustCode,false,0);
+  
+  MatrixBegin(h3,v+=40,-55,v+=50,-,20);
+  MatCol(1,25,"Tips",0,Type,false,SetSClass);
+  MatCol(1,90,"Kods",0,Code,false,0);
+  MatCol(1,190,"V‚rds",0,Name,false,0);
+  EndMatrix;
+  TextField(h3,v,-40,80,Text,0);
+  
+  //Tile(2,400,true,"",-);
+  wn = CurWindow;
+  if GetWindowString(wn,"SMFCode") <> "" then begin
+    WebPage(20,vm+70,-20,-20,"http://jal.lv/WebShowDocuments.hal?code=" & GetWindowString(wn,"SMFCode") & "&user=" & CurrentUser,"DocPage");
+    //WebPage(20,vm+70,-20,-20,"http://localhost:8191/WebShowDocuments.hal?code=" & GetWindowString(wn,"SMFCode") & "&user=" & CurrentUser,"DocPage");
+  end;
+  SpecialMenu("Skat´t saraksti ar SMU",' ',1,"ShowFullMailListDsm");
+  EndWindow;
+
+  WindowBegin("Ievietot m‚c´bu uzÀ•mumu",SMFSClass,CGslist,-);
+  SpawnClass(SMFDClass);
+  SetWRect(64,80,860,350);
+  Sizeable(-1,-1,0,0);
+  UseView(SMFVc);
+  RecordList(4,17,-21,-39);
+  RlColKey(4,2,"SMU kods",SMFCode,false,SMFCode);
+  RlColKey(94,94,"Nosaukums",SMFName,false,SMFName);
+  RlColKey(-480,-480,"Skola",SchoolName,false,SchoolName);
+  //RlColKey(-280,-280,"Skolot‚js",TeacherName,false,TeacherName);
+  RlColKey(-160,-160,"Tips",TypeName,false,Type);
+  RlColKey(-80,-80,"Statuss",StatusName,false,Status);
+  SearchField("Mekl•t");
+  EndWindow;
+
+
+return;
+end;

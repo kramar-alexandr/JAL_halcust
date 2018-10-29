@@ -1,0 +1,276 @@
+
+function integer getSMFPartCount(record SMFVc SMFr)
+begin
+  record CUVc CUr;
+  integer i,cnt;
+  record RLinkVc RLr;
+  integer res;
+
+  res = 0;
+
+  i = 1;
+  while ReadRecordLink(SMFr,i,CUr,RLr) begin
+    res = res + 1;
+    i = i + 1;
+  end;
+
+
+  getSMFPartCount = res;
+return;
+end;
+
+procedure OutPutTeacherList(record SMFVc SMFr,integer pos,integer c)
+begin
+  row SMFVc SMFrw;
+  integer i,rwcnt,p;
+  record TeacherVc TCr;
+  record MentorVc MTr;
+  record CUVc CUr;
+  
+  p = pos;
+
+  rwcnt = MatRowCnt(SMFr);
+  for (i = 0; i < rwcnt; i = i + 1) begin
+    MatRowGet(SMFr,i,SMFrw);
+    if SMFrw.Type == 0 then begin //for starters created just for teachers. dont know if mentors are needed
+      TCr.TeacherCode = SMFrw.Code;
+      if readfirstmain(TCr,1,true) then begin
+        CUr.Code = TCr.CustCode;
+        if readfirstmain(CUr,1,true) then begin
+          OutString(p,0,CUr.Name,false);p = p + c;
+          OutString(p,0,CUr.Phone,false);p = p + c;
+          OutString(p,0,CUr.eMail,false);p = p + c;
+        end;
+      end;
+    end;
+  end;
+
+return;
+end;
+
+
+global
+procedure CourseEventPartRn(record RcVc RepSpec)
+begin
+  record CourseEventVc CourseEventr;
+  row CourseEventVc CourseEventrw;
+  integer i,rwcnt,c,p,smfmax,cnt,st;
+  record ResVc Resr; 
+  boolean TrHs,testf;
+  integer rw,qty;
+  string 255 tstr,smucode,schoolname,smuname;
+  record CUVc ContactCUr,CUr;
+  record SchoolVc Schoolr;
+  record RLinkVc RLr;
+  record SMFVc SMFr;
+  record TeacherVc TCr;
+  integer ssize,tsize,csize;
+  array record SMFVc arSMF;
+  array record TeacherVc arTC;
+  array record CUVc arCU;
+  boolean smf,tcf;
+
+  st = 20;
+
+  StartReportJob(USetStr(16800));
+  CourseEventr.SerNr = RepSpec.long1;
+  if (ReadFirstMain(CourseEventr,1,true)) then begin  
+    rw = 1;
+    tstr = USetStr(16801) & ": "& CourseEventr.SerNr;
+    Header(rw,tstr,1);
+    rw = rw + 1;
+    tstr = USetStr(16802) & ": " & CourseEventr.CourseCode;
+    tstr = tstr & ", " & CourseEventr.CourseName;
+    Header(rw,tstr,1);
+    rw = rw + 1;
+    Header(rw,USetStr(16803) & ": " & CourseEventr.TransDate & ":" & CourseEventr.EndDate,1);
+  
+    EndHeader;
+
+
+    Gray_Divider(0,1);
+    csize = 0;ssize = 0;tsize = 0;
+    c = 50;
+    if (RepSpec.ArtMode == 1 ) then begin
+      rwcnt = MatRowCnt(CourseEventr);
+      for (i=0;i<rwcnt;i=i+1) begin
+        MatRowGet(CourseEventr,i,CourseEventrw);
+        testf = true;
+        if (nonblankdate(CourseEventrw.CancelDate)) then begin
+          testf = false;
+        end;
+        if (testf) then begin
+          ContactCUr.Code = CourseEventrw.ContactCode;
+          if (ReadFIrstMain(ContactCUr,1,true)) then begin 
+            tcf = false;
+            smf = false;
+
+            if readrecordLink(ContactCUr,1,SMFr,RLr) then begin
+              smf = true;
+              arSMF[ssize] = SMFr;
+              cnt = MatRowCnt(SMFr);
+              if cnt > smfmax then begin
+                smfmax = cnt;
+              end;
+              ssize = ssize + 1;
+            end else begin
+              TCr.CustCode = ContactCUr.Code;
+              if readfirstkey("CustCode",TCr,1,true) then begin
+                arTC[tsize] = TCr;
+                tsize = tsize + 1;
+                tcf = true;
+              end;
+            end;
+
+            if smf == false and tcf == false then begin
+              arCU[csize] = ContactCUr;
+              csize = csize + 1;
+            end;
+
+          end;
+        end;
+      end;
+
+      StartFormat(15);
+      p = st;
+      OutString(p,0,UsetStr(32260),false);p = p +c ;
+      OutString(p,0,UsetStr(32261),false);p = p +c ;
+      OutString(p,0,UsetStr(32460),false);p = p +c ;
+      OutString(p,0,UsetStr(10991),false);p = p +c ;
+      OutString(p,0,UsetStr(32461),false);p = p +c ;
+      for (i = 0; i < smfmax; i = i + 1) begin
+        OutString(p,0,UsetStr(32462) & " " & i+1,false);p = p +c ;
+        OutString(p,0,UsetStr(11611),false);p = p +c ;
+        OutString(p,0,UsetStr(10991),false);p = p +c ;
+      end;
+      EndFormat;
+      StartFormat(1);
+      Gray_divider(0,1);
+      endformat;
+      
+      for (i = 0; i < ssize; i = i + 1) begin
+        p = st;
+        SMFr = arSMF[i];
+        StartFormat(15);
+        OutString(p,0,SMFr.SMFCode,false); p = p + c;
+        OutString(p,0,SMFr.SMFName,false); p = p + c;
+        OutString(p,0,SMFr.ProdSpec,false); p = p + c;
+        OutString(p,0,SMFr.Email,false); p = p + c;
+        OutString(p,0,getSMFPartCount(SMFr),false); p = p + c;
+        OutPutTeacherList(SMFr,p,c);
+        EndFormat;
+      end;
+
+      StartFormat(10);
+      Black_divider(0,1);
+      endformat;
+
+      StartFormat(15);
+      p = st;
+      OutString(p,0,UsetStr(25077),false);p = p +c ;
+      OutString(p,0,UsetStr(10991),false);p = p +c ;
+      OutString(p,0,UsetStr(11611),false);p = p +c ;
+      OutString(p,0,UsetStr(32463),false);p = p +c ;
+      EndFormat;
+      StartFormat(1);
+      Gray_divider(0,1);
+      endformat;
+
+      for (i = 0; i < tsize; i = i + 1) begin
+        p = st;
+        TCr = arTC[i];
+        CUr.Code = TCr.CustCode;
+        if readfirstmain(CUr,1,true) then begin
+          StartFormat(15);
+          OutString(p,0,CUr.Name,false); p = p + c;
+          OutString(p,0,CUr.eMail,false); p = p + c;
+          OutString(p,0,CUr.Phone,false); p = p + c;
+          OutString(p,0,TCr.SchoolName,false); p = p + c;
+          EndFormat;
+        end;
+      end;
+
+      StartFormat(10);
+      Black_divider(0,1);
+      endformat;
+
+      StartFormat(15);
+      p = st;
+      OutString(p,0,UsetStr(25077),false);p = p +c ;
+      OutString(p,0,UsetStr(10991),false);p = p +c ;
+      EndFormat;
+      StartFormat(1);
+      Gray_divider(0,1);
+      endformat;
+
+
+      for (i = 0; i < csize; i = i + 1) begin
+        p = 10;
+        CUr = arCU[i];
+        StartFormat(15);
+        OutString(p,0,CUr.Name,false); p = p + c;
+        OutString(p,0,CUr.eMail,false); p = p + c;
+        EndFormat;
+      end;
+
+
+      Gray_Divider(0,1);
+      StartFormat(15);
+      OutString(0,0,USetStr(16724) & ": " & (ssize + csize + tsize),false);
+      EndFormat;
+    end else begin
+      StartFormat(15);
+      OutString(0,0,USetStr(16804),false);
+      OutString(100,0,USetStr(32264),false);          
+      OutString(250,0,USetStr(16806),false);      
+      OutString(310,0,USetStr(16807),false);      
+      OutString(1,0,"",true);        
+      EndFormat;  
+
+
+      Gray_Divider(0,1);
+
+      rwcnt = MatRowCnt(CourseEventr);
+      for (i=0;i<rwcnt;i=i+1) begin
+        MatRowGet(CourseEventr,i,CourseEventrw);
+        testf = true;
+        if (nonblankdate(CourseEventrw.CancelDate)) then begin
+          testf = false;
+        end;
+        if (testf) then begin
+          ContactCUr.Code = CourseEventrw.ContactCode;
+          if (ReadFIrstMain(ContactCUr,1,true)) then begin end;
+          
+          schoolname = "";
+          if readrecordlink(ContactCUr,1,Schoolr,RLr) then begin
+            schoolname = Schoolr.SchoolName;
+          end;
+          smuname = "";
+          smucode = "";
+          if readrecordLink(ContactCUr,1,SMFr,RLr) then begin
+            smuname = SMFr.SMFName;
+            smucode = SMFr.SMFCode;
+          end;
+
+          StartFormat(15);
+          OutStringID(0,"DblCUVc",CourseEventrw.ContactName,false,CourseEventrw.ContactCode);
+          OutString(100,0,schoolname,false);      
+          OutString(250,0,ContactCUr.Phone,false);            
+          OutString(310,0,ContactCUr.eMail,false);    
+          OutStringID(1,"SMFDbl",smuname,true,smucode);    
+          EndFormat;
+          qty = qty + 1;        
+        end;
+      end;
+
+      Gray_Divider(0,1);
+      StartFormat(15);
+      OutString(0,0,USetStr(16724) & ": " & ValToString(qty,M40Val,"","",0),false);
+      EndFormat;
+
+    end;
+
+  end;  
+  EndJob
+  return;
+end;

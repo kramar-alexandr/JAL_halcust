@@ -1,0 +1,31 @@
+
+global 
+updating function longint JALEventFieldVcRecordCheck(var record JALEventFieldVc JFr,record JALEventFieldVc JF2r,LongInt stat,LongInt long4)
+begin
+  LongInt res,i;
+  
+  res = 0;
+  
+  if JFr.SerNr < 0 then begin
+    if JF2r.SerNr < 0 then begin 
+      JFr.SerNr = NextSerNr("JALEventFieldVc",CurrentDate,-1,false,"");
+    end else begin
+    RecordCheckError(1058,"",-1,"SerNr");      
+    res = -1; 
+    goto LJALEventFieldVcRecordCheck;
+    end;
+  end;
+  
+  if JFr.Type == 1 then begin
+    if JFr.SelectBox < 1 then begin
+
+    end;
+  end;
+ 
+  
+    
+LJALEventFieldVcRecordCheck:;
+  JALEventFieldVcRecordCheck = res;
+  return;
+end;
+

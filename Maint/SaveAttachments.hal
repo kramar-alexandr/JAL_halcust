@@ -1,0 +1,192 @@
+
+updating procedure CreateJALFile(record SMFVc SMFr,record Attach2Vc Attachr)
+begin
+  record JALFileVc JFr;
+
+
+  RecordNew(JFr);
+  JFr.SerNr = NextSerNr("JALFileVc",CurrentDate,-1,false,"");
+  JFr.SMFCode = SMFr.SMFCode;
+  JFr.SMFName = SMFr.SMFName;
+  JFr.TransDate = CurrentDate;
+  JFr.Status = 0;
+  if RecordStore(JFr,true) then begin 
+    CreateRecordLink(JFr,CurrentCompany,Attachr,CurrentCompany);
+  end;
+
+return;
+end;
+
+updating procedure SendFeedBackMail(string mail,boolean savef,string comp)
+begin
+  record MailVc Mailr;
+  row MailVc Mailrw;
+  integer i;
+  string 100 tstr;
+  record MailSettingsBlock MSr;
+  BlockLoad(MSr);
+
+  RecordNew(Mailr);
+  Mailr.Header = USetStr(32356);
+  if savef then begin
+    AddToText(USetStr(32357) & comp,Mailr);
+  end else begin
+    AddToText(USetStr(32358),Mailr);
+  end;
+  ClearRow(Mailr,Mailrw,1);
+  Mailrw.RowTyp = kMailRowTypeFrom;
+  Mailrw.AddrCode = MSr.FromSystem;
+  MatRowPut(Mailr,0,Mailrw);
+  ClearRow(Mailr,Mailrw,1);
+  Mailrw.RowTyp = kMailRowTypeTo;
+  Mailrw.AddrCode = mail;
+  MatRowPut(Mailr,1,Mailrw);
+  Mailr.SendFlag = 1;
+  if recordStore(Mailr,true) then begin end;
+return;
+end;
+
+procedure GetSMFFromMail(string mail,string head,var boolean savef,var record SMFVc SMFr)
+begin
+  record SMFVc tSMFr;
+  record CUVc CUr;
+  record RLinkVc RLr;
+  integer i;
+  boolean TrHs;
+
+  ResetLoop(CUr);
+  CUr.eMail = mail;
+  TrHs = true;
+  if readfirstkey("eMail",CUr,1,true) then begin
+    if ReadRecordLink(CUr,1,tSMFr,RLr) then begin
+      SMFr = tSMFr;
+      savef = true;
+    end;
+  end;
+  
+  if savef == false then begin
+    tSMFr.SMFCode = head;
+    if readfirstmain(tSMFr,1,true) then begin
+      SMFr = tSMFr;
+      savef = true;
+    end;
+  end;
+
+return;
+end;
+
+function string 255 FormatEmail(string mail)
+begin
+  string 255 res;
+  integer i,startpos,endpos;
+
+  res = mail;
+  startpos = -1;
+  endpos = -1;
+
+  for (i = 0; i < len(mail);i = i + 1) begin
+    if mid(mail,i,1) == "<" then begin
+      startpos = i+1;
+    end;
+    if mid(mail,i,1) == ">" then begin
+      endpos = i;
+    end;
+  end;
+
+  if startpos > -1 and endpos > -1 then begin
+    res = mid(mail,startpos,(endpos - startpos));
+  end;
+
+  FormatEmail = res;
+return;
+end;
+
+
+
+
+global
+updating procedure SaveAttachmentsMn(string arg)
+begin
+
+  record RLinkVc RLr;
+  record Attach2Vc Attachr;
+  record MailVc mailr,oldmailr;
+  row MailVc mailrw;
+  record SMFVc SMFr;
+  record JALClassBlock JCbl;
+  record ConfVc Confr;
+  string 100 semail,ckey;
+  boolean TrHs,foundf,savef;
+  integer i,rwcnt;
+  integer confcode;
+  string 50 frommail;
+
+
+  BlockLoad(JCbl);
+  TrHs = true;
+  
+  Confr.AddrName = JCbl.StartConf;
+ 
+  if ReadFirstKey("AddrName",Confr,1,TrHs) begin
+    confcode = Confr.SerNr;
+  end;
+  TrHs = true;
+  ckey="UserSer:" & confcode;
+ 
+  while loopkey(ckey,mailr,1,TrHs) begin
+    rwcnt = MatRowCnt(mailr);
+    for (i=0; i < rwcnt; i = i + 1) begin
+      MatRowGet(mailr,i,mailrw);
+      if (mailrw.RowTyp == 1) then begin
+        semail = FormatEmail(mailrw.AddrCode);
+        i = rwcnt;
+      end;
+    end;
+	  savef = false;
+	  foundf=true;
+    if nonblank(semail) then begin
+      GetSMFFromMail(semail,mailr.Header,savef,SMFr);
+    //logtext(0,"Sanemts fails - " & semail & " ," & SMFr.SMFCode);
+    end;
+    if savef then begin
+      i = 1;
+  //stopalert("ir viss savef");
+      while ReadRecordLink(mailr,i,Attachr,RLr) begin
+        if right(Attachr.FileName,4) <> ".htm" and right(Attachr.FileName,5) <> ".html" then begin
+          //CreateRecordLink(SMFr,CurrentCompany,Attachr,CurrentCompany);
+          CreateJALFile(SMFr,Attachr);
+        end;
+        i = i + 1;
+      end;
+    end;
+    RecordCopy(oldmailr,mailr);
+    for (i = 0 ; i < rwcnt; i = i + 1) begin
+      MatRowGet(mailr,i,mailrw);
+      if mailrw.RowTyp == kMailRowTypeFrom then begin
+        frommail = mailrw.AddrCode;
+      end;
+      if mailrw.AddrCode == JCbl.StartConf then begin
+      //stopalert("izmainam meilu");
+      //i = rwcnt;
+        if savef then begin
+          mailrw.AddrCode = JCbl.GoodConf;
+        end else begin
+          mailrw.AddrCode = JCbl.BadConf;
+        end;
+        MatRowPut(mailr,i,mailrw);
+      end;
+    end;
+
+    if RecordUpdate(oldmailr,mailr,true)==0 then begin
+      if savef then begin
+        //SendMailForAttachments(SMFr,mailr);
+        //CreateRecordLink(mailr,CurrentCompany,SMFr,CurrentCompany);
+      end;
+      if nonblank(frommail) then begin
+        SendFeedBackMail(frommail,savef,SMFr.SMFName);
+      end;
+    end;
+  end;
+
+  return;
+end;

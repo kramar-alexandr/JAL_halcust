@@ -1,0 +1,169 @@
+/*****  AddSMFMn.hal  *****
+ * 09/11/09 - GJS: JAL vienas skolas vietu rezerv•äanas variants.
+ *                 Lietot‚ju un pastkastäu izveide.
+ * 09/10/29 - GJS: Jaun‚s komp‚nijas pievienoäanas fjas 1.posms
+ * 09/10/28 - GJS: þener•t komp‚nijas nav iesp•jams. Tas bðs j‚dara ar rociÀu. 
+ ***** ************** *****/
+
+updating procedure CreatePupil(string pc, string pname, string compshort, string compname)
+begin 
+  Record UserVc Userr;
+  Record ConfVc Confr;
+  
+  recordnew(Userr);
+  Userr.Code = pc;
+  Userr.Name = pname;
+  Userr.AccessGroup = "DAL";
+  Userr.StartLevel = 1;
+  recordstore(Userr,true);
+
+  recordnew(Confr);
+  Confr.AddrName = pname & " (" & compshort & ")";
+  Confr.Comment = compname;
+  Confr.Class = 5;
+  Confr.AddrCode = pc;
+  Confr.UserType = 3;
+  recordstore(Confr,true);
+
+  return;
+end;
+
+updating procedure CreatePupils(string compshort, string compname,integer r)
+begin 
+  integer i,x;
+  string 5 pc;
+  string 20 pname;
+  string 10 rstr;
+  i=1;
+  rstr = r;
+  for(i=1;i<=5;i=i+1) begin
+    switch (i) begin
+      case 1: pc="D" & left("000",3-len(rstr)) & rstr & "DI"; pname=USetStr(32011);
+              CreatePupil(pc,pname,compshort,compname);
+      case 2: pc="D" & left("000",3-len(rstr)) & rstr & "GR"; pname=USetStr(32012);
+              CreatePupil(pc,pname,compshort,compname);
+      case 3: pc="D" & left("000",3-len(rstr)) & rstr & "01"; pname=USetStr(32013);
+              CreatePupil(pc,pname,compshort,compname);
+      case 4: pc="D" & left("000",3-len(rstr)) & rstr & "02"; pname=USetStr(32014);
+              CreatePupil(pc,pname,compshort,compname);
+      case 5: pc="D" & left("000",3-len(rstr)) & rstr & "03"; pname=USetStr(32015);
+              CreatePupil(pc,pname,compshort,compname);
+    end;
+  end;
+
+  return;
+end;
+
+
+updating procedure AddComp(record RcVc RepSpec, integer r)
+begin 
+  record CYBlock CYBl;
+  Record CompaniesBlock CompaniesRec;
+  Row CompaniesBlock CompaniesBlockrw;
+  BlockLoad(CompaniesRec);
+    
+  SetCompany(r+1,false);
+  BlockLoad(CYBl);
+  CYBl.CompName = RepSpec.f2;
+  BlockStore(CYBl);
+  CreatePupils(RepSpec.f1,RepSpec.f2,r+1);
+  MatRowGet(CompaniesRec,r,CompaniesBlockrw);
+  CompaniesBlockrw.ShortName = RepSpec.f1;
+  CompaniesBlockrw.CompName = RepSpec.f2;
+  CompaniesBlockrw.ActiveStatus = 0;
+  MatRowPut(CompaniesRec,r,CompaniesBlockrw);
+  BlockStore(CompaniesRec);
+
+  return;
+end;
+
+global
+updating procedure AddSMFMn(record RcVc RepSpec)
+  Begin
+  Record CompaniesBlock CompaniesBlockr;
+  Row CompaniesBlock CompaniesBlockrw;
+  Integer i,rwcnt;
+  string 255 busted,noblanks;
+  Boolean blankcomp,added;
+  
+  BlockLoad(CompaniesBlockr);
+  blankcomp = true;
+  added = false;
+  rwcnt = MatRowCnt(CompaniesBlockr);
+
+  for (i=1;i<rwcnt;i=i+1) begin
+    if (added == false) then begin
+      MatRowGet(CompaniesBlockr,i,CompaniesBlockrw);
+      if (RepSpec.f3==CompaniesBlockrw.ShortName) then begin    //check if there is a school
+        if (RepSpec.f1==CompaniesBlockrw.ShortName) then begin    //check if company already registered
+          busted = USetStr(32000) & CompaniesBlockrw.ShortName & USetStr(32001);
+          beep;
+         // stopalert(busted);
+          //RecordCheckError(busted,"",1,"f1");
+          goto nocomp;
+        end;//existingcompanycheck
+        if blank(CompaniesBlockrw.CompName) then begin
+          AddComp(RepSpec,i);
+          added = true;
+        end else begin
+          if (i+1 == rwcnt) then begin
+            blankcomp = false;
+          end;
+        end;
+     end else begin
+        if blank(CompaniesBlockrw.ShortName) then begin
+          AddComp(RepSpec,i);
+          added = true;
+        end else begin
+          if (i+1 == rwcnt) then begin
+            blankcomp = false;
+          end;
+        end;
+      end; //school
+    end;
+  end;
+
+  if (blankcomp == false) then begin
+    noblanks = USetStr(32002);
+    beep;
+   // stopalert(noblanks);
+    //RecordCheckError(noblanks,"",1,"f1");
+  end;
+  
+  nocomp:;                               
+  return;
+end;
+
+/*
+global
+updating procedure GenComMn(record RcVc RepSpec)
+Begin  
+  Record CompaniesBlock CompaniesRec;
+  Row CompaniesBlock CompaniesBlockrw;
+  Integer i,rwcnt;
+  Boolean store;
+  
+  BlockLoad(CompaniesRec);
+  
+  store = false;
+  rwcnt = MatRowCnt(CompaniesRec);
+  
+  i=0;
+  while (i<5) begin
+     MatRowGet(CompaniesRec,i,CompaniesBlockrw);
+     CompaniesBlockrw.CompCode = i;
+     MatRowPut(CompaniesRec,i,CompaniesBlockrw);
+     trace(i,CompaniesBlockrw.CompCode);
+     store = true;
+     i=i+1;
+  end;
+
+  if (store==true) then begin
+    BlockStore(CompaniesRec);
+  end;
+  
+  return;
+End;
+*/
+
+

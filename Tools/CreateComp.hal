@@ -1,0 +1,308 @@
+external inner procedure FindCurMailboxName(var string);
+external inner function string 255 removenextnode(var string);
+external inner procedure ExtractObj(string,var Integer,var string);
+
+global
+procedure CreateTimedTaskForClient(record SMFVc SMFr)
+begin
+   date td;
+   time t;
+   
+   td = CurrentDate;
+   t = AddSeconds(CurrentTime,5);
+   NewTimedTask("SMFClietGenerate" & SMFr.SMFCode,"Generate SMF Client","SMFClientGen",SMFr.SMFCode,td,t,"","");
+
+
+return;
+end;
+
+procedure ExportFileForServer(record SMFVc SMFr,record JALServerVc JSr)
+begin
+   date td;
+   time t;
+   
+   td = CurrentDate;
+   t = AddSeconds(CurrentTime,1);
+   NewTimedTask("Exportserverinfo","Exportserverinfo","SendExportFileToServer",SMFr.SMFCode & "," & JSr.Code,td,t,"","");
+
+
+return;
+end;
+
+global
+updating procedure SendMailManual(record SMFVc SMFr)
+begin
+  record MailVc Mailr;
+  row MailVc Mailrw;
+  integer i,j;
+  string 10 rstr;
+  string 100 tstr;
+  string 255 txt;
+  record ReportMailBlock RepMailr;
+  record MailSettingsBlock MSr;
+  record CUVc CUr;
+  record RLinkVc RLr;
+  BlockLoad(MSr);
+
+  i=1;
+  rstr = SMFr.CompNr;
+
+  CUr.Code = SMFr.CustCode;
+  if readfirstmain(CUr,1,true) then begin end;
+
+  RecordNew(Mailr);	
+  BlockLoad(RepMailr);
+  
+  ClearRow(Mailr,Mailrw,1);
+  Mailrw.RowTyp = kMailRowTypeFrom;
+  //FindCurMailboxName(tstr);
+ // Stopalert("rrr " & MSr.FromSystem);
+  Mailrw.AddrCode = MSr.Postmaster;
+  MatRowPut(Mailr,0,Mailrw);
+  ClearRow(Mailr,Mailrw,1);
+  Mailrw.RowTyp = kMailRowTypeTo;
+  Mailrw.AddrCode = CUr.eMail;
+  MatRowPut(Mailr,1,Mailrw);
+  j = 0;
+  Mailr.Header = USetStr(32380);
+  LineTextPut(Mailr,j,USetStr(32380));j = j + 1;
+  LineTextPut(Mailr,j,USetStr(32381));j = j + 1;
+  LineTextPut(Mailr,j,USetStr(32375));j = j + 1;
+
+  while ReadRecordLink(SMFr,i,CUr,RLr) begin
+    txt="D" & left("000",3-len(rstr)) & rstr & (i-1) & "  - (" & CUr.Name & ")";
+    LineTextPut(Mailr,j,txt);
+    i = i+1;
+    j = j + 1;
+  end;
+
+  LineTextPut(Mailr,j,USetStr(32375));j = j + 1;
+  LineTextPut(Mailr,j,USetStr(32374));j = j + 1;
+  LineTextPut(Mailr,j,USetStr(32375));j = j + 1;
+  LineTextPut(Mailr,j,USetStr(32376));
+  Mailr.SendFlag = 1;//gjs1
+  if recordStore(Mailr,true) then begin end;
+  return;
+end;
+
+global
+procedure ExportEnterString(string tstr)
+begin
+  
+  ExportPadString(tstr,BytesInString(tstr)," ",false);
+  ExportPadString(chr(13),1," ",false);
+
+return;
+end;
+
+global
+procedure ExportTabString(string tstr)
+begin
+  //logtext(0,tstr & ";" & len(tstr));
+  ExportPadString(tstr,BytesInString(tstr)," ",false);
+  ExportPadString(chr(9),1," ",false);
+
+return;
+end;
+
+global
+updating procedure SendExportFileToServer(string args)
+begin
+  area fl;
+  string 255 filename;
+  string 255 tstr,tstr2;
+  integer i;
+  record CUVc CUr,oldCUr;
+  record RLinkVc RLr;
+  record TeacherVc TCr;
+  record SMFVc SMFr;
+  row SMFVc SMFrw;
+  record JALServerVc JSr;
+  string 255 arg;
+  integer pos;
+
+  pos = 0;
+
+  arg = args;
+  ExtractObj(arg,pos,tstr2);
+  SMFr.SMFCode = tstr2;
+
+   if readfirstmain(SMFr,1,true) then begin
+    //pos = 1;
+    ExtractObj(arg,pos,tstr2);
+    JSr.Code = tstr2;
+    if readfirstmain(JSr,1,true) then begin
+    
+    //filename = JSr.FilePath & SMFr.SMFCode & ".txt";
+    //filename = "complist//" & SMFr.SMFCode & ".txt";
+    CreateFile("tmp_companies//" & SMFr.SMFCode & ".txt");
+  
+    //ExportPadString("test",4," ",false);
+    ExportEnterString("smfimport");
+    ExportTabString(SMFr.CompNr);
+    ExportTabString(SMFr.SMFCode);
+    ExportEnterString(SMFr.SMFName);
+    MatRowGet(SMFr,0,SMFrw);
+
+    TCr.TeacherCode = SMFrw.Code;
+    if readfirstmain(TCr,1,true) then begin end;
+    ExportTabString(JSr.TeacherAccGr);
+    ExportTabString(TCr.GlobalUser);
+    //ExportTabString(TCr.TeacherCode);
+    ExportEnterString(TCr.TeacherName);
+    i = 1;
+    ExportTabString(JSr.SMFAccGr);
+    while readrecordLink(SMFr,i,CUr,RLr) begin
+      ExportTabString(CUr.Name);
+      recordCopy(oldCUr,CUr);
+      CUr.UserStr1 = "D" & left("000",3-len(SMFr.CompNr)) & SMFr.CompNr & (i-1);
+      if recordUpdate(oldCUr,CUr,true) then begin end;
+      i = i + 1;
+    end;
+
+    CloseFile;
+    RunProgram("./movefiles.sh",SMFr.SMFCode & ".txt " & JSr.FilePath);
+
+  end;
+end;
+
+return;
+end;
+
+global
+updating procedure FillSMFCompany(string code)
+begin
+  record SMFVc oldSMFr,SMFr;
+  record JALServerVc JSr,oldJSr;
+  boolean TrHs;
+
+  TrHs = true;
+  SMFr.SMFCode = code;
+  if readfirstmain(SMFr,1,true) then begin
+    JSr.Code = SMFr.ServerCode;
+    if readfirstmain(JSr,1,true) then begin
+      ExportFileForServer(SMFr,JSr);
+      //CreateTimedTaskForClient(SMFr);
+      SendMailManual(SMFr);
+    end; 
+  end;
+
+return;
+end;
+
+global
+updating procedure AddComp(var record SMFVc SMFr)
+begin 
+
+  NewTimedTask("SMFCompanyFIll","Generate SMF company","FillSMFCompany",SMFr.SMFCode,CurrentDate,AddSeconds(CurrentTime,1),"","");
+  logtext(0,"Request for new company");
+  return;
+end;
+
+
+
+global
+updating procedure SendChangedStatusNotification(record SMFVc SMFr,integer status)
+begin
+  record MailVc Mailr;
+  row MailVc Mailrw;
+  integer i,j;
+  string 10 rstr;
+  string 100 tstr;
+  string 255 txt;
+  record MailSettingsBlock MSr;
+  record JALClassBlock JCbl;
+  record CUVc CUr;
+  record RLinkVc RLr;
+  record LTxtVc LTxtr;
+  integer lcnt;
+  BlockLoad(MSr);
+  BlockLoad(JCbl);
+
+  switch status begin
+    case 0: LTxtr.Code = JCbl.STDTextEn;
+    case 1: LTxtr.Code = JCbl.STDTextDis;
+    case 2: LTxtr.Code = JCbl.STDTextTerm;
+  end;
+  if readfirstmain(LTxtr,1,true) then begin
+
+    CUr.Code = SMFr.CustCode;
+    if readfirstmain(CUr,1,true) then begin end;
+
+    RecordNew(Mailr);	
+    //BlockLoad(RepMailr);
+    
+    ClearRow(Mailr,Mailrw,1);
+    Mailrw.RowTyp = kMailRowTypeFrom;
+    Mailrw.AddrCode = MSr.Postmaster;
+    MatRowPut(Mailr,0,Mailrw);
+    ClearRow(Mailr,Mailrw,1);
+    Mailrw.RowTyp = kMailRowTypeTo;
+    Mailrw.AddrCode = CUr.eMail;
+    MatRowPut(Mailr,1,Mailrw);
+    Mailr.Header = LTxtr.Comment;
+    lcnt = LineTextCnt(LTxtr);
+    for ( i = 0 ; i < lcnt; i = i + 1) begin
+      LineTextPut(Mailr,i,LineTextGet(Ltxtr,i));
+    end;
+
+    Mailr.SendFlag = 1;//gjs1
+    if recordStore(Mailr,true) then begin end;
+
+  end;
+  return;
+end;
+
+
+global
+updating procedure SendUpdateCompStatusFile(record SMFVc SMFr,integer type)
+begin 
+
+  NewTimedTask("SendUpdateCompStatusFileSub","ChangeSMFStatus","SendUpdateCompStatusFileSub",SMFr.SMFCode & "," & type,CurrentDate,AddSeconds(CurrentTime,1),"","");
+
+  return;
+end;
+
+
+
+global
+updating procedure SendUpdateCompStatusFileSub(string args)
+begin
+
+  string 255 filename;
+  integer i;
+  record JALServerVc JSr;
+  record SMFVc SMFr;
+  string 255 arg;
+  integer type;
+  integer pos;
+  string 255 tstr,tstr2;
+
+  pos = 0;
+  arg = args;
+  ExtractObj(arg,pos,tstr2);
+  SMFr.SMFCode = tstr2;
+
+  if readfirstmain(SMFr,1,true) then begin
+    ExtractObj(arg,pos,tstr2);
+    type = stringtoint(tstr2);
+
+    JSr.Code = SMFr.ServerCode;
+  //logtext(0,"viens " & JSr.Code);
+    if readfirstmain(JSr,1,true) then begin
+    
+      filename = "status_" & SMFr.SMFCode & ".txt";
+      CreateFile("tmp_companies//" & filename);
+    
+      //ExportPadString("test",4," ",false);
+      ExportEnterString("smfstatusimport");
+      ExportTabString(SMFr.CompNr);
+      ExportEnterString(type);
+      CloseFile;
+      RunProgram("./movefiles.sh",filename & " " & JSr.FilePath);
+    end;
+  end;
+
+return;
+end;
+

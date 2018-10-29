@@ -1,0 +1,239 @@
+external inner procedure NextM4Number(string,var string);
+external function string 4 GiveCode(var string);
+
+global 
+Updating function Boolean GetNextTeacherCode(var string itemnr)
+begin
+  Boolean res;
+  record TeacherVc Teacherr;
+  record SRBlock SRb;
+
+  BlockLoad(SRb);
+  NextM4Number(SRb.LastTeacherCode,itemnr);
+  if (nonblank(itemnr)) then begin
+    Teacherr.TeacherCode = GiveCode(itemnr);
+    if (ReadFirstMain(Teacherr,1,true)==false) then begin
+      SRb.LastTeacherCode = itemnr;
+    end else begin
+      Teacherr.TeacherCode = "ZZZZZZZZZZZZZZZZZZZ";
+      if (ReadLastMain(Teacherr,1,false)) then begin
+        NextM4Number(Teacherr.TeacherCode,itemnr);
+        if (nonblank(itemnr)) then begin
+          SRb.LastTeacherCode = GiveCode(itemnr); 
+        end else begin
+          itemnr = "001";
+        end;
+      end;
+    end;
+	BlockStore(SRb);
+  end;
+  GetNextTeacherCode = res;
+  return;
+end;
+
+global
+updating procedure GenMailForApprovedTeacher(record TeacherVc Teacherr,string sc)
+begin
+  record MailVc Mailr;
+  row MailVc Mailrw;
+  integer i;
+  string 255 txt1,txt2;
+  record MailSettingsBlock MSr;
+  record CUVc CUr;
+  record SchoolVc SCr;
+
+  BlockLoad(MSr);
+
+  SCr.SchoolCode = sc;
+  if readfirstmain(SCr,1,true) then begin
+  end;
+
+  txt1 = USetStr(32371) & SCr.SchoolName & USetStr(32372);
+  txt2 = USetStr(32373) & Teacherr.GlobalUser;
+
+  RecordNew(Mailr);
+  Mailr.Header = USetStr(32370);
+  LineTextPut(Mailr,0,txt1);
+  LineTextPut(Mailr,0,txt2);
+  LineTextPut(Mailr,0,USetStr(32374));
+  LineTextPut(Mailr,0,USetStr(32375));
+  LineTextPut(Mailr,0,USetStr(32376));
+	
+  ClearRow(Mailr,Mailrw,0);
+  Mailrw.RowTyp = 1;
+  //Mailrw.AddrCode = MSr.FromSystem;
+  Mailrw.AddrCode = MSr.Postmaster;
+  MatRowPut(Mailr,0,Mailrw);
+  ClearRow(Mailr,Mailrw,1);
+  Mailrw.RowTyp = kMailRowTypeTo;
+  CUr.Code = Teacherr.CustCode;
+  if readfirstmain(CUr,1,true) then begin end;
+  Mailrw.AddrCode = CUr.eMail;
+  MatRowPut(Mailr,1,Mailrw);
+  Mailr.SendFlag = 1;
+
+  if recordStore(Mailr,true) then begin 
+  end;
+return;
+end;
+
+
+global
+updating function LongInt TeacherVcRecordRemoveTest(var record TeacherVc Teacherr,record TeacherVc Teacher2r,LongInt stat,LongInt long4)
+begin
+  LongInt res;
+  record GlobalUserVc GlobalUserr;
+  String 10 gusercode;
+
+  res = 1;
+  /*if (Teacherr.Approved==1) then begin
+    gusercode = "SK" & Teacherr.SchoolCode & Teacherr.TeacherCode;
+	  GlobalUserr.Code = Teacher;
+	if readfirstmain(GlobalUserr,1,true) then begin
+	  if (GlobalUserr.Name == Teacherr.TeacherName) then begin
+	    //RecordRemove(GlobalUserr);
+	  end;
+	end;
+    MessageBox(32206,gusercode);
+  end;*/
+  TeacherVcRecordRemoveTest = res;
+  return;
+end;
+
+
+global
+updating function LongInt TeacherVcRecordDefaults(var record TeacherVc Teacherr,record TeacherVc Teacher2r,LongInt stat,LongInt long4)
+begin
+  LongInt res;
+  string 3 code;
+  if (SingleUserMode) then begin
+    if (GetNextTeacherCode(Teacherr.TeacherCode)) then begin end;
+  end;
+  Teacherr.TransDate = CurrentDate;
+  TeacherVcRecordDefaults = res;
+  return;
+end;
+
+global 
+updating function longint TeacherVcRecordDuplicate(var record TeacherVc Teacherr,record TeacherVc Teacher2r,LongInt stat,LongInt long4)
+begin
+  longint res;
+  
+  Teacherr.TeacherCode = "";
+  Teacherr.TransDate = CurrentDate;
+  TeacherVcRecordDuplicate = res;
+return;
+end;
+
+
+function boolean GetApprovedSchool(record TeacherVc TCr,var string sc)
+begin
+  boolean res;
+  record SchoolVc Schoolr;
+  row TeacherVc TCrw;
+  integer i,rwcnt;
+
+  res = false;
+
+  rwcnt = matRowCnt(TCr);
+  for (i = 0; i < rwcnt;i = i + 1) begin
+    MatRowGet(TCr,i,TCrw);
+    Schoolr.SchoolCode = TCrw.SchoolCode;
+    if readfirstmain(Schoolr,1,true) then begin
+      if Schoolr.Approved == 1 then begin
+        res = true;
+        sc = Schoolr.SchoolCode;
+        i = rwcnt;
+      end;
+    end;
+  end;
+
+  GetApprovedSchool = res;
+return;
+end;
+
+global
+updating function LongInt TeacherVcRecordCheck(var record TeacherVc Teacherr,record TeacherVc Teacher2r,LongInt stat,LongInt long4)
+begin
+  LongInt res,i;
+  record TeacherVc TCr;
+  record SRblock SRb;
+  record SchoolVc Schoolr;
+  string 4 sc;
+  record CUVc CUr,oldCUr;
+  
+  res = 0;
+  /*
+  if (blank(Teacherr.TeacherCode)) then begin
+    RecordCheckError(1058,USetStr(32258),-1,"TeacherCode");      
+    res = -1; 
+    goto LTeacherVcRecordCheck;
+  end;*/
+  if (blank(Teacherr.TeacherCode)) then begin
+    if (GetNextTeacherCode(Teacherr.TeacherCode)) then begin end;
+  end else begin
+  /*
+    TCr.TeacherCode = Teacherr.TeacherCode;
+	if (readfirstmain(TCr,1,true)) then begin
+	  RecordCheckError(1058,USetStr(32251),-1,"SchoolCode");      
+      res = -1; 
+      goto LTeacherVcRecordCheck;
+	end else begin
+	  BlockLoad(SRb);
+	  SRb.LastTeacherCode = Teacherr.TeacherCode;
+	  BlockStore(SRb);
+	end;
+	*/
+  end;
+  
+
+  if (blank(Teacherr.TeacherName)) then begin
+    RecordCheckError(1058,USetStr(32259),-1,"TeacherName");      
+    res = -1; 
+    goto LTeacherVcRecordCheck;
+  end;
+  /*if (blank(Teacherr.SchoolCode)) then begin
+    RecordCheckError(1058,USetStr(32251),-1,"SchoolCode");      
+    res = -1; 
+    goto LTeacherVcRecordCheck;
+  end;
+  if (blank(Teacherr.SchoolName)) then begin
+    RecordCheckError(1058,USetStr(32252),-1,"SchoolName");      
+    res = -1; 
+    goto LTeacherVcRecordCheck;
+  end;*/
+
+  
+  if (Teacherr.Approved==1 and Teacher2r.Approved!=1) then begin
+    //Schoolr.SchoolCode = Teacherr.SchoolCode;
+    if (GetApprovedSchool(Teacherr,sc)) then begin
+      Teacherr.GlobalUser = "SK" & sc & Teacherr.TeacherCode;
+      GenMailForApprovedTeacher(Teacherr,sc);
+      CUr.Code = Teacherr.CustCode;
+      if (ReadFirstMain(CUr,1,true)) then begin
+        RecordCopy(oldCUr,CUr);
+        CUr.AllowLogin = 1;
+        RecordUpdate(oldCUr,CUr,true);
+      end;
+    end else begin
+      RecordCheckError(1080,USetStr(32275),-1,"SchoolCode");      
+      res = -1;
+      Teacherr.Approved=0;
+      goto LTeacherVcRecordCheck;
+    end;
+  end;
+  if (Teacherr.Approved==0 and Teacher2r.Approved!=0) then begin
+//	  Teacherr.Approved = 1;
+    CUr.Code = Teacherr.CustCode;
+    if (ReadFirstMain(CUr,1,true)) then begin
+      RecordCopy(oldCUr,CUr);
+      CUr.AllowLogin = 0;
+      RecordUpdate(oldCUr,CUr,true);
+    end;
+  end;
+  
+  
+LTeacherVcRecordCheck:;
+  TeacherVcRecordCheck = res;
+  return;
+end;

@@ -1,0 +1,37 @@
+
+
+global
+procedure StudentAnomaliesRn(record RCVc RepSpec)
+begin
+  Integer i,j;
+  record CUVc CUr;
+  record SMFVc SMFr;
+  record SchoolVc SCr;
+  record RLinkVc RLr;
+  
+  StartReportJob("Skoleni");
+  EndHeader;
+  while (LoopMain(CUr,1,true)) begin
+    i = 1;
+    while (ReadRecordLink(CUr,i,SMFr,RLr)) begin
+      
+      i = i + 1;
+    end;
+    j = 1;
+    while (ReadRecordLink(CUr,j,SCr,RLr)) begin
+      j = j + 1;
+    end;
+    
+    if (i>=3 or j>=3) then begin
+      StartFormat(15);
+      OutString(0,"DblCUVc",CUr.Code,false);
+      OutString(50,0,CUr.Name,false);
+      OutString(150,0,i,false);
+      OutString(170,0,j,false);
+      EndFormat;
+    end;
+  end;
+  EndJob;
+
+  return;
+end;

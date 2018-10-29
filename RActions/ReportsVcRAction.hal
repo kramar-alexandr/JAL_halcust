@@ -1,0 +1,139 @@
+external inner procedure FindCurMailboxName(var string);
+
+//gjs
+/*updating procedure CreateGlobalUser(var record ReportsVc Reportsr)
+begin 
+  Record GlobalUserVc GUserr;
+  
+  recordnew(GUserr);
+  GUserr.Code = "SK" & Reportsr.SchoolCode & Reportsr.TeacherCode;
+  GUserr.Name = Reportsr.TeacherName;
+  GUserr.AccessGroup = "PS";
+  GUserr.StartLevel = 1;
+  recordstore(GUserr,true);
+
+  return;
+end;
+
+
+global
+function LongInt ReportsVcRecordRemoveTest(var record ReportsVc Reportsr,record ReportsVc Reports2r,LongInt stat,LongInt long4)
+begin
+  LongInt res;
+  String 10 gusercode;
+
+  res = 1;
+  if (Reportsr.Approved==1) then begin
+    gusercode = "SK" & Reportsr.SchoolCode & Reportsr.TeacherCode;
+    MessageBox(32206,gusercode);
+  end;
+  ReportsVcRecordRemoveTest = res;
+  return;
+end;
+*/
+
+updating procedure SendMailFromReport(record ReportsVc Repr)
+begin
+  record MailVc Mailr;
+  row MailVc Mailrw;
+  integer i;
+  string 100 tstr;
+  record ReportMailBlock RepMailr;
+
+  BlockLoad(RepMailr);
+  RecordNew(Mailr);
+  Mailr.Header = Repr.SMFName;
+  LineTextPut(Mailr,0,"tekts");
+  
+  ClearRow(Mailr,Mailrw,1);
+  Mailrw.RowTyp = kMailRowTypeFrom;
+  FindCurMailboxName(tstr);
+  Mailrw.AddrCode = tstr;
+  MatRowPut(Mailr,0,Mailrw);
+  ClearRow(Mailr,Mailrw,1);
+  Mailrw.RowTyp = kMailRowTypeTo;
+  Mailrw.AddrCode = RepMailr.Mail;
+  MatRowPut(Mailr,1,Mailrw);
+  Mailr.SendFlag = 1;
+  if recordStore(Mailr,true) then begin 
+    CreateRecordLink(Mailr,CurrentCompany,Repr,CurrentCompany); 
+  end;
+
+return;
+end;
+
+global
+function LongInt ReportsVcRecordDefaults(var record ReportsVc Reportsr,record ReportsVc Reports2r,LongInt stat,LongInt long4)
+begin
+  LongInt res;
+  
+  Reportsr.SentDate = CurrentDate;
+  Reportsr.SMFName = CurrentCompany;
+  if SingleUserMode then begin
+    Reportsr.RepCode = NextSerNr("ReportsVc",Reportsr.SentDate,-1,false,"");
+  end;
+
+  ReportsVcRecordDefaults = res;
+  return;
+end;
+
+
+global
+updating function LongInt ReportsVcRecordCheck(var record ReportsVc Reportsr,record ReportsVc Reports2r,LongInt stat,LongInt long4)
+begin
+  LongInt res,i;
+  record ReportsVc Repr;
+  
+  res = 0;
+ 
+  if (Reportsr.RepCode<0) then begin
+    Reportsr.RepCode = NextSerNr("ReportsVc",Reportsr.SentDate,-1,false,"");
+  end else begin 
+    if ((stat == 1) or (Reportsr.RepCode != Reports2r.RepCode)) then begin
+	  Repr.RepCode = Reportsr.RepCode;
+	  if readfirstmain(Repr,1,true) then begin
+	    //RecordCheckError(,USetStr(),-1,"RepCode");
+	    res = -1; 
+	    goto LReportsVcRecordCheck;
+	  end;
+    end;
+  end;
+    
+  if (blank(Reportsr.SMFCode)) then begin
+    RecordCheckError(1058,USetStr(32260),-1,"SMFCode");      
+    res = -1; 
+    goto LReportsVcRecordCheck;
+  end;
+  if (blank(Reportsr.SMFName)) then begin
+    RecordCheckError(1058,USetStr(32261),-1,"SMFName");      
+    res = -1; 
+    goto LReportsVcRecordCheck;
+  end;
+/*
+  if (blank(Reportsr.Texta)) then begin
+    RecordCheckError(1058,USetStr(32271),-1,"Texta");      
+    res = -1; 
+    goto LReportsVcRecordCheck;
+  end;
+  if (blank(Reportsr.Textb)) then begin
+    RecordCheckError(1058,USetStr(32272),-1,"Textb");      
+    res = -1; 
+    goto LReportsVcRecordCheck;
+  end;
+  if (blank(Reportsr.Textc)) then begin
+    RecordCheckError(1058,USetStr(32273),-1,"Textc");      
+    res = -1; 
+    goto LReportsVcRecordCheck;
+  end;
+ */
+  
+  if ((stat == 1 and Reportsr.SentStatuss==1) or (Reportsr.SentStatuss==1 and Reports2r.SentStatuss!=1)) then begin
+    //CreateGlobalUser(Reportsr);
+	SendMailFromReport(Reportsr);
+  end;
+  
+  
+LReportsVcRecordCheck:;
+  ReportsVcRecordCheck = res;
+  return;
+end;

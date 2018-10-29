@@ -1,0 +1,124 @@
+external function string 255 FormatSimpleLink(string,boolean);
+external function string 255 ToolWebNGTranslateText(integer);
+external procedure ShowRedirectHtml(string,boolean);
+external updating procedure GenMailForSMU(string,string,string,var record SMFVc,boolean,record CUVc,string);
+
+procedure ShowUploadForm()
+begin
+
+  WebOutStringFormatNL("<div class=""upload"">");
+  WebOutStringFormatNL("<div class=""changepic_text"">");
+  WebOutStringFormatNL(ToolWebNGTranslateText(25539));
+  WebOutStringFormatNL("</div>");
+  WebOutStringFormatNL("<Form method=""POST"" action=""/WebRegUpload.hal"" enctype=""multipart/form-data"">");
+  WebOutStringFormatNL("<div><input type=""file"" name=""filename"" size=""40""></div>");
+  WebOutStringFormatNL("<div class=""uploadline2""><input id=""changesbutton"" type=""submit"" value=""" & ToolWebNGTranslateText(25547) & """>");
+  PutSessionString("tpath",WebGetArg("path"));
+  WebOutStringFormatNL("</div>");
+  WebOutStringFormatNL("</form>");
+  WebOutStringFormatNL("<div class=""changepic_text"">");
+  WebOutStringFormatNL(ToolWebNGTranslateText(25540));
+  WebOutStringFormatNL("</div>");
+  WebOutStringFormatNL("</div>");
+
+  return;
+end;
+
+procedure SelBoxForType()
+begin
+  WebOutStringFormatNL("<select  class=""spinput _select"" name=""type"">");
+  WebOutStringFormatNL("<option value=""" & 0 & """>" & USetStr(32131) & "</option>");
+  WebOutStringFormatNL("<option value=""" & 1 & """>" & USetStr(32132) & "</option>");
+  WebOutStringFormatNL("<option value=""" & 2 & """>" & USetStr(32133) & "</option>");
+  WebOutStringFormatNL("</select>");
+  //WebOutStringFormatNL("<div>" & ToolWebNGTranslateText(20067) & "</div>");
+  return;
+end;
+
+procedure ShowFinishSMURegForm()
+begin
+
+  WebOutStringFormatNL("<form method=""POST"" action=""/WebSMURegFinish.hal"" onSubmit=""return TestFieldsForSMU_Finish(this,'" & toolwebngtranslatetext(20010) & "','" & toolwebngtranslatetext(20012) & "','" & toolwebngtranslatetext(20013) & "','" & toolwebngtranslatetext(20014) & "','" & toolwebngtranslatetext(20015) & "','" & toolwebngtranslatetext(20016) & "','" & toolwebngtranslatetext(20018) & "','" & toolwebngtranslatetext(20019) & "','" & toolwebngtranslatetext(20020) & "','" & toolwebngtranslatetext(20021) & "')"">");
+  WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path") & """>");
+  WebOutStringFormatNL("<div class='_reg_first'>" & toolwebngtranslatetext(21061) & "</div><input class=""spinput _name"" type=""text"" name=""smuname"" value="""" >");
+  SelBoxForType;
+  //SelBoxForProduct; 
+
+  WebOutStringFormatNL("<div id=""errormsg""><div id=""esmuname""></div><div id=""eschool""></div><div id=""eteacher""></div><div id=""ename""></div>");
+  WebOutStringFormatNL("<div id=""esurname""></div><div id=""eemail""></div><div id=""esameemail""></div><div id=""esameSMUname""><div id=""esameSMUmsg""></div></div><div id=""epassword""></div><div id=""ereg""></div><div id=""edistrict""></div><div id=""eclass""></div></div>");
+  WebOutStringFormatNL("<input type=""submit"" class=""spbutton""  value=""" & toolwebngtranslatetext(21064) & """ >");
+  WebOutStringFormatNL("</form>");
+
+  return;
+end;
+
+procedure FinishRegForm()
+begin
+  string 255 step;
+  
+  WebGetArg("step");
+  switch (step) begin
+    case "2": ShowUploadForm;
+    otherwise
+      ShowFinishSMURegForm;
+  end;
+
+  return;
+end;
+
+global webpublic
+updating procedure WebSMURegFinish()
+begin
+  string 100 reg,text;
+  string 100 smuname;
+  string 10 teacher;
+  string 10 school;
+  boolean TrHs,testf;
+  string 25 tstr;
+  record CUVc CUr,tCUr,oldCUr;
+  record SMFVc SMFr,oldSMFr;
+  record TeacherVc TCr;
+  record SchoolVc SCr;
+  record JALClassblock JALClassbl;
+  record ReportMailBlock RMbl;
+  record JALRegionBlock JRbl;
+  row JALRegionBlock JRblrw;
+  string 5 code,cust;
+  integer err;
+  integer year;
+  row SMFVc SMFrw;
+
+  BlockLoad(RMbl);
+  smuname = WebGetArg("smuname");
+  err = 0;
+  
+  if blank(smuname) then begin
+    err = err + 2;
+  end else begin
+    SMFr.SMFName = smuname;
+    if readfirstkey("SMFName",SMFr,1,true) begin
+      err = err + 2;
+    end;
+  end;
+  SMFr.CustCode = CurrentCust;
+  if (ReadFirstKey("CustCode",SMFr,1,true)==false) then begin
+    err = err + 4;
+  end;
+  if err == 0 then begin
+    RecordCopy(oldSMFr,SMFr);
+    SMFr.SMFName = WebGetArg("smuname");
+    SMFr.TypeFlag = StringToLongInt(WebGetArg("type"));
+    SMFr.TypeName = USetStr(32131 + SMFr.TypeFlag);
+    SMFr.ReadyFlag = 1;
+    text = SMFr.Manager & USetStr(32345) & 1 & USetStr(32346);
+    GenMailForSMU(text,USetStr(32344) & " - " & SMFr.SMFName,RMbl.SMUMail,SMFr,true,CUr,""); 
+    if (RecordUpdate(oldSMFr,SMFr,true)==0) then begin
+    
+    end;
+    ShowRedirectHtml(WebGetArg("regpath") & "?step=2",false);
+  end else begin
+    ShowRedirectHtml(FormatSimpleLink("/badreg",true),false);
+  end;
+
+  return;
+end;

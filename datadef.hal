@@ -1,0 +1,835 @@
+
+SourceFile("halcust\\Documents", 3);
+SourceFile("halcust\\Exports", 3);
+SourceFile("halcust\\Imports", 3);
+SourceFile("halcust\\Imports_62to80", 3);
+SourceFile("halcust\\Maint", 3);
+SourceFile("halcust\\RActions", 3);
+SourceFile("halcust\\Reports", 3);
+SourceFile("halcust\\Tools", 3);
+SourceFile("halcust\\WActions", 3);
+SourceFile("halcust\\Windows", 3);
+SourceFile("halcust\\WebNG",0);
+SourceFile("halcust\\Level0", 0);
+SourceFile("halcust\\Level0/WebNG", 0);
+
+//----------------------------
+//
+begin
+
+//Skolas:
+  RecordBegin(SchoolVc,-,"");
+  RecordField(SchoolCode,M4Code,4,0);
+  RecordField(SchoolName,M4Str,60,0);
+//  RecordField(Region,M4Str,20,0);
+  RecordField(Region,M4Str,50,0);
+  RecordField(Address,M4Str,255,0);
+  RecordField(Director,M4Str,60,0);
+  RecordField(Telephone,M4Str,20,0);
+  RecordField(Email,M4Str,60,0);
+  RecordField(PupilCount,M4Int,0,0);
+  RecordField(Comment,M4TextField,0,0);
+  RecordField(Lang,M4Str,20,0);
+  RecordField(Approved,M4Mark,0,0);
+  RecordField(District,M4Str,100,0);
+  //p•c skolas koda
+  MainKeyBegin(SchoolCode,0);
+  KeySegment(SchoolCode);
+  //p•c skolas nosaukuma
+  KeyBegin(SchoolName);
+  KeySegment(SchoolName);
+  KeySegment(SchoolCode);
+  //p•c re®iona
+  KeyBegin(Region);
+  KeySegment(Region);
+  KeySegment(SchoolName);
+  KeySegment(SchoolCode);
+  //p•c telefona
+  KeyBegin(Telephone);
+  KeySegment(Telephone);
+  KeySegment(SchoolName);
+  KeySegment(SchoolCode);
+  //p•c skol•nu skaita
+  KeyBegin(PupilCount);
+  KeySegment(PupilCount);
+  KeySegment(SchoolName);
+  KeySegment(SchoolCode);
+  //pec apstiprinatajam
+  KeyBegin(Approved);
+  KeySegment(Approved);
+  KeySegment(District);
+  KeySegment(SchoolName);
+  KeySegment(SchoolCode);
+  //pec novada
+  KeyBegin(District);
+  KeySegment(District);
+  KeySegment(SchoolName);
+  KeySegment(SchoolCode);
+  EndRecord;
+
+
+//Skolot‚ji:
+  RecordBegin(TeacherVc,-,"");
+  RecordField(TeacherCode,M4Code,3,0);
+  RecordField(TeacherName,M4Str,60,0);
+  //RecordField(Telephone,M4Str,20,0);
+  //RecordField(Email,M4Str,60,0);
+  RecordField(SchoolCode,M4Code,3,SchoolVc);
+  RecordField(SchoolName,M4Str,60,0);
+//  RecordField(Approved,M4Int,0,0);
+  RecordField(Approved,M4Mark,0,0);
+  RecordField(TransDate,M4Date,0,0);
+  RecordField(GlobalUser,M4Str,100,0);
+  RecordField(CustCode,M4Str,100,0);
+  RecordField(OtherJob,M4Str,100,0);
+  RecordField(Subject,M4Str,60,0);
+  RecordField(Math,M4Matrix,0,0);
+  RecordField(ContractNr,M4Str,50,0);
+  ArrayBegin(Math,-,1);
+  ArrayField(SchoolCode,M4Code,4,0);
+  ArrayField(SchoolName,M4Str,80,0);
+  EndArray;
+  //p•c skolot‚ja koda
+  MainKeyBegin(TeacherCode,0);
+  KeySegment(TeacherCode);
+  //p•c skolot‚ja v‚rda
+  KeyBegin(TeacherName);
+  KeySegment(TeacherName);
+  KeySegment(TeacherCode);
+  //p•c skolas koda
+  /*MainKeyBegin(SchoolCode,0);
+  KeySegment(SchoolCode);
+  KeySegment(TeacherCode);
+  //p•c skolas nosaukuma
+  KeyBegin(SchoolName);
+  KeySegment(SchoolName);  
+  KeySegment(TeacherCode);*/
+  //p•c apstiprin‚tajiem/neapstiprin‚tajiem
+  /*KeyBegin(Approved);
+  KeySegment(Approved);
+  KeySegment(SchoolCode);
+  KeySegment(TeacherName);
+  KeySegment(TeacherCode);*/
+  //p•c glob‚l‚ lietot‚ja
+  KeyBegin(GlobalUser);
+  KeySegment(GlobalUser);
+  KeySegment(TeacherCode);
+  //p•c kontakta koda
+  KeyBegin(CustCode);
+  KeySegment(CustCode);
+  KeySegment(TeacherCode);
+
+  //p•c jaunajiem skolas kodiem
+  SubSetKeyBegin2(Approved);
+  StoreInBaseKey;
+  AppendMatrixFieldToKeyName(SchoolCode,0);
+  KeySegment(Approved);
+  KeySegment(TeacherName);
+  KeySegment(TeacherCode);
+
+  KeyBegin(SchoolName);
+  KeySegment(SchoolName);  
+  KeySegment(TeacherCode)
+  //p•c re®. datuma
+  KeyBegin(TransDate);
+  KeySegment(TransDate);
+  KeySegment(TeacherCode);
+  EndRecord;
+
+  //Mentori:
+  RecordBegin(MentorVc,-,"");
+  RecordField(MentorCode,M4Long,0,0);
+  RecordField(MentorName,M4Str,60,0);
+  //RecordField(Telephone,M4Str,20,0);
+  //RecordField(Email,M4Str,60,0);
+  RecordField(Company,M4Str,255,0);
+  RecordField(Job,M4Str,255,0);
+  RecordField(Region,M4Str,100,0);
+  RecordField(District,M4Str,100,0);
+  RecordField(Approved,M4Mark,0,0);
+  RecordField(TransDate,M4Date,0,0);
+  RecordField(Text,M4TextField,0,0);
+  RecordField(CustCode,M4Str,100,0);
+  //p•c Mentora koda
+  MainKeyBegin(MentorCodeCode,0);
+  KeySegment(MentorCode);
+  //p•c Mentora v‚rda
+  KeyBegin(MentorName);
+  KeySegment(MentorName);
+  KeySegment(MentorCode);
+  
+  //p•c regiona
+  KeyBegin(Region);
+  KeySegment(Region);
+  KeySegment(MentorName);
+  KeySegment(MentorCode);
+
+  //p•c komp‚nijas
+  KeyBegin(Company);
+  KeySegment(Company);
+  KeySegment(MentorName);
+  KeySegment(MentorCode);
+
+  //p•c novada
+  KeyBegin(District);
+  KeySegment(District);
+  KeySegment(MentorName);
+  KeySegment(MentorCode);
+ 
+  //p•c apstiprin‚tajiem/neapstiprin‚tajiem
+  KeyBegin(Approved);
+  KeySegment(Approved);
+  KeySegment(MentorName);
+  KeySegment(MentorCode);
+  //p•c kontakta koda
+  KeyBegin(CustCode);
+  KeySegment(CustCode);
+  KeySegment(MentorCode);
+  EndRecord;
+
+
+
+//SMF:
+  RecordBegin(SMFVc,-,"");
+  RecordField(SMFCode,M4Code,12,0);
+  RecordField(SMFName,M4Str,60,0);
+  RecordField(Manager,M4Str,60,0);
+  RecordField(Email,M4Str,60,0);
+//  RecordField(Region,M4Str,20,0);
+  RecordField(Region,M4Str,255,0);
+  RecordField(StatusFlag,M4Int,0,0);
+  RecordField(StatusName,M4Str,20,0);
+  RecordField(TypeName,M4Str,20,0);
+  RecordField(TypeFlag,M4Int,0,0);
+  RecordField(Comment,M4Str,255,0);
+  RecordField(TeacherCode,M4Code,3,TeacherVc);
+  RecordField(TeacherName,M4Str,60,0);
+  RecordField(SchoolCode,M4Code,3,SchoolVc);
+  RecordField(SchoolName,M4Str,60,0);
+//  RecordField(Approved,M4Int,0,0);
+  RecordField(Approved,M4Mark,0,0);
+  RecordField(TransDate,M4Date,0,0);
+  RecordField(Objects,M4Str,255,ObjVc);
+  RecordField(CompNr,M4Code,10,0);
+  RecordField(Text,M4TextField,0,0);
+  RecordField(CustCode,M4Str,100,0);
+  RecordField(Doc0,M4Int,0,0);
+  RecordField(Doc1,M4Int,0,0);
+  RecordField(Doc2,M4Int,0,0);
+  RecordField(Doc3,M4Int,0,0);
+  RecordField(Doc4,M4Int,0,0);
+  RecordField(Doc5,M4Int,0,0);
+  RecordField(Doc6,M4Int,0,0);
+  RecordField(Doc7,M4Int,0,0);
+  RecordField(Doc8,M4Int,0,0);
+  RecordField(Doc9,M4Int,0,0);
+  RecordField(ServerCode,M4Code,10,0);
+  RecordField(ProdSpec,M4Str,255,0);
+  RecordField(ClassNum,M4Str,3,0);
+  RecordField(ClassChar,M4Str,2,0);
+  RecordField(Math,M4Matrix,0,0);
+  RecordField(RecType,M4Int,0,0);
+  RecordField(ReadyFlag,M4Int,0,0);
+  
+  RecordField(ParentName,M4Str,255,0);// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 5 October 2018 17:38:29
+  RecordField(ParentSurName,M4Str,255,0);// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 5 October 2018 17:38:30
+  RecordField(ParenteMail,M4Str,255,0);// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 5 October 2018 17:38:30
+  RecordField(AgeFlag,M4Int,0,0);// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 5 October 2018 17:38:51
+  
+  ArrayBegin(Math,-,1);
+  ArrayField(Type,M4Set,1005,0);
+  ArrayField(Code,M4Code,10,0);
+  ArrayField(Name,M4Str,50,0);
+  EndArray;
+  //p•c SMF koda
+  MainKeyBegin(SMFCode,0);
+  KeySegment(SMFCode);
+  //p•c SMF nosaukuma
+  KeyBegin(SMFName);
+  KeySegment(SMFName);
+  KeySegment(SMFCode);
+  //p•c statusa
+  KeyBegin(Status);
+  KeySegment(StatusName);
+  KeySegment(SMFName);
+  KeySegment(SMFCode);
+  KeyBegin(StatusFlag);
+  KeySegment(StatusFlag);
+  KeySegment(SMFName);
+  KeySegment(SMFCode);
+  //p•c tipa
+  KeyBegin(Type);
+  KeySegment(TypeName);
+  KeySegment(SMFName);
+  KeySegment(SMFCode);
+  //p•c skolas nosaukuma
+  KeyBegin(SchoolName);
+  KeySegment(SchoolName);
+  KeySegment(SMFName);
+  KeySegment(SMFCode);
+  //peec skolas koda
+  KeyBegin(SchoolCode);
+  KeySegment(SchoolCode);
+  KeySegment(SMFCode);
+  //p•c skolot‚ja v‚rda
+  KeyBegin(TeacherName);
+  KeySegment(TeacherName);
+  KeySegment(SMFName);
+  KeySegment(SMFCode);
+  //pec skolotaja koda
+  KeyBegin(TeacherCode);
+  KeySegment(TeacherCode);
+  KeySegment(SMFName);
+  KeySegment(SMFCode);
+  //peec komp‚nijas nr
+  KeyBegin(CompNr);
+  KeySegment(CompNr);
+  KeySegment(SMFCode);
+  //peec klienta koda
+  KeyBegin(CustCode);
+  KeySegment(CustCode);
+  KeySegment(SchoolCode);
+  KeySegment(SMFCode);
+  //p•c e-pasta
+  KeyBegin(Email);
+  KeySegment(Email);
+  KeySegment(SMFCode);
+  //p•c re®. datuma
+  KeyBegin(TransDate);
+  KeySegment(TransDate);
+  KeySegment(SMFCode);
+  
+  SubsetKeyBegin2(MCode);
+  StoreInBaseKey;
+  AppendMatrixFieldToKeyName(Code,0);
+  KeySegment(SMFCode);
+
+  EndRecord;
+
+
+//Atskaites:
+  RecordBegin(ReportsVc,-,"");
+  RecordField(RepCode,M4Long,6,0);
+  RecordField(SentDate,M4Date,0,0);
+  RecordField(SMFCode,M4Code,12,SMFVc);
+  RecordField(SMFName,M4Str,60,0);
+  RecordField(Texta,M4TextField,0,0);
+  RecordField(Textb,M4TextField,0,0);
+  RecordField(Textc,M4TextField,0,0);
+//  RecordField(SentStatuss,M4Int,0,0);
+  RecordField(SentStatuss,M4Mark,0,0);
+  //p•c atskaites koda
+  MainKeyBegin(RepCode,0);
+  KeySegment(RepCode);
+  KeySegment(SMFName);
+  //p•c SMF koda
+  KeyBegin(SMFCode);
+  KeySegment(SMFCode);
+  KeySegment(SMFName);
+  KeySegment(RepCode);
+  //p•c SMF nosaukuma
+  KeyBegin(SMFName);
+  KeySegment(SMFName);
+  KeySegment(RepCode);
+  //p•c nos. datuma
+  KeyBegin(SentDate);
+  KeySegment(SentDate);
+  KeySegment(SMFName);
+  KeySegment(RepCode);
+  //p•c statusa
+  KeyBegin(SentStatuss);
+  KeySegment(SentStatuss);
+  KeySegment(SentDate);
+  KeySegment(SMFName);
+  KeySegment(RepCode);
+  //pec smf koda un datuma
+  KeyBegin(SMFCodeDate);
+  KeySegment(SMFCode);
+  KeySegment(SentDate);
+  EndRecord;
+
+  BlockBegin(ReportMailBlock,-,"");
+  RecordField(Mail,M4Str,60,ConfVc);
+  RecordField(SMUMail,M4Str,70,ConfVc);
+  RecordField(TeacherMail,M4Str,70,ConfVc);
+  RecordField(MentorMail,M4Str,70,ConfVc);
+  RecordField(STUMail,M4Str,70,ConfVc);
+  EndBlock;
+  
+//Numuru s•riju bloks:
+  BlockBegin(SRBlock,SRType,"serier2");
+  RecordField(LastOrdNr,M4Long,0,0);
+  RecordField(LastShipNr,M4Long,0,0);
+  RecordField(LastInvNr,M4Long,0,0);
+  RecordField(LastPurNr,M4Long,0,0);
+  RecordField(LastPayNr,M4Long,0,0);
+  RecordField(LastTrInvNr,M4Long,0,0);
+  RecordField(LastIntNr,M4Long,0,0);
+  RecordField(LastCustCode,M4Code,20,CUVc);
+  RecordField(LastTrPayNr,M4Long,0,0);
+  RecordField(x1,M4Dummy,0,0);
+  RecordField(LastQTNr,M4Long,0,0);
+  RecordField(LastTSNr,M4Long,0,0);
+  RecordField(LastTRNr,M4Long,0,0);
+  RecordField(LastTrVINr,M4Long,0,0);
+  RecordField(LastOPNr,M4Long,0,0);
+  RecordField(LastVINr,M4Long,0,0);
+  RecordField(LastTrOPNr,M4Long,0,0);
+  RecordField(LastRegDate,M4Date,0,0);
+  RecordField(LastVECode,M4Code,20,VEVc);
+  RecordField(LastInvDate,M4Date,0,0);
+  RecordField(LastCOInvNr,M4Long,0,0);
+  RecordField(LastBTNr,M4Long,0,0);
+  RecordField(LastCLInNr,M4Long,0,0);
+  RecordField(LastCLOutNr,M4Long,0,0);
+  RecordField(LastPRCode,M4Code,20,PRVc);  
+  RecordField(LastJobNr,M4Long,0,0);
+  RecordField(LastDaughterJobNr,M4Long,0,0);
+  RecordField(LastGuestCode,M4Code,20,CUVc);
+  RecordField(LastIVCashNr,M4Long,0,0);
+  RecordField(LastCredInvNr,M4Long,0,0);
+  RecordField(LastCredVINr,M4Long,0,0);
+  RecordField(LastSiteCode,M4Code,20,CUVc);
+  RecordField(LastCashInvNr,M4Long,0,0);
+  RecordField(LastTTRNr,M4Long,0,0);
+  RecordField(LastInventoryNr,M4Str,30,0);
+  RecordField(LastSalesForecast,M4Code,20,SalesForecastVc);
+  RecordField(LastArtCode,M4Code,20,INVc);
+  RecordField(LastDropSHNr,M4Long,0,0);
+  RecordField(LastSchoolCode,M4Code,3,0);
+  RecordField(LastTeacherCode,M4Code,3,0);
+  RecordField(LastLoyaltyCardNr,M4Code,20,0); 
+  RecordField(LastRestAccNr,M4Long,0,0);
+  RecordField(LastPONr,M4Long,0,0);
+  RecordField(GuestArrivalSequence,M4Long,0,0);
+  RecordField(LastSKU,M4Str,100,0);  
+  RecordField(LastVATDeclCode,M4Code,20,VATDeclVc);  
+  EndBlock;
+
+  RecordBegin(WebNGBlogCommentVc,-,"");
+	RecordField(SerNr,M4Long,0,0);
+	RecordField(MailSerNr,M4Code,20,0);
+	RecordField(MailboxName,M4Str,50,0);
+	RecordField(MailHeader,M4Str,200,0);
+	RecordField(CommentHeader,M4Str,200,0);
+	RecordField(TransDate,M4Date,0,0);
+	RecordField(TransTime,M4Time,0,0);
+	RecordField(IPAddress,M4Str,20,0);
+	RecordField(Email,M4Str,200,0);
+	RecordField(UserName,M4Str,200,0);
+	RecordField(CommentType,M4Int,0,0);
+	RecordField(AcceptFlag,M4Int,0,0);
+	RecordField(CustCode,M4Code,20,0);
+	RecordField(Math,M4TextField,0,0);
+	RecordField(TextType,M4Int,0,0);
+	MainKeyBegin(SerNr,1);
+	AppendFieldToKeyName(MailSerNr);
+	StoreInBaseKey;
+	KeySegment(SerNr);
+
+	SubSetKeyBegin2(MailHeader);
+	AppendFieldToKeyName(MailSerNr);
+	StoreInBaseKey;
+	KeySegment(MailHeader);
+	KeySegment(MailboxName);
+	KeySegment(SerNr);
+
+	SubSetKeyBegin2(MailSerNr);
+	AppendFieldToKeyName(MailSerNr);
+	StoreInBaseKey;
+	KeySegment(MailSerNr);
+	KeySegment(SerNr);
+
+	SubSetKeyBegin2(MailboxName);
+	AppendFieldToKeyName(MailSerNr);
+	StoreInBaseKey;
+	KeySegment(MailboxName);
+	KeySegment(MailSerNr);
+	KeySegment(SerNr);
+
+	SubSetKeyBegin2(UserName);
+	AppendFieldToKeyName(MailSerNr);
+	StoreInBaseKey;
+	KeySegment(UserName);
+	KeySegment(MailboxName);
+	KeySegment(MailSerNr);
+	KeySegment(SerNr);
+
+	SubSetKeyBegin2(TransDate);
+	AppendFieldToKeyName(MailSerNr);
+	StoreInBaseKey;
+	KeySegment(TransDate);
+	KeySegment(MailboxName);
+	KeySegment(MailSerNr);
+	KeySegment(SerNr);
+
+	SubSetKeyBegin2(IPAddress);
+	AppendFieldToKeyName(MailSerNr);
+	StoreInBaseKey;
+	KeySegment(IPAddress);
+	KeySegment(MailboxName);
+	KeySegment(MailSerNr);
+	KeySegment(SerNr);
+
+	SubSetKeyBegin2(Email);
+	AppendFieldToKeyName(MailSerNr);
+	StoreInBaseKey;
+	KeySegment(Email);
+	KeySegment(MailboxName);
+	KeySegment(MailSerNr);
+	KeySegment(SerNr);
+
+	SubSetKeyBegin2(ActSerNr);
+	AppendFieldToKeyName(MailSerNr);
+	StoreInBaseKey;
+	KeySegment(SerNr);
+
+	SubSetKeyBegin2(PosSerNr);
+	AppendFieldToKeyName(MailSerNr);
+	StoreInBaseKey;
+	KeySegment(SerNr);
+
+	SubSetKeyBegin2(NegSerNr);
+	AppendFieldToKeyName(MailSerNr);
+	StoreInBaseKey;
+	KeySegment(SerNr);
+
+	SubSetKeyBegin2(ContPosSerNr);
+	AppendFieldToKeyName(MailSerNr);
+	StoreInBaseKey;
+	KeySegment(SerNr);
+
+	SubSetKeyBegin2(ContNegSerNr);
+	AppendFieldToKeyName(MailSerNr);
+	StoreInBaseKey;
+	KeySegment(SerNr);
+
+	SubSetKeyBegin2(ContActSerNr);
+	AppendFieldToKeyName(MailSerNr);
+	StoreInBaseKey;
+	KeySegment(SerNr);
+
+	SubSetKeyBegin2(CustCode);
+	AppendFieldToKeyName(MailSerNr);
+	StoreInBaseKey;
+	KeySegment(CustCode);
+	KeySegment(SerNr);
+
+  EndRecord;
+
+  BlockBegin(JALLangBlock,-,"");
+  RecordField(Math,M4Matrix,0,0);
+  ArrayBegin(Math,-,1);
+  ArrayField(Code,M4Code,5,0);
+  ArrayField(Lang,M4Str,15,0);
+  EndArray;
+  EndBlock;
+
+  BlockBegin(JALRegionBlock,-,"");
+  RecordField(Math,M4Matrix,0,0);
+  ArrayBegin(Math,-,1);
+  ArrayField(Region,M4Str,20,0);
+  ArrayField(SubRegion,M4Str,255,0);
+  EndArray;
+  EndBlock;
+  
+  BlockBegin(JALSubjectBlock,-,"");// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 9 October 2018 17:01:01
+  RecordField(Math,M4Matrix,0,0);
+  ArrayBegin(Math,-,1);
+  ArrayField(Subject,M4Str,50,0);
+  EndArray;
+  EndBlock;
+
+  BlockBegin(NewsEmailBlock,-,"");
+  RecordField(Math,M4Matrix,0,0);
+  ArrayBegin(Math,-,1);
+  ArrayField(Email,M4Str,40,0);
+  EndArray;
+  EndBlock;
+
+  BlockBegin(JALClassBlock,-,"");
+  RecordField(Schoolar,M4Str,255,0);
+  RecordField(Teacher,M4Str,255,0);
+  RecordField(Mentor,M4Str,255,0);
+  RecordField(Cat,M4Str,255,0);
+  RecordField(CStyle,M4Str,255,0);
+  RecordField(Template,M4Str,255,0);
+  RecordField(Struct,M4Str,255,WebNGStructVc);
+  RecordField(EventSmall,M4Str,255,0);
+  RecordField(GUTeacher,M4Str,255,0);//global user group
+  RecordField(GUTeacherClosed,M4Str,255,0);
+  RecordField(StartConf,M4Str,255,0);//importa failu konferences
+  RecordField(GoodConf,M4Str,255,0);
+  RecordField(BadConf,M4Str,255,0);
+  RecordField(ProfileElement,M4Code,100,0);
+  RecordField(EventPart,M4Str,255,0);
+  RecordField(AttachConf,M4Str,255,0);
+  RecordField(ProfileCorrectionStruct,M4Long,0,0);
+  RecordField(AddEmpStruct,M4Long,0,0);
+  RecordField(EmpChangeStruct,M4Long,0,0);
+  RecordField(UploadAfter,M4Long,0,0);
+  RecordField(UploadFail,M4Long,0,0);
+  RecordField(RecoveryHead,M4Str,255,0);
+  RecordField(RecoveryStartTxt,M4Code,10,0);
+  RecordField(RecoveryEndTxt,M4Code,10,0);
+  RecordField(ScoreFrom,M4Int,0,0);
+  RecordField(ScoreTo,M4Int,0,0);
+  RecordField(STDTextTerm,M4Code,10,0);
+  RecordField(STDTextDis,M4Code,10,0);
+  RecordField(STDTextEn,M4Code,10,0);
+  RecordField(EventAccepted,M4Code,10,0);
+  RecordField(EventDeclined,M4Code,10,0);
+  RecordField(UploadDir,M4Str,255,0);
+  RecordField(DownloadReq,M4Str,255,0);
+  RecordField(DownloadReqStat,M4Int,0,0);
+  EndBlock;
+  
+
+  //koment‚ra lauka garuma izmainas abiem ierakstiem
+  RecordAddBegin(WebNGTranslateVc,"jal_translate");
+  ChangeField(FileName,M4Set,505,0);
+  SubsetKeyBegin2(EventLangCode);
+  AppendFieldToKeyName(Code);
+  KeySegment(LangCode);
+  KeySegment(Sorting);
+  KeySegment(Code);
+  KeySegment(FileName);
+  SubsetKeyBegin2(EventLastChanged);
+  AppendFieldToKeyName(Code);
+  KeySegment(LastChanged);
+  KeySegment(LangCode);
+  KeySegment(Sorting);
+  KeySegment(Code);
+  KeySegment(FileName);
+  SubsetKeyBegin2(EventComment);
+  AppendFieldToKeyName(Code);
+  KeySegment(Comment);
+  KeySegment(LangCode);
+  KeySegment(Sorting);
+  KeySegment(Code);
+  KeySegment(FileName);
+  EndRecordAdd;
+
+  RecordAddBegin(WebNGContentVc,"jal_content");
+  ChangeField(Comment,M4Str,255,0);
+  EndRecordAdd;
+
+  BlockBegin(JALDistrictBlock,-,"");
+  RecordField(Math,M4Matrix,0,0);
+  ArrayBegin(Math,-,1);
+  ArrayField(District,M4Str,30,0);
+  ArrayField(Region,M4Str,20,0);
+  EndArray;
+  EndBlock;
+
+  RecordAddBegin(MailVc,"jal_mail"); //Note: Don't change tag in master. presence server depends on format of this record
+  SubsetKeyBegin2(UserCustTime);
+  AppendMatrixFieldToKeyName(AddrCode,AddrStatus);
+  KeySegment(TransDate);
+  KeySegment(TransTime);
+  KeySegment(SerNr);
+  EndRecordAdd;  
+
+  
+  RecordBegin(JALFileVc,-,"");
+  RecordField(SerNr,M4Long,0,0);
+  RecordField(SMFCode,M4Code,12,0);
+  RecordField(SMFName,M4Str,60,0);
+  RecordField(Status,M4Int,0,0);
+  RecordField(TransDate,M4Date,0,0);
+  RecordField(Score,M4Int,0,0);
+  MainKeyBegin(SerNr,0);
+  KeySegment(SerNr);
+  KeyBegin(SMFCode);
+  KeySegment(SMFCode);
+  KeySegment(Status);
+  KeySegment(SerNr);
+  KeyBegin(SMFTransDate);
+  KeySegment(SMFCode);
+  KeySegment(TransDate);
+  KeySegment(SerNr);
+
+  EndRecord;
+
+
+  RecordBegin(JALServerVc,-,"");
+  RecordField(Code,M4Code,10,0);
+  RecordField(Comment,M4Str,150,0);
+  RecordField(FilePath,M4Str,255,0);
+  RecordField(WebPort,M4Int,0,0);
+  RecordField(AppPort,M4Int,0,0);
+  RecordField(IP,M4Str,100,0);
+  RecordField(LastComp,M4Long,0,0);
+  RecordField(TeacherAccGr,M4Str,20,0);
+  RecordField(SMFAccGr,M4Str,20,0);
+  MainKeyBegin(Code,0);
+  KeySegment(Code);
+  KeyBegin(LastComp);
+  KeySegment(LastComp);
+  KeySegment(Code);
+  EndRecord;
+
+  RecordBegin(JALFileHistVc,-,"");
+  RecordField(SerNr,M4Long,0,0);
+  RecordField(DocSerNr,M4Long,0,0);
+  RecordField(Status,M4Int,0,0);
+  RecordField(TransDate,M4Date,0,0);
+  RecordField(TransTime,M4Time,0,0);
+  MainKeyBegin(SerNr,0);
+  KeySegment(SerNr);
+  KeyBegin(DocDate);
+  KeySegment(DocSerNr);
+  KeySegment(TransDate);
+  KeySegment(TransTime);
+  EndRecord;
+
+  RecordBegin(JALTeacherAccVc,-,"");
+  RecordField(SerNr,M4Long,0,0);
+  RecordField(TransDate,M4Date,0,0);
+  RecordField(TransTime,M4Time,0,0);
+  RecordField(SMFCode,M4Code,20,0);
+  RecordField(CustCode,M4Code,20,0);
+  RecordField(RecType,M4Set,1005,0);
+  RecordField(RecCode,M4Code,10,0);
+  RecordField(StatusFlag,M4Int,0,0);
+  MainKeyBegin(SerNr,0);
+  KeySegment(SerNr);
+
+  KeyBegin(SMFStatus);
+  KeySegment(StatusFlag);
+  KeySegment(SMFCode);
+  KeySegment(TransDate);
+  KeySegment(TransTime);
+  KeySegment(SerNr);
+
+
+  KeyBegin(SMFCode);
+  KeySegment(SMFCode);
+  KeySegment(TransDate);
+  KeySegment(TransTime);
+  KeySegment(SerNr);
+
+  KeyBegin(RecType);
+  KeySegment(StatusFlag);
+  KeySegment(RecType);
+  KeySegment(RecCode);
+  KeySegment(TransDate);
+  KeySegment(TransTime);
+  KeySegment(SerNr);
+  EndRecord;
+
+  RecordBegin(JALEventVc,-,"");
+  RecordField(SerNr,M4Long,0,0);
+  RecordField(Comment,M4Str,150,0);
+  RecordField(TransDate,M4Date,0,0);
+  RecordField(StartDate,M4Date,0,0);
+  RecordField(EndDate,M4Date,0,0);
+  RecordField(ActiveFlag,M4Mark,0,0);
+  RecordField(DefLangCode,M4Code,20,0);
+  RecordField(RegFlag,M4Mark,0,0);
+  RecordField(Math,M4Matrix,0,0);
+  RecordField(ClosedFlag,M4Int,0,0);
+  ArrayBegin(Math,-,1);
+  ArrayField(Field,M4Long,0,0);
+  ArrayField(Comment,M4Str,60,0);
+  ArrayField(Req,M4Set,506,0);
+  ArrayField(Show,M4Set,507,0);
+  EndArray;
+  MainKeyBegin(SerNr,0);
+  KeySegment(SerNr);
+
+  KeyBegin(Active);
+  KeySegment(ActiveFlag);
+  KeySegment(StartDate);
+  KeySegment(SerNr);
+  
+  KeyBegin(StartDate);
+  KeySegment(StartDate);
+  KeySegment(SerNr);
+  EndRecord;
+
+  RecordBegin(JALEventFieldVc,-,"");
+  RecordField(SerNr,M4Long,0,0);
+  RecordField(Comment,M4Str,60,0);
+  RecordField(Text,M4Str,100,0);
+  RecordField(Type,M4Set,508,0);
+  RecordField(SelectBox,M4Long,0,0);
+  RecordField(Math,M4Matrix,0,0);
+  ArrayBegin(Math,-,1);
+  ArrayField(LangCode,M4Code,10,0);
+  ArrayField(Comment,M4Str,100,0);
+  EndArray;
+  MainKeyBegin(SerNr,0);
+  KeySegment(SerNr);
+  EndRecord;
+
+  RecordBegin(JALEventSelectBoxVc,-,"");
+  RecordField(SerNr,M4Long,0,0);
+  RecordField(Comment,M4Str,255,0);
+  RecordField(Text,M4Str,255,0);
+  RecordField(Math,M4Matrix,0,0);
+  ArrayBegin(Math,-,1);
+  ArrayField(LangCode,M4Code,10,0);
+  ArrayField(Comment,M4Str,255,0);
+  EndArray;
+  MainKeyBegin(SerNr,0);
+  KeySegment(SerNr);
+  EndRecord;
+
+  RecordBegin(JALEventEntryVc,-,"");
+  RecordField(SerNr,M4Long,0,0);
+  RecordField(TransDate,M4Date,0,0);
+  RecordField(CustType,M4Set,503,0);
+  RecordField(CustCode,M4Code,30,0);
+  RecordField(AddCode,M4Code,30,0);
+  RecordField(StatusFlag,M4Int,0,0);
+  RecordField(EventNr,M4Long,0,0);
+  RecordField(Math,M4Matrix,0,0);
+  ArrayBegin(Math,-,1);
+  ArrayField(Field,M4Long,0,0);
+  ArrayField(Comment,M4Str,60,0);
+  ArrayField(Value,M4Str,250,0);
+  EndArray;
+  MainKeyBegin(SerNr,0);
+  KeySegment(SerNr);
+
+  KeyBegin(Status);
+  KeySegment(EventNr);
+  KeySegment(StatusFlag);
+  KeySegment(TransDate);
+  KeySegment(SerNr);
+
+  KeyBegin(CustType);
+  KeySegment(EventNr);
+  KeySegment(CustType);
+  KeySegment(AddCode);
+  KeySegment(SerNr);
+  EndRecord;
+
+  RecordBegin(WebTemplateVc,-,"");
+  RecordField(Code,M4Code,30,0);
+  RecordField(Comment,M4Str,100,0);
+  RecordField(Template,M4Code,30,0);
+  RecordField(Math,M4Matrix,0,0);
+  ArrayBegin(Math,-,1);
+  ArrayField(ElementCode,M4Code,30,0);
+  ArrayField(Type,M4Set,1700,0);
+  ArrayField(TransFlag,M4Set,1701,0);
+  EndArray;
+  MainKeyBegin(Code,0);
+  KeySegment(Code);
+  EndRecord;
+
+  RecordBegin(WebElementGroupVc,-,"");
+  RecordField(Code,M4Code,20,0);
+  RecordField(Comment,M4Str,100,0);
+  MainKeyBegin(Code,0);
+  KeySegment(Code);
+  EndRecord;
+
+  RecordAddBegin(WebNGElementVc,"jal_elements");
+  RecordField(Group,M4Code,20,0);
+  EndRecordAdd;
+
+
+end;

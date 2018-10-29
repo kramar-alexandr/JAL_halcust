@@ -1,0 +1,27 @@
+
+global
+updating procedure SMUUpdateCustomer(record CUVc CUr)
+begin
+  record CUVc oldCUr;
+ 
+  ReadFirstMain(CUr,1,true);
+  RecordCopy(oldCUr,CUr);
+  CUr.AllowLogin = 1;
+  RecordUpdate(oldCUr,CUr,true);
+
+  return;
+end;
+
+global
+procedure SetLoginFlagMn(record RCVc RepSpec)
+begin
+  record CUVc CUr;
+ 
+  while (LoopMain(Cur,1,true)) begin
+    if (CUr.AllowLogin!=1 and CUr.Classification=="SKLN") then begin
+      qupdating.SMUUpdateCustomer(CUr);
+    end;
+  end;
+
+  return;
+end;

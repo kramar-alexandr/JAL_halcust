@@ -1,0 +1,51 @@
+external procedure CreateTimedTaskForClient(record SMFVc);
+
+
+global
+updating procedure RepairAppMn(record RCVc RepSpec)
+begin
+  record SMFVc SMFr;
+  integer i;
+  boolean TrHs;
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+
+
+  TrHs = true;
+  SMFr.SMFCode = RepSpec.f1;
+  while loopkey("SMFCode",SMFr,1,TrHs) begin
+    if nonblank(RepSpec.f1) and RepSpec.f1 <> SMFr.SMFCode then begin
+      TrHs = false;
+    end else begin
+      if (nonblank(SMFr.CompNr)) then begin
+        i = 1;
+        while readrecordLink(SMFr,i,Attachr,RLr) begin
+          if (Attachr.FileName == "hw-mac-client.zip") or (Attachr.FileName == "hw-win-client.zip") then begin
+            RecordDelete(Attachr);
+          end else begin
+            i = i + 1;
+          end;
+        end;
+      end;
+    end;
+  end;
+
+    TrHs = true;
+  SMFr.SMFCode = RepSpec.f1;
+  ResetLoop(SMFr);
+  while loopkey("SMFCode",SMFr,1,TrHs) begin
+    if nonblank(RepSpec.f1) and RepSpec.f1 <> SMFr.SMFCode then begin
+      TrHs = false;
+    end else begin
+      if (nonblank(SMFr.CompNr)) then begin
+        CreateTimedTaskForClient(SMFr)
+      end;
+    end;
+  end;
+  
+
+
+
+return;
+end;
+

@@ -1,0 +1,464 @@
+external function string 255 FormatSimpleLink(string,boolean);
+//external procedure WebOutStringFormatNL(string);
+external function string 255 ToolWebNGtranslateText(integer);
+external procedure ShowRedirectHtml(string,boolean);
+external function Boolean GetNextCustNr(var string);
+//external procedure SelBoxForReg(boolean);
+external procedure NextM4Number(string,var string);
+
+SetLangMode(LangLatvian,"LAT",0);
+
+global
+function string 4 GiveCode(var string code)
+begin
+  string 4 codeor;
+
+  codeor = code;
+  while len(codeor)<3 begin
+    codeor = "0" & codeor;
+  end;
+
+GiveCode = codeor;
+return;
+end;
+
+Updating function Boolean GetNextTeacherCode(var string itemnr)
+begin
+  Boolean res;
+  record TeacherVc Teacherr;
+  record SRBlock SRb;
+
+  BlockLoad(SRb);
+  NextM4Number(SRb.LastTeacherCode,itemnr);
+  if (nonblank(itemnr)) then begin
+    Teacherr.TeacherCode = GiveCode(itemnr);
+    if (ReadFirstMain(Teacherr,1,true)==false) then begin
+      SRb.LastTeacherCode = itemnr;
+    end else begin
+      Teacherr.TeacherCode = "ZZZZZZZZZZZZZZZZZZZ";
+      if (ReadLastMain(Teacherr,1,false)) then begin
+        NextM4Number(Teacherr.TeacherCode,itemnr);
+        if (nonblank(itemnr)) then begin
+          SRb.LastTeacherCode = GiveCode(itemnr); 
+        end else begin
+          itemnr = "001";
+        end;
+      end;
+    end;
+	BlockStore(SRb);
+  end;
+  GetNextTeacherCode = res;
+  return;
+end;
+
+global
+procedure SelBoxForSchoolForTeacher(string district)
+begin
+  record SchoolVc SCr;
+  record JALRegionBlock JRbl;
+  row JALRegionBlock JRblrw;
+  boolean TrHs,firstf;
+  string 10 school;
+
+  //BlockLoad(JRbl);
+  //MatRowGet(JRbl,0,JRblrw);
+  //stopalert("nuuu? " & district);
+  TrHs = true;
+  firstf=true;
+  //SCr.Approved = 1;
+  SCr.SchoolName = "0";
+  //SCr.Region = Jrblrw.Region;
+  SCr.District = district;
+  SCr.SchoolCode = "0";
+  //stopalert(SCr.Region);
+  
+  WebOutStringFormatNL("<select  class=""spinput _select"" id=""schoolselect"" name=""school"">");// onchange=""getteacher()"">");
+  WebOutStringFormatNL("<option value=""-1"">" & ToolWebNGTranslateText(23000) & "</option>");
+  if district <> "" then begin
+  while loopkey("District",SCr,3,TrHs) begin
+  //stopalert(SCr.SchoolCode);
+    //if SCr.Approved <> 1 then begin  
+	//  TrHs = false;
+    //end else begin
+	
+      if SCr.District <> District then begin
+	      TrHs = false;
+	    end else begin
+	      if firstf == true then begin
+	        school = SCr.SchoolCode;
+		    firstf = false;
+        end;
+	      WebOutStringFormatNL("<option value=""" & SCr.SchoolCode & """>" & SCr.SchoolName & "</option>");
+      end;
+	  //stopalert(SCr.District & " " & TrHs);
+    //end;
+  end;
+  end;
+
+
+  WebOutStringFormatNL("</select>");
+  //WebOutStringFormatNL("<div>" & ToolWebNGtranslateText(20070) & "</div>");
+return;
+end;
+
+global
+procedure SelBoxForDistrictForTeacher(string region)
+begin
+  integer rwcnt,i;
+  record JALDistrictBlock JDbl;
+  row JALDistrictBlock JDblrw;
+  boolean firstf;
+  string 100 district;
+  //stopalert(region);
+  //stopalert(region);
+  BlockLoad(JDbl);
+  rwcnt = MatRowCnt(JDbl);
+  firstf = true;
+  WebOutStringFormatNL("<select  class=""spinput _select"" id=""districtselect"" name=""district"" onchange=""getschoolforteacher()"">");
+  WebOutStringFormatNL("<option value=""-1"">" & ToolWebNGTranslateText(20084) & "</option>");
+  for (i = 0 ; i < rwcnt; i = i + 1) begin
+    MatRowGet(JDbl,i,JDblrw);
+	if JDblrw.Region == region then begin
+	  if firstf then begin
+	    district = JDblrw.District;
+		firstf = false;
+	  end;
+	  WebOutStringFormatNL("<option value=""" & i & """>" & JDblrw.District & "</option>");
+    end;
+  end;
+  WebOutStringFormatNL("</select>");
+  //WebOutStringFormatNL("<div>" & ToolWebNGTranslateText(20086) & "</div>");
+  WebOutStringFormatNL("<div id=""schooldiv"">");
+  //SelBoxForSchool;
+  
+  SelBoxForSchoolForTeacher(district);
+
+  WebOutStringFormatNL("</div>");
+
+return;
+end;
+
+global
+procedure SelBoxForRegForTeacher()
+begin
+  integer rwcnt,i;
+  record JALRegionBlock JRbl;
+  row JALRegionBlock JRblrw;
+  string 30 region;
+
+    
+	BlockLoad(JRbl);
+
+	rwcnt = MatRowCnt(JRbl);
+        WebOutStringFormatNL("<select  class=""spinput _select"" id=""regselect"" name=""reg"" onchange=""getdistrict()"">");//onchange=""getschool()"">");//changeSchool('/WebJALChangeSchool.hal','reg=' + this.value)"">");
+	WebOutStringFormatNL("<option value=""-1"">" & ToolWebNGTranslateText(20088) & "</option>");
+	for ( i = 0; i < rwcnt; i = i + 1) begin
+	  MatRowGet(JRbl,i,JRblrw);
+	  if i == 0 then begin
+	    region = JRblrw.Region;
+	  end;
+      WebOutStringFormatNL("<option value=""" & i & """>" & JRblrw.Region & "</option>");
+	end;
+	WebOutStringFormatNL("</select>");
+	//WebOutStringFormatNL("<div>" & ToolWebNGTranslateText(20068) & "</div>");
+	WebOutStringFormatNL("<div id=""districtdiv"">");
+    SelBoxForDistrictForTeacher(region);
+	WebOutStringFormatNL("</div>");
+  return;
+end;
+
+procedure SelBoxForSubject()
+begin
+  integer i;
+ 
+
+  WebOutStringFormatNL("<select class=""spinput _select"" name=""subject"">");//changeSchool('/WebJALChangeSchool.hal','reg=' + this.value)"">");
+  WebOutStringFormatNL("<option value=""-1"">" & ToolWebNGTranslateText(23002) & "</option>");
+  for ( i = 20101; i < 20126; i = i + 1) begin
+    
+    //stopalert("aaa " & i & ToolWebNGtranslateText(i));
+    WebOutStringFormatNL("<option value=""" & i &  """>" & ToolWebNGtranslateText(i) & "</option>");
+
+  end;
+  WebOutStringFormatNL("</select>");
+  //WebOutStringFormatNL("<div>" & ToolWebNGtranslateText(20035) & "</div>");
+
+
+
+return;
+end;
+
+
+global
+procedure TeacherRegForm()
+begin
+  integer err;
+  //stopalert("ads");
+  WebOutStringFormatNL("<form method=""POST"" action=""/WebTeacherReg.hal"" onSubmit=""return TestFieldsForTeacher(this,'" & ToolWebNGtranslateText(20055) & "','" & ToolWebNGtranslateText(20056) & "','" & ToolWebNGtranslateText(20057) & "','" & ToolWebNGtranslateText(20058) & "','" & ToolWebNGtranslateText(20063) & "','" & toolwebngtranslatetext(21102) & "',");
+  WebOutStringFormatNL("'" & toolwebngtranslatetext(20015) & "','" & toolwebngtranslatetext(20017) & "','" & toolwebngtranslatetext(20018) & "','" & toolwebngtranslatetext(20019) & "','" & toolwebngtranslatetext(20020) & "','" & toolwebngtranslatetext(20022) & "')"">");
+  WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path") & """>");
+  WebOutStringFormatNL("<input class=""spinput"" type=""text"" required name=""name"" placeholder=""V&#257rds, Uzv&#257rds"">");
+  //WebOutStringFormatNL("<input class=""spinput"" type=""text"" required name=""pk"" placeholder=" & ToolWebNGtranslateText(20031) & ">");
+  WebOutStringFormatNL("<input class=""spinput"" type=""tel"" required name=""tel"" pattern='[+][0-9]{5,10}' placeholder='Tel.nr'><div data-title='Tikai cipari un simbols (+)' class='info-sign'><img src='img/information.png'></img></div>");
+  WebOutStringFormatNL("<input id=""regemail"" placeholder=" & ToolWebNGtranslateText(20033) & " class=""spinput"" type=""email"" required name=""email""  onchange=""testemail(this.value); compemails('" & ToolWebNGTranslateText(21102) & "',1);""><div data-title='J‚ievada ir aktu‚lais e-pasts, kas tiek izmantots ikdien‚' class='info-sign'><img src='img/information.png'></img></div>");
+  WebOutStringFormatNL("<input id=""regemail2"" placeholder=""Atk&#257rtojiet e-pastu"" class=""spinput"" type=""email"" required name=""email2""  onchange=""compemails('" & ToolWebNGTranslateText(21102) & "',0);"">");
+  SelBoxForRegForTeacher;
+  //WebOutStringFormatNL("<div id=""schooldiv"">");
+  //SelBoxForSchool;
+  //WebOutStringFormatNL("</div>");
+  //WebOutStringFormatNL("<input class=""spinput"" type=""text"" required name=""extrajob"" value="""" placeholder=" & ToolWebNGtranslateText(20034) & ">");
+  SelBoxForSubject;
+  //WebOutStringFormatNL("<div class='reg_label'>" & ToolWebNGtranslateText(20087) & "</div><input class=""spinput"" type=""text"" name=""spam"" value="""" placeholder=" & ToolWebNGtranslateText(20087) & ">");
+  WebOutStringFormatNL("<input class=""spinput"" type=""text"" required name=""contract"" value="""" placeholder=""Sadarb´bas l´guma nr."">");
+  WebOutStringFormatNL("<input class=""spinput"" type=""password"" required name=""password1"" minlength=""4"" placeholder=""Parole""><div data-title='Vismaz 4 simboli' class='info-sign'><img src='img/information.png'></img></div>");
+  WebOutStringFormatNL("<input class=""spinput"" type=""password"" required name=""password2"" minlength=""4"" placeholder=""Parole atk&#257rtoti"">");
+  WebOutStringFormatNL("<div id=""errormsg""><div id=""ename""></div><div id=""econtract""></div><div id=""epk""></div><div id=""etel""></div><div id=""eemail""></div><div id=""esameemail""><div id=""samemailmsg"">");
+  WebOutStringFormatNL("</div></div><div id=""ecode""></div><div id=""ecompare""></div><div id=""ereg""></div><div id=""eschool""></div><div id=""esubject""></div><div id=""epassword""></div><div id=""edistrict""></div></div>");
+
+  WebOutStringFormatNL("<input type=""submit"" class=""spbutton""  value=""" & ToolWebNGtranslateText(21064) & """ >");
+
+  WebOutStringFormatNL("</form>");
+  WebOutStringFormatNL("<script>");
+  WebOutStringFormatNL("function getschoolforteacher() {");
+  WebOutStringFormatNL("  var reqid = document.getElementById('districtselect').options[document.getElementById('districtselect').selectedIndex].value;");
+  WebOutStringFormatNL("  var link = '" & FormatSimpleLink("/ajx",true) & "?action=getschoolforteacher&district=' + reqid;");
+  WebOutStringFormatNL("  xmlhttp=new XMLHttpRequest();");
+  WebOutStringFormatNL("  xmlhttp.open('GET',link,false);");
+  WebOutStringFormatNL("  xmlhttp.send(null);");
+  WebOutStringFormatNL("  document.getElementById('schooldiv').innerHTML = xmlhttp.responseText;");
+  WebOutStringFormatNL("}");
+  WebOutStringFormatNL("function testemail(email) {");
+  WebOutStringFormatNL("  var reqid = email");
+  WebOutStringFormatNL("  var link = '" & FormatSimpleLink("/ajx",true) & "?action=getmail&email=' + reqid;");
+  WebOutStringFormatNL("  xmlhttp=new XMLHttpRequest();");
+  WebOutStringFormatNL("  xmlhttp.open('GET',link,false);");
+  WebOutStringFormatNL("  xmlhttp.send(null);");
+  WebOutStringFormatNL("  var text = xmlhttp.responseText;");
+  WebOutStringFormatNL("  TestEmail2(text);");
+
+
+  WebOutStringFormatNL("}");
+  WebOutStringFormatNL("function getdistrict() {");
+  WebOutStringFormatNL("  var reqid = document.getElementById('regselect').options[document.getElementById('regselect').selectedIndex].value;");
+  WebOutStringFormatNL("  var link = '" & FormatSimpleLink("/ajx",true) & "?action=getdistrictforteacher&reg=' + reqid;");
+  WebOutStringFormatNL("  xmlhttp=new XMLHttpRequest();");
+  WebOutStringFormatNL("  xmlhttp.open('GET',link,false);");
+  WebOutStringFormatNL("  xmlhttp.send(null);");
+  WebOutStringFormatNL("  document.getElementById('districtdiv').innerHTML = xmlhttp.responseText;");
+  
+  WebOutStringFormatNL("}");
+  WebOutStringFormatNL("</script>");
+  return;
+end;
+  
+global
+updating procedure GenMailForTeacher(string txt,string head,string conf,var record TeacherVc TCr,boolean testf,record CUVc CUr,string tstr)
+begin
+  record MailVc Mailr;
+  row MailVc Mailrw;
+  integer i;
+  record MailSettingsBlock MSr;
+  BlockLoad(MSr);
+
+    RecordNew(Mailr);
+    Mailr.Header = head;
+	
+    
+    ClearRow(Mailr,Mailrw,0);
+    Mailrw.RowTyp = 1;
+	  if testf then begin
+      LineTextPut(Mailr,0,txt);
+      Mailrw.AddrCode = MSr.FromSystem;
+	  end else begin
+      LineTextPut(Mailr,0,USetStr(32359));
+      LineTextPut(Mailr,1,USetStr(32360));
+      LineTextPut(Mailr,2,"");
+      LineTextPut(Mailr,3,USetStr(32362));
+      //LineTextPut(Mailr,1,USetStr(10018) & " " & CUr.eMail);
+      //LineTextPut(Mailr,2,USetStr(10029) & ": " & tstr);
+      //LineTextPut(Mailr,3,USetStr(32472));
+      //LineTextPut(Mailr,4,"http://jal.lv/WebJALApprovebyc3a.hal?c=" & CUr.Code & "&a=" & CUr.Comment);
+      Mailrw.AddrCode = MSr.Postmaster;
+	  end;
+    MatRowPut(Mailr,0,Mailrw);
+    ClearRow(Mailr,Mailrw,1);
+    Mailrw.RowTyp = kMailRowTypeTo;
+    Mailrw.AddrCode = conf;
+    MatRowPut(Mailr,1,Mailrw);
+    Mailr.SendFlag = 1;
+
+    if recordStore(Mailr,true) then begin 
+      if testf then begin
+        CreateRecordLink(Mailr,currentcompany,TCr,currentcompany);
+        CreateRecordLink(TCr,currentcompany,Mailr,currentcompany);
+	    end;
+	  end;
+
+return;
+end;
+
+function string 255 GenerateRandomHash()
+begin
+  string 100 ast;
+  LongInt pos,length;
+  LongInt i;
+  string 255 res,tstr;
+  
+  length = 20;
+
+  res = "";
+  Randomize;
+  ast = "0f3481ade786F29523aaadeccbb123456ff987C2a3b4d6dd7ee8f922f33e5"; // 61 characters
+  for (i=0;i<length;i=i+1) begin
+    pos = Random(0,60);
+    tstr = Mid(ast,pos,1);
+    res = res & tstr;    
+  end;
+
+  GenerateRandomHash = res;
+return;
+end;
+
+
+global webpublic
+updating procedure WebTeacherReg()
+begin
+  
+  integer i;
+  string 100 name,email,phone,text;
+  record CUVc CUr,tCUr,oldCUr;
+  record TeacherVc TCr;
+  record SchoolVc SCr;
+  record JALClassblock JALClassbl;
+  record ReportMailBlock RMbl;
+  string 100 tstr,code,tstr2;
+  boolean savef, TrHs,foundf;
+  integer err;
+  row TeacherVc TCrw;
+  string 50 contract;
+
+  BlockLoad(RMbl);
+
+
+  BlockLoad(JALClassbl);
+
+  name = WebGetArg("name");
+  email = WebGetArg("email");
+  phone = WebGetArg("tel");
+  contract = WebGetArg("contract");
+  
+  savef = false;
+  TrHs = true;
+  tCUr.eMail = email;
+  err = 0;
+
+  if blank(name) then begin
+    err = err + 2;
+  end;
+  if blank(email) then begin
+    err = err + 4;
+  end;
+  if blank(phone) then begin
+    err = err + 8;
+  end;
+  if blank(contract) then begin
+    err = err + 16;
+  end;
+  SCr.SchoolCode = WebGetArg("school");
+  if readfirstmain(SCr,1,true) == false then begin
+    err = err + 32;
+  end;
+  
+  foundf = false;
+  if err == 0 then begin
+    if readfirstkey("eMail",tCUr,1,true) begin
+        if SetInSet(JALClassbl.EventPart,tCUr.Classification) then begin
+          savef = true;
+          foundf = true;
+          RecordCopy(oldCUr,tCUr);
+          tCUr.Classification = JALClassbl.Teacher;
+          tstr = WebGetArg("password1");
+          tCUr.AllowLogin = 0;
+          tCUr.Comment = GenerateRandomHash;
+          tCUr.Phone = phone;
+          tCUr.CustType = 1;
+          tCUr.VATNr = WebGetArg("pk");
+          tCUr.CUType = 1;
+          tCUr.Password = CalcPassword(tstr,tCUr.Code,0);
+          if recordUpdate(oldCUr,tCUr,true)== 0 then begin code = tCUr.Code; end;
+        end;
+    end else begin
+      RecordNew(CUr);
+      if (GetNextCustNr(tstr)) then begin end;
+      stopalert(tstr & ":");
+      CUr.Code = tstr;
+      CUr.Name = name;
+      CUr.eMail = email;
+      CUr.Phone = phone;
+      CUr.VATNr = WebGetArg("pk");
+      CUr.CustType = 1;
+      CUr.CUType = 1;
+      CUr.Classification = JALClassbl.Teacher;
+      CUr.AllowLogin = 0;
+      CUr.Comment = GenerateRandomHash;
+      tstr = WebGetArg("password1");
+      CUr.Password = CalcPassword(tstr,CUr.Code,0);
+      SCr.SchoolCode = WebGetArg("school");
+      if readfirstmain(SCr,1,true) then begin
+        CreateRecordLink(CUr,currentcompany,SCr,currentcompany);
+      end;
+      if recordStore(CUr,false) then begin 
+        text = CUr.Name & USetStr(32343);
+        code = CUr.Code;
+        savef = true;
+      end;
+    end;
+    
+    if savef then begin
+      RecordNew(TCr);
+      
+      if (GetNextTeacherCode(tstr2)) then begin end;
+      stopalert(tstr2 & ":");
+      TCr.TeacherCode = tstr2;
+      clearRow(TCr,TCrw,1);
+      TCrw.SchoolCode = WebGetArg("school");
+      //TCr.SchoolCode = WebGetArg("school");
+      SCr.SchoolCode = TCrw.SchoolCode;
+      TCr.SchoolCode = SCr.SchoolCode;
+      if readfirstmain(SCr,1,true) then begin
+        //TCr.SchoolName = SCr.SchoolName;
+        TCrw.SchoolName = SCr.SchoolName;
+        TCr.SchoolName = SCr.SchoolName;
+      end;
+      MatRowPut(TCr,0,TCrw);
+      TCr.CustCode = code;
+      TCr.TeacherName = name;
+      TCr.ContractNr = contract;
+      //TCr.Email = email;
+      //TCr.Telephone = phone;
+      TCr.OtherJob = WebGetArg("extrajob");
+      TCr.Subject = ToolWebNGTranslateText(StringToLongInt(WebGetArg("subject")));
+      if recordStore(TCr,false) then begin 
+        GenMailForTeacher(text,USetStr(32342) & " : " & name,RMbl.TeacherMail,TCr,true,CUr,""); 
+        text = USetStr(32347) & chr(13) & USetStr(10018) & " " & email &  chr(13) & USetStr(10029) & ": " & tstr;
+        if foundf then begin
+          //GenMailForTeacher(text,USetStr(32348),email,TCr,false,tCUr,tstr); 
+        end else begin
+          //GenMailForTeacher(text,USetStr(32348),email,TCr,false,CUr,tstr); 
+        end;
+      end;
+      ShowRedirectHtml(FormatSimpleLink("/afterreg",true),false);
+    end else begin
+      ShowRedirectHtml(FormatSimpleLink("/badreg",true),false);
+    end;
+
+  end else begin
+    ShowRedirectHtml(FormatSimpleLink("/badreg",true),false);  
+  end;
+  
+
+  //stopalert("asdf");
+  
+ 
+return;
+end;

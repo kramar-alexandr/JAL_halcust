@@ -1,0 +1,127 @@
+global
+function boolean StringInString(string Search,string Content,boolean CaseSens)
+begin
+  boolean res;
+  integer cntS,cntI;
+  integer iS,iI;
+  string 1 cS,cI;
+  string 255 iStr,sStr;
+  
+  if (CaseSens) then Begin
+    sStr = Search;
+    iStr = Content;
+  end else Begin
+    sStr = UpperCase(Search);
+    iStr = UpperCase(Content);
+  end;
+  res = false;
+  cntS = len(sStr);
+  cntI = len(iStr);
+  iS = 0;
+  cS = Mid(sStr,iS,1);
+  for (iI=0;iI<cntI;iI=iI+1) begin
+    cI = Mid(iStr,iI,1);
+    if (cI == cS) then begin
+      if (iS < cntS-1) then begin
+        iS = iS + 1;
+        cS = Mid(sStr,iS,1);
+      end else begin
+        res = true;
+        goto EOFStringInString;
+      end;
+    end else begin
+      iS = 0;
+      cS = Mid(sStr,iS,1);
+    end;
+  end;
+
+  EOFStringInString:;
+  StringInString = res;
+  return;
+end;
+
+
+global
+updating procedure DistrictGuesserMn()
+begin
+  record SchoolVc SCr;
+  integer i,cnt,cnt2,rwcnt;
+  string 255 tstr,tstr2;
+  boolean existsdistrict,nostreet,nostreet2;
+  Record JALDistrictBlock JALDistrictBlockr;
+  Row JALDistrictBlock JALDistrictBlockrw;
+  BlockLoad(JALDistrictBlockr);
+  
+  rwcnt = MatRowCnt(JALDistrictBlockr);
+
+  cnt=0; cnt2=0;
+  
+  SCr.SchoolCode = "000";
+  while loopkey("SchoolCode",SCr,1,true) begin
+    if(cnt==3) then begin
+      //goto bikses;
+    end;
+    for (i=0;i<rwcnt;i=i+1) begin
+      MatRowGet(JALDistrictBlockr,i,JALDistrictBlockrw);
+      existsdistrict = StringInString(JALDistrictBlockrw.District,SCr.Address,False);
+      if(existsdistrict==true) then begin
+        tstr=JALDistrictBlockrw.District & "S IELA";
+        tstr2=JALDistrictBlockrw.District & " IELA";
+        nostreet=StringInString(tstr,SCr.Address,False);
+        nostreet2=StringInString(tstr2,SCr.Address,False);
+        if((nostreet==true)or(nostreet2==true)) then begin
+          goto skipdistrict;
+        end;
+        SCr.District=JALDistrictBlockrw.District;
+        if(JALDistrictBlockrw.Region!=SCr.Region) then begin
+          SCr.Region=JALDistrictBlockrw.Region;
+        end;
+        if recordStore(SCr,true) then begin
+          //trace("novads: ",SCr.District);
+          //trace("adrese: ",SCr.Address);
+          cnt=cnt+1;
+        end;
+      end;
+    skipdistrict:;
+    end;
+  end;
+
+  bikses:;
+  return;
+end;
+
+
+global
+updating procedure MissingDistrictCntMn()
+begin
+  record SchoolVc SCr;
+  integer cnt;
+  string 255 kodi;
+
+  cnt=0; kodi="";
+  
+  SCr.SchoolCode = "000";
+  while loopkey("SchoolCode",SCr,1,true) begin
+    if(Blank(SCr.District)) then begin
+      cnt=cnt+1;
+      kodi=kodi & ", " & SCr.SchoolCode;
+    end;
+  end;
+
+  Trace("Kopaa skolas bez novadiem: ",cnt);
+  Trace("Vain´g‚s: ",kodi);
+  return;
+end;
+
+
+global
+updating procedure ClearDistrictMn()
+begin
+  record SchoolVc SCr;
+  SCr.SchoolCode = "000";
+  while loopkey("SchoolCode",SCr,1,true) begin
+    SCr.District="";
+    recordStore(SCr,true);
+  end;
+  return;
+end;

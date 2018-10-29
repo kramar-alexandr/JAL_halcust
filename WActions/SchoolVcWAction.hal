@@ -1,0 +1,157 @@
+//gjs
+/*
+global
+function Boolean SchoolDClassAfterEditField(Integer wn,string fieldname,Integer fn, Integer rownr,Integer changed)
+begin
+  Boolean res;
+  record SchoolVc Schoolr;
+
+  switch (fieldname) begin
+
+    case "SchoolCode": 
+      if (changed==1) then begin 
+        GetWindowRecord(wn,Schoolr);
+        Schoolr.SchoolCode = Schoolr.SchoolCode;
+        if (ReadFirstMain(Schoolr,1,true)==true) then begin 
+          beep;
+          Trace(USetStr(32203),"");
+        end;
+      end;
+      
+  end;
+  SchoolDClassAfterEditField = res;
+  return;
+end;
+*/
+
+
+external inner procedure StripEndingSpaces(var string);
+
+procedure MakeSpace(var string space,integer l)
+begin
+  integer i,dif ;
+  dif = 20 - l;
+  space = "";
+  for (i = 0; i < dif ; i = i + 1) begin
+    space = space & " ";
+  end;
+
+  return;
+end;
+
+
+
+global
+function Boolean JALLangSClassOnOpenWindow(Integer wn)
+begin
+  record JALLangBlock JLr;
+  row JALLangBlock JLrw;
+  integer i,rwc;
+  string 5 space;
+
+  BlockLoad(JLr);
+  rwc = MatRowCnt(JLr);
+  for (i = 0; i < rwc; i = i + 1) begin
+    MatRowGet(JLr,i,JLrw);
+	
+	MakeSpace(space,len(JLrw.Code));
+    SetListString(wn,i+1,JLrw.Code & space & JLrw.Lang,false);   
+  end;
+  JALLangSClassOnOpenWindow=false;
+  return;
+end;
+
+global
+function Boolean JALLangSClassOnOKWindow(Integer wn)
+begin
+  Integer mwn;
+  string 60 tstr;
+  
+  mwn = MotherWindow(wn);
+  if (SelectedListLine(wn)>=0) then begin
+      tstr = GetListString(wn,SelectedListLine(wn));
+      tstr = left(tstr,5);
+      StripEndingSpaces(tstr);
+  end else begin
+       tstr="";
+  end;        
+  CloseWindow(wn);
+  PasteString(mwn,tstr);
+  JALLangSClassOnOKWindow = false;
+  return;
+end;
+
+global
+function Boolean JALRegionSClassOnOpenWindow(Integer wn)
+begin
+  record JALRegionBlock JRr;
+  row JALRegionBlock JRrw;
+  integer i,rwc;
+
+  BlockLoad(JRr);
+  rwc = MatRowCnt(JRr);
+  for (i = 0; i < rwc; i = i + 1) begin
+    MatRowGet(JRr,i,JRrw);
+    SetListString(wn,i+1,JRrw.Region,false);   
+  end;
+  JALRegionSClassOnOpenWindow=false;
+  return;
+end;
+
+global
+function Boolean JALRegionSClassOnOKWindow(Integer wn)
+begin
+  Integer mwn;
+  string 60 tstr;
+  
+  mwn = MotherWindow(wn);
+  if (SelectedListLine(wn)>=0) then begin
+      tstr = GetListString(wn,SelectedListLine(wn));
+      tstr = left(tstr,15);
+      StripEndingSpaces(tstr);
+  end else begin
+       tstr="";
+  end;        
+  CloseWindow(wn);
+  PasteString(mwn,tstr);
+  JALRegionSClassOnOKWindow = false;
+  return;
+end;
+
+
+global
+function Boolean JALDistrictSClassOnOpenWindow(Integer wn)
+begin
+  record JALDistrictBlock JDr;
+  row JALDistrictBlock JDrw;
+  integer i,rwc;
+
+  BlockLoad(JDr);
+  rwc = MatRowCnt(JDr);
+  for (i = 0; i < rwc; i = i + 1) begin
+    MatRowGet(JDr,i,JDrw);
+    SetListString(wn,i+1,JDrw.District,false);   
+  end;
+  JALDistrictSClassOnOpenWindow=false;
+  return;
+end;
+
+global
+function Boolean JALDistrictSClassOnOKWindow(Integer wn)
+begin
+  Integer mwn;
+  string 60 tstr;
+  
+  mwn = MotherWindow(wn);
+  if (SelectedListLine(wn)>=0) then begin
+      tstr = GetListString(wn,SelectedListLine(wn));
+      //tstr = left(tstr,15);
+      //StripEndingSpaces(tstr);
+  end else begin
+       tstr="";
+  end;        
+  CloseWindow(wn);
+  PasteString(mwn,tstr);
+  JALDistrictSClassOnOKWindow = false;
+  return;
+end;

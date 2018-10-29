@@ -1,0 +1,62 @@
+procedure ReadImportTagWebNGMenuVcRecord(record WebNGMenuVc WebNGMenur)
+begin
+  row WebNGMenuVc WebNGMenurw;
+  integer rwcnt;
+  
+  RecordNew(WebNGMenur);
+  WebNGMenur.Code = ImportField;
+  WebNGMenur.Comment = ImportField;
+  WebNGMenur.LinkToStruct = StringToLongint(ImportField);
+  WebNGMenur.ExtraArgs = ImportField;
+  WebNGMenur.Target = ImportField;
+  WebNGMenur.NoSession = StringToInt(ImportField);
+  WebNGMenur.ParentMenu = ImportField;
+  WebNGMenur.GoToURL = ImportField;
+  WebNGMenur.LinkPict = ImportField;
+  WebNGMenur.WebElement = ImportField;
+  WebNGMenur.ShowWhenLoggedIn = StringToInt(ImportField);
+  WebNGMenur.ShowWhenLoggedOut = StringToInt(ImportField);
+  WebNGMenur.MenuClass = ImportField;
+  WebNGMenur.ActMenuClass = "active";
+  
+  rwcnt = 0;
+  
+  while (NextImportLine(false)) begin
+    ClearRow(WebNGMenur,WebNGMenurw,1);
+    WebNGMenurw.LangCode = ImportField;
+    WebNGMenurw.Text = ImportField;
+    MatRowPut(WebNGMenur,rwcnt,WebNGMenurw);
+    rwcnt = rwcnt + 1;
+  end;
+  
+  return;
+end;
+
+global
+updating procedure ReadImportTagWebNGMenuVc(string thetag)
+begin
+  record WebNGMenuVc WebNGMenur;
+  record WebNGMenuVc WebNGMenu2r;
+  
+  while (NextImportLine(false)) begin
+    ReadImportTagWebNGMenuVcRecord(WebNGMenur);
+    WebNGMenu2r.Code = WebNGMenur.Code;
+    if (ReadFirstMain(WebNGMenu2r,1,true)) then begin
+      if (RecordUpdate(WebNGMenu2r,WebNGMenur,false)==0) then begin end;
+    end else begin
+      if (RecordImportStore(WebNGMenur,false)) then begin end;
+    end;
+  end;
+  
+  return;
+end;
+
+global
+function string 120 ReadRecordIdStrWebNGMenuVc(Integer compnr,string thetag)
+begin
+  record WebNGMenuVc WebNGMenur;
+  
+  WebNGMenur.Code = ImportField;
+  ReadRecordIdStrWebNGMenuVc = BuildRecordIdStr(WebNGMenur,compnr);
+  return;
+end;

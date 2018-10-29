@@ -1,0 +1,142 @@
+
+global 
+updating function longint JALEventEntryVcRecordDefaults(var record JALEventEntryVc JEEr,record JALEventEntryVc JEE2r,LongInt stat,LongInt long4)
+begin
+  longint res;
+
+  JEEr.TransDate = CurrentDate;
+
+  JALEventEntryVcRecordDefaults = res;
+return;
+end;
+
+
+global 
+updating function longint JALEventEntryVcRecordCheck(var record JALEventEntryVc JEEr,record JALEventEntryVc JEE2r,LongInt stat,LongInt long4)
+begin
+  LongInt res;
+  integer rwcnt,i;
+  
+  res = 0;
+
+  if JEEr.SerNr < 0 then begin
+    if JEE2r.SerNr < 0 then begin
+      JEEr.SerNr = NextSerNr("JALEventEntryVc",CurrentDate,-1,false,"");
+    end else begin
+      RecordCheckError(1058,"",-1,"SerNr");      
+      res = -1; 
+      goto LJALEventEntryVcRecordCheck;
+    end;
+  end;
+    
+LJALEventEntryVcRecordCheck:;
+  JALEventEntryVcRecordCheck = res;
+  return;
+end;
+
+function string 60 GetEntryEmail(record JALEventEntryVc JEEr)
+begin
+  row JALEventEntryVc JEErw;
+  record CUVc CUr;
+  record JALEventFieldVc JFr;
+  integer i,rwcnt;
+  string 60 res;
+  
+  res = "";
+
+  if JEEr.CustType < 3 then begin
+    CUr.Code = JEEr.CustCode;
+    res = CUr.eMail;
+  end else begin
+    rwcnt = MatRowCnt(JEEr);
+    for (i = 0; i < rwcnt; i = i + 1) begin
+      MatRowGet(JEEr,i,JEErw);
+      JFr.SerNr = JEErw.Field;
+      if readfirstmain(JFr,1,true) then begin
+        if JFr.Type == 3 then begin
+          res = JEErw.Value;
+          i = rwcnt;
+        end;
+      end;
+    end;
+  end;
+  
+  GetEntryEmail = res;
+return;
+end;
+
+updating procedure SendEntryMail(string mail,string code,string comment)
+begin
+  record MailVc Mailr;
+  row MailVc Mailrw;
+  integer i,lcnt;
+  string 100 tstr;
+  record LTxtVc Ltxtr;
+  record MailSettingsBlock MSr;
+
+  if nonblank(mail) and nonblank(code) then begin
+    Ltxtr.Code = code;
+    if readfirstmain(Ltxtr,1,true) then begin
+      BlockLoad(MSr);
+
+      RecordNew(Mailr);
+      Mailr.Header = Ltxtr.Comment & " - " & comment;
+      lcnt = LineTextCnt(Ltxtr);
+      for (i = 0; i < lcnt;i = i + 1) begin
+        LineTextPut(Mailr,i,LineTextGet(Ltxtr,i));
+      end;
+      
+      ClearRow(Mailr,Mailrw,0);
+      Mailrw.RowTyp = 1;
+      Mailrw.AddrCode = MSr.FromSystem;
+      MatRowPut(Mailr,0,Mailrw);
+      ClearRow(Mailr,Mailrw,1);
+      Mailrw.RowTyp = kMailRowTypeTo;
+      Mailrw.AddrCode = mail;
+      MatRowPut(Mailr,1,Mailrw);
+      Mailr.SendFlag = 1;
+      if recordStore(Mailr,true) then begin  end;
+    end;
+  end;
+
+return;
+end;
+
+function string 255 GetEventComment(longint num)
+begin
+  record JALEventVc JEr;
+  string 255 res;
+
+  res = "";
+
+  JEr.SerNr = num;
+  if readfirstmain(JEr,1,true) then begin
+    res = JEr.Comment;
+  end;
+
+
+ GetEventComment = res;
+return;
+end;
+
+global 
+updating function longint JALEventEntryVcRecordUpdate(var record JALEventEntryVc JEEr,record JALEventEntryVc JEE2r,LongInt stat,LongInt long4)
+begin
+  longint res;
+  record JALClassBlock JCbl;
+
+  BlockLoad(JCbl);
+
+  if JEEr.StatusFlag <> JEE2r.StatusFlag then begin
+    if (JEEr.StatusFlag == 1) then begin
+      SendEntryMail(GetEntryEmail(JEEr),JCbl.EventAccepted,GetEventComment(JEEr.EventNr));
+    end else begin
+      if JEEr.StatusFlag == 2 then begin
+        SendEntryMail(GetEntryEmail(JEEr),JCbl.EventDeclined,GetEventComment(JEEr.EventNr));
+      end;
+    end;
+  end;
+
+  JALEventEntryVcRecordUpdate = res;
+return;
+end;

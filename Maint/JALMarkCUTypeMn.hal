@@ -1,0 +1,16 @@
+
+global
+updating procedure JALMarkasCUMn(record RCVc RepSpec)
+begin
+  record CUVc CUr,oldCUr;
+  
+  while (LoopMain(CUr,1,true)) begin
+    if (CUr.Classification=="SKLT") then begin
+      RecordCopy(oldCUr,CUr);
+      CUr.CUType = 1;
+      RecordUpdate(oldCUr,CUr,true);
+    end;
+  end;
+
+  return;
+end;

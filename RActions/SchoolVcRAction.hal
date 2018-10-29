@@ -1,0 +1,157 @@
+external inner procedure NextM4Number(string,var string);
+external function string 4 GiveCode(var string);
+
+
+global
+Updating function Boolean GetNextSchoolCode(var string itemnr)
+begin
+  Boolean res;
+  record SchoolVc SCr;
+  record SRBlock SRb;
+  res = true;
+  BlockLoad(SRb);
+  NextM4Number(SRb.LastSchoolCode,itemnr);
+  if (nonblank(itemnr)) then begin
+    SCr.SchoolCode = GiveCode(itemnr);
+    if (ReadFirstMain(SCr,1,true)==false) then begin
+      SRb.LastSchoolCode = itemnr;
+    end else begin
+      SCr.SchoolCode = "ZZZZZZZZZZZZZZZZZZZ";
+      if (ReadLastMain(SCr,1,false)) then begin
+        NextM4Number(SCr.SchoolCode,itemnr);
+        if (nonblank(itemnr)) then begin
+          SRb.LastSchoolCode = GiveCode(itemnr); 
+        end else begin
+          itemnr = "001";
+        end;
+      end;
+    end;
+	BlockStore(SRb);
+  end;
+  GetNextSchoolCode = res;
+  return;
+end;
+
+global 
+updating function longint SchoolVcRecordDefaults(var record SchoolVc Schoolr,record SchoolVc School2r,LongInt stat,LongInt long4)
+begin
+  longint res;
+
+  SchoolVcRecordDefaults = res;
+return;
+end;
+
+global 
+updating function longint SchoolVcRecordDuplicate(var record SchoolVc Schoolr,record SchoolVc School2r,LongInt stat,LongInt long4)
+begin
+  longint res;
+  
+  Schoolr.SchoolCode = "";
+
+  SchoolVcRecordDuplicate = res;
+return;
+end;
+
+
+//gjs
+global
+updating function LongInt SchoolVcRecordCheck(var record SchoolVc Schoolr,record SchoolVc School2r,LongInt stat,LongInt long4)
+begin
+  LongInt res,i;
+  record SchoolVc SCr;
+  record SRblock SRb;
+  
+  res = 0;
+  
+  if (blank(Schoolr.SchoolName)) then begin
+    RecordCheckError(1058,USetStr(32252),-1,"SchoolName");      
+    res = -1; 
+    goto LSchoolVcRecordCheck;
+  end;
+  if (blank(Schoolr.Region)) then begin
+    RecordCheckError(1058,USetStr(32253),-1,"Region");      
+    res = -1; 
+    goto LSchoolVcRecordCheck;
+  end;
+  /*
+  if (blank(Schoolr.Director)) then begin
+    RecordCheckError(1058,USetStr(32254),-1,"Director");      
+    res = -1; 
+    goto LSchoolVcRecordCheck;
+  end;
+  if (blank(Schoolr.Address)) then begin
+    RecordCheckError(1058,USetStr(32255),-1,"Address");      
+    res = -1; 
+    goto LSchoolVcRecordCheck;
+  end;
+  if (blank(Schoolr.Telephone)) then begin
+    RecordCheckError(1058,USetStr(32256),-1,"Telephone");      
+    res = -1; 
+    goto LSchoolVcRecordCheck;
+  end;
+  if (blank(Schoolr.Email)) then begin
+    RecordCheckError(1058,USetStr(32257),-1,"Email");      
+    res = -1; 
+    goto LSchoolVcRecordCheck;
+  end;
+  */
+
+    
+LSchoolVcRecordCheck:;
+  SchoolVcRecordCheck = res;
+  return;
+end;
+
+
+global
+updating function LongInt SchoolVcRecordUpdateAfter(var record SchoolVc Schoolr,record SchoolVc School2r,LongInt stat,LongInt long4)
+begin
+  LongInt res,i;
+  record TeacherVc TCr;
+  record CUVc CUr,oldCUr;
+  Boolean TrHs;
+  
+  if (Schoolr.Approved==1 and School2r.Approved==0) then begin
+    while (LoopKey("Approved:" & Schoolr.SchoolCode,TCr,1,true)) begin
+      CUr.Code = TCr.CustCode;
+      if (TCr.Approved==1) then begin
+        if (ReadFirstMain(CUr,1,true)) then begin
+          RecordCopy(oldCUr,CUr);
+          CUr.AllowLogin = 1;
+          RecordUpdate(oldCUr,CUr,true);
+        end;
+      end;
+    end;
+  end;
+
+  if (Schoolr.Approved==0 and School2r.Approved==1) then begin
+    while (LoopKey("Approved:" & Schoolr.SchoolCode,TCr,1,true)) begin
+      CUr.Code = TCr.CustCode;
+      if (ReadFirstMain(CUr,1,true)) then begin
+        RecordCopy(oldCUr,CUr);
+        CUr.AllowLogin = 0;
+        RecordUpdate(oldCUr,CUr,true);
+      end;
+    end;
+  end;
+
+  SchoolVcRecordUpdateAfter = res;
+  return;
+end;
+
+
+global
+updating function LongInt SchoolVcRecordRemoveTest(var record SchoolVc Schoolr,record SchoolVc School2r,LongInt stat,LongInt long4)
+begin
+  Longint res;
+  SetLangMode(LangLatvian,"LAT",0);
+  
+  res = 1;
+  if (CurrentUser!="ADM2" and CurrentUser!="EBS") then begin
+    res = 0;
+    MessageBox(0,"Skolu nedr´kst dz•st");
+  end;
+    
+  SchoolVcRecordRemoveTest = res;
+  return;
+end;

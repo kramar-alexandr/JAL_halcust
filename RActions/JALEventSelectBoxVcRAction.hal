@@ -1,0 +1,25 @@
+
+global 
+updating function longint JALEventSelectBoxVcRecordCheck(var record JALEventSelectBoxVc JSr,record JALEventSelectBoxVc JS2r,LongInt stat,LongInt long4)
+begin
+  LongInt res,i;
+  
+  res = 0;
+  
+  if JSr.SerNr < 0 then begin
+    if JS2r.SerNr < 0 then begin 
+      JSr.SerNr = NextSerNr("JALEventSelectBoxVc",CurrentDate,-1,false,"");
+    end else begin
+    RecordCheckError(1058,"",-1,"SerNr");      
+    res = -1; 
+    goto LJALEventSelectBoxVcRecordCheck;
+    end;
+  end;
+ 
+  
+    
+LJALEventSelectBoxVcRecordCheck:;
+  JALEventSelectBoxVcRecordCheck = res;
+  return;
+end;
+

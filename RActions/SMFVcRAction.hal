@@ -1,0 +1,236 @@
+external updating procedure AddComp(var record SMFVc);
+external updating procedure SendUpdateCompStatusFile(record SMFVc,integer);
+external updating procedure SendChangedStatusNotification(record SMFVc,integer);
+
+function boolean ServerHasRoom()
+begin
+  record JALServerVc JSr;
+  boolean res,TrHs;
+
+  res = false;
+  TrHs = true;
+
+  while loopkey("Code",JSr,1,TrHs) begin
+    if JSr.LastComp < 199 then begin
+      res = true;
+      TrHs = false;
+    end;
+  end;
+
+  ServerHasRoom = res;
+
+return;
+end;
+
+//gjs
+global
+updating function LongInt SMFVcRecordCheck(var record SMFVc SMFr,record SMFVc SMF2r,LongInt stat,LongInt long4)
+begin
+  LongInt res,i;
+  string 3 skola;
+  record JALServerVc JSr;
+  boolean TrHs;
+
+  
+  res = 0;
+  if (blank(SMFr.SMFCode)) then begin
+    RecordCheckError(1058,USetStr(32260),-1,"SMFCode");      
+    res = -1; 
+    goto LSMFVcRecordCheck;
+  end;
+  /*
+  if (blank(SMFr.SMFName)) then begin
+    RecordCheckError(1058,USetStr(32261),-1,"SMFName");      
+    res = -1; 
+    goto LSMFVcRecordCheck;
+  end;
+  */
+  if (blank(SMFr.Manager)) then begin
+    RecordCheckError(1058,USetStr(32262),-1,"Manager");      
+    res = -1; 
+    goto LSMFVcRecordCheck;
+  end;
+  if (SMFr.RecType==0 and blank(SMFr.Region)) then begin
+    RecordCheckError(1058,USetStr(32253),-1,"Region");      
+    res = -1; 
+    goto LSMFVcRecordCheck;
+  end;
+  if (blank(SMFr.Email)) then begin
+    RecordCheckError(1058,USetStr(32257),-1,"Email");      
+    res = -1; 
+    goto LSMFVcRecordCheck;
+  end;
+  /*if (blank(SMFr.TeacherCode)) then begin
+    RecordCheckError(1058,USetStr(32258),-1,"TeacherCode");      
+    res = -1; 
+    goto LSMFVcRecordCheck;
+  end;
+  if (blank(SMFr.TeacherName)) then begin
+    RecordCheckError(1058,USetStr(32259),-1,"TeacherName");      
+    res = -1; 
+    goto LSMFVcRecordCheck;
+  end;
+  */
+  if (SMFr.RecType==0 and blank(SMFr.SchoolCode)) then begin
+    RecordCheckError(1058,USetStr(32251),-1,"SchoolCode");      
+    res = -1; 
+    goto LSMFVcRecordCheck;
+  end;
+  if (SMFr.RecType==0 and blank(SMFr.SchoolName)) then begin
+    RecordCheckError(1058,USetStr(32252),-1,"SchoolName");      
+    res = -1; 
+    goto LSMFVcRecordCheck;
+  end;
+
+
+  if (SMFr.StatusFlag == 1 and SMF2r.StatusFlag ==0) then begin
+    if ServerHasRoom==false then begin
+      RecordCheckError(32250,"",-1,"SMFCode");      
+      res = -1; 
+      goto LSMFVcRecordCheck;
+    end else begin
+      TrHs = true;
+      while loopkey("Code",JSr,1,TrHs) begin
+        if JSr.LastComp < 199 then begin
+          if (JSr.LastComp <1) then begin
+            JSr.LastComp = 1;
+          end;
+          TrHs = false;
+          SMFr.ServerCode = JSr.Code;
+          SMFr.CompNr = JSr.LastComp + 1;
+        end;
+      end;
+    end;
+  end;
+
+  /*if (SMF2r.StatusFlag > SMFr.StatusFlag and SMFr.StatusFlag != 1) then begin
+    SMFr.StatusFlag = SMF2r.StatusFlag;
+  end;*/
+
+  if SMFr.StatusFlag <> SMF2r.StatusFlag then begin
+    switch SMFr.StatusFlag begin
+      case 0: SMFr.StatusFlag = SMF2r.StatusFlag;//just created
+      case 2: if SMF2r.StatusFlag == 0 then begin SMFr.StatusFlag = 0; end;//disabled
+      case 3: if SMF2r.StatusFlag == 0 then begin SMFr.StatusFlag = 0; end;//terminated
+    end;
+  end;
+
+
+  switch (SMFr.TypeFlag) begin
+    case 0: SMFr.TypeName=USetStr(32131);
+    case 1: SMFr.TypeName=USetStr(32132);
+    case 2: SMFr.TypeName=USetStr(32133);
+  end;  
+  
+  switch (SMFr.StatusFlag) begin
+    case 0: SMFr.StatusName=USetStr(32111);
+    case 1: SMFr.StatusName=USetStr(32112);
+    case 2: SMFr.StatusName=USetStr(32113);
+    case 3: SMFr.StatusName=USetStr(32114);
+  end;
+
+  
+LSMFVcRecordCheck:;
+  SMFVcRecordCheck = res;
+  return;
+end;
+/*
+global
+updating function LongInt SMFVcRecordImport(var record SMFVc SMFr,record SMFVc SMF2r,LongInt stat,LongInt long4)
+begin
+  LongInt res,i;
+  integer rwcnt;
+  row SMFVc SMFrw;
+  boolean insertf;
+
+  res = 0;
+
+  if nonblank(SMFr.TeacherCode) then begin
+    rwcnt = MatRowCnt(SMFr);
+    insertf = true;
+    for (i = 0 ; i < rwcnt; i = i +1) begin
+      MatRowGet(SMFr,i,SMFrw);
+      if SMFrw.Code == SMFr.TeacherCode then begin
+        insertf = false;
+      end;
+    end;
+    if insertf == true then begin
+      ClearRow(SMFr,SMFrw,1);
+      SMFrw.Type = 0;
+      SMFrw.Name = SMFr.TeacherName;
+      SMFrw.Code = SMFr.TeacherCode;
+      MatRowPut(SMFr,rwcnt,SMFrw);
+    end;
+    SMFr.TeacherCode = "";
+    SMFr.TeacherName = "";
+  end;
+  
+  SMFVcRecordImport = res;
+return;
+end;
+
+*/
+
+global
+updating function LongInt SMFVcRecordDefaults(var record SMFVc SMFr,record SMFVc SMF2r,LongInt stat,LongInt long4)
+begin
+  LongInt res;
+
+  SMFr.TransDate = CurrentDate;
+  
+  SMFVcRecordDefaults = res;
+  return;
+end;
+
+
+global
+updating function LongInt SMFVcRecordSave(var record SMFVc SMFr,record SMFVc SMF2r,LongInt stat,LongInt long4)
+begin
+  LongInt res;
+
+  
+  /*if SMFr.StatusFlag ==1  then begin
+    AddComp(SMFr);
+  end;
+*/
+  
+
+  SMFVcRecordSave = res;
+return;
+end;
+
+
+global 
+updating function LongInt SMFVcRecordUpdate(var record SMFVc SMFr,record SMFVc SMF2r,LongInt stat,LongInt long4)
+begin
+  LongInt res;
+  record JALServerVc JSr,oldJSr;
+
+ 
+  /*if (SMF2r.StatusFlag ==0 and SMFr.StatusFlag ==1 ) then begin
+    AddComp(SMFr);
+  end;*/
+
+  if SMFr.StatusFlag <> SMF2r.StatusFlag then begin
+    switch SMFr.StatusFlag begin
+      case 1: if SMF2r.StatusFlag == 0 then begin 
+                JSr.Code = SMFr.ServerCode;
+                if readfirstmain(JSr,1,true) then begin
+                  recordCopy(oldJSr,JSr);
+                  JSr.LastComp = SMFr.CompNr;
+                  if recordUpdate(oldJSr,JSr,true)==0 then begin
+                  end;
+                end;                
+                AddComp(SMFr);
+              end else begin 
+                SendUpdateCompStatusFile(SMFr,0); 
+                SendChangedStatusNotification(SMFr,0);
+              end;
+      case 2: SendUpdateCompStatusFile(SMFr,1);SendChangedStatusNotification(SMFr,1);
+      case 3: SendUpdateCompStatusFile(SMFr,1);SendChangedStatusNotification(SMFr,2);
+    end;
+  end;
+
+  SMFVcRecordUpdate = res;
+return;
+end;

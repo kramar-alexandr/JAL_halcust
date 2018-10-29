@@ -1,0 +1,41 @@
+external inner function string 50 GetEntryPersonName(record JALTeacherAccVc);
+
+
+global 
+updating function LongInt JALTeacherAccVcRecordUpdate(var record JALTeacherAccVc JTr,record JALTeacherAccVc JT2r,LongInt stat,LongInt long4)
+begin
+  record SMFVc oldSMFr,SMFr;
+  row SMFVc SMFrw;
+  integer i,rwcnt;
+  boolean foundf;
+  LongInt res;
+ 
+  res = 0;
+  if JTr.StatusFlag <> JT2r.StatusFlag then begin
+    if JTr.StatusFlag == 1 then begin
+      SMFr.SMFCode = JTr.SMFCode;
+      if readfirstmain(SMFr,1,true) then begin
+        rwcnt = MatRowCnt(SMFr);
+        foundf = false;
+        for ( i = 0 ; i < rwcnt; i = i + 1) begin
+          MatRowGet(SMFr,i,SMFrw);
+          if SMFrw.Type == JTr.RecType and SMFrw.Code == JTr.RecCode then begin
+            foundf = true;
+          end;
+        end;
+        if foundf == false then begin
+          recordCopy(oldSMFr,SMFr);
+          ClearRow(SMFr,SMFrw,1);
+          SMFrw.Type = JTr.RecType;
+          SMFrw.Code = JTr.RecCode;
+          SMFrw.Name = GetEntryPersonName(JTr);
+          MatRowPut(SMFr,rwcnt,SMFrw);
+          if recordUpdate(oldSMFr,SMFr,true) then begin end;
+        end;
+      end;
+    end;
+  end;
+
+  JALTeacherAccVcRecordUpdate = res;
+return;
+end;

@@ -1,0 +1,119 @@
+external function string 255 toolwebngtranslatetext(integer);
+external outer procedure SMFClientGen(string,string);
+
+procedure SetContentTypeForExtension(string ext)
+begin
+  switch (ext) begin
+    case "css" : WebSetContentType("text/css");
+    case "jpg" : WebSetContentType("image/jpeg");
+    case "jpeg" : WebSetContentType("image/jpeg");
+    case "png" : WebSetContentType("image/png");
+    case "gif" : WebSetContentType("image/gif");
+    case "htc" : WebSetContentType("text/x-component");
+    case "exe" : WebSetContentType("application/binary");
+    case "bin" : WebSetContentType("application/binary");
+    case "obj" : WebSetContentType("application/binary");
+    case "hpf" : WebSetContentType("application/binary");
+    case "hob" : WebSetContentType("application/binary");
+    case "dat" : WebSetContentType("application/binary");
+    case "swf" : WebSetContentType("application/x-shockwave-flash");
+    case "pdf" : WebSetContentType("application/pdf");
+    case "zip" : WebSetContentType("application/zip");
+    case "txt" : WebSetContentType("text/plain");
+    case "xml" : WebSetContentType("text/xml");
+    case "xsl" : WebSetContentType("text/xsl");
+    case "htm" : WebSetContentType("text/html");
+    case "html" : WebSetContentType("text/html");
+    otherwise
+      WebSetContentType("application/binary");
+  end;
+  return;
+end;
+
+
+global webpublic
+procedure WebOutPutSMFClient()
+begin
+  record SMFVc SMFr;
+  string 10 type;
+  record CUVc CUr;
+  record RLinkVc RLr,RL2r;
+  record Attach2Vc Attachr;
+  boolean res;
+  integer i;
+  string 30 filename;
+  string 5 ext;
+  boolean foundf;
+
+  type = WebGetArg("os");
+  CUr.Code = CurrentCust;
+  foundf = false;
+  if readfirstmain(CUr,1,true) begin
+    if readrecordlink(CUr,1,SMFr,RLr) begin
+    /*
+      i = 0; 
+      filename = "hw-" & type & "-client.zip";
+      res = true;
+      while readrecordlink(SMFr,i,Attachr,RL2r) and res begin
+        if (Attachr.FileName == filename) then begin
+          ext = right(Attachr.FileName,4);
+          SetContentTypeForExtension(ext);
+          WebSetContentDisposition("inline; filename=" & Attachr.FileName);
+          WebOutAttachment(Attachr.SerNr);
+          res = false;
+          foundf = true;
+        end;
+        i = i + 1;
+      end;
+      */
+      foundf = true;
+      logtext(0,"WebOutPutSMFClient " & SMFr.SMFCode);
+      SMFClientGen(SMFr.SMFCode,type);
+      
+    end;
+  end;
+
+  if foundf == false then begin
+    WebOutString("<html><head></head><body>" & ToolWebNGTranslateText(31000) & "</body></html>");
+  end;
+
+
+return;
+end;
+
+
+global webpublic
+procedure WebOutPutTeacherClient()
+begin
+  record SMFVc SMFr;
+  string 10 type;
+  record CUVc CUr;
+  record RLinkVc RLr,RL2r;
+  record Attach2Vc Attachr;
+  boolean res;
+  integer i;
+  string 30 filename;
+  string 5 ext;
+
+  type = WebGetArg("os");
+  CUr.Code = CurrentCust;
+  SMFr.SMFCode = webgetarg("smf");
+  if readfirstmain(SMFr,1,true) then begin
+    i = 0; 
+    filename = "hw-" & type & "-client.zip";
+    res = true;
+    while readrecordlink(SMFr,i,Attachr,RL2r) and res begin
+      if (Attachr.FileName == filename) then begin
+        ext = right(Attachr.FileName,4);
+        SetContentTypeForExtension(ext);
+        WebSetContentDisposition("inline; filename=" & Attachr.FileName);
+        WebOutAttachment(Attachr.SerNr);
+        res = false;
+      end;
+      i = i + 1;
+    end;
+  end;
+
+
+return;
+end;

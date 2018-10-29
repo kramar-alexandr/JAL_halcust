@@ -1,0 +1,1 @@
+globalupdating procedure DeleteSchoolsMn()begin  record SchoolVc SCr;    SCr.SchoolCode = "000";  while loopkey("SchoolCode",SCr,1,true) begin    RecordRemove(SCr);    StepBack(SCr);  end;  return;end;

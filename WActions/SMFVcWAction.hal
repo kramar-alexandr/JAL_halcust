@@ -1,0 +1,466 @@
+remote updating function boolean CreateNode_Remote(record WebNGMenuVc);
+remote updating function boolean DuplicateNode_Remote(record WebNGMenuVc,var record WebNGMenuVc);
+remote function string 40 GetNextCode_Menu(string);
+
+
+//gjs
+global
+function Boolean SMFDClassSMFCodeEFAfter(Integer wn,Integer changedf)
+begin  
+  Boolean res;
+  record SMFVc SMFr;
+  record TeacherVc Teacherr;
+  record SchoolVc Schoolr;
+  string 1 regcode;
+  integer reg;
+  //string 4 year;
+
+  if (changedf!=0) then begin 
+    GetWindowRecord(wn,SMFr);
+    regcode = mid(SMFr.SMFCode,0,1);   
+      switch (regcode) begin
+        case "R": 
+          reg = 0;
+        case "V": 
+          reg = 1;
+        case "L": 
+          reg = 2;
+        case "Z": 
+          reg = 3;
+        case "K": 
+          reg = 4;
+      end;
+    SMFr.Region = reg;
+//    SMFr.TypeFlag = mid(SMFr.SMFCode,1,1);
+    SMFr.SchoolCode = mid(SMFr.SMFCode,2,3);
+    Schoolr.SchoolCode = SMFr.SchoolCode;
+      if (ReadFirstMain(Schoolr,1,true)==true) then begin 
+        SMFr.SchoolName = Schoolr.SchoolName;
+        PutWindowRecord(wn,SMFr);
+      end else begin
+        Trace(USetStr(32202),SMFr.SchoolCode);
+      end;
+    //comp = mid(SMFr.SMFCode,5,3);
+    //year = mid(SMFr.SMFCode,8,4);
+    PutWindowRecord(wn,SMFr);
+//    res = SMFDClassSchoolCodeEFAfter(wn,changed);
+  end;
+  SMFDClassSMFCodeEFAfter = true;
+  return;
+end;
+
+global
+function Boolean SMFDClassSchoolCodeEFAfter(Integer wn,Integer changedf)
+begin  
+  record SMFVc SMFr;
+  record TeacherVc Teacherr;
+  record SchoolVc Schoolr;
+
+      if (changedf==1) then begin 
+        GetWindowRecord(wn,SMFr);
+        Schoolr.SchoolCode = SMFr.SchoolCode;
+        if (ReadFirstMain(Schoolr,1,true)==true) then begin 
+          SMFr.SchoolName = Schoolr.SchoolName;
+          PutWindowRecord(wn,SMFr);
+        end else begin
+          beep;
+        end;
+      end;
+
+  SMFDClassSchoolCodeEFAfter = true;
+  return;
+end;
+
+global
+function Boolean SMFDClassTeacherCodeEFAfter(Integer wn,Integer changedf)
+begin  
+  record SMFVc SMFr;
+  record TeacherVc Teacherr;
+  record SchoolVc Schoolr;
+  string 3 skola;
+
+      if (changedf==1) then begin 
+        GetWindowRecord(wn,SMFr);
+        Teacherr.TeacherCode = SMFr.TeacherCode;
+        if (ReadFirstMain(Teacherr,1,true)==true) then begin 
+          SMFr.TeacherName = Teacherr.TeacherName;
+          skola = mid(SMFr.SMFCode,2,3);
+          if(Teacherr.SchoolCode==skola) then begin
+            SMFr.SchoolCode = Teacherr.SchoolCode;
+            SMFr.SchoolName = Teacherr.SchoolName;
+          end else begin
+            Trace(USetStr(32204),"");
+          end;
+          PutWindowRecord(wn,SMFr);
+        end else begin
+          beep;
+        end;
+      end;
+
+  SMFDClassTeacherCodeEFAfter = true;
+  return;
+end;
+
+
+//afteredit actions
+global
+function Boolean SMFDClassAfterEditField(Integer wn,string fieldname,Integer fn, Integer rownr,Integer changed)
+begin
+  Boolean res;
+  record TeacherVc Teacherr;
+  record SchoolVc Schoolr;
+  record SMFVc SMFr;
+
+  switch (fieldname) begin
+
+    case "TeacherCode": 
+      res = SMFDClassTeacherCodeEFAfter(wn,changed);
+      //res = SMFDClassTeacherCodeEFAfter(wn,changed);
+
+    case "SchoolCode": 
+      res = SMFDClassSchoolCodeEFAfter(wn,changed);
+      
+    case "SMFCode": 
+      res = SMFDClassSMFCodeEFAfter(wn,changed);
+
+/*
+    case "Quant": 
+      res = SMFDClassQuantEFAfter(wn,rownr,changed);
+      SMFDClassTotalEFAfter(wn);
+    case "Price": 
+      res = SMFDClassQuantEFAfter(wn,rownr,changed);
+      SMFDClassTotalEFAfter(wn);
+    case "SalesType": 
+      if (changed==1) then begin 
+        res = IsElementInBlock(SMFrw.SalesTypeCode,"SalesTypeBlock");
+      end;
+*/      
+  end;
+  SMFDClassAfterEditField = res;
+  return;
+end;
+
+
+
+global
+procedure SchoolDbl(string dblstr,string l,Integer currepwn)
+begin
+  record SchoolVc Sr;
+
+	Sr.SchoolCode = dblstr;
+  if nonblank(l) then begin
+    Sr.SchoolCode = l;
+  end else begin
+    Sr.SchoolCode = dblstr;
+  end;
+
+	if (readfirstmain(Sr, 1, true)) Begin
+	  OpenWindow("SchoolDClass", 1, 0 ,"","", Sr);
+	End;
+	return;
+End;
+
+global
+procedure TeacherDbl(string dblstr,string l,Integer currepwn)
+begin
+  record TeacherVc Tr;
+
+	if nonblank(l) then begin
+    Tr.TeacherCode = l;
+  end else begin
+    Tr.TeacherCode = dblstr;
+  end;
+
+	if (readfirstmain(Tr, 1, true)) Begin
+	  OpenWindow("TeacherDClass", 1, 0 ,"","", Tr);
+	End;
+	return;
+End;
+
+global
+procedure SMFDbl(string dblstr,string l,Integer currepwn)
+begin
+  record SMFVc SMFr;
+
+  if nonblank(l) then begin
+    SMFr.SMFCode = l;
+  end else begin
+    SMFr.SMFCode = dblstr;
+  end;
+
+	if (readfirstmain(SMFr, 1, true)) Begin
+	  OpenWindow("SMFDClass", 1, 0 ,"","", SMFr);
+	End;
+	return;
+End;
+
+global
+procedure MentorDbl(string dblstr,string l,Integer currepwn)
+begin
+  record MentorVc MTr;
+
+  if nonblank(l) then begin
+    MTr.MentorCode = StringToLongInt(l);
+  end else begin
+    MTr.MentorCode = StringToLongInt(dblstr);
+  end;
+
+	if (readfirstmain(MTr, 1, true)) Begin
+	  OpenWindow("MentorDClass", 1, 0 ,"","", MTr);
+	End;
+	return;
+End;
+
+global
+procedure JALEventEntryDbl(string dblstr,string l,Integer currepwn)
+begin
+  record JALEventEntryVc JEEr;
+
+  if nonblank(l) then begin
+    JEEr.SerNr = StringToLongInt(l);
+  end else begin
+    JEEr.SerNr = StringToLongInt(dblstr);
+  end;
+
+	if (readfirstmain(JEEr, 1, true)) Begin
+	  OpenWindow("JALEventEntryDClass", currepwn, 0 ,"","", JEEr);
+	End;
+	return;
+End;
+
+
+global
+procedure DblCourseEventVcSMU(string dblstr,string l,Integer currepwn)
+begin
+  Integer wn;
+  Longint afr;
+  record CourseEventVc CourseEventr;
+
+  if nonblank(l) then begin
+    CourseEventr.SerNr = stringtolongint(l);
+  end else begin
+    CourseEventr.SerNr = stringtolongint(dblstr);
+  end;
+  if (ReadFirstMain(CourseEventr,1,true)) then begin
+    wn = OpenWindow("CourseEventDClass",1,0,"","",CourseEventr);
+  end;     
+  return;
+end;
+
+
+
+global
+function Boolean SMFDClassOnOpenWindow(Integer wn)
+begin
+  record SMFVc SMFr;
+  
+  getWindowRecord(wn,SMFr);
+  //stopalert(wn & " loga WA");
+  PutWindowString(wn,"SMFCode",SMFr.SMFCode);
+  ReRunWindowDef(wn);
+
+  SMFDClassOnOpenWindow = true;
+return;
+end;
+
+
+global 
+procedure SMFDClassOnWindowRecordChange(integer wn)
+begin
+  if SMFDClassOnOpenWindow(wn) then begin end;
+
+  //ReRunWindowDef(wn);
+
+return;
+end;
+
+global
+procedure DblJALFilesVc(string dblstr,string l,Integer currepwn)
+begin
+  Integer wn;
+  record JALFileVc JFr;
+  longint tstr;
+
+  if (nonblank(l)) then begin
+    tstr = stringToLongInt(l);
+  end else begin
+    tstr = stringToLongInt(dblstr);
+  end;
+  JFr.SerNr = tstr;
+
+  if Readfirstmain(JFr,1,true) then begin
+    wn = OpenWindow("JALFileDClass",0,currepwn,"","",JFr);
+  end;
+return;
+end;
+
+
+
+global 
+procedure DblJALFileHistRn(string dblstr,string l,Integer currepwn)
+begin
+  Integer wn;
+  record RcVc curRepSpec;
+  record RcVc RepSpec;
+
+  GetWindowRecord(currepwn,curRepSpec);
+  RecordCopy(RepSpec,curRepSpec);
+  RepSpec.f1 = l;
+  RepSpec.repname = "JALFileHistRn";
+  RepSpec.Media = mtScreen;
+  RunReport(RepSpec,0);
+
+return;
+end;
+
+
+global
+procedure EventParticipantsRClassReportDefaults(Integer wn)
+BEGIN
+  record RcVc RepSpec;
+  Boolean testf;
+  
+  DeselectWindow(wn,false);
+  GetWindowRecord(wn,RepSpec);
+  RepSpec.flags[0]=4;
+  RepSpec.flags[1]=3; 
+  
+  PutWindowRecord(wn,RepSpec);
+  SelectWindow(wn);
+  RETURN;
+END;
+
+
+global
+procedure JALCourseEventParticipantsDsm()
+begin
+  Integer wn;
+  record RcVc RepSpec;
+  record JALEventVc JEr;
+
+  wn = CurWindow;
+  GetWindowRecord(wn,JEr);
+  RecordNew(RepSpec);
+  ReportDefaults(RepSpec,"EventParticipantsRClass");
+  RepSpec.repname = "EventParticipantsRn";
+  RepSpec.long1 = JEr.SerNr;
+  RepSpec.flags[0] = 4;
+  RepSpec.flags[1] = 3;
+  RepSpec.Media = mtScreen;    
+  RepSpec.ArtMode = 0;      
+  RunReport(RepSpec,0);
+  return;
+end;
+
+global 
+procedure CreateSubMenuDsm()
+begin
+  integer wn,nwn;
+  record WebNGMenuVc WMr,tWMr;
+
+
+  wn = CurWindow;
+  if WindowState(wn) == 0 then begin
+    GetWindowRecord(wn,WMr);
+
+    RecordNew(tWMr);
+    tWMr.ParentMenu = WMr.Code;
+    nwn = OpenWindow("WebNGChildMenuDClass",1,wn,"","",tWMr);
+  end;
+
+return;
+end;
+
+global 
+procedure DuplicateSubMenuDsm()
+begin
+  integer wn,nwn;
+  record WebNGMenuVc WMr,tWMr;
+
+
+  wn = CurWindow;
+  if WindowState(wn) == 0 then begin
+
+    GetWindowRecord(wn,WMr);
+
+    RecordNew(tWMr);
+    tWMr.ParentMenu = WMr.Code;
+    nwn = OpenWindow("WebNGDuplicateMenuDClass",1,wn,"","",tWMr);
+  end;
+return;
+end;
+
+global 
+updating procedure CreateChildMenuBtn()
+begin
+  integer wn;
+  record WebNGMenuVc WMr;
+
+  wn = CurWindow;
+  DeselectWindow(wn,true);
+  GetWindowRecord(wn,WMr);
+  if CreateNode_Remote(WMr) then begin
+    CloseWindow(wn);
+  end else begin
+    MessageBox(0,"Aizpildiet visus laukus");
+  end;
+
+return;
+end;
+
+global 
+updating procedure DuplicateChildMenuBtn()
+begin
+  integer wn,nwn;
+  record WebNGMenuVc WMr,nWMr;
+
+  wn = CurWindow;
+  DeselectWindow(wn,true);
+  GetWindowRecord(wn,WMr);
+  if DuplicateNode_Remote(WMr,nWMr) then begin
+    CloseWindow(wn);
+    nwn = OpenWindow("WebNGMenuDClass",1,0,"","",nWMr);
+  end else begin
+    MessageBox(0,"Aizpildiet visus laukus");
+  end;
+
+return;
+end;
+
+
+global 
+procedure CreateChildMenuNoBtn()
+begin
+
+  CloseWindow(CurWindow);
+
+return;
+end;
+
+global
+procedure WebNGChildMenuDClassButtonFlags(Integer wn,var Boolean duplOK,var Boolean newOK,var Boolean saveOK,var Boolean restOK)
+begin
+  duplOK = false;
+  newOK = false;
+  saveOK= false;
+  restOK= false;
+  return;
+end;
+
+global
+procedure GenereteChildMenuDsm()
+begin
+  integer wn,nwn;
+  record WebNGMenuVc WMr,nWMr;
+
+  wn = CurWindow;
+  if WindowState(wn) == 0 then begin
+    GetWindowRecord(wn,WMr);
+    RecordNew(nWMr);
+    nWMr.Code = GetNextCode_Menu(WMr.Code);
+    nWMr.ParentMenu = WMr.Code;
+    nwn = OpenWindow("WebNGMenuDClass",1,0,"","",nWMr);
+  end;
+
+return;
+end;

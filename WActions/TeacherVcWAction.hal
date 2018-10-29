@@ -1,0 +1,30 @@
+//gjs
+global
+function Boolean TeacherDClassAfterEditField(Integer wn,string fieldname,Integer fn, Integer rownr,Integer changed)
+begin
+  Boolean res;
+  record TeacherVc Teacherr;
+  record SchoolVc Schoolr;
+  row TeacherVc TCrw;
+
+  switch (fieldname) begin
+
+    case "SchoolCode": 
+      if (changed==1) then begin 
+        GetWindowRecord(wn,Teacherr);
+        MatRowGet(Teacherr,rownr,TCrw);
+        Schoolr.SchoolCode = TCrw.SchoolCode;
+        if (ReadFirstMain(Schoolr,1,true)==true) then begin 
+          TCrw.SchoolName = Schoolr.SchoolName;
+          MatRowPut(Teacherr,rownr,TCrw);
+          PutWindowRecord(wn,Teacherr);
+        end else begin
+          beep;
+        end;
+      end;
+      
+  end;
+  TeacherDClassAfterEditField = res;
+  return;
+end;
+

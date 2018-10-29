@@ -1,0 +1,737 @@
+
+//external procedure WebOutStringFormatNL(string);
+external function string 255 FormatSimpleLink(string,boolean);
+external function string 255 ToolWebNGtranslateText(integer);
+external procedure SendAttachedFile(record Attach2Vc,boolean);
+external function boolean FileNameIsImage(string);
+external procedure AddComment(boolean,string,string,string);
+external procedure ShowRedirectHtml(string,boolean);
+//external procedure ShowProfileImg(record SMFVc);
+external function string 255 GetLinkToStruct(LongInt,boolean);
+external procedure ShowProfileImgLink(record SMFVc);
+
+
+procedure  DrawSelectBoxObj(string reg,string dir)
+begin
+  integer i;
+  string 10 selected;
+  record ObjVc Obr;
+
+  WebOutStringFormatNL("<select name=""dirselect"" onchange=""location.href='" & FormatSimpleLink(WebGetArg("path"),true) & "?reg=" & reg & "&dir=' + this.value"">");
+  WebOutStringFormatNL("<option value="""">" & ToolWebNGTranslateText(25509) & "</option>");
+
+  while loopkey("Code",Obr,1,true) begin
+	if dir == Obr.Code then begin
+	  selected = "SELECTED";
+	end;
+	WebOutStringFormatNL("<option value=""" & Obr.Code & """" & selected & ">" &  Obr.Comment & "</option>");
+	selected = "";
+  end;
+  WebOutStringFormatNL("</select>");
+
+return;
+end;
+
+function integer GetCompanyNr(string name)
+begin
+  record CompaniesBlock Cbl;
+  row CompaniesBlock Cblrw;
+  integer rwcnt,i;
+  integer res;
+
+  BlockLoad(Cbl);
+  res = -1;
+  rwcnt = MatRowCnt(Cbl);
+  for (i = 0; i < rwcnt; i = i + 1) begin
+    MatRowGet(Cbl,i,Cblrw);
+	if Cblrw.CompName == name then begin
+	  res = StringToLongInt(Cblrw.CompCode);
+	  i = rwcnt;
+	end;
+  end;
+
+  GetCompanyNr = res;
+  return;
+
+end;
+
+
+
+global
+procedure CompListOut()
+begin
+  string 30 reg,region;
+  string 50 dir;
+  record WebNGCompCountryVc WCCr;
+  record SMFVc SMFr;
+  string 50 country;
+  boolean TrHs,testf;
+  record JALRegionBlock JRbl;
+  row JALRegionBlock JRblrw;
+  record JALClassBlock JCbl;
+  integer errorflags,cnt,page,pagecnt,comcnt,sStart,sEnd,count;
+  roundmode res;
+  string 255 tmplink;
+
+
+  BlockLoad(JCbl);
+  
+  dir = WebGetArg("dir");
+  TrHs = true;
+  SMFr.StatusFlag = 1;
+  BlockLoad(JRbl);
+  MatRowGet(JRbl,StringToLongInt(WebGetArg("reg")),JRblrw);
+  reg = JRblrw.Region;
+  WebOutStringFormatNL("<map name=""map"">");
+  MatRowGet(JRbl,3,JRblrw);
+  region = JRblrw.Region;
+  WebOutStringFormatNL("<area shape=""poly"" coords=""83,75,65,77,42,116,41,146,16,170,6,247,12,268,23,266,24,258,52,236,60,239,85,225,128,236,139,233,130,229,130,210,136,203,137,195,152,191,171,192,172,183,179,179,187,180,188,155,186,149,167,142,167,128,162,107,146,");
+  WebOutStringFormatNL("96,145,92,125,74,126,56"" alt=""" & region & """ title=""" & ToolWebNGTranslateText(20160) & """ href=""" & FormatSimpleLink(WebGetArg("path"),true) & "?reg=" & 3 & "&dir=" & dir & """ />");
+  MatRowGet(JRbl,0,JRblrw);//Riga
+  region = JRblrw.Region;
+  WebOutStringFormatNL("<area shape=""poly"" coords=""251,118,251,126,231,146,225,148,214,157,201,161,188,159,188,169,198,171,206,180,206,190,215,189,223,192,224,196,229,196,233,199,238,195,248,199,260,192,262,182,253,175,260,168,266,172,280,165,304,163,302,155,293,");
+  WebOutStringFormatNL("147,289,130,285,128,287,121,284,118,270,128,261,116,251,118"" alt=""" & region & """ title=""" & ToolWebNGTranslateText(20161) & """ href=""" & FormatSimpleLink(WebGetArg("path"),true) & "?reg=" & 0 & "&dir=" & dir & """ />");
+  MatRowGet(JRbl,4,JRblrw);
+  region = JRblrw.Region;
+  WebOutStringFormatNL("<area shape=""poly"" coords=""140,233,133,228,131,211,140,203,139,196,154,192,170,194,175,184,181,180,188,182,189,174,194,172,200,177,203,188,207,193,218,193,229,200,251,199,263,189,259,176,263,171,296,166,312,167,317,160,319,167,328,162,326,");
+  WebOutStringFormatNL("183,338,185,343,189,348,181,352,186,349,192,366,206,374,203,386,210,391,204,405,209,408,219,398,218,393,223,384,216,373,230,383,259,371,273,356,270,354,276,346,271,343,265,314,263,300,258,300,251,286,228,266,237,262,247,253,251,243,246,234,251,223,241,206,240,206,");
+  WebOutStringFormatNL("237,189,240,178,234,163,235,158,243,152,240,151,229,140,233"" alt=""" & region & """ title=""" & ToolWebNGTranslateText(20162) & """ href=""" & FormatSimpleLink(WebGetArg("path"),true) & "?reg=" & 4 & "&dir=" & dir & """ />");
+  MatRowGet(JRbl,2,JRblrw);
+  region = JRblrw.Region;
+  WebOutStringFormatNL("<area shape=""poly"" coords=""251,116,247,47,254,47,255,40,283,32,299,20,306,20,307,31,311,29,310,18,338,41,342,38,350,47,361,47,362,57,373,62,381,78,394,81,397,88,411,80,421,78,422,72,439,80,457,84,469,82,467,97,476,98,491,113,489,134,485,140,");
+  WebOutStringFormatNL("480,169,471,168,461,173,458,180,427,173,417,188,416,213,407,212,406,206,390,201,384,207,372,200,367,203,351,191,355,185,345,178,342,185,328,179,331,161,320,162,316,159,310,163,305,162,302,152,295,145,291,129,287,125,290,119,285,115,270,124,261,113""");
+  WebOutStringFormatNL("alt=""" & region & """ title=""" & ToolWebNGTranslateText(20163) & """ href=""" & FormatSimpleLink(WebGetArg("path"),true) & "?reg=" & 2 & "&dir=" & dir & """ />");
+  MatRowGet(JRbl,1,JRblrw);//Latgale
+  region = JRblrw.Region;
+  WebOutStringFormatNL("<area shape=""poly"" coords=""355,278,358,284,373,292,376,300,385,302,388,313,397,320,415,323,419,319,425,323,431,318,436,306,451,300,461,308,467,304,485,308,485,293,492,281,498,275,504,268,505,264,509,261,522,253,525,241,519,228,519,219,513,");
+  WebOutStringFormatNL("210,515,203,509,203,503,188,497,182,500,173,496,171,494,167,480,173,468,171,458,181,429,178,419,191,418,214,409,215,409,221,399,221,393,227,384,219,375,231,382,250,388,263,384,263,372,275,364,275,359,272,356,278"" alt=""" & region & """ ");
+  WebOutStringFormatNL("title=""" & ToolWebNGTranslateText(20164) & """ href=""" & FormatSimpleLink(WebGetArg("path"),true) & "?reg=" & 1 & "&dir=" & dir & """ />");
+  WebOutStringFormatNL("</map>");
+
+  //DrawSelectBoxReg(reg,dir);
+  DrawSelectBoxObj(WebGetArg("reg"),dir);
+
+  count = 6;
+  //code = codestr;
+  page = StringToLongInt(WebGetArg("p"));
+  if page == -1 then begin
+    page = 1;
+  end;
+
+  comcnt = 0;
+  
+  while loopkey("StatusFlag",SMFr,1,TrHs) begin 
+    //stopalert(SMFr.StatusFlag & " " & SMFr.SMFName);
+    if SMFr.StatusFlag <> 1 then begin
+      TrHs = false;
+    end else begin
+      testf = true;
+      if reg <> "" and reg <> SMFr.Region then begin
+        testf = false;
+      end;
+      if ((dir <> "" ) and (SetInSet(dir,SMFr.Objects)==false)) then begin
+        testf = false;
+      end;
+      if (blank(SMFr.CompNr)) then begin
+        testf = false;
+      end;
+      if testf then begin
+          comcnt = comcnt + 1;
+      end;
+    end;
+  end;
+
+
+  
+  pagecnt = comcnt/count;
+  //stopalert(comcnt & " skaits");
+  if (count * pagecnt) <> comcnt then begin
+    pagecnt=pagecnt+1;
+  end;
+  sStart = (page * count) - count;
+  sEnd = (page * count);
+  tmplink = FormatSimpleLink(GetLinkToStruct(JCbl.Struct,true),false);
+  cnt = 1;
+  TrHs = true;
+  SMFr.StatusFlag = 1;
+  ResetLoop(SMFr);
+  //stopalert("asdf " & reg);
+  WebOutStringFormatNL("<ul>"); 
+  while (loopkey("StatusFlag",SMFr,1,TrHs) and (cnt <= sEnd)) begin 
+    if SMFr.StatusFlag <> 1 then begin
+      TrHs = false;
+    end else begin
+      testf = true;
+      if reg <> "" and reg <> SMFr.Region then begin
+        testf = false;
+      end;
+      if ((dir <> "" ) and (SetInSet(dir,SMFr.Objects)==false)) then begin
+        testf = false;
+      end;
+      if (blank(SMFr.CompNr)) then begin
+        testf = false;
+      end;
+      if testf then begin
+        if sStart < cnt then begin
+            WebOutStringFormatNL("<li><a href=""" & tmplink & "?c=" & SMFr.SMFCode & """>" & SMFr.SMFName & " </a></li>");
+        end;
+        cnt = cnt + 1;
+      end;
+    end;
+  end;
+  WebOutStringFormatNL("</ul>");  
+
+ 
+
+ if (pagecnt > 1) then begin
+    WebOutStringFormat("<div id=""comnav"">");
+    for (cnt = 1; cnt <= pagecnt; cnt = cnt + 1) begin
+      if (page <> cnt) then begin
+        WebOutTagOpen("<a href=""" & WebGetArg("path") & "?reg=" & WebGetArg("reg") & "&dir=" & WebGetArg("dir") & "&p=" & cnt & """>");
+        WebOutStringFormat(cnt);
+        WebOutTagClose("</a>");
+      end else begin
+        WebOutStringFormat(cnt);
+      end;
+    end;
+    WebOutStringFormat("</div>");
+  end;  
+
+end;
+
+
+global
+function boolean ProdHasImage(record WebNGProductVc Prodr,var integer i)
+begin
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+
+  boolean res;
+  
+  i = 1;
+  res = false;
+  while (ReadRecordLink(Prodr,i,Attachr,RLr) and res==false) begin
+    if (FileNameIsImage(Attachr.FileName)) then begin
+      res = true;
+    end;
+    i = i+1;
+  end;
+
+  ProdHasImage = res;
+  return;
+end;
+
+procedure ShowCompProdGal(string country)
+begin
+  record WebNGProductVc Prodr;
+  record Attach2Vc Attachr;
+  record RLinkVc Rlr;
+  boolean TrHs;
+  integer i;
+  string 255 link;
+  string 10 img,type;
+  integer j;
+
+  img = WebGetArg("img");
+  type = WebGetArg("type");
+  //stopalert("aaa");
+  
+    Prodr.Code = "1";
+    //stopalert("hmm");
+    TrHs = true;
+    i = 1;
+	j = -1;
+	WebOutStringFormatNL("<div id=""profgal"">");
+	WebOutStringFormatNL("<div> " & ToolWebNGTranslateText(23055) & "</div>");
+    while loopkey("Code",Prodr,1,TrHs) begin
+      //stopalert("parbaudam");
+      if ProdHasImage(Prodr,j) then begin
+        //stopalert("ir bilde");
+        link="/shop/" & country & "/productinfo/" & Prodr.Code & "/";
+        WebOutStringFormatNL("<a href=""" & FormatSimpleLink(link,true) & """><img src=""/WebShowProdImg.hal?prod=" & Prodr.Code & "&img=" & (j-1) & "&comp=" & CurrentCompany & """></a>");
+      end;
+      i = i + 1;
+      if i > 6 then begin
+        TrHs = false;
+      end;
+    end;
+   WebOutStringFormatNL("</div>");
+
+return;
+end;
+
+global webpublic
+procedure WebShowCompProfile()
+begin
+  string 10 img,type;
+  record Attach2Vc Attachr;
+  record RlinkVc RLr;
+  integer i;
+  boolean testf;
+  record SMFVc SMFr;
+
+  WebOutSTringFormatNL("<!DOCTYPE html PUBLIC ""-//W3C//DTD HTML 4.01//EN"" ""http://www.w3.org/TR/html4/strict.dtd"">");
+  WebOutSTringFormatNL("<html><head>");
+  WebOutSTringFormatNL("<link rel='stylesheet' type='text/css' href='/styles2.css'>");
+  WebOutSTringFormatNL("</head>");
+  WebOutSTringFormatNL("<body>");
+
+  SMFr.SMFCode = WebGetArg("c");
+  if readfirstmain(SMFr,1,true) then begin
+    if webgetArg("comp") == SMFr.CompNr then begin
+      WebOutStringFormatNL("<div class='catalog_profile'>");
+      WebOutStringFormatNL("<h1>" & SMFr.SMFName & "</h1>");
+      WebOutStringFormatNL("<div id=""profpic"">");
+      ShowProfileImgLink(SMFr);
+      WebOutStringFormatNL("</div>");
+      WebOutStringFormatNL("<div id=""proftxt"">");
+      WebOutText(SMFr,true,"");
+      WebOutStringFormatNL("</div>");
+      WebOutStringFormatNL("</div>");
+    end else begin
+
+    end;
+  end;
+
+  WebOutSTringFormatNL("</body>");
+  WebOutSTringFormatNL("</html>");
+
+return;
+end;
+
+global
+procedure ShowHeadLine(string title,string compnr)
+begin
+
+  integer pcnt,ncnt;
+
+  WebOutString("<div id=""prof-head"">");
+  WebOutString("<a href=""#"" onclick=""showcomments(); return false;"">" & ToolWebNGTranslateText(22001) & "(" & RecordsInIndex("WebNGBlogCommentVc","ContActSerNr:" & compnr) & ")</a>");
+  
+  
+  WebOutString("<div id=""blog-head-item"" ><a  href=""/WebProfChangeFB.hal?sernr=" & compnr & "&fb=up&compnr=" & compnr & "&tt=1&profpath=" & WebGetArg("path") & """>");
+  WebOutString("<img src=""/images/up.png""></a></div>");
+
+  pcnt = RecordsInIndex("WebNGBlogCommentVc","ContPosSerNr:" & compnr);
+  //WebOutString("<div id=""blog-head-item"" style=""color:#00cc00; font-weight:bold; margin-left:0;"">" & " " & pcnt & "</div>");
+  ncnt = RecordsInIndex("WebNGBlogCommentVc","ContNegSerNr:" & compnr);
+  WebOutString("<div id=""blog-head-item"" style=""color:#cc0000; font-weight:bold; ""> " & (pcnt-ncnt) & "</div>");
+  WebOutString("<div id=""blog-head-item"" ><a href=""/WebProfChangeFB.hal?sernr=" & compnr & "&fb=down&compnr=" & compnr & "&tt=1&profpath=" & WebGetArg("path") & """>");
+  WebOutString("<img src=""/images/down.png""></a></div>");
+
+  
+  
+  //WebOutString( seit ir balsosana
+  //WebOutString( ieteikt draugiem
+  WebOutString("<div id=""blog-head-item-right""> <a target=""_blank"" href=""http://www.facebook.com/share.php?u=" & "http://www.jal.lv" & FormatSimpleLink(WebGetArg("path"),true) & """><img src=""/images/facebook2.png""></a></div>");
+  WebOutString("<div id=""blog-head-item-right"">");
+  WebOutString("<a target=""_blank""  href=""http://twitter.com/home?status=" & ToolWebNGTranslateText(20135) & " http://www.jal.lv" & FormatSimpleLink(WebGetArg("path"),true) & """><img src=""/images/twitter2.png""></a></div>");  
+  WebOutString("<div id=""blog-head-item-right"">");
+  WebOutString("<a target=""_blank"" href=""http://www.draugiem.lv/say/ext/add.php?title=" & FormatSimpleLink(WebGetArg("path"),true));
+  WebOutString("&link=" & "http://www.jal.lv" & FormatSimpleLink(WebGetArg("path"),true) & "&titlePrefix=smu.lv""><img src=""/images/draugiem.png""></a></div></div>");
+
+return;
+end;
+
+global
+procedure ShowProfComments(string codestr, string ckey, integer texttype,string comp,string f)
+begin
+
+  record WebNGBlogCommentVc WebComr;
+  longint sernr;
+  string 255 tstr,link;
+  Boolean TrHs,foundf;
+  integer errorflags,cnt,page,pagecnt,comcnt,sStart,sEnd,count;
+  roundmode res;
+  string 20 code;
+
+  res.decimals = 0;
+  res.direction = kRoundingDirectionToFromPosInf; // kRoundingDirectionToFromZero
+  res.mode = kRoundingModeHalfUp; //   kRoundingModeTruncate,kRoundingModeHalfUp,kRoundingModeHalfDown, kRoundingModeToEven, kRoundingModeToOdd,
+  res.step =   kRoundingStepNone; // kRoundingStep5, kRoundingStep25
+  
+  count = 6;
+  code = codestr;
+  page = StringToLongInt(WebGetArg("compage"));
+  if page == -1 then begin
+    page = 1;
+  end;
+  
+  comcnt = RecordsInIndex("WebNGBlogCommentVc",ckey & code);
+  pagecnt = comcnt/count;
+  //stopalert(comcnt & " skaits");
+  if (count * pagecnt) <> comcnt then begin
+    pagecnt=pagecnt+1;
+  end;
+  sStart = (page * count) - count;
+  sEnd = (page * count);
+
+//  WebOutStringFormatNL("<div id=""comment-head""><a href=""../news/" & sernr &""">" & toolwebngtranslatetext(24175) & GetWebNGTranslateHeader(sernr) & "</a></div>");
+  Trhs = true;
+  WebOutStringFormatNL("<div id=""blog-coms"">");  
+  WebOutStringFormatNL("<div id=""blog-coms-head"">" & toolwebngtranslatetext(22001) & "</a></div>");  
+  foundf = false;
+  WebComr.SerNr = -1;
+  //stopalert(ckey & code & " ");
+  cnt = 1;
+  //stopalert(code & " asdf");
+  while (LoopKey(ckey & code,WebComr,1,TrHs) and (cnt <= sEnd))begin
+    if WebComr.AcceptFlag==0 then begin
+	  if WebComr.TextType == texttype then begin
+	    if sStart < cnt then begin
+          WebOutStringFormatNL("<div id=""blog-comment-head"">");  
+          WebOutStringFormatNL("<div id=""blog-comment""><b>" & WebComr.UserName & "</b></div><div id=""blog-comtime"">" & WebComr.TransDate & "  " & WebComr.TransTime & "</div>");
+          WebOutStringFormatNL("</div>");  
+          WebOutStringFormatNL("<p>");  
+        
+          WebOutText(WebComr,true,"");
+          WebOutStringFormatNL(tstr);
+          WebOutStringFormatNL("</p>");  
+          foundf = true;
+        end;
+		cnt = cnt + 1;
+      end;
+	    
+    end;
+  end;
+  if foundf==false then begin
+    WebOutStringFormatNL("<div id=""blog-comment-head"">");
+    WebOutStringFormatNL("<p>" & toolwebngtranslatetext(21044) & "<p>");
+    WebOutStringFormatNL("</div>");
+    WebOutStringFormatNL("<br>");
+  end;
+
+  if (pagecnt > 1) then begin
+    WebOutStringFormat("<div id=""comnav"">");
+    for (cnt = 1; cnt <= pagecnt; cnt = cnt + 1) begin
+      if (page <> cnt) then begin
+        WebOutTagOpen("<a href=""" & WebGetArg("contpath") & "?sernr=" & code & "&detlevel=2" & "&compage=" & cnt & """>");
+        WebOutStringFormat(cnt);
+        WebOutTagClose("</a>");
+      end else begin
+        WebOutStringFormat(cnt);
+      end;
+    end;
+    WebOutStringFormat("</div>");
+  end;  
+  
+  AddComment(false,code,f,comp);
+
+
+return;
+end;
+
+function integer GetServerPort(record SMFVc SMFr)
+begin
+  record JALServerVc JSr;
+  integer res;
+
+  res = 1;
+
+  JSr.Code = SMFr.ServerCode;
+  if readfirstmain(JSr,1,true) then begin
+    res = JSr.WebPort;
+  end;
+
+  GetServerPort = res;
+
+return;
+end;
+
+global 
+procedure ShowCompProf()
+begin
+  record SMFVc SMFr;
+  string 255 country;
+  string 10 comp;
+  boolean TrHs,testf;
+  record WebNGCompCountryVc WCCr;
+
+  SMFr.SMFCode = WebGetArg("c");
+  if readfirstmain(SMFr,1,true) then begin
+    if nonblank(SMFr.CompNr) and nonblank(SMFr.ServerCode) then begin
+      WebOutStringFormatNL("<div class='frame_wrap'><iframe src='http://jal.lv:" & GetServerPort(SMFr) & "/WebShowCompInfo.hal?comp=" & SMFr.CompNr & "&c=" & SMFr.SMFCode & "'></iframe></div>");
+    end;
+  end;
+  return;
+end;
+
+
+
+global webpublic 
+updating procedure WebJALCommentProf()
+begin
+  string 255 tstr,username,subject,email,result,textarea;
+record WebNGTranslateVc WTr;
+integer errflags;
+record WebNGBlogCommentVc WebComr,WCr;
+integer detlev;
+string 3 detlev2;
+boolean savef,Trhs;
+time timep;
+  
+  setCompany(stringToLongInt(WebGetArg("compnr")),false);
+
+  
+    RecordNew(WebComr);
+    username = WebGetArg("name");
+    //subject = WebGetArg("subject");
+    email = WebGetArg("e-mail");
+    //result = WebGetArg("result");
+    textarea = WebGetArg("comment-text");
+    errflags = 0;
+	/*
+    if result <>"7" then begin
+      errflags = 2;
+    end;*/
+    if username =="" then begin
+      errflags = errflags + 4;
+    end;
+    if email =="" then begin
+      //errflags = errflags + 8;
+    end;
+    if textarea =="" then begin
+      errflags = errflags + 16;
+    end;
+  //stopalert("viss ir " & WebGetArg("comp"));
+    if errflags == 0 then begin
+      WebComr.UserName = username;
+      WebComr.CommentHeader = subject;
+      WebComr.Email = email;
+	  WebComr.CommentType=0;
+	  WebComr.TextType = 1;
+      WebComr.MailHeader = WTr.Comment;
+      WebComr.MailSerNr = WebGetArg("compnr");
+      WebComr.IPAddress = WebRemoteIPAddress;
+      if CurrentCust <> "" then begin
+        WebComr.CustCode = CurrentCust;
+      end;
+      WebGetText("comment-text",WebComr);
+      savef = true;
+	    Trhs = true;
+	    timep = AddMinutes(WebComr.TransTime,-10);
+      WCr.IPAddress = WebComr.IPAddress;
+      while loopkey("IPAddress:" & WTr.Code,WCr,1,Trhs) begin
+        if (WebComr.IPAddress == WCr.IPAddress) then begin
+          if (WebComr.TransDate == WCr.TransDate) then begin
+            if (timep<WCr.TransTime) then begin
+            savef = false;
+            errflags = errflags + 32;
+            end;
+          end;
+        end else begin
+          Trhs = false;
+        end;
+	    end;
+
+		//stopalert("eeee " & savef);
+      if savef then begin
+        if recordStore(WebComr,true) then begin end;
+		PutSessionString("cname","");      
+        PutSessionString("cemail","");      
+        PutSessionString("ctext","");   
+      end else begin
+	    PutSessionString("cname",username);      
+        PutSessionString("cemail",email);      
+        PutSessionString("ctext",textarea);    
+	  end;
+         
+      //PutSessionString("chead","");      
+      PutSessionString("err",errflags);      
+    end else begin
+      PutSessionString("cname",username);      
+      PutSessionString("cemail",email);      
+      PutSessionString("ctext",textarea);      
+      //PutSessionString("chead",subject);      
+      PutSessionString("err",errflags);      
+    end;
+    ShowRedirectHtml(FormatSimpleLink(WebGetArg("contpath"),true),false);
+  
+
+
+
+  resetCompany(1);
+
+return;
+end;
+
+
+global webpublic 
+updating procedure WebJALCommentProd()
+begin
+  string 255 tstr,username,subject,email,result,textarea;
+record WebNGTranslateVc WTr;
+integer errflags;
+record WebNGBlogCommentVc WebComr,WCr;
+integer detlev;
+string 3 detlev2;
+boolean savef,Trhs;
+time timep;
+  
+  setCompany(stringToLongInt(WebGetArg("compnr")),false);
+
+  
+    RecordNew(WebComr);
+    username = WebGetArg("name");
+    //subject = WebGetArg("subject");
+    email = WebGetArg("e-mail");
+    //result = WebGetArg("result");
+    textarea = WebGetArg("comment-text");
+    errflags = 0;
+	/*
+    if result <>"7" then begin
+      errflags = 2;
+    end;*/
+    if username =="" then begin
+      errflags = errflags + 4;
+    end;
+    if email =="" then begin
+      //errflags = errflags + 8;
+    end;
+    if textarea =="" then begin
+      errflags = errflags + 16;
+    end;
+  //stopalert("viss ir " & WebGetArg("comp"));
+    if errflags == 0 then begin
+      WebComr.UserName = username;
+      WebComr.CommentHeader = subject;
+      WebComr.Email = email;
+	  WebComr.CommentType=0;
+	  WebComr.TextType = 0;
+      //WebComr.MailHeader = WTr.Comment;
+      WebComr.MailSerNr = WebGetArg("sernr");
+      WebComr.IPAddress = WebRemoteIPAddress;
+      if CurrentCust <> "" then begin
+        WebComr.CustCode = CurrentCust;
+      end;
+      WebGetText("comment-text",WebComr);
+      savef = true;
+	    Trhs = true;
+	    timep = AddMinutes(WebComr.TransTime,-10);
+      WCr.IPAddress = WebComr.IPAddress;
+      while loopkey("IPAddress:" & WTr.Code,WCr,1,Trhs) begin
+        if (WebComr.IPAddress == WCr.IPAddress) then begin
+          if (WebComr.TransDate == WCr.TransDate) then begin
+            if (timep<WCr.TransTime) then begin
+            savef = false;
+            errflags = errflags + 32;
+            end;
+          end;
+        end else begin
+          Trhs = false;
+        end;
+	    end;
+
+		//stopalert("eeee " & savef);
+      if savef then begin
+        if recordStore(WebComr,true) then begin end;
+		PutSessionString("cname","");      
+        PutSessionString("cemail","");      
+        PutSessionString("ctext","");   
+      end else begin
+	    PutSessionString("cname",username);      
+        PutSessionString("cemail",email);      
+        PutSessionString("ctext",textarea);    
+	  end;
+         
+      //PutSessionString("chead","");      
+      PutSessionString("err",errflags);      
+    end else begin
+      PutSessionString("cname",username);      
+      PutSessionString("cemail",email);      
+      PutSessionString("ctext",textarea);      
+      //PutSessionString("chead",subject);      
+      PutSessionString("err",errflags);      
+    end;
+    ShowRedirectHtml(FormatSimpleLink(WebGetArg("contpath"),true),false);
+
+  resetCompany(1);
+
+return;
+end;
+
+/*
+global
+function boolean IsAllowedHWLIP(string ip)
+begin
+  record WebBlogIPFilterBlock WebIPBl;
+  row WebBlogIPFilterBlock WebIPrw;
+  integer rw,rwc;
+  boolean res;
+  BlockLoad(WebIPbl);
+  rwc = MatRowCnt(WebIPBl);
+  res = true;
+  if ip <> "" then begin
+    for (rw = 0; rw < rwc; rw = rw + 1) begin
+      MatRowGet(WebIPBl,rw,WebIPrw);
+      if ip <= WebIPrw.ToIP and ip >= WebIPrw.FromIP then begin
+        res = false;
+      end;
+    end;
+  end;
+  IsAllowedHWLIP = res;
+return;
+end;
+*/
+global webpublic
+updating procedure WebProfChangeFB()
+begin
+  
+  //record MailVc Mailr;
+  //row MailVc Mailrw;
+  record WebNGBlogCommentVc WCr,tWCr;
+  boolean Trhs,foundf;
+  string 255 sernr,act;
+  integer i;
+  act = WebGetArg("fb");
+  sernr = webGetArg("sernr");
+  //Mailr.SerNr = sernr;
+  //if ReadFirstMain(Mailr,1,true) then begin
+  setcompany(StringToLongInt(WebGetArg("compnr")),false);
+    RecordNew(WCr);
+    WCr.SerNr = NextSerNr("WebNGBlogCommentVc",CurrentDate,-1,false,"");
+    WCr.MailSerNr = WebGetArg("sernr");
+    //MatRowGet(Mailr,0,Mailrw);
+    //WCr.MailboxName = Mailrw.AddrCode;
+    //WCr.MailHeader = Mailr.Header;
+	
+	WCr.TextType = StringToLongInt(WebGetArg("tt"));
+	//stopalert(WebGetArg("tt") & " " & WCr.TextType);
+    WCr.TransDate = CurrentDate;
+    WCr.TransTime = CurrentTime;
+    WCr.IPAddress = WebRemoteIPAddress;
+    //WCr.TextType = 0;
+    if act=="up" then begin 
+      WCr.CommentType = 1;
+    end;
+    if act=="down" then begin
+      WCr.CommentType = 2;    
+    end;
+    tWCr.IPAddress = WCr.IPAddress;
+    TrHs = true;
+    foundf = false;
+
+    //if IsAllowedHWLIP(WCr.IPAddress) then begin
+      while LoopKey("IPAddress:" & WCr.MailSerNr,tWCr,1,TrHs) begin
+        if tWCr.IPAddress == WCr.IPAddress then begin
+          if tWCr.TextType == WCr.TextType then begin
+		    if ((tWCr.CommentType == 1) or (tWCr.CommentType == 2)) then begin	
+              trhs = False;
+			  foundf = true;
+			end;
+          end;
+        end;
+	  end;
+      //end; 
+
+
+      if foundf==false then begin
+        if recordStore(WCr,true) then begin end;
+      end;
+   
+	
+  //end;
+  resetCompany(1);
+  ShowRedirectHtml(FormatSimpleLink(WebGetArg("profpath"),true),false);
+return;
+end;

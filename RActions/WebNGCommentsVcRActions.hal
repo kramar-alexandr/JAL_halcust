@@ -1,0 +1,106 @@
+global
+function LongInt WebNGBlogCommentVcRecordCheck(var record WebNGBlogCommentVc WebNGBlogCommentr,record WebNGBlogCommentVc WebNGBlogComment2r,LongInt stat,LongInt long4)
+begin
+  LongInt res;
+
+  res = 0;
+  if WebNGBlogCommentr.SerNr <= 0 then begin
+    WebNGBlogCommentr.SerNr = NextSerNr("WebNGBlogCommentVc",CurrentDate,-1,false,"");
+  end;
+  if Blank(WebNGBlogCommentr.TransDate) then begin WebNGBlogCommentr.TransDate = CurrentDate; end;
+  if Blank(WebNGBlogCommentr.TransTime) then begin WebNGBlogCommentr.TransTime = CurrentTime; end;
+  WebNGBlogCommentVcRecordCheck = res;
+  return;
+end;
+
+
+global
+function LongInt WebNGBlogCommentVcRecordDefaults(var record WebNGBlogCommentVc WebNGBlogCommentr,record WebNGBlogCommentVc WebNGBlogComment2r,LongInt stat,LongInt long4)
+begin
+  LongInt res;
+
+  if SingleUserMode then begin
+    WebNGBlogCommentr.SerNr = NextSerNr("WebNGBlogCommentVc",CurrentDate,-1,false,"");
+  end;
+  WebNGBlogCommentr.TransDate = CurrentDate;
+  WebNGBlogCommentr.TransTime = CurrentTime;
+  WebNGBlogCommentVcRecordDefaults = res;
+  return;
+end;
+
+
+global
+function LongInt WebNGBlogCommentVcRecordInIndex(record WebNGBlogCommentVc WebNGBlogCommentr,string indexname)
+begin
+  LongInt res;
+  integer cnt;
+ 
+  res = 1;
+  
+  if (WebNGBlogCommentr.TextType == 0) then begin
+    if WebNGBlogCommentr.AcceptFlag<>0 then begin
+      if indexname =="ActSerNr" then begin res = 0;end;
+      if indexname =="NegSerNr" then begin res = 0;end;
+      if indexname =="PosSerNr" then begin res = 0;end;
+      if indexname =="ContActSerNr" then begin res = 0;end;
+      if indexname =="ContNegSerNr" then begin res = 0;end;
+      if indexname =="ContPosSerNr" then begin res = 0;end;
+    end else begin
+      if WebNGBlogCommentr.CommentType == 0 then begin
+        if indexname =="ContActSerNr" then begin res = 0;end;
+        if indexname =="NegSerNr" then begin res = 0;end;
+        if indexname =="PosSerNr" then begin res = 0;end;
+        if indexname =="ContNegSerNr" then begin res = 0;end;
+        if indexname =="ContPosSerNr" then begin res = 0;end;
+      end;
+      if WebNGBlogCommentr.CommentType == 1 then begin
+        if indexname =="ContActSerNr" then begin res = 0;end;
+        if indexname =="ActSerNr" then begin res = 0;end;
+        if indexname =="NegSerNr" then begin res = 0;end;
+        if indexname =="ContNegSerNr" then begin res = 0;end;
+        if indexname =="ContPosSerNr" then begin res = 0;end;
+      end;
+      if WebNGBlogCommentr.CommentType == 2 then begin
+        if indexname =="ContActSerNr" then begin res = 0;end;
+        if indexname =="ActSerNr" then begin res = 0;end;
+        if indexname =="PosSerNr" then begin res = 0;end;
+        if indexname =="ContPosSerNr" then begin res = 0;end;
+        if indexname =="ContNegSerNr" then begin res = 0;end;
+      end;
+    end;
+  end else begin
+    if WebNGBlogCommentr.AcceptFlag<>0 then begin
+      if indexname =="ActSerNr" then begin res = 0;end;
+      if indexname =="NegSerNr" then begin res = 0;end;
+      if indexname =="PosSerNr" then begin res = 0;end;
+      if indexname =="ContNegSerNr" then begin res = 0;end;
+      if indexname =="ContPosSerNr" then begin res = 0;end;
+      if indexname =="ContActSerNr" then begin res = 0;end;
+    end else begin
+      if WebNGBlogCommentr.CommentType == 0 then begin
+        if indexname =="ActSerNr" then begin res = 0;end;
+        if indexname =="NegSerNr" then begin res = 0;end;
+        if indexname =="PosSerNr" then begin res = 0;end;
+        if indexname =="ContNegSerNr" then begin res = 0;end;
+        if indexname =="ContPosSerNr" then begin res = 0;end;
+      end;
+      if WebNGBlogCommentr.CommentType == 1 then begin
+        if indexname =="ContActSerNr" then begin res = 0;end;
+        if indexname =="ActSerNr" then begin res = 0;end;
+        if indexname =="PosSerNr" then begin res = 0;end;
+        if indexname =="NegSerNr" then begin res = 0;end;
+        if indexname =="ContNegSerNr" then begin res = 0;end;
+      end;
+      if WebNGBlogCommentr.CommentType == 2 then begin
+        if indexname =="ActSerNr" then begin res = 0;end;
+        if indexname =="ContActSerNr" then begin res = 0;end;
+        if indexname =="PosSerNr" then begin res = 0;end;
+        if indexname =="NegSerNr" then begin res = 0;end;
+        if indexname =="ContPosSerNr" then begin res = 0;end;
+      end;
+    end;
+  end;
+
+  WebNGBlogCommentVcRecordInIndex = res;
+  return;
+end;

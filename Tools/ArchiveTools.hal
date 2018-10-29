@@ -1,0 +1,269 @@
+external procedure ExportEnterString(string);
+external procedure ExportTabString(string);
+external updating procedure SMU_UpdateDownloadReq(string);
+external procedure SMFClientGen(string,string);
+external updating procedure SMU_UpdateDownloadStat(Integer);
+external inner function string 255 ToolWebNGTranslateText(Integer);
+
+function string 10 GetServerPort(string code)
+begin
+  record JALServerVc JSr;
+  string 10 res;
+
+  res = "";
+  JSr.Code = code;
+  if readfirstmain(JSr,1,true) then begin
+    res = JSr.AppPort;
+  end;
+
+  GetServerPort = res;
+return;
+end;
+
+procedure ShowRedirectMessage()
+begin
+  WebOutString("<html><head><title></title><link type='text/css' rel='stylesheet' href='/styles.css'></head><body class='dwn_msg'><script>setTimeout(function(){window.location.reload();},2000);</script><div class='redir_msg'>" & ToolWebNGTranslateText(31921) & "</div></body></html>");
+  return;
+end;
+
+procedure SetContentTypeForExtension(string ext)
+begin
+  switch (ext) begin
+    case "css" : WebSetContentType("text/css");
+    case "jpg" : WebSetContentType("image/jpeg");
+    case "jpeg" : WebSetContentType("image/jpeg");
+    case "png" : WebSetContentType("image/png");
+    case "gif" : WebSetContentType("image/gif");
+    case "htc" : WebSetContentType("text/x-component");
+    case "exe" : WebSetContentType("application/binary");
+    case "bin" : WebSetContentType("application/binary");
+    case "obj" : WebSetContentType("application/binary");
+    case "hpf" : WebSetContentType("application/binary");
+    case "hob" : WebSetContentType("application/binary");
+    case "dat" : WebSetContentType("application/binary");
+    case "swf" : WebSetContentType("application/x-shockwave-flash");
+    case "pdf" : WebSetContentType("application/pdf");
+    case "zip" : WebSetContentType("application/zip");
+    case "txt" : WebSetContentType("text/plain");
+    case "xml" : WebSetContentType("text/xml");
+    case "xsl" : WebSetContentType("text/xsl");
+    case "htm" : WebSetContentType("text/html");
+    case "html" : WebSetContentType("text/html");
+    otherwise
+      WebSetContentType("application/binary");
+  end;
+  return;
+end;
+
+procedure CheckForArchive(string code,string os)
+begin
+  string 255 filename,macfile,winfile;
+  record SMFVc SMFr;
+  string 10 ext;
+
+  logtext(0,"CheckForArchive " & os);
+  macfile = "gen_clients//hw-" & os & "-client.zip";
+  if (FileExists(macfile) == false) then begin
+    ShowRedirectMessage;
+  end else begin
+    ext = "zip";
+    SetContentTypeForExtension(ext);
+    WebSetContentDisposition("inline; filename=hw-" & os & "-klients.zip");
+    WebOutFile("gen_clients//hw-" & os & "-client.zip");
+
+    Delete_File(macfile);
+
+    Delete_File(os & "_client//DBDEF.txt");
+    queued.SMU_UpdateDownloadReq("");
+    queued.SMU_UpdateDownloadReqStat(0);
+  end;
+
+return;
+end;
+
+global
+procedure JAL_RunShellScript(string script)
+begin
+
+  RunProgram(script,"");
+
+  return;
+end;
+
+//procedure SMU_ZipArchive(string args)
+procedure SMU_ZipArchive(string os)
+begin
+  record JALClassBlock JCb;
+
+  LogText(0,"SMU_ZipArchive0 " & os);
+  if (FileExists(os & "_client//DBDEF.txt")) then begin
+    //BlockLoad(JCb);
+    //if (JCb.DownloadReqStat==1) then begin
+      logtext(0,"SMU_ZipArchive call");
+      //RunProgram("/bin/bash",hobfolder & "/../test.sh");
+//      NewTimedTask2("Runshellscript","runshellscript","JAL_RunShellScript","./test.sh " & os,CurrentDate,AddSeconds(CurrentTime,1),"");
+      RunProgram("./test.sh"," " & os);
+      qupdating.SMU_UpdateDownloadStat(2);
+    //end;
+  end;
+
+  return;
+end;
+
+procedure CreateClient(string code,string os)
+begin
+  record SMFVc SMFr;
+  record JALServerVc JSr;
+  date td;
+  time t;
+  integer i;
+
+  SMFr.SMFCode = code;
+  if readfirstmain(SMFr,1,true) then begin
+    JSr.Code = SMFr.ServerCode;
+    if readfirstmain(JSr,1,true) then begin end;
+    if (os=="win") then begin
+      CreateFile("win_client//DBDEF.txt");
+      ExportEnterString("tb");
+      ExportEnterString("CompaniesBlock");
+      for (i = 1; i< stringtolongint(SMFr.CompNr); i = i + 1) begin
+        ExportTabString(i);
+        ExportTabString("");
+        ExportTabString("");
+        ExportTabString(JSr.IP);
+        ExportTabString(GetServerPort(SMFr.ServerCode));
+        ExportTabString("");
+        ExportEnterString("1");
+      end;
+      ExportTabString(SMFr.CompNr);
+      ExportTabString(SMFr.SMFName);
+      ExportTabString(SMFr.SMFCode);
+      ExportTabString(JSr.IP);
+      ExportTabString(GetServerPort(SMFr.ServerCode));
+      ExportTabString("");
+      ExportEnterString("0");
+      CloseFile;
+      SMU_ZipArchive(os);
+    end;
+  LogText(0,"CreateClient " & os);
+    if (os=="mac") then begin
+      CreateFile("mac_client//DBDEF.txt");
+      ExportEnterString("tb");
+      ExportEnterString("CompaniesBlock");
+      //LogText(0,"veidojam");
+      for (i = 1; i< stringtolongint(SMFr.CompNr); i = i + 1) begin
+        ExportTabString(i);
+        ExportTabString("");
+        ExportTabString("");
+        ExportTabString(JSr.IP);
+        ExportTabString(GetServerPort(SMFr.ServerCode));
+        ExportTabString("");
+        ExportEnterString("1");
+      end;
+
+      ExportTabString(SMFr.CompNr);
+      ExportTabString(SMFr.SMFName);
+      ExportTabString(SMFr.SMFCode);
+      ExportTabString(JSr.IP);
+      ExportTabString(GetServerPort(SMFr.ServerCode));
+      ExportTabString("");
+      ExportEnterString("0");
+
+      CloseFile;
+      SMU_ZipArchive(os);
+    end;
+    //qupdating.SMU_UpdateDownloadStat(1);
+
+  end;
+
+return;
+end;
+
+function Integer CurrentRequestIsActive(string genid,string smfcode)
+begin
+  Integer res;
+  record JALClassBlock JCb;
+
+  res = 0;
+  BlockLoad(JCb);
+  if (JCb.DownloadReq==genid) then begin
+    res = 2;
+  end;
+  if (blank(JCb.DownloadReq)) then begin
+    qupdating.SMU_UpdateDownloadReq(genid);
+    res = 1;
+  end;
+
+  CurrentRequestIsActive = res;
+  return;
+end;
+
+function string 255 GenerateRandomHex(integer length)
+begin
+  string 100 ast;
+  LongInt pos;
+  LongInt i;
+  string 255 res,tstr;
+
+  res = "";
+  Randomize;
+  ast = "0F3481ADE786F29523AAADECCBB123456FF987C2A3B4D6DD7EE8F922F33E5"; // 61 characters
+  for (i=0;i<length;i=i+1) begin
+    if (mod(i,8) == 0 and i!=0) then begin
+      res = res & "-";
+    end;
+    pos = Random(0,60);
+    tstr = Mid(ast,pos,1);
+    res = res & tstr;
+  end;
+
+  GenerateRandomHex = res;
+  return;
+end;
+
+global
+updating procedure SMU_UpdateDownloadReq(string code)
+begin
+  record JALClassBlock JCb;
+
+  BlockLoad(JCb);
+  JCb.DownloadReq = code;
+  BlockStore(JCb);
+
+  return;
+end;
+
+global
+updating procedure SMU_UpdateDownloadStat(Integer stat)
+begin
+  record JALClassBlock JCb;
+
+  BlockLoad(JCb);
+  JCb.DownloadReqStat = stat;
+  BlockStore(JCb);
+
+  return;
+end;
+
+global
+procedure SMFClientGen(string code,string os)
+begin
+  date td;
+  time t;
+  Integer stat;
+
+  if (blank(GetSessionString("downloadid"))) then begin
+    PutSessionString("downloadid",GenerateRandomHex(30));
+  end;
+
+  stat = CurrentRequestIsActive(GetSessionString("downloadid"),code);
+  //logtext(0,"SMFClientGen " & GetSessionString("downloadid") & ";" & stat);
+  switch (stat) begin
+    case 0:ShowRedirectMessage;
+    case 1:CreateClient(code,os);
+           ShowRedirectMessage;
+    case 2:CheckForArchive(code,os);
+  end;
+
+return;
+end;

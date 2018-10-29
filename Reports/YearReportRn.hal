@@ -1,0 +1,88 @@
+global
+procedure SMFreportsRn(record RCVc RepSpec)
+begin
+  record SMFVc SMFr;
+  record ReportsVc Repr;
+  array string 2 reports;
+  boolean testf,Trhs;
+  integer i;
+  
+  StartReportJob(UsetStr(32134));
+  EndHeader;
+
+  SetRepCol(0,0);
+  SetRepCol(2,100);
+  SetRepCol(3,300);
+  SetRepCol(4,330);
+  SetRepCol(5,360);
+  SetRepCol(6,390);
+  SetRepCol(7,420);
+  SetRepCol(8,450);
+  SetRepCol(9,480);
+  SetRepCol(10,510);
+//  SetRepCol(12,540);
+
+  StartFormat(15);
+  OutString(0,0,USetStr(32260),false);
+  OutString(2,0,USetStr(32261),false);
+  OutString(3,0,USetStr(32300),false);
+  OutString(4,0,USetStr(32301),false);
+  OutString(5,0,USetStr(32302),false);
+  OutString(6,0,USetStr(32303),false);
+  OutString(7,0,USetStr(32304),false);
+  OutString(8,0,USetStr(32305),false);
+  OutString(9,0,USetStr(32306),false);
+  OutString(10,0,USetStr(32307),false);
+  OutString(540,0,USetStr(32308),false);
+  EndFormat;
+  StartFormat(4);
+  Black_Divider(0,1);
+  EndFormat;
+ 
+  while loopkey("SMFCode",SMFr,1,true) begin
+    testf = true; 
+    for (i = 1; i < 13; i = i + 1) begin
+      reports[i] = "-";
+    end;
+    if (nonblank(RepSpec.f1) and SMFr.SMFCode!=RepSpec.f1) then begin
+      testf = false;
+    end;
+    if testf then begin
+      Trhs = true;
+      Repr.SMFCode = SMFr.SMFCode;
+      Repr.SentDate = RepSpec.sStartDate;
+      while loopkey("SMFCodeDate",Repr,2,Trhs) begin
+        if (Repr.SMFCode == SMFr.SMFCode) then begin
+          if (Repr.SentDate <= RepSpec.sEndDate) then begin
+            if (Repr.SentStatuss == 1) then begin
+              reports[GetMonth(Repr.SentDate)] = "V";
+            end;
+          end else begin 
+            Trhs = false; 
+          end;
+        end else begin
+          Trhs = false;
+        end;
+      end;  
+      
+      StartFormat(15);
+      OutString(0,0,SMFr.SMFCode,false);
+      OutString(2,0,SMFr.SMFName,false);
+      OutString(3,0,reports[9],false);
+      OutString(4,0,reports[10],false);
+      OutString(5,0,reports[11],false);
+      OutString(6,0,reports[12],false);
+      OutString(7,0,reports[1],false);
+      OutString(8,0,reports[2],false);
+      OutString(9,0,reports[3],false);
+      OutString(10,0,reports[4],false);
+      OutString(540,0,reports[5],false);
+      EndFormat; 
+
+     end;
+  end;
+
+EndJob;
+
+return;
+end;

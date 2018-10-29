@@ -1,0 +1,1 @@
+globalprocedure ShowFullMailListDsm()begin  record SMFVc SMFr;  record RCVc RepSpec;  integer wn;  wn = CurWindow;  GetWindowRecord(wn,SMFr);  RecordNew(RepSpec);  RepSpec.f1 = SMFr.SMFCode;  RepSpec.repname = "ShowCompMailRn";  //ReportDefaults(RepSpec,"ShowFullMailListRClass");  RepSpec.Media = mtScreen;  RunReport(RepSpec,0);return;end;
