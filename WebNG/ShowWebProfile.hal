@@ -505,7 +505,7 @@ begin
     if readfirstmain(CUr,1,true) then begin
       if readrecordlink(CUr,1,SMFr,RLr) or FindSMURecord(cCUr.Code,SMFr) then begin
         if (cust == CurrentCust or  cCUr.Code == SMFr.CustCode) then begin
-          WebOutStringFormatNL("<form method=""POST"" action=""/WebChangeCompEmp.hal"">");
+          WebOutStringFormatNL("<form method=""POST"" id=""forma""action=""/WebChangeCompEmp.hal"">");
           WebOutStringFormatNL("<input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");
           WebOutStringFormatNL("<input type=""hidden"" name=""cust"" value=""" & CUr.Code & """>");
           WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path")& """>");
@@ -808,7 +808,7 @@ begin
   rwcnt = MatRowCnt(TCr);
 
   WebOutStringFormatNL("<table id=""profiletable"">");
-  WebOutStringFormatNL("<tr><td id=""first"">V‚rds, Uzv‚rds:<td/><td>" & TCr.TeacherName & "</td></tr>");
+  WebOutStringFormatNL("<tr><td id=""first"">Vï¿½rds, Uzvï¿½rds:<td/><td>" & TCr.TeacherName & "</td></tr>");
   //WebOutStringFormatNL("<tr><td id=""first"">" & ToolWebNGTranslateText(20031) & ":<td/><td>" & CUr.VATNr & "</td></tr>");
   WebOutStringFormatNL("<tr><td id=""first"">" & ToolWebNGTranslateText(20036) & ":<td/><td>" & Schoolr.SchoolName & " (" & aprsch & ")</td></tr>");
   WebOutStringFormatNL("<tr><td id=""first"">" & ToolWebNGTranslateText(20032) & ":<td/><td>" & CUr.Phone & "</td></tr>");
@@ -850,7 +850,7 @@ begin
     while loopkey("CustCode",TCr,1,testf) begin
       testf = false;
       if TCr.CustCode == CurrentCust then begin
-        //WebOutStringFormatNL("V‚rds, Uzv‚rds:" & TCr.TeacherName);
+        //WebOutStringFormatNL("Vï¿½rds, Uzvï¿½rds:" & TCr.TeacherName);
         //WebOutStringFormatNL("<br/><br/>");
         if(nonblank(TCr.GlobalUser)) then begin
           //WebOutStringFormatNL(ToolWebNGTranslateText(25605) & ": " & TCr.GlobalUser);
@@ -861,7 +861,7 @@ begin
         //SMFr.TeacherCode = TCr.TeacherCode;
         //SMFr.SMFName = "";
         //WebOutStringFormatNL(ToolWebNGTranslateText(25602) & ":");
-        //WebOutStringFormatNL("V‚rds, Uzv‚rds:" & TCr.TeacherName);
+        //WebOutStringFormatNL("Vï¿½rds, Uzvï¿½rds:" & TCr.TeacherName);
         ShowTeacherINFO(TCr);//info izdruka
         //SMFr.TeacherName = TCr.TeacherName;
         //WebOutStringFormatNL(ToolWebNGTranslateText(25601) & ":<ul>");
@@ -1040,10 +1040,10 @@ begin
   WebOutStringFormatNL("<form method=""POST"" id=""forma"" action=""/WebChangePassword.hal"" onSubmit=""return testpassword(this)"">");
   //WebOutStringFormatNL("<input type=""hidden"" name=""path"" value=""" & WebGetArg("path") & """>");
 
-  WebOutStringFormatNL("<div id=""passw"" class=""smallinput""><div id=""oldpassword""><input class=""spinputa"" type=""password"" name=""oldpassword""><span>Vec‚ parole:</span></div><div id=""pass1""><input class=""spinputa"" type=""password"" name=""password1""><span>Jaun‚ parole:</span></div>");
-  WebOutStringFormatNL("<div id=""passw2""><input class=""spinputa"" type=""password"" name=""password2""><span>Jaun‚ parole atk‚rtoti:</span></div></div>");
+  WebOutStringFormatNL("<div id=""passw"" class=""smallinput""><div id=""oldpassword""><input class=""spinputa"" type=""password"" name=""oldpassword""><span>Vecï¿½ parole:</span></div><div id=""pass1""><input class=""spinputa"" type=""password"" name=""password1""><span>Jaunï¿½ parole:</span></div>");
+  WebOutStringFormatNL("<div id=""passw2""><input class=""spinputa"" type=""password"" name=""password2""><span>Jaunï¿½ parole atkï¿½rtoti:</span></div></div>");
   WebOutStringFormatNL("<div id=""errormsg""><div id=""epassword""></div></div>");
-  WebOutStringFormatNL("<input class=""spbutton"" type=""submit"" value=""APSTIPRINT"">");
+  WebOutStringFormatNL("<input class=""spbutton"" type=""submit"" value=""APSTIPRINï¿½T"">");
   WebOutStringFormatNL("</form>");
 
 return;
