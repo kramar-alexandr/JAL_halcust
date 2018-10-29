@@ -319,7 +319,7 @@ begin
           WebOutStringFormatNL("</div>");
           WebOutStringFormatNL("<div class=""deletebutton"">");
           if ((SMFr.CustCode == CUr.Code or CUr.Code == tCUr.Code)) then begin
-            WebOutStringFormatNL("<a href=""" & FormatSimpleLink(GetLinkToStruct(JCbl.EmpChangeStruct,true),true) & "?cust=" & tCUr.Code & """>" & ToolWebNGTranslateText(25930) & "</a>");
+            WebOutStringFormatNL("<a href=""" & FormatSimpleLink(GetLinkToStruct(JCbl.EmpChangeStruct,true),true) & "?cust=" & CUr.Code & """>" & ToolWebNGTranslateText(25930) & "</a>");
           end else begin
             WebOutStringFormatNL("&nbsp;");
           end;
