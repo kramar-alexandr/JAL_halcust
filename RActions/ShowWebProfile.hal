@@ -258,7 +258,7 @@ begin
     res = true;
   end;
 
-  FindSMURecord = res;
+  FindTchrRecord = res;
   return;
 end;
 
@@ -575,10 +575,10 @@ begin
     cCUr.Code = CurrentCust;
     if readfirstmain(cCUr,1,true) then begin end;
     if readfirstmain(CUr,1,true) then begin
-      if readrecordlink(CUr,1,SMFr,RLr) or FindTchrRecord(cCUr.Code,Tchr) then begin
+      if readrecordlink(CUr,1,Tchr,RLr) or FindTchrRecord(cCUr.Code,Tchr) then begin
         if (cust == CurrentCust or  cCUr.Code == Tchr.CustCode) then begin
           WebOutStringFormatNL("<form method=""POST"" action=""/WebChangeCompEmp.hal"">");
-          WebOutStringFormatNL("<input type=""hidden"" name=""smu"" value=""" & Tchr.SMFCode & """>");
+          WebOutStringFormatNL("<input type=""hidden"" name=""smu"" value=""" & Tchr.TeacherCode & """>");
           WebOutStringFormatNL("<input type=""hidden"" name=""cust"" value=""" & CUr.Code & """>");
           WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path")& """>");
           WebOutStringFormatNL("<div class=""addinput""><input type=""text"" name=""name"" value=""" & CUr.Name & """></div>");
