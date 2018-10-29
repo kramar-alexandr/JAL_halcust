@@ -573,6 +573,9 @@ begin
   logtext(0,"TchChangePage0 " & cust);
   if nonblank(cust) or nonblank(CurrentCust) then begin
     CUr.Code = cust;
+    if(blank(cust))then begin
+    	CUr.Code = CurrentCust;
+    end;
     cCUr.Code = CurrentCust;
     logtext(0,"TchChangePage1 " & cust);
     if readfirstmain(cCUr,1,true) then begin end;
