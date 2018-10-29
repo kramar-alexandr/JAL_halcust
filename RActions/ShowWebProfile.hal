@@ -1,7 +1,7 @@
 external function string 255 ToolWebNGtranslateText(integer);
 external function boolean FileNameIsImage(string);
 external procedure SendAttachedFile(record Attach2Vc,boolean);
-external function string 255 FormatSimpleLink(string,boolean);
+external inner function string 255 FormatSimpleLink(string,boolean);
 external procedure ShowWebElement(string);
 external procedure ShowRedirectHtml(string,boolean);
 external function string 255 GetLinkToStruct(LongInt,boolean);
