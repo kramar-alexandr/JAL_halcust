@@ -563,9 +563,13 @@ begin
   record CUVc CUr,cCUr;
   record TeacherVc Tchr;
   record RLinkVc RLr;
+  record SchoolVc Schoolr;
   integer i;
   record JALClassBlock JCbl;
   string 30 cust;
+
+  Schoolr.SchoolCode = Tchr.SchoolCode;
+  readfirstmain(Schoolr,1,true);
 
   BlockLoad(JCbl);
 
@@ -589,14 +593,10 @@ begin
           WebOutStringFormatNL("<input type=""hidden"" name=""tch"" value=""" & Tchr.TeacherCode & """>");
           WebOutStringFormatNL("<input type=""hidden"" name=""cust"" value=""" & CUr.Code & """>");
           WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path")& """>");
-          WebOutStringFormatNL("<div class=""addinput""><input type=""text"" name=""name"" value=""" & CUr.Name & """></div>");
-          //WebOutStringFormatNL("<span>V‚rds, Uzv‚rds :</span>");
-          WebOutStringFormatNL("<div class=""addinput""><input type=""text"" name=""skola"" value=""" & CUr.eMail & """></div>");
-          //WebOutStringFormatNL("<span>Skola :</span>");
-          WebOutStringFormatNL("<div class=""addinput""><input type=""text"" name=""telephone"" value=""" & CUr.eMail & """></div>");
-          //WebOutStringFormatNL("<span>Telefona nr. :</span>");
-          WebOutStringFormatNL("<div class=""addinput""><input type=""text"" name=""email"" value=""" & CUr.eMail & """></div>");
-          //WebOutStringFormatNL("<span>E-pasts :</span>");
+          WebOutStringFormatNL("<div class=""addinput""><span>V‚rds, Uzv‚rds :</span><input disabled type=""text"" name=""name"" value=""" & CUr.Name & """></div>");
+          WebOutStringFormatNL("<div class=""addinput""><span>Skola :</span><input disabled type=""text"" name=""skola"" value=""" & Schoolr.SchoolName & """></div>");
+          WebOutStringFormatNL("<div class=""addinput""><span>Telefona nr. :</span><input type=""text"" name=""telephone"" value=""" & CUr.Phone & """></div>");
+          WebOutStringFormatNL("<div class=""addinput""><span>E-pasts :</span><input type=""text"" name=""email"" value=""" & CUr.eMail & """></div>");
           //error
           err = StringToLongInt(getSessionString("err"));
           PutSessionString("err","");
@@ -619,7 +619,7 @@ begin
             end;
             WebOutStringFormatNL("</div>");
           end;
-          WebOutStringFormatNL("<table><tr><td><div class=""addbutton""><input type=""submit"" value=""" & ToolWebNGTranslateText(20212) & """ ></div></td><td><div class=""addbutton""><a href=""" & FormatSimpleLink(GetLinkToStruct(JCbl.ProfileCorrectionStruct,true),true) & """>" & ToolWebNGTranslateText(20211) & "</a></div></td></tr></table>");
+          WebOutStringFormatNL("<input class=""loginbutton"" type=""submit"" value=""APSTIPRINT"" >");
           WebOutStringFormatNL("</form>");
         end else begin
           ShowRedirectHTML(FormatSimpleLink(GetLinkToStruct(JCbl.ProfileCorrectionStruct,true),true),false);
@@ -812,7 +812,7 @@ begin
   rwcnt = MatRowCnt(TCr);
 
   WebOutStringFormatNL("<table id=""profiletable"">");
-  WebOutStringFormatNL("<tr><td id=""first"">V?rds, Uzv?rds:<td/><td>" & TCr.TeacherName & "</td></tr>");
+  WebOutStringFormatNL("<tr><td id=""first"">V‚rds, Uzv‚rds:<td/><td>" & TCr.TeacherName & "</td></tr>");
   //WebOutStringFormatNL("<tr><td id=""first"">" & ToolWebNGTranslateText(20031) & ":<td/><td>" & CUr.VATNr & "</td></tr>");
   WebOutStringFormatNL("<tr><td id=""first"">" & ToolWebNGTranslateText(20036) & ":<td/><td>" & Schoolr.SchoolName & " (" & aprsch & ")</td></tr>");
   WebOutStringFormatNL("<tr><td id=""first"">" & ToolWebNGTranslateText(20032) & ":<td/><td>" & CUr.Phone & "</td></tr>");
@@ -1044,10 +1044,10 @@ begin
   WebOutStringFormatNL("<form method=""POST"" id=""forma"" action=""/WebChangePassword.hal"" onSubmit=""return testpassword(this)"">");
   //WebOutStringFormatNL("<input type=""hidden"" name=""path"" value=""" & WebGetArg("path") & """>");
 
-  WebOutStringFormatNL("<div id=""passw"" class=""smallinput""><div id=""oldpassword""><input class=""spinputa"" type=""password"" name=""oldpassword""><span>Vec? parole:</span></div><div id=""pass1""><input class=""spinputa"" type=""password"" name=""password1""><span>Jaun? parole:</span></div>");
-  WebOutStringFormatNL("<div id=""passw2""><input class=""spinputa"" type=""password"" name=""password2""><span>Jaun? parole atk?rtoti:</span></div></div>");
+  WebOutStringFormatNL("<div id=""passw"" class=""smallinput""><div id=""oldpassword""><input class=""spinputa"" type=""password"" name=""oldpassword""><span>Vec‚ parole :</span></div><div id=""pass1""><input class=""spinputa"" type=""password"" name=""password1""><span>Jaun‚ parole :</span></div>");
+  WebOutStringFormatNL("<div id=""passw2""><input class=""spinputa"" type=""password"" name=""password2""><span>Jaun‚ parole atk‚rtoti :</span></div></div>");
   WebOutStringFormatNL("<div id=""errormsg""><div id=""epassword""></div></div>");
-  WebOutStringFormatNL("<input class=""spbutton"" type=""submit"" value=""APSTIPRIN?T"">");
+  WebOutStringFormatNL("<input class=""spbutton"" type=""submit"" value=""APSTIPRINT"">");
   WebOutStringFormatNL("</form>");
 
 return;
