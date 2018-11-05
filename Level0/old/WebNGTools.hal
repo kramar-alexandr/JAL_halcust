@@ -1447,7 +1447,7 @@ begin
                 
                 WebOutString("</div>");
                 WebOutString("</div>");
-              end else begin //pas‚kumiem
+              end else begin //pasï¿½kumiem
                 //if piclink <> "" then begin 
                 //  WebOutStringFormatNL("<div id=""gallistimg""><img src=""" & piclink & """></div>");
                 //end;    
@@ -1786,7 +1786,7 @@ begin
   end;
   WebOutTagOpen("<html>");
   WebOutTagOpen("<head>");
-  WebOutStringFormatNL("<title>302 Redirect</title>");
+  WebOutStringFormatNL("<title>303 Redirect</title>");
   //WebOutStringFormat("<meta http-equiv=""refresh"" content=""0; url=" & mlink & """>");
   WebOutTagClose("</head>");
   WebOutTagOpen("<body>");
@@ -2393,7 +2393,7 @@ begin
   end;
   WebOutTagOpen("<html>");
   WebOutTagOpen("<head>");
-  WebOutStringFormatNL("<title>302 Redirect</title>");
+  WebOutStringFormatNL("<title>304 Redirect</title>");
   WebOutTagClose("</head>");
   WebOutTagOpen("<body>");
 
@@ -2533,7 +2533,7 @@ updating procedure WebJALComment()
 begin
   string 100 sl,serstr;
   string 100 t1,t2,t3;
-  //stopalert("koment•jam vai ko");
+  //stopalert("komentï¿½jam vai ko");
   sl = WebGetArg("sl");
   serstr = WebGetArg("sernr");
   //trace("varonis",sl);
@@ -2543,7 +2543,7 @@ begin
   //trace("asdf",t2);
   if (sl == t1) then begin
     WebHWLCommentContent;
-	//stopalert("koment•jam tomer");
+	//stopalert("komentï¿½jam tomer");
   end else begin
       //stopalert("apskatam");
 	  ShowRedirectHtml(FormatSimpleLink(WebGetArg("contpath"),true) & "?sernr=" & serstr & "&detlevel=2",false);
