@@ -1789,7 +1789,7 @@ begin
   WebOutTagOpen("<html>");
   WebOutTagOpen("<head>");
   WebOutStringFormatNL("<title>302 Redirect</title>");
-  //WebOutStringFormat("<meta http-equiv=""refresh"" content=""0; url=" & mlink & """>");
+  WebOutStringFormat("<meta http-equiv=""refresh"" content=""0; url=" & mlink & """>");
   WebOutTagClose("</head>");
   WebOutTagOpen("<body>");
   hostport = "";
