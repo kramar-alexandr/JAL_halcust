@@ -1786,15 +1786,15 @@ begin
   if (gDontOutputHTMLDoctype==false) then begin
     WebOutStringFormatNL("<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01//EN"" ""http://www.w3.org/TR/html4/strict.dtd"">");
   end;
-  WebOutTagOpen("<script>");
-  WebOutStringFormatNL("document.location = " & mlink & "");
-  WebOutTagOpen("</script>");
   WebOutTagOpen("<html>");
   WebOutTagOpen("<head>");
-  WebOutStringFormatNL("<title>302 Redirect</title>");
+  WebOutStringFormatNL("<title>302 tyd Redirect</title>");
   WebOutStringFormat("<meta http-equiv=""refresh"" content=""0; url=" & mlink & """>");
   WebOutTagClose("</head>");
   WebOutTagOpen("<body>");
+  WebOutTagOpen("<script>");
+  WebOutStringFormatNL("document.location = " & mlink & "");
+  WebOutTagClose("</script>");
   hostport = "";
   if (InString(mlink,"http:")==0 and InString(mlink,"https:")==0) then begin
     if (secure) then begin
@@ -2396,14 +2396,14 @@ begin
   if (gDontOutputHTMLDoctype==false) then begin
     WebOutStringFormatNL("<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01//EN"" ""http://www.w3.org/TR/html4/strict.dtd"">");
   end;
-  WebOutTagOpen("<script>");
-  WebOutStringFormatNL("document.location = " & mlink & "");
-  WebOutTagOpen("</script>");
   WebOutTagOpen("<html>");
   WebOutTagOpen("<head>");
-  WebOutStringFormatNL("<title>302 Redirect</title>");
+  WebOutStringFormatNL("<title>302 tyt Redirect</title>");
   WebOutTagClose("</head>");
   WebOutTagOpen("<body>");
+  WebOutTagOpen("<script>");
+  WebOutStringFormatNL("document.location = " & mlink & "");
+  WebOutTagClose("</script>");
 
   WebOutStringFormat(ToolWebNGTranslateText(25417) & " "); //If your browser does not automatically redirect you in 5 seconds, please
   WebOutStringFormat("<a href=""");
