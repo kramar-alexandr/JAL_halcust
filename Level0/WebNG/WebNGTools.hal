@@ -1786,6 +1786,9 @@ begin
   if (gDontOutputHTMLDoctype==false) then begin
     WebOutStringFormatNL("<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01//EN"" ""http://www.w3.org/TR/html4/strict.dtd"">");
   end;
+  WebOutTagOpen("<script>");
+  WebOutStringFormatNL("document.location = " & mlink & "");
+  WebOutTagOpen("</script>");
   WebOutTagOpen("<html>");
   WebOutTagOpen("<head>");
   WebOutStringFormatNL("<title>302 Redirect</title>");
