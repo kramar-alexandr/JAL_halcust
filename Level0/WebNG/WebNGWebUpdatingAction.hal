@@ -92,7 +92,7 @@ begin
   gLoggedOut = true;
   newpath = WebGetArg("path");
   PutSessionString("justloggedout","true");
-  ShowRedirectHtml(FormatSimpleLink(newpath,true),WebSecureMode);
+  ShowRedirectHtml(FormatSimpleLink("/reg_login",true),WebSecureMode);
   return;
 end;
 
