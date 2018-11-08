@@ -15,21 +15,21 @@ begin
 	if(WebLoginStatus==3)then begin
 		code = webgetarg("sernr");
 		if(nonblank(code))then begin
-			SMFr.Code = code;
-			if(readfirstmain(SFMr,1,true))then begin
-				RecordNew(Ar);
-				Ar.Text = ANAB.ActText;
-				Ar.Type = ANAB.ActType;
-				Ar.Persons = ANAB.ActPerson;
-				RecordStore(Ar,true);
-				CreateRecordLink(Ar,CurrentCompany,SFMr,CurrentCompany);
-				CreateRecordLink(SFMr,CurrentCompany,Ar,CurrentCompany);
+			SMFr.SMFCode = code;
+			if(readfirstmain(SMFr,1,true))then begin
+				RecordNew(Actr);
+				Actr.Text = ANAB.ActText;
+				Actr.Type = ANAB.ActType;
+				Actr.Persons = ANAB.ActPerson;
+				RecordStore(Actr,true);
+				CreateRecordLink(Actr,CurrentCompany,SMFr,CurrentCompany);
+				CreateRecordLink(SMFr,CurrentCompany,Actr,CurrentCompany);
 			end;
 		end;
 		WebGetPostData(PostData);
 		datajson = ParseJsonArea(PostData);
 		for(i=0;i<JSONcntChild(datajson,"sernr");i=i+1) begin
-			code = JSONGet(datajson,root[i]);		if(nonblank(code))then begin			SMFr.Code = code;			if(readfirstmain(SFMr,1,true))then begin				RecordNew(Ar);				Ar.Text = ANAB.ActText;				Ar.Type = ANAB.ActType;				Ar.Persons = ANAB.ActPerson;				RecordStore(Ar,true);				CreateRecordLink(Ar,CurrentCompany,SFMr,CurrentCompany);				CreateRecordLink(SFMr,CurrentCompany,Ar,CurrentCompany);			end;		end;
+			code = JSONGet(datajson,root[i]);			if(nonblank(code))then begin				SMFr.SMFCode = code;				if(readfirstmain(SMFr,1,true))then begin					RecordNew(Actr);					Actr.Text = ANAB.ActText;					Actr.Type = ANAB.ActType;					Actr.Persons = ANAB.ActPerson;					RecordStore(Actr,true);					CreateRecordLink(Actr,CurrentCompany,SMFr,CurrentCompany);					CreateRecordLink(SMFr,CurrentCompany,Actr,CurrentCompany);				end;			end;
 		end;
 		
 	end;
