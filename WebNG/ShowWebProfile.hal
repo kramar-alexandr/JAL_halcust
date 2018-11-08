@@ -1045,7 +1045,7 @@ begin
   WebOutStringFormatNL("<input type=""hidden"" name=""path"" value=""" & WebGetArg("path") & """>");
 
   WebOutStringFormatNL("<div id=""passw"" class=""smallinput""><div class=""addinput"" id=""oldpassword""><span>Vec‚ parole :</span><input class=""spinputa"" type=""password"" name=""oldpassword""></div><div class=""addinput"" id=""pass1""><span>Jaun‚ parole :</span><input class=""spinputa"" type=""password"" name=""password1""></div>");
-  WebOutStringFormatNL("<div  class=""addinput"" id=""passw2""><span>Jaun‚ parole atk‚rtoti :</span><input class=""spinputa"" type=""password"" name=""password2"">/div></div>");
+  WebOutStringFormatNL("<div  class=""addinput"" id=""passw2""><span>Jaun‚ parole atk‚rtoti :</span><input class=""spinputa"" type=""password"" name=""password2""></div></div>");
   WebOutStringFormatNL("<div  class=""addinput"" id=""errormsg""><div id=""epassword""></div></div>");
   WebOutStringFormatNL("<input class=""spbutton"" type=""submit"" value=""APSTIPRINT"">");
   WebOutStringFormatNL("</form>");
