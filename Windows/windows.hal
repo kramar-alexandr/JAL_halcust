@@ -221,6 +221,14 @@ begin
   StaticText(80,25,"Spied OK",false);
   EndWindow;
 
+ WindowBegin("Smu New Act",SmuNewActTClass,CGHbl,HBlRecType);
+   SetBlid(SmuNewActBlock);
+   SetWRect(20,80,570,298);
+   Sizeable(-1,-1,0,0);
+   EditField(10,10,130,"Act Type",Normal,ActType,false,0);
+   EditField(10,30,130,"Act Text ID",Normal,ActText,false,0);
+   EditField(10,30,130,"Act Persone",Normal,ActPerson,false,0);
+   EndWindow;
 
   WindowBegin("Komp‚nijas",CompaniesTClass,CGHbl,HBlRecType);
   SetBlid(CompaniesBlock);
