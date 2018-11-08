@@ -21,15 +21,13 @@ begin
 				Actr.Comment = ANAB.ActText;
 				Actr.ActType = ANAB.ActType;
 				Actr.CUCode = ANAB.ActPerson;
-				RecordStore(Actr,true);
-				CreateRecordLink(Actr,CurrentCompany,SMFr,CurrentCompany);
-				CreateRecordLink(SMFr,CurrentCompany,Actr,CurrentCompany);
+				if(RecordStore(Actr,true)) yhen begin					CreateRecordLink(Actr,CurrentCompany,SMFr,CurrentCompany);					CreateRecordLink(SMFr,CurrentCompany,Actr,CurrentCompany);					weboutstring("{\"result\":\"OK\"}");				end else begin					weboutstring("{\"result\":\"ERROR\"}");				end;
 			end;
 		end;
 		WebGetPostData(PostData);
 		datajson = ParseJsonArea(PostData);
 		for(i=0;i<JSONCountChildren(datajson,"sernr");i=i+1) begin
-			code = JSONGet(datajson,"root[0]/["  & i & "]/debet/account/@sernr");			if(nonblank(code))then begin				SMFr.SMFCode = code;				if(readfirstmain(SMFr,1,true))then begin					RecordNew(Actr);					Actr.Comment = ANAB.ActText;					Actr.ActType = ANAB.ActType;					Actr.CUCode = ANAB.ActPerson;					RecordStore(Actr,true);					CreateRecordLink(Actr,CurrentCompany,SMFr,CurrentCompany);					CreateRecordLink(SMFr,CurrentCompany,Actr,CurrentCompany);				end;			end;
+			code = JSONGet(datajson,"root[0]/["  & i & "]/debet/account/@sernr");			if(nonblank(code))then begin				SMFr.SMFCode = code;				if(readfirstmain(SMFr,1,true))then begin					RecordNew(Actr);					Actr.Comment = ANAB.ActText;					Actr.ActType = ANAB.ActType;					Actr.CUCode = ANAB.ActPerson;					if(RecordStore(Actr,true)) yhen begin						CreateRecordLink(Actr,CurrentCompany,SMFr,CurrentCompany);						CreateRecordLink(SMFr,CurrentCompany,Actr,CurrentCompany);						weboutstring("{\"result\":\"OK\"}");					end else begin						weboutstring("{\"result\":\"ERROR\"}");					end;				end;			end;
 		end;
 		
 	end;
