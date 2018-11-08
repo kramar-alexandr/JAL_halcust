@@ -221,7 +221,7 @@ begin
   StaticText(80,25,"Spied OK",false);
   EndWindow;
 
- WindowBegin("Smu New Act",SmuNewActTClass,CGHbl,HBlRecType);
+ WindowBegin("Smu New Act",SmuNewActTClass,CGSbl,HBlRecType);
    SetBlid(SmuNewActBlock);
    SetWRect(20,80,570,298);
    Sizeable(-1,-1,0,0);
