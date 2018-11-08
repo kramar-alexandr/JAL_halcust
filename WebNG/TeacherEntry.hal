@@ -18,9 +18,9 @@ begin
 			SMFr.SMFCode = code;
 			if(readfirstmain(SMFr,1,true))then begin
 				RecordNew(Actr);
-				Actr.Text = ANAB.ActText;
-				Actr.Type = ANAB.ActType;
-				Actr.Persons = ANAB.ActPerson;
+				Actr.Comment = ANAB.ActText;
+				Actr.ActType = ANAB.ActType;
+				Actr.CUCode = ANAB.ActPerson;
 				RecordStore(Actr,true);
 				CreateRecordLink(Actr,CurrentCompany,SMFr,CurrentCompany);
 				CreateRecordLink(SMFr,CurrentCompany,Actr,CurrentCompany);
@@ -28,8 +28,8 @@ begin
 		end;
 		WebGetPostData(PostData);
 		datajson = ParseJsonArea(PostData);
-		for(i=0;i<JSONcntChild(datajson,"sernr");i=i+1) begin
-			code = JSONGet(datajson,root[i]);			if(nonblank(code))then begin				SMFr.SMFCode = code;				if(readfirstmain(SMFr,1,true))then begin					RecordNew(Actr);					Actr.Text = ANAB.ActText;					Actr.Type = ANAB.ActType;					Actr.Persons = ANAB.ActPerson;					RecordStore(Actr,true);					CreateRecordLink(Actr,CurrentCompany,SMFr,CurrentCompany);					CreateRecordLink(SMFr,CurrentCompany,Actr,CurrentCompany);				end;			end;
+		for(i=0;i<JSONCountChildren(datajson,"sernr");i=i+1) begin
+			code = JSONGet(datajson,"root[0]/["  & i & "]/debet/account/@sernr");			if(nonblank(code))then begin				SMFr.SMFCode = code;				if(readfirstmain(SMFr,1,true))then begin					RecordNew(Actr);					Actr.Comment = ANAB.ActText;					Actr.ActType = ANAB.ActType;					Actr.CUCode = ANAB.ActPerson;					RecordStore(Actr,true);					CreateRecordLink(Actr,CurrentCompany,SMFr,CurrentCompany);					CreateRecordLink(SMFr,CurrentCompany,Actr,CurrentCompany);				end;			end;
 		end;
 		
 	end;
