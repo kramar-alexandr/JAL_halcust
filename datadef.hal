@@ -832,4 +832,9 @@ begin
   EndRecordAdd;
 
 
+	BlockBegin(SmuNewActBlock,-,"");
+		RecordField(ActType,M4Str,100,0);
+		RecordField(ActText,M4Str,100,0);
+		RecordField(ActPerson,M4Str,100,0);
+	EndBlock;	
 end;
