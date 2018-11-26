@@ -42,6 +42,7 @@ external procedure EmpChangePage();
 external procedure TchChangePage();// Edit ************************** BPI Ukraine - KramarAlexandr - Monday, 29 October 2018 13:41:27
 external procedure DrawPasswordRecoveryPage();
 external procedure WebShowEntry();
+external procedure WebShowSmuEntry();
 external procedure ExtractObjWithSeparator(string,string,Boolean,var Integer,var string);
 //CUST-END
 
@@ -215,6 +216,8 @@ begin
     DrawPasswordRecoveryPage; res = true;
   case "WebShowEntry":
     WebShowEntry; res = true;
+  case "WebShowSmuEntry":
+    WebShowSmuEntry; res = true;
 //CUST-END
   end;
   ShowHALFunction = res;
