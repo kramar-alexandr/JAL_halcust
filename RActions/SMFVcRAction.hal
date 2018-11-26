@@ -32,6 +32,7 @@ begin
   record JALServerVc JSr;
   boolean TrHs;
 	integer j,pos;
+	record CUVc CUr;
 	string 255 member;
 		
 		pos = 0;
@@ -39,6 +40,12 @@ begin
 		member="";
 		ExtractObj(SMFr.Member,pos,member);
 		while(nonblank(member)) begin
+			CUr.Code = member;
+			if(!Readfirstmain(CUr,1,true)) then begin
+				RecordCheckError(1058,"Can't find member",-1,"Members");      
+				res = -1; 
+				goto LSMFVcRecordCheck;
+			end;
 			j=j+1;
 		end;
 		if(j>5) then begin
