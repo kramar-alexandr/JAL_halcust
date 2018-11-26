@@ -102,23 +102,23 @@ begin
 end;
 
 global
-function Boolean SMFDClassMembersEFAfter(Integer wn,Integer changedf)
+function Boolean SMFDClassMemberEFAfter(Integer wn,Integer changedf)
 begin  
   record SMFVc SMFr;
-	int pos,i;
+	integer pos,i;
   string 255 member;
 		GetWindowRecord(wn,SMFr);
 		pos = 0;
 		i = 0;
 		member="";
-		ExtractObject(SMFr,pos,member);
+		ExtractObj(SMFr.Member,pos,member);
 		while(nonblank(member)) begin
 			i=i+1;
 		end;
 		if(i>5) then begin
-			messagebox(0,"Can't be more then 5 position);
+			messagebox(0,"Can't be more then 5 position");
 		end;
-  SMFDClassMembersEFAfter = true;
+  SMFDClassMemberEFAfter = true;
   return;
 end;
 
@@ -140,8 +140,8 @@ begin
 
     case "SchoolCode": 
       res = SMFDClassSchoolCodeEFAfter(wn,changed);
-    case "Members":
-			res = SMFDClassMembersEFAfter(wn,changed);
+    case "Member":
+			res = SMFDClassMemberEFAfter(wn,changed);
     case "SMFCode": 
       res = SMFDClassSMFCodeEFAfter(wn,changed);
 

@@ -1,6 +1,7 @@
 external updating procedure AddComp(var record SMFVc);
 external updating procedure SendUpdateCompStatusFile(record SMFVc,integer);
 external updating procedure SendChangedStatusNotification(record SMFVc,integer);
+external inner procedure ExtractObj(string,var Integer,var string);
 
 function boolean ServerHasRoom()
 begin
@@ -36,7 +37,7 @@ begin
 		pos = 0;
 		j = 0;
 		member="";
-		ExtractObject(SMFr,pos,member);
+		ExtractObj(SMFr.Member,pos,member);
 		while(nonblank(member)) begin
 			j=j+1;
 		end;
