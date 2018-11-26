@@ -30,7 +30,21 @@ begin
   string 3 skola;
   record JALServerVc JSr;
   boolean TrHs;
-
+	integer j,pos;
+	string 255 member;
+		
+		pos = 0;
+		j = 0;
+		member="";
+		ExtractObject(SMFr,pos,member);
+		while(nonblank(member)) begin
+			j=j+1;
+		end;
+		if(j>5) then begin
+			RecordCheckError(1058,"Can't be more then 5",-1,"Members");      
+    res = -1; 
+    goto LSMFVcRecordCheck;
+		end;
   
   res = 0;
   if (blank(SMFr.SMFCode)) then begin

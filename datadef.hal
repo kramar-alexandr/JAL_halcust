@@ -235,7 +235,8 @@ begin
   RecordField(ParentSurName,M4Str,255,0);// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 5 October 2018 17:38:30
   RecordField(ParenteMail,M4Str,255,0);// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 5 October 2018 17:38:30
   RecordField(AgeFlag,M4Int,0,0);// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 5 October 2018 17:38:51
-  
+  RecordField(Members,M4Str,255,0); //Edit_________________ABR 26.11.18 15:00
+	
   ArrayBegin(Math,-,1);
   ArrayField(Type,M4Set,1005,0);
   ArrayField(Code,M4Code,10,0);

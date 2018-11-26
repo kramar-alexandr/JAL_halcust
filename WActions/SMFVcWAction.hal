@@ -1,7 +1,7 @@
 remote updating function boolean CreateNode_Remote(record WebNGMenuVc);
 remote updating function boolean DuplicateNode_Remote(record WebNGMenuVc,var record WebNGMenuVc);
 remote function string 40 GetNextCode_Menu(string);
-
+external inner procedure ExtractObj(string,var Integer,var string);
 
 //gjs
 global
@@ -101,6 +101,27 @@ begin
   return;
 end;
 
+global
+function Boolean SMFDClassMembersEFAfter(Integer wn,Integer changedf)
+begin  
+  record SMFVc SMFr;
+	int pos,i;
+  string 255 member;
+		GetWindowRecord(wn,SMFr);
+		pos = 0;
+		i = 0;
+		member="";
+		ExtractObject(SMFr,pos,member);
+		while(nonblank(member)) begin
+			i=i+1;
+		end;
+		if(i>5) then begin
+			messagebox(0,"Can't be more then 5 position);
+		end;
+  SMFDClassMembersEFAfter = true;
+  return;
+end;
+
 
 //afteredit actions
 global
@@ -119,7 +140,8 @@ begin
 
     case "SchoolCode": 
       res = SMFDClassSchoolCodeEFAfter(wn,changed);
-      
+    case "Members":
+			res = SMFDClassMembersEFAfter(wn,changed);
     case "SMFCode": 
       res = SMFDClassSMFCodeEFAfter(wn,changed);
 
