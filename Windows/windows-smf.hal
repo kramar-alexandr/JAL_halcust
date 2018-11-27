@@ -43,8 +43,8 @@ begin
   TileButton(2,"Iesðt´tie dokumenti");
   Tile(1,400,true,"",Manager);*/
   EditField(h,v+=vs,220,"Vad´t‚js",Normal,Manager,false,0);
-	EditField(h,v+=vs,220,"Dalibnieki",Normal,Member,false,0);
-	EditField(h,v+=vs,220,"Merkauditorija",Normal,TargetAud,false,0);
+	EditField(h,v+=vs,220,"Darbinieks",Normal,Member,false,0);
+	EditField(h,v+=vs,220,"M•rúauditorija",Normal,TargetAud,false,0);
   EditField(h,v+=vs,220,"E-pasts",Normal,Email,false,0);
   EditField(h,v+=vs,50,"Skol•na lietot. kods",Normal,CustCode,false,0);
   EditField(h2,v, 90,"Re®ions",Normal,Region,false,JALRegionSClass);
