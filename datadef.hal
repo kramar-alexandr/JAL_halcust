@@ -237,7 +237,9 @@ begin
   RecordField(AgeFlag,M4Int,0,0);// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 5 October 2018 17:38:51
   RecordField(Member,M4Str,255,0); //Edit_________________ABR 26.11.18 15:00
 	RecordField(TargetAud,M4Str,255,0); //Edit_________________ABR 26.11.18 17:10
-	
+	RecordField(ConfirmSKL,M4Mark,0,0);//Edit_________________ABR 26.11.18 17:10
+	RecordField(ConfirmPar,M4Mark,0,0);//Edit_________________ABR 26.11.18 17:10
+	RecordField(ConfirmTech,M4Mark,0,0);//Edit_________________ABR 26.11.18 17:10
   ArrayBegin(Math,-,1);
   ArrayField(Type,M4Set,1005,0);
   ArrayField(Code,M4Code,10,0);
