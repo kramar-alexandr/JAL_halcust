@@ -115,7 +115,7 @@ begin
         MoveReservationsBasket(GetWebSessionUUID,CurrentCust);
         PutSessionString("justloggedin","true");
         SendHansaWorldID;
-        //PutSessionString("requesturl","/MainProfile");
+//        PutSessionString("requesturl","/MainProfile");
         ShowWebProfile;
         logtext(0,"GetSessionString(requesturl); " & GetSessionString("requesturl"));
         //RedirectToRequestedPage;

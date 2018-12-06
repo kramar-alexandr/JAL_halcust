@@ -41,6 +41,7 @@ external procedure AddEmpPage();
 external procedure EmpChangePage();
 external procedure DrawPasswordRecoveryPage();
 external procedure WebShowEntry();
+external procedure WebShowSmuEntry();
 external procedure ExtractObjWithSeparator(string,string,Boolean,var Integer,var string);
 //CUST-END
 
@@ -212,6 +213,8 @@ begin
     DrawPasswordRecoveryPage; res = true;
   case "WebShowEntry":
     WebShowEntry; res = true;
+  case "WebShowSmuEntry":
+    WebShowSmuEntry; res = true;
 //CUST-END
   end;
   ShowHALFunction = res;

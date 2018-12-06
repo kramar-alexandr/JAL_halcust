@@ -6,6 +6,8 @@ external procedure ShowWebElement(string);
 external procedure ShowRedirectHtml(string,boolean);
 external function string 255 GetLinkToStruct(LongInt,boolean);
 external procedure ShowDocumentList(string,integer,string);
+SetLangMode(LangLatvian,"LAT",0);
+
 
 
 procedure ShowUploadForm()
@@ -196,7 +198,7 @@ begin
   record ObjVc OBr;
   integer i;
 
-  WebOutStringFormatNL("<div class=""formrow""><div class='form_lb_test'>" & ToolWebNGTranslateText(25920) & "</div>");
+  WebOutStringFormatNL("<div class=""addinput""><span class='form_lb_test'>" & ToolWebNGTranslateText(25920) & "</span>");
 
   WebOutStringFormatNL("<select class='spinput' name='prclass'>");
   WebOutStringFormatNL("<option value="""">" & ToolWebNGTranslateText(25922) & "</option>");
@@ -262,6 +264,76 @@ begin
   return;
 end;
 
+global procedure EmpChangePage()
+begin
+  integer err;
+  record CUVc CUr,cCUr;
+  record SMFVc SMFr;
+  record RLinkVc RLr;
+  integer i;
+  record JALClassBlock JCbl;
+  string 30 cust;
+
+  BlockLoad(JCbl);
+
+  cust = CurrentCust;
+
+  if nonblank(cust) then begin
+    CUr.Code = cust;
+    cCUr.Code = CurrentCust;
+    if readfirstmain(cCUr,1,true) then begin end;
+    if readfirstmain(CUr,1,true) then begin
+      if readrecordlink(CUr,1,SMFr,RLr) or FindSMURecord(cCUr.Code,SMFr) then begin
+        if (cust == CurrentCust or  cCUr.Code == SMFr.CustCode) then begin
+          WebOutStringFormatNL("<form class=""changeprofile"" method=""POST"" id=""forma""action=""/WebChangeCompEmp.hal"">");
+          WebOutStringFormatNL("<input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");
+          WebOutStringFormatNL("<input type=""hidden"" name=""cust"" value=""" & CUr.Code & """>");
+          WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path")& """>");
+          WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(20030) & "</span><input type=""text"" name=""name"" value=""" & CUr.Name & """></div>");
+          WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">Skola:</span><input readonly type=""text"" name=""name"" value=""" & SMFr.SchoolName & """></div>");
+          WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(20033) & "</span><input readonly type=""text"" name=""email"" value=""" & CUr.eMail & """></div>");
+          WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(23010) & "</span><input type=""password"" name=""passw1""></div>");
+          WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(23011) & "</span><input type=""password"" name=""passw2""></div>");
+          //error
+          err = StringToLongInt(getSessionString("err"));
+          PutSessionString("err","");
+          if err > 0 then begin
+            WebOutStringFormatNL("<div id=""error"">");
+            if (BitAnd(err,2)==2) then begin
+              WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20200) & "</li>");
+            end;
+            if (BitAnd(err,4)==4) then begin
+              WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20201) & "</li>");
+            end;
+            if (BitAnd(err,8)==8) then begin
+              WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20202) & "</li>");
+            end;
+            if (BitAnd(err,16)==16) then begin
+              WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20203) & "</li>");
+            end;
+            if (BitAnd(err,64)==64) then begin
+              WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20205) & "</li>");
+            end;
+            WebOutStringFormatNL("</div>");
+          end;
+          WebOutStringFormatNL("<div class=""addbutton""><button class=""spbutton"" id=""confirmMainInfo"" type=""button"">" & ToolWebNGTranslateText(20212) & "</button></div>");
+          WebOutStringFormatNL("</form>");
+        end else begin
+          ShowRedirectHTML(FormatSimpleLink(GetLinkToStruct(JCbl.ProfileCorrectionStruct,true),true),false);
+        end;
+      end else begin
+        ShowFailPage;
+      end;
+    end else begin
+      ShowFailPage;
+    end;
+  end else begin
+    ShowFailPage;
+  end;
+return;
+end;
+
+
 global procedure ShowProfileCorrectionInfo()
 begin
   record CUVc CUr,tCUr;
@@ -280,7 +352,10 @@ begin
         err = StringToLongInt(getSessionString("err"));
         PutSessionString("err","");
         WebOutStringFormatNL("<div id=""compinfo"">");
-        WebOutStringFormatNL("<form id=""changeprofile"" method=""POST"" action=""/WebChangeProfile.hal"">");
+        EmpChangePage;
+        WebOutStringFormatNL("<h2>Skol•nu m‚c´bu uzÀ•mums</h2>");
+        WebOutStringFormatNL("<p>P•c ä´s inform‚cijas maiÀas atk‚rtoti tiek iesniegts SMU re®istr‚cijas pieteikums. P•c t‚ apstiprin‚juma saÀemäanas no skolot‚ja un JA Latvia jaun‚ Re®istr‚cijas apliec´ba ar atjaunoto inform‚ciju bðs pieejama sadaº‚ Atskaites/Dokumenti. Atjaunoto dokumentu oblig‚ti nepiecieäams izdruk‚t un iesniegt parakst´äanai SMU skolot‚jam/konsultantam un skolas direktoram, cit‚d‚k SMU darb´bu nevar turpin‚t.áo inform‚ciju var labot tikai SMU vad´t‚js.</p>");
+        WebOutStringFormatNL("<form class=""changeprofile"" id=""formaTwo"" method=""POST"" action=""/WebChangeProfile.hal"">");
         if err > 0 then begin
           WebOutStringFormatNL("<div id=""error"">");
           if (BitAnd(err,2)==2) then begin
@@ -290,54 +365,50 @@ begin
           WebOutStringFormatNL("</div>");
         end;
         WebOutStringFormatNL("<input type=""hidden"" name=""tpath"" value=""" & WebGetArg("path") & """>");
-        WebOutStringFormatNL("<div class=""formrow""><div class='form_lb_test'>" & ToolWebNGTranslateText(21061) & "</div><input type=""text"" class=""name"" name=""name"" value='" & EscapeText(SMFr.SMFName) & "'>");
+        WebOutStringFormatNL("<div class=""addinput""><span>SMU Nosaukums</span><input type=""text"" name=""name"" value='" & EscapeText(SMFr.SMFName) & "'>");
         WebOutStringFormatNL("</div>");
         WebOutStringFormatNL("<input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");
         WebOutStringFormatNL("<input type=""hidden"" name=""emp"" value=""" & CUr.Code & """>");
-        WebOutStringFormatNL("<div id=""infolabel"">" & ToolWebNGTranslateText(23070) & "</div>");
-        WebOutStringFormatNL("<textarea name=""comment"" id=""comment"">");
-        WebOutText(SMFr,false,"");
-        WebOutStringFormatNL("</textarea>");
-        ShowClassSelect(SMFr);
-        WebOutStringFormatNL("<div class=""formrow""><div class='form_lb_test'>" & ToolWebNGTranslateText(25921) & "</div><input type=""text"" class=""name"" name=""prodinfo"" value=""" & SMFr.ProdSpec & """>");
+//        WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(23070) & "</span>");
+//        WebOutStringFormatNL("<textarea type=""text"" name=""comment"">");
+//        WebOutText(SMFr,false,"");
+//        WebOutStringFormatNL("</textarea>");
+//        WebOutStringFormatNL("</div>");
+        WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(25921) & "</span><input type=""text"" class=""name"" name=""prodinfo"" value=""" & SMFr.ProdSpec & """>");
         WebOutStringFormatNL("</div>");
-
-        WebOutStringFormatNL("<input type=""submit"" value=""" & ToolWebNGTranslateText(23073) & """ id=""changesbutton"">");
+        ShowClassSelect(SMFr);
+        WebOutStringFormatNL("<div class=""addbutton""><button class=""spbutton"" type=""button"" value="""" id=""confirmSmuInfo"">" & ToolWebNGTranslateText(23073) & "</button></div>");
         WebOutStringFormatNL("</form>");
         WebOutStringFormatNL("</div>");
-
-        ShowDocUploadForm;
-        
-        ShowUploadForm;
-
-
+//        ShowDocUploadForm;
+//        ShowUploadForm;
         i = 1;
         emp = 0;
         WebOutStringFormatNL("<div id=""removeemp"">");
-        WebOutStringFormatNL("<h3>" & ToolWebNGTranslateText(23071) & "</h3>");
+        WebOutStringFormatNL("<h2>" & ToolWebNGTranslateText(23071) & "</h2>");
         while readrecordlink(SMFr,i,tCUr,RLr) begin
           WebOutStringFormatNL("<div class=""emprow"">");
           if (SMFr.CustCode <> tCUr.Code and CUr.Code == SMFr.CustCode) then begin
             WebOutStringFormatNL("<form class=""deleteform"" action=""/WebDeleteEmp.hal"" method=""POST"" onsubmit=""return confirm('" & ToolWebNGTranslateText(23076) & "');"">");
           end; 
-            WebOutStringFormatNL("<div class=""emp""><div class=""empname"">" & tCUr.Name & "</div><div class=""empemail"">" & tCUr.eMail & "</div></div><input type=""hidden"" name=""emp"" value=""" & tCUr.Code & """>");
+            WebOutStringFormatNL("<div class=""emp""><div class=""empname""><span>" & ToolWebNGTranslateText(20030) & ": </span><p>" & tCUr.Name & "</p></div><div class=""empemail""><span>E-pasta adrese: </span><p>" & tCUr.eMail & "</p></div></div><input type=""hidden"" name=""emp"" value=""" & tCUr.Code & """>");
             WebOutStringFormatNL("<input type=""hidden"" name=""tpath"" value=""" & WebGetArg("path") & """><input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");
           
          
-          WebOutStringFormatNL("<div class=""deletebutton  delleft"">"); 
+//          WebOutStringFormatNL("<div class=""deletebutton  delleft"">");
           if (SMFr.CustCode <> tCUr.Code and CUr.Code == SMFr.CustCode) then begin   
-            WebOutStringFormatNL("<input type=""submit"" value=""" & ToolWebNGTranslateText(23074) & """>");
+            WebOutStringFormatNL("<input class=""spbutton"" type=""submit"" value=""" & ToolWebNGTranslateText(23074) & """>");
           end else begin
             WebOutStringFormatNL("&nbsp;");
           end;
-          WebOutStringFormatNL("</div>");
-          WebOutStringFormatNL("<div class=""deletebutton"">");
+//          WebOutStringFormatNL("</div>");
+//          WebOutStringFormatNL("<div class=""deletebutton"">");
           if ((SMFr.CustCode == CUr.Code or CUr.Code == tCUr.Code)) then begin
-            WebOutStringFormatNL("<a href=""" & FormatSimpleLink(GetLinkToStruct(JCbl.EmpChangeStruct,true),true) & "?cust=" & CUr.Code & """>" & ToolWebNGTranslateText(25930) & "</a>");
+//            WebOutStringFormatNL("<a class=""spbutton"" href=""" & FormatSimpleLink(GetLinkToStruct(JCbl.EmpChangeStruct,true),true) & "?cust=" & CUr.Code & """>" & ToolWebNGTranslateText(25930) & "</a>");
           end else begin
             WebOutStringFormatNL("&nbsp;");
           end;
-          WebOutStringFormatNL("</div>");
+//          WebOutStringFormatNL("</div>");
             if (SMFr.CustCode <> tCUr.Code and CUr.Code == SMFr.CustCode) then begin   
             WebOutStringFormatNL("</form>") ;
           end;
@@ -351,7 +422,8 @@ begin
           WebOutStringFormatNL("<div id=""noemp"">" & ToolWebNGTranslateText(23075) & "</div>");
         end;
         if (emp < 5 and SMFr.CustCode == CUr.Code) then begin
-          WebOutStringFormatNL("<div id=""addemp""><a href=""" & FormatSimpleLink(GetLinkToStruct(JCbl.AddEmpStruct,true),true) & """>" & ToolWebNGTranslateText(20080) & "</a></div>");
+
+          WebOutStringFormatNL("<div id=""addemp""><button class=""spbutton addEmp"">" & ToolWebNGTranslateText(20080) & "</button></div>");
         end;
         
         WebOutStringFormatNL("</div>");
@@ -467,7 +539,7 @@ begin
             end;
             WebOutStringFormatNL("</div>");
           end;
-          WebOutStringFormatNL("<table><tr><td><div class=""addbutton""><input type=""submit"" value=""" & ToolWebNGTranslateText(20210) & """ ></div></td><td><div class=""addbutton""><a href=""" & FormatSimpleLink(GetLinkToStruct(JCbl.ProfileCorrectionStruct,true),true) & """>" & ToolWebNGTranslateText(20211) & "</a></div></td></tr></table>");
+          WebOutStringFormatNL("<div class=""addEmpBtn""><input class=""spbutton"" type=""submit"" value=""" & ToolWebNGTranslateText(20210) & """ ><button type='button' class=""spbutton addEmpCancel"">" & ToolWebNGTranslateText(20211) & "</button></div>");
           WebOutStringFormatNL("</form>");
         end else begin
           ShowRedirectHTML(FormatSimpleLink(GetLinkToStruct(JCbl.ProfileCorrectionStruct,true),true),false);
@@ -483,79 +555,6 @@ begin
   end;
 return;
 end;
-
-
-global procedure EmpChangePage()
-begin
-  integer err;
-  record CUVc CUr,cCUr;
-  record SMFVc SMFr;
-  record RLinkVc RLr;
-  integer i;
-  record JALClassBlock JCbl;
-  string 30 cust;
-
-  BlockLoad(JCbl);
-
-  cust = WebGetArg("cust");
-  if nonblank(cust) then begin
-    CUr.Code = cust;
-    cCUr.Code = CurrentCust;
-    if readfirstmain(cCUr,1,true) then begin end;
-    if readfirstmain(CUr,1,true) then begin
-      if readrecordlink(CUr,1,SMFr,RLr) or FindSMURecord(cCUr.Code,SMFr) then begin
-        if (cust == CurrentCust or  cCUr.Code == SMFr.CustCode) then begin
-          WebOutStringFormatNL("<form method=""POST"" id=""forma""action=""/WebChangeCompEmp.hal"">");
-          WebOutStringFormatNL("<input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");
-          WebOutStringFormatNL("<input type=""hidden"" name=""cust"" value=""" & CUr.Code & """>");
-          WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path")& """>");
-          WebOutStringFormatNL("<div class=""addinput""><input type=""text"" name=""name"" value=""" & CUr.Name & """></div>");
-          WebOutStringFormatNL("<div class=""addlabel"">" & ToolWebNGTranslateText(20030) & "</div>");
-          WebOutStringFormatNL("<div class=""addinput""><input type=""text"" name=""email"" value=""" & CUr.eMail & """></div>");
-          WebOutStringFormatNL("<div class=""addlabel"">" & ToolWebNGTranslateText(20033) & "</div>");
-          WebOutStringFormatNL("<div class=""addinput""><input type=""password"" name=""passw1""></div>");
-          WebOutStringFormatNL("<div class=""addlabel"">" & ToolWebNGTranslateText(23010) & "</div>");
-          WebOutStringFormatNL("<div class=""addinput""><input type=""password"" name=""passw2""></div>");
-          WebOutStringFormatNL("<div class=""addlabel"">" & ToolWebNGTranslateText(23011) & "</div>");
-          //error
-          err = StringToLongInt(getSessionString("err"));
-          PutSessionString("err","");
-          if err > 0 then begin
-            WebOutStringFormatNL("<div id=""error"">");
-            if (BitAnd(err,2)==2) then begin
-              WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20200) & "</li>");
-            end;
-            if (BitAnd(err,4)==4) then begin
-              WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20201) & "</li>");
-            end;
-            if (BitAnd(err,8)==8) then begin
-              WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20202) & "</li>");
-            end;
-            if (BitAnd(err,16)==16) then begin
-              WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20203) & "</li>");
-            end;
-            if (BitAnd(err,64)==64) then begin
-              WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20205) & "</li>");
-            end;
-            WebOutStringFormatNL("</div>");
-          end;
-          WebOutStringFormatNL("<table><tr><td><div class=""addbutton""><input type=""submit"" value=""" & ToolWebNGTranslateText(20212) & """ ></div></td><td><div class=""addbutton""><a href=""" & FormatSimpleLink(GetLinkToStruct(JCbl.ProfileCorrectionStruct,true),true) & """>" & ToolWebNGTranslateText(20211) & "</a></div></td></tr></table>");
-          WebOutStringFormatNL("</form>");
-        end else begin
-          ShowRedirectHTML(FormatSimpleLink(GetLinkToStruct(JCbl.ProfileCorrectionStruct,true),true),false);
-        end;
-      end else begin
-        ShowFailPage;
-      end;
-    end else begin
-      ShowFailPage;
-    end;
-  end else begin
-    ShowFailPage;
-  end;
-return;
-end;
-
 
 global procedure TchChangePage()
 begin
@@ -683,6 +682,7 @@ begin
 
   txt="";
   TrHs = true;
+  logtext(0, "ShowProfileForSMU");
   if nonblank(CurrentCust) then begin
     CUr.Code = CurrentCust;
     if readfirstmain(CUr,1,true) then begin
@@ -977,7 +977,8 @@ begin
     if readfirstmain(CUr,1,true) then begin
       if readrecordlink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr) then begin
         foundf = true;
-        ShowRedirectHTML(FormatSimpleLink("/ProfileSMU",true),false);
+		logtext(0, "Profile [SMU]");
+        ShowRedirectHTML(FormatSimpleLink("/profilePupil",true),false);
     //while loopkey("CustCode",SMFr,1,TrHs) begin
       //TrHs = false;
      // if SMFr.CustCode == curcust then begin
@@ -997,7 +998,8 @@ begin
         SMFr.CustCode = Cur.Code;
         if (ReadFirstKey("CustCode",SMFr,1,true)) then begin
           foundf = true;
-          ShowRedirectHTML(FormatSimpleLink("/ProfileSMU",true),false);              
+		logtext(0, "Profile [SMU]");
+          ShowRedirectHTML(FormatSimpleLink("/profilePupil",true),false);
         end;
       end;
     end;
@@ -1008,7 +1010,8 @@ begin
           TrHs = false;
         if TCr.CustCode == curcust then begin
           foundf = true;
-        ShowRedirectHTML(FormatSimpleLink("/ProfileTeacher",true),false);
+          logtext(0, "Profile [TEACHER]");
+        ShowRedirectHTML(FormatSimpleLink("/profileTeacher",true),false);
           //ShowProfileForTeacher(TCr);
         end;
       end;
