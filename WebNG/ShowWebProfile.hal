@@ -333,6 +333,52 @@ begin
 return;
 end;
 
+global procedure ParentChangeForm()
+begin
+		record SMFVc SMFr;
+	row SMFVc SMFrw;
+	integer i,mtrw,cnt;
+	string 50 code,status,type;
+	record CUVc CUr;
+  boolean TrHs,testf;
+	LongInt err;
+
+		CUr.Code = CurrentCust;
+		if(ReadFirstMain(CUr,1,true)) then begin
+      SMFr.CustCode=CurrentCust;
+			ReadFirstKey("CustCode",SMFr,1,true);
+			WebOutStringFormatNL("<form class=""changeprofile"" method=""POST"" id=""forma""action=""/WebChangeCompParent.hal"">");
+			WebOutStringFormatNL("<input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");
+			WebOutStringFormatNL("<input type=""hidden"" name=""cust"" value=""" & CUr.Code & """>");
+			WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path")& """>");
+			WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(20030) & "</span><input type=""text"" name=""name"" value=""" & SMFr.ParentName & " " & SMFr.ParentSurName &  """></div>");
+			WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(20033) & "</span><input readonly type=""text"" name=""email"" value=""" & SMFr.ParenteMail & """></div>");
+	//error
+			err = StringToLongInt(getSessionString("err"));
+			PutSessionString("err","");
+			if err > 0 then begin
+				WebOutStringFormatNL("<div id=""error"">");
+				if (BitAnd(err,2)==2) then begin
+					WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20200) & "</li>");
+				end;
+				if (BitAnd(err,4)==4) then begin
+					WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20201) & "</li>");
+				end;
+				if (BitAnd(err,8)==8) then begin
+					WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20202) & "</li>");
+				end;
+				if (BitAnd(err,16)==16) then begin
+					WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20203) & "</li>");
+				end;
+				if (BitAnd(err,64)==64) then begin
+					WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20205) & "</li>");
+				end;
+				WebOutStringFormatNL("</div>");
+			end;
+		end;
+	WebOutStringFormatNL("<div class=""addbutton""><button class=""spbutton"" id=""confirmParentInfo"" type=""button"">" & ToolWebNGTranslateText(20212) & "</button></div>");
+	WebOutStringFormatNL("</form>");
+end;
 
 global procedure ShowProfileCorrectionInfo()
 begin
@@ -353,6 +399,7 @@ begin
         PutSessionString("err","");
         WebOutStringFormatNL("<div id=""compinfo"">");
         EmpChangePage;
+				ParentChangeForm;
         WebOutStringFormatNL("<h2>Skol•nu m‚c´bu uzÀ•mums</h2>");
         WebOutStringFormatNL("<p>P•c ä´s inform‚cijas maiÀas atk‚rtoti tiek iesniegts SMU re®istr‚cijas pieteikums. P•c t‚ apstiprin‚juma saÀemäanas no skolot‚ja un JA Latvia jaun‚ Re®istr‚cijas apliec´ba ar atjaunoto inform‚ciju bðs pieejama sadaº‚ Atskaites/Dokumenti. Atjaunoto dokumentu oblig‚ti nepiecieäams izdruk‚t un iesniegt parakst´äanai SMU skolot‚jam/konsultantam un skolas direktoram, cit‚d‚k SMU darb´bu nevar turpin‚t.áo inform‚ciju var labot tikai SMU vad´t‚js.</p>");
         WebOutStringFormatNL("<form class=""changeprofile"" id=""formaTwo"" method=""POST"" action=""/WebChangeProfile.hal"">");
@@ -1079,3 +1126,17 @@ begin
   end;
 
 end;
+
+global webpublic
+updating procedure WebJALConfirmPupilRegistration()
+begin
+  record CUVc CUr,oldCUr;
+	record SMFVc SMFr;
+	
+	SMFr.CustCode = CurrentCust;
+	if(ReadFirstKey("CustCode",SMFr,1,true)) then begin
+		SMFr.ConfirmSKL = 1;
+		RecordStore(SMFr,true);
+	end;	
+end;
+

@@ -486,3 +486,33 @@ begin
 
 return;
 end;
+
+global
+function Boolean SMFDClassConfirmSKLButtonAction(Integer wn,Integer value)
+BEGIN
+  Boolean res;
+  
+  res = false;
+  SMFDClassConfirmSKLButtonAction = res;
+  RETURN;
+END;
+
+global
+function Boolean SMFDClassConfirmParButtonAction(Integer wn,Integer value)
+BEGIN
+  Boolean res;
+  
+  res = false;
+  SMFDClassConfirmParButtonAction = res;
+  RETURN;
+END;
+
+global
+function Boolean SMFDClassConfirmTeachButtonAction(Integer wn,Integer value)
+BEGIN
+  Boolean res;
+  
+  res = false;
+  SMFDClassConfirmTeachButtonAction = res;
+  RETURN;
+END;
