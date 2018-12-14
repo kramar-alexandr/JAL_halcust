@@ -347,8 +347,9 @@ begin
 		if(ReadFirstMain(CUr,1,true)) then begin
       SMFr.CustCode=CurrentCust;
 			ReadFirstKey("CustCode",SMFr,1,true);
-			WebOutStringFormatNL("<h2>Inform‚cija par vec‚ku vai aizbildni:</h2>");
-			WebOutStringFormatNL("<form class=""changeprofile"" method=""POST"" id=""formaParent""action=""/WebChangeCompParent.hal"">");
+		if (SMFr.AgeFlag==0) then begin
+		    WebOutStringFormatNL("<h2>Inform‚cija par vec‚ku vai aizbildni:</h2>");
+			WebOutStringFormatNL("<form class=""changeprofile"" method=""POST"" id=""forma""action=""/WebChangeCompParent.hal"">");
 			WebOutStringFormatNL("<input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");
 			WebOutStringFormatNL("<input type=""hidden"" name=""cust"" value=""" & CUr.Code & """>");
 			WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path")& """>");
@@ -376,9 +377,10 @@ begin
 				end;
 				WebOutStringFormatNL("</div>");
 			end;
-		end;
 	WebOutStringFormatNL("<div class=""addbutton""><button class=""spbutton"" id=""confirmParentInfo"" type=""button"">" & ToolWebNGTranslateText(20212) & "</button></div>");
 	WebOutStringFormatNL("</form>");
+		end;
+		end;
 end;
 
 global procedure ShowProfileCorrectionInfo()
