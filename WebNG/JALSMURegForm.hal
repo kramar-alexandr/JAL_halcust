@@ -815,9 +815,10 @@ begin
             CreateRecordLink(SMFr,CurrentCompany,CUr,CurrentCompany);
             CreateRecordLink(CUr,CurrentCompany,SMFr,CurrentCompany);
             text = USetStr(32347) & chr(13) & USetStr(10018) & " " & email[i] &  chr(13) & USetStr(10029) & ": " & tstr;
+						text = "reg";
             GenMailForSMU(text,USetStr(32348),CUr.eMail,SMFr,false,CUr,tstr); 
 						if(SMFr.AgeFlag!=0) then begin
-								text = "test";
+								text = "test reg";
 								GenMailForSMU(text,USetStr(32483),SMFr.ParenteMail,SMFr,false,tCUr,tstr);
 						end;
           end;
