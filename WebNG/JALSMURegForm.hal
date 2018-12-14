@@ -760,7 +760,7 @@ begin
 		SMFr.ParentSurName = WebGetArg("parentsurname");// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 5 October 2018 17:42:32
 		SMFr.ParenteMail = WebGetArg("parentemail");// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 5 October 2018 17:42:33
 		SMFr.AgeFlag = stringtoint(WebGetArg("age"));// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 5 October 2018 17:42:33
-    
+  
     if recordStore(SMFr,false) then begin 
       //text = name[0] & USetStr(32345) & (size) & USetStr(32346);
       //GenMailForSMU(text,USetStr(32344) & " - " & SMFr.SMFName,RMbl.SMUMail,SMFr,true,CUr,""); 
@@ -788,6 +788,10 @@ begin
               CreateRecordLink(tCUr,CurrentCompany,SMFr,CurrentCompany);
               text = USetStr(32347) & chr(13) & USetStr(10018) & " " & email[i] &  chr(13) & USetStr(10029) & ": " & tstr;
               GenMailForSMU(text,USetStr(32348),tCUr.eMail,SMFr,false,tCUr,tstr);   
+							if(SMFr.AgeFlag==0) then begin
+								text = "test";
+								GenMailForSMU(text,USetStr(32483),SMFr.ParenteMail,SMFr,false,tCUr,tstr);
+							end;
             end;
           end;
         end else begin
@@ -812,6 +816,10 @@ begin
             CreateRecordLink(CUr,CurrentCompany,SMFr,CurrentCompany);
             text = USetStr(32347) & chr(13) & USetStr(10018) & " " & email[i] &  chr(13) & USetStr(10029) & ": " & tstr;
             GenMailForSMU(text,USetStr(32348),CUr.eMail,SMFr,false,CUr,tstr); 
+						if(SMFr.AgeFlag==0) then begin
+								text = "test";
+								GenMailForSMU(text,USetStr(32483),SMFr.ParenteMail,SMFr,false,tCUr,tstr);
+						end;
           end;
         end;
         if i == 0 then begin
