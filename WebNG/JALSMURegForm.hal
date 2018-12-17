@@ -530,6 +530,7 @@ updating procedure GenMailForSMU(string txt,string head,string conf,var record S
 begin
   record MailVc Mailr;
   row MailVc Mailrw;
+	record TeacherVc TCr;
   integer i;
   string 100 tstr;
   record MailSettingsBlock MSr;
@@ -549,7 +550,20 @@ begin
       LineTextPut(Mailr,1,USetStr(10018) & " " & CUr.eMail);
       LineTextPut(Mailr,2,USetStr(10029) & ": " & pass);
       LineTextPut(Mailr,3,USetStr(32472));
-      LineTextPut(Mailr,4,"http://jal.lv/WebJALApprovebyc3a.hal?c=" & CUr.Code & "&a=" & CUr.Comment);
+			if(ReadFirstKey("Email",SMFr,1,true)) then begin
+				LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveSMU.hal?c=" & CUr.Code & "&a=" & CUr.Comment);
+			end else begin
+				if(ReadFirstKey("ParenteMail",SMFr,1,true)) then begin
+					LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveParente.hal?c=" & CUr.Code & "&a=" & CUr.Comment);
+				end else begin
+					TCr.CustCode = CUr.Code;
+					if(ReadFirstKey("CustCode",TCr,1,true)) then begin
+						LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveTeacher.hal?c=" & CUr.Code & "&a=" & CUr.Comment);
+					end else begin
+						LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveEmployer.hal?c=" & CUr.Code & "&a=" & CUr.Comment);
+					end;	
+				end;
+			end;	
       Mailrw.AddrCode = MSr.Postmaster;
 	  end;
     MatRowPut(Mailr,0,Mailrw);
@@ -645,7 +659,7 @@ begin
   integer err;
   integer year;
   row SMFVc SMFrw;
-
+  record ConfVc Cr;
   BlockLoad(RMbl);
   BlockLoad(JALClassbl);
   smuname = WebGetArg("smuname");
@@ -782,16 +796,15 @@ begin
             tCUr.CustType = 1;
             tCUr.CUType = 1;
             tCUr.Password = CalcPassword(tstr,tCUr.Code,0);
-						tCUr.Classification = JALClassbl.Schoolar;
             if recordUpdate(oldCUr,tCUr,true)== 0 then begin 
               testf = true;
               CreateRecordLink(SMFr,CurrentCompany,tCUr,CurrentCompany);
               CreateRecordLink(tCUr,CurrentCompany,SMFr,CurrentCompany);
               text = USetStr(32347) & chr(13) & USetStr(10018) & " " & email[i] &  chr(13) & USetStr(10029) & ": " & tstr;
-              GenMailForSMU(text,USetStr(32348),tCUr.eMail,SMFr,true,tCUr,tstr);   
+              GenMailForSMU(text,USetStr(32348),tCUr.eMail,SMFr,false,tCUr,tstr);   
 							if(SMFr.AgeFlag!=0) then begin
 								text = "test";
-								GenMailForSMU(text,USetStr(32483),SMFr.ParenteMail,SMFr,true,tCUr,tstr);
+								GenMailForSMU(text,USetStr(32483),SMFr.ParenteMail,SMFr,false,tCUr,tstr);
 							end;
             end;
           end;
@@ -808,8 +821,6 @@ begin
           tstr = WebGetArg("password1");
           SCr.SchoolCode = WebGetArg("school");
           CUr.Password = CalcPassword(tstr,CUr.Code,0);
-					CUr.Classification = JALClassbl.Schoolar;
-					tCUr.Classification = JALClassbl.Schoolar;
           if recordStore(CUr,true) then begin 
             testf = true;
             if readfirstmain(SCr,1,true) then begin
