@@ -198,7 +198,7 @@ begin
   record ObjVc OBr;
   integer i;
 
-  WebOutStringFormatNL("<div class=""addinput""><span class='form_lb_test'>" & ToolWebNGTranslateText(25920) & "</span>");
+  WebOutStringFormatNL("<div class=""addinput selectCompInfo""><span class='form_lb_test'>" & ToolWebNGTranslateText(25920) & "</span>");
 
   WebOutStringFormatNL("<select class='spinput' name='prclass'>");
   WebOutStringFormatNL("<option value="""">" & ToolWebNGTranslateText(25922) & "</option>");
