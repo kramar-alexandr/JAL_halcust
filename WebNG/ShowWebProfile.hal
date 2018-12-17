@@ -347,7 +347,7 @@ begin
 		if(ReadFirstMain(CUr,1,true)) then begin
       SMFr.CustCode=CurrentCust;
 			ReadFirstKey("CustCode",SMFr,1,true);
-		if (SMFr.AgeFlag==0) then begin
+		if (SMFr.AgeFlag!=0) then begin
 		    WebOutStringFormatNL("<h2>Inform‚cija par vec‚ku vai aizbildni:</h2>");
 			WebOutStringFormatNL("<form class=""changeprofile"" method=""POST"" id=""forma""action=""/WebChangeCompParent.hal"">");
 			WebOutStringFormatNL("<input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");

@@ -782,13 +782,14 @@ begin
             tCUr.CustType = 1;
             tCUr.CUType = 1;
             tCUr.Password = CalcPassword(tstr,tCUr.Code,0);
+						tCUr.Classification = JALClassbl.Schoolar;
             if recordUpdate(oldCUr,tCUr,true)== 0 then begin 
               testf = true;
               CreateRecordLink(SMFr,CurrentCompany,tCUr,CurrentCompany);
               CreateRecordLink(tCUr,CurrentCompany,SMFr,CurrentCompany);
               text = USetStr(32347) & chr(13) & USetStr(10018) & " " & email[i] &  chr(13) & USetStr(10029) & ": " & tstr;
               GenMailForSMU(text,USetStr(32348),tCUr.eMail,SMFr,true,tCUr,tstr);   
-							if(SMFr.AgeFlag==0) then begin
+							if(SMFr.AgeFlag!=0) then begin
 								text = "test";
 								GenMailForSMU(text,USetStr(32483),SMFr.ParenteMail,SMFr,true,tCUr,tstr);
 							end;
@@ -807,6 +808,8 @@ begin
           tstr = WebGetArg("password1");
           SCr.SchoolCode = WebGetArg("school");
           CUr.Password = CalcPassword(tstr,CUr.Code,0);
+					CUr.Classification = JALClassbl.Schoolar;
+					tCUr.Classification = JALClassbl.Schoolar;
           if recordStore(CUr,true) then begin 
             testf = true;
             if readfirstmain(SCr,1,true) then begin
