@@ -788,10 +788,10 @@ begin
               CreateRecordLink(SMFr,CurrentCompany,tCUr,CurrentCompany);
               CreateRecordLink(tCUr,CurrentCompany,SMFr,CurrentCompany);
               text = USetStr(32347) & chr(13) & USetStr(10018) & " " & email[i] &  chr(13) & USetStr(10029) & ": " & tstr;
-              GenMailForSMU(text,USetStr(32484),tCUr.eMail,SMFr,false,tCUr,tstr);   
+              GenMailForSMU(text,USetStr(32486),tCUr.eMail,SMFr,false,tCUr,tstr);   
 							if(SMFr.AgeFlag!=0) then begin
 								text = "test";
-								GenMailForParents(text,USetStr(32486),SMFr.ParenteMail,SMFr,false,tCUr,tstr);
+								GenMailForParents(text,USetStr(32484),SMFr.ParenteMail,SMFr,false,tCUr,tstr);
 							end;
             end;
           end;
@@ -843,30 +843,3 @@ begin
 return;
 end;
 
-global webpublic
-updating procedure WebJALApprovebyc3a()
-begin
-  record CUVc CUr,oldCUr;
-  boolean okf;
-
-  okf = false;
-
-  CUr.Code = WebGetArg("c");
-  if readfirstmain(CUr,1,true) then begin
-    if CUr.Comment == WebGetArg("a") then begin
-      recordCopy(oldCUr,CUr);
-      CUr.AllowLogin = 1;
-      if recordUpdate(oldCUr,CUr,true)==0 then begin
-        okf = true;
-      end;
-    end;
-  end;
-
-  if okf then begin
-    ShowRedirectHtml(FormatSimpleLink("/profile_acc",true),false);
-  end else begin
-    ShowRedirectHtml(FormatSimpleLink("/profile_decl",true),false);
-  end;
-
-return;
-end;
