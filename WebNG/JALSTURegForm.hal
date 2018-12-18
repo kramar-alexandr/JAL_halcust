@@ -526,21 +526,88 @@ begin
       LineTextPut(Mailr,0,txt);
       Mailrw.AddrCode = MSr.FromSystem;
 	  end else begin
-			if(ReadFirstKey("Email",SMFr,1,true)) then begin
-				LineTextPut(Mailr,4,"http://jal.lv/WebJALApprovebyc3a.hal?c=" & CUr.Code & "&a=" & CUr.Comment);
-			end else begin
-				if(ReadFirstKey("ParenteMail",SMFr,1,true)) then begin
-					LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveParente.hal?c=" & CUr.Code & "&a=" & CUr.Comment);
-				end else begin
-					TCr.CustCode = CUr.Code;
-					if(ReadFirstKey("CustCode",TCr,1,true)) then begin
-						LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveTeacher.hal?c=" & CUr.Code & "&a=" & CUr.Comment);
-					end else begin
-						LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveEmployer.hal?c=" & CUr.Code & "&a=" & CUr.Comment);
-					end;	
-				end;
-			end;	
-      Mailrw.AddrCode = MSr.Postmaster;
+			LineTextPut(Mailr,4,"http://jal.lv/WebJALApprovebyc3a.hal?c=" & CUr.Code & "&a=" & CUr.Comment);
+			Mailrw.AddrCode = MSr.Postmaster;
+	  end;
+    MatRowPut(Mailr,0,Mailrw);
+    ClearRow(Mailr,Mailrw,1);
+    Mailrw.RowTyp = kMailRowTypeTo;
+    Mailrw.AddrCode = conf;
+    MatRowPut(Mailr,1,Mailrw);
+    Mailr.SendFlag = 1;
+    if recordStore(Mailr,true) then begin 
+	  if testf then begin
+	    CreateRecordLink(Mailr,currentcompany,SMFr,currentcompany);
+        CreateRecordLink(SMFr,currentcompany,Mailr,currentcompany);
+	  end;
+	end;
+
+return;
+end;
+
+global
+updating procedure GenMailForParents(string txt,string head,string conf,var record SMFVc SMFr,boolean testf,record CUVc CUr,string pass)
+begin
+  record MailVc Mailr;
+  row MailVc Mailrw;
+  integer i;
+	record TeacherVc TCr;
+  string 100 tstr;
+  record MailSettingsBlock MSr;
+  BlockLoad(MSr);
+
+    RecordNew(Mailr);
+    Mailr.Header = head;
+	
+    
+    ClearRow(Mailr,Mailrw,0);
+    Mailrw.RowTyp = 1;
+    if testf then begin
+      LineTextPut(Mailr,0,txt);
+      Mailrw.AddrCode = MSr.FromSystem;
+	  end else begin
+			LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveParents.hal?c=" & SMFr.SMFCode & "&a=" & CUr.Comment);
+			Mailrw.AddrCode = MSr.Postmaster;
+	  end;
+    MatRowPut(Mailr,0,Mailrw);
+    ClearRow(Mailr,Mailrw,1);
+    Mailrw.RowTyp = kMailRowTypeTo;
+    Mailrw.AddrCode = conf;
+    MatRowPut(Mailr,1,Mailrw);
+    Mailr.SendFlag = 1;
+    if recordStore(Mailr,true) then begin 
+	  if testf then begin
+	    CreateRecordLink(Mailr,currentcompany,SMFr,currentcompany);
+        CreateRecordLink(SMFr,currentcompany,Mailr,currentcompany);
+	  end;
+	end;
+
+return;
+end;
+
+global
+updating procedure GenMailForEmployer(string txt,string head,string conf,var record SMFVc SMFr,boolean testf,record CUVc CUr,string pass)
+begin
+  record MailVc Mailr;
+  row MailVc Mailrw;
+  integer i;
+	record TeacherVc TCr;
+  string 100 tstr;
+  record MailSettingsBlock MSr;
+  BlockLoad(MSr);
+
+    RecordNew(Mailr);
+    Mailr.Header = head;
+	
+    
+    ClearRow(Mailr,Mailrw,0);
+    Mailrw.RowTyp = 1;
+    if testf then begin
+      LineTextPut(Mailr,0,txt);
+      Mailrw.AddrCode = MSr.FromSystem;
+	  end else begin
+			LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveEmployer.hal?c=" & SMFr.SMFCode & "&a=" & CUr.Comment);
+			Mailrw.AddrCode = MSr.Postmaster;
 	  end;
     MatRowPut(Mailr,0,Mailrw);
     ClearRow(Mailr,Mailrw,1);
@@ -801,6 +868,7 @@ updating procedure WebJALApprovebyc3a()
 begin
   record CUVc CUr,oldCUr;
   boolean okf;
+	record SMFVc SMFr;
 
   okf = false;
 
@@ -813,6 +881,84 @@ begin
         okf = true;
       end;
     end;
+  end;
+	SMFr.CustCode = CUr.Code;
+	If(ReadFirstKey("CustCode",SMFr,1,true)) then begin
+		SMFr.ConfirmSKL = 1;
+	end;
+	RecordStore(SMFr,true);
+  if okf then begin
+    ShowRedirectHtml(FormatSimpleLink("/profile_acc",true),false);
+  end else begin
+    ShowRedirectHtml(FormatSimpleLink("/profile_decl",true),false);
+  end;
+
+return;
+end;
+
+global webpublic
+updating procedure WebJALApproveParents()
+begin
+ record SMFVc SMFr;
+  boolean okf;
+
+  okf = false;
+
+  SMFr.SMFCode = WebGetArg("c");
+  if readfirstmain(SMFr,1,true) then begin
+    SMFr.ConfirmPar = 1;
+		RecordStore(SMFr,true);
+  end;
+
+  if okf then begin
+    ShowRedirectHtml(FormatSimpleLink("/profile_acc",true),false);
+  end else begin
+    ShowRedirectHtml(FormatSimpleLink("/profile_decl",true),false);
+  end;
+
+return;
+end;
+
+global webpublic
+updating procedure WebJALApproveEmployer()
+begin
+  record CUVc CUr,oldCUr;
+  boolean okf;
+
+  okf = false;
+
+  CUr.Code = WebGetArg("c");
+  if readfirstmain(CUr,1,true) then begin
+    if CUr.Comment == WebGetArg("a") then begin
+      recordCopy(oldCUr,CUr);
+      CUr.AllowLogin = 1;
+      if recordUpdate(oldCUr,CUr,true)==0 then begin
+        okf = true;
+      end;
+    end;
+  end;
+
+  if okf then begin
+    ShowRedirectHtml(FormatSimpleLink("/profile_acc",true),false);
+  end else begin
+    ShowRedirectHtml(FormatSimpleLink("/profile_decl",true),false);
+  end;
+
+return;
+end;
+
+global webpublic
+updating procedure WebJALApproveTeacher()
+begin
+  record SMFVc SMFr;
+  boolean okf;
+
+  okf = false;
+
+  SMFr.SMFCode = WebGetArg("c");
+  if readfirstmain(SMFr,1,true) then begin
+    SMFr.ConfirmTech = 1;
+		RecordStore(SMFr,true);
   end;
 
   if okf then begin

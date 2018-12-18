@@ -8,6 +8,10 @@ external function string 4 GiveCode(var string);
 external procedure SelBoxForDistrictForTeacher(string);
 external procedure SelBoxForSchoolForTeacher(string);
 external procedure SelBoxForDistrictForMentor(string);
+external updating procedure GenMailForSMU(string,string,string,var record SMFVc,boolean,record CUVc,string);
+external updating procedure GenMailForParents(string,string,string,var record SMFVc,boolean,record CUVc,string);
+external updating procedure GenMailForEmp(string,string,string,var record SMFVc,boolean,record CUVc,string);
+external updating procedure GenMailForTeacher(string,string,string,var record SMFVc,boolean,record CUVc,string);
 
 SetLangMode(LangLatvian,"LAT",0);
 
@@ -526,7 +530,7 @@ begin
 
 
 global
-updating procedure GenMailForSMU(string txt,string head,string conf,var record SMFVc SMFr,boolean testf,record CUVc CUr,string pass)
+updating procedure GenMailForTeacher(string txt,string head,string conf,var record SMFVc SMFr,boolean testf,record CUVc CUr,string pass)
 begin
   record MailVc Mailr;
   row MailVc Mailrw;
@@ -546,24 +550,7 @@ begin
       LineTextPut(Mailr,0,txt);
       Mailrw.AddrCode = MSr.FromSystem;
 	  end else begin
-      LineTextPut(Mailr,0,USetStr(32347));
-      LineTextPut(Mailr,1,USetStr(10018) & " " & CUr.eMail);
-      LineTextPut(Mailr,2,USetStr(10029) & ": " & pass);
-      LineTextPut(Mailr,3,USetStr(32472));
-			if(ReadFirstKey("Email",SMFr,1,true)) then begin
-				LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveSMU.hal?c=" & CUr.Code & "&a=" & CUr.Comment);
-			end else begin
-				if(ReadFirstKey("ParenteMail",SMFr,1,true)) then begin
-					LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveParente.hal?c=" & CUr.Code & "&a=" & CUr.Comment);
-				end else begin
-					TCr.CustCode = CUr.Code;
-					if(ReadFirstKey("CustCode",TCr,1,true)) then begin
-						LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveTeacher.hal?c=" & CUr.Code & "&a=" & CUr.Comment);
-					end else begin
-						LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveEmployer.hal?c=" & CUr.Code & "&a=" & CUr.Comment);
-					end;	
-				end;
-			end;	
+			LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveTeacher.hal?c=" & CUr.Code & "&a=" & CUr.Comment);
       Mailrw.AddrCode = MSr.Postmaster;
 	  end;
     MatRowPut(Mailr,0,Mailrw);
@@ -575,7 +562,7 @@ begin
     if recordStore(Mailr,true) then begin 
 	  if testf then begin
 	    CreateRecordLink(Mailr,currentcompany,SMFr,currentcompany);
-        CreateRecordLink(SMFr,currentcompany,Mailr,currentcompany);
+      CreateRecordLink(SMFr,currentcompany,Mailr,currentcompany);
 	  end;
 	end;
 
@@ -804,7 +791,7 @@ begin
               GenMailForSMU(text,USetStr(32348),tCUr.eMail,SMFr,false,tCUr,tstr);   
 							if(SMFr.AgeFlag!=0) then begin
 								text = "test";
-								GenMailForSMU(text,USetStr(32483),SMFr.ParenteMail,SMFr,false,tCUr,tstr);
+								GenMailForParents(text,USetStr(32483),SMFr.ParenteMail,SMFr,false,tCUr,tstr);
 							end;
             end;
           end;
@@ -833,7 +820,7 @@ begin
             GenMailForSMU(text,USetStr(32348),CUr.eMail,SMFr,false,CUr,tstr); 
 						if(SMFr.AgeFlag!=0) then begin
 								text = "test reg";
-								GenMailForSMU(text,USetStr(32483),SMFr.ParenteMail,SMFr,false,tCUr,tstr);
+								GenMailForParents(text,USetStr(32483),SMFr.ParenteMail,SMFr,false,tCUr,tstr);
 						end;
           end;
         end;
