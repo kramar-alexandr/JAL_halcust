@@ -853,7 +853,7 @@ begin
         end;
       end;
     end;
-
+	
     //stopalert("asdf");
     ShowRedirectHtml(FormatSimpleLink("/afterreg1",true),false);
   end else begin
@@ -878,20 +878,22 @@ begin
   CUr.Code = WebGetArg("c");
 	SMFr.CustCode = CUr.Code;
 	if(ReadFirstKey("CustCode",SMFr,1,true)) then begin
-		matrowget(SMFr,0,SMFrw);
-		TCr.TeacherCode = SMFrw.Code;
-		text = "test confirm link";
-		if(ReadFirstMain(TCr,1,true)) then begin
-			tCUr.Code = TCr.CustCode;
-			if(ReadFirstMain(tCur,1,true)) then begin
-				GenMailForTeacher(text,USetStr(32485),tCUr.eMail,SMFr,false,CUr,"");
+		if(SMFr.ConfirmSKL==0) then begin
+			matrowget(SMFr,0,SMFrw);
+			TCr.TeacherCode = SMFrw.Code;
+			text = "test confirm link";
+			if(ReadFirstMain(TCr,1,true)) then begin
+				tCUr.Code = TCr.CustCode;
+				if(ReadFirstMain(tCur,1,true)) then begin
+					GenMailForTeacher(text,USetStr(32485),tCUr.eMail,SMFr,false,CUr,"");
+				end;
 			end;
-		end;
-		if (SMFr.AgeFlag != 0) then begin
-			GenMailForParents(text,USetStr(32486),SMFr.ParenteMail,SMFr,false,CUr,"");
-		end;
+			if (SMFr.AgeFlag != 0) then begin
+				GenMailForParents(text,USetStr(32484),SMFr.ParenteMail,SMFr,false,CUr,"");
+			end;
 
-
+			ShowRedirectHtml(FormatSimpleLink("/reg_login",true),false);
+		end;
 	end;
 
 
@@ -914,8 +916,6 @@ begin
 
   if okf then begin
     ShowRedirectHtml(FormatSimpleLink("/profile_acc",true),false);
-  end else begin
-    ShowRedirectHtml(FormatSimpleLink("/profile_decl",true),false);
   end;
 
 return;
@@ -958,7 +958,7 @@ begin
   if readfirstmain(SMFr,1,true) then begin
     SMFr.ConfirmTech = 1;
   end;
-
+	ShowRedirectHtml(FormatSimpleLink("/profile_acc",true),false);
 
 return;
 end;
