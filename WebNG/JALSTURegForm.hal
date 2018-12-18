@@ -873,9 +873,10 @@ begin
 	row SMFVc SMFrw;
 	string 255 text;
 
-
-
   CUr.Code = WebGetArg("c");
+  readfirstmain(CUr, 1, true);
+  CUr.AllowLogin = 1;
+    recordStore(CUr, true);
 	SMFr.CustCode = CUr.Code;
 	if(ReadFirstKey("CustCode",SMFr,1,true)) then begin
 		if(SMFr.ConfirmSKL==0) then begin
@@ -890,8 +891,10 @@ begin
 			end;
 			if (SMFr.AgeFlag != 0) then begin
 				GenMailForParents(text,USetStr(32484),SMFr.ParenteMail,SMFr,false,CUr,"");
-			end;
 
+			end;
+            SMFr.ConfirmSKL = 1;
+            recordStore(SMFr, true);
 			ShowRedirectHtml(FormatSimpleLink("/reg_login",true),false);
 		end;
 	end;
