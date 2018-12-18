@@ -788,10 +788,10 @@ begin
               CreateRecordLink(SMFr,CurrentCompany,tCUr,CurrentCompany);
               CreateRecordLink(tCUr,CurrentCompany,SMFr,CurrentCompany);
               text = USetStr(32347) & chr(13) & USetStr(10018) & " " & email[i] &  chr(13) & USetStr(10029) & ": " & tstr;
-              GenMailForSMU(text,USetStr(32348),tCUr.eMail,SMFr,false,tCUr,tstr);   
+              GenMailForSMU(text,USetStr(32484),tCUr.eMail,SMFr,false,tCUr,tstr);   
 							if(SMFr.AgeFlag!=0) then begin
 								text = "test";
-								GenMailForParents(text,USetStr(32483),SMFr.ParenteMail,SMFr,false,tCUr,tstr);
+								GenMailForParents(text,USetStr(32486),SMFr.ParenteMail,SMFr,false,tCUr,tstr);
 							end;
             end;
           end;
@@ -817,10 +817,10 @@ begin
             CreateRecordLink(CUr,CurrentCompany,SMFr,CurrentCompany);
             text = USetStr(32347) & chr(13) & USetStr(10018) & " " & email[i] &  chr(13) & USetStr(10029) & ": " & tstr;
 						text = "reg";
-            GenMailForSMU(text,USetStr(32348),CUr.eMail,SMFr,false,CUr,tstr); 
+            GenMailForSMU(text,USetStr(32484),CUr.eMail,SMFr,false,CUr,tstr); 
 						if(SMFr.AgeFlag!=0) then begin
 								text = "test reg";
-								GenMailForParents(text,USetStr(32483),SMFr.ParenteMail,SMFr,false,tCUr,tstr);
+								GenMailForParents(text,USetStr(32486),SMFr.ParenteMail,SMFr,false,tCUr,tstr);
 						end;
           end;
         end;
