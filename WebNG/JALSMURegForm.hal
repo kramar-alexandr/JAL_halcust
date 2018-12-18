@@ -11,7 +11,6 @@ external procedure SelBoxForDistrictForMentor(string);
 external updating procedure GenMailForSMU(string,string,string,var record SMFVc,boolean,record CUVc,string);
 external updating procedure GenMailForParents(string,string,string,var record SMFVc,boolean,record CUVc,string);
 external updating procedure GenMailForEmp(string,string,string,var record SMFVc,boolean,record CUVc,string);
-external updating procedure GenMailForTeacher(string,string,string,var record SMFVc,boolean,record CUVc,string);
 
 SetLangMode(LangLatvian,"LAT",0);
 
@@ -803,7 +802,7 @@ begin
           CUr.eMail = email[i];
           CUr.CUType = 1;
           CUr.Classification = JALClassbl.Schoolar;
-          CUr.AllowLogin = 1;
+          CUr.AllowLogin = 0;
           CUr.Comment = GenerateRandomHash;
           tstr = WebGetArg("password1");
           SCr.SchoolCode = WebGetArg("school");

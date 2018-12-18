@@ -251,7 +251,7 @@ begin
   return;
 end;
   
-global
+
 updating procedure GenMailForTeacher(string txt,string head,string conf,var record TeacherVc TCr,boolean testf,record CUVc CUr,string tstr)
 begin
   record MailVc Mailr;
@@ -439,7 +439,7 @@ begin
       TCr.OtherJob = WebGetArg("extrajob");
       TCr.Subject = ToolWebNGTranslateText(StringToLongInt(WebGetArg("subject")));
       if recordStore(TCr,false) then begin 
-        //GenMailForTeacher(text,USetStr(32342) & " : " & name,RMbl.TeacherMail,TCr,true,CUr,""); 
+        GenMailForTeacher(text,USetStr(32342) & " : " & name,RMbl.TeacherMail,TCr,true,CUr,""); 
         text = USetStr(32347) & chr(13) & USetStr(10018) & " " & email &  chr(13) & USetStr(10029) & ": " & tstr;
         if foundf then begin
           //GenMailForTeacher(text,USetStr(32348),email,TCr,false,tCUr,tstr); 
