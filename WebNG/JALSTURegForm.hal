@@ -899,6 +899,7 @@ begin
 			end;
 		end else begin
 			logtext(0,"can't save");
+		end;	
 	end else begin
 		logtext(0,"wrong user");
 	end;	
