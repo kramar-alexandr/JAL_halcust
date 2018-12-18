@@ -874,31 +874,35 @@ begin
 	string 255 text;
 
   CUr.Code = WebGetArg("c");
-  readfirstmain(CUr, 1, true);
-  CUr.AllowLogin = 1;
-    recordStore(CUr, true);
-	SMFr.CustCode = CUr.Code;
-	if(ReadFirstKey("CustCode",SMFr,1,true)) then begin
-		if(SMFr.ConfirmSKL==0) then begin
-			matrowget(SMFr,0,SMFrw);
-			TCr.TeacherCode = SMFrw.Code;
-			text = "test confirm link";
-			if(ReadFirstMain(TCr,1,true)) then begin
-				tCUr.Code = TCr.CustCode;
-				if(ReadFirstMain(tCur,1,true)) then begin
-					GenMailForTeacher(text,USetStr(32485),tCUr.eMail,SMFr,false,CUr,"");
+ if(ReadFirstMain(CUr,1,true)) then begin
+		CUr.AllowLogin = 1;
+		if(RecordStore(CUr,true)) then begin
+			SMFr.CustCode = CUr.Code;
+			if(ReadFirstKey("CustCode",SMFr,1,true)) then begin
+				if(SMFr.ConfirmSKL==0) then begin
+					matrowget(SMFr,0,SMFrw);
+					TCr.TeacherCode = SMFrw.Code;
+					text = "test confirm link";
+					if(ReadFirstMain(TCr,1,true)) then begin
+						tCUr.Code = TCr.CustCode;
+						if(ReadFirstMain(tCur,1,true)) then begin
+							GenMailForTeacher(text,USetStr(32485),tCUr.eMail,SMFr,false,CUr,"");
+						end;
+					end;
+					if (SMFr.AgeFlag != 0) then begin
+						GenMailForParents(text,USetStr(32484),SMFr.ParenteMail,SMFr,false,CUr,"");
+
+					end;
+								SMFr.ConfirmSKL = 1;
+								recordStore(SMFr, true);
 				end;
 			end;
-			if (SMFr.AgeFlag != 0) then begin
-				GenMailForParents(text,USetStr(32484),SMFr.ParenteMail,SMFr,false,CUr,"");
-
-			end;
-            SMFr.ConfirmSKL = 1;
-            recordStore(SMFr, true);
-			ShowRedirectHtml(FormatSimpleLink("/reg_login",true),false);
-		end;
-	end;
-
+		end else begin
+			logtext(0,"can't save");
+	end else begin
+		logtext(0,"wrong user");
+	end;	
+	ShowRedirectHtml(FormatSimpleLink("/reg_login",true),false);
 
 return;
 end;
@@ -961,7 +965,7 @@ begin
   if readfirstmain(SMFr,1,true) then begin
     SMFr.ConfirmTech = 1;
   end;
-	ShowRedirectHtml(FormatSimpleLink("/profile_acc",true),false);
+	ShowRedirectHtml(FormatSimpleLink("/",true),false);
 
 return;
 end;
