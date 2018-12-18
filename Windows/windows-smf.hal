@@ -97,7 +97,7 @@ begin
   StaticText(h3,v+=10,"Confirmacia",false);
 	CheckBox(h3,v+=10,0,"ConfirmSKL",ConfirmSKL);
 	CheckBox(h3,v+=vs,0,"ConfirmPar",ConfirmPar);
-	CheckBox(h3,v+=vs,0,"ConfirmTeacher",ConfirmTeach);
+	CheckBox(h3,v+=vs,0,"ConfirmTeacher",ConfirmTech);
   //Tile(2,400,true,"",-);
 	TextField(h3,v+=20,-40,80,Text,0);
   wn = CurWindow;

@@ -285,7 +285,7 @@ begin
     if readfirstmain(CUr,1,true) then begin
       if readrecordlink(CUr,1,SMFr,RLr) or FindSMURecord(cCUr.Code,SMFr) then begin
         if (cust == CurrentCust or  cCUr.Code == SMFr.CustCode) then begin
-          WebOutStringFormatNL("<form class=""changeprofile"" method=""POST"" id=""forma""action=""/WebChangeCompEmp.hal"">");
+          WebOutStringFormatNL("<form class=""changeprofile"" method=""POST"" id=""forma"">");
           WebOutStringFormatNL("<input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");
           WebOutStringFormatNL("<input type=""hidden"" name=""cust"" value=""" & CUr.Code & """>");
           WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path")& """>");
@@ -349,11 +349,12 @@ begin
 			ReadFirstKey("CustCode",SMFr,1,true);
 		if (SMFr.AgeFlag!=0) then begin
 		    WebOutStringFormatNL("<h2>Inform‚cija par vec‚ku vai aizbildni:</h2>");
-			WebOutStringFormatNL("<form class=""changeprofile"" method=""POST"" id=""forma""action=""/WebChangeCompParent.hal"">");
+			WebOutStringFormatNL("<form class=""changeprofile"" method=""POST"" id=""formaTree"">");
 			WebOutStringFormatNL("<input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");
 			WebOutStringFormatNL("<input type=""hidden"" name=""cust"" value=""" & CUr.Code & """>");
 			WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path")& """>");
-			WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(20030) & "</span><input type=""text"" name=""name"" value=""" & SMFr.ParentName & " " & SMFr.ParentSurName &  """></div>");
+			WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">V‚rds</span><input type=""text"" name=""firstName"" value=""" & SMFr.ParentName & """></div>");
+			WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">Uzv‚rds</span><input type=""text"" name=""secondName"" value=""" & SMFr.ParentSurName &  """></div>");
 			WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(20033) & "</span><input type=""text"" name=""email"" value=""" & SMFr.ParenteMail & """></div>");
 	//error
 			err = StringToLongInt(getSessionString("err"));
