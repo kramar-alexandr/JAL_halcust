@@ -9,6 +9,7 @@ external procedure SelBoxForDistrictForTeacher(string);
 external procedure SelBoxForSchoolForTeacher(string);
 external procedure SelBoxForDistrictForMentor(string);
 external updating procedure GenMailForTeacher(string,string,string,var record SMFVc,boolean,record CUVc,string);
+external function Boolean FindSMURecord(string,var record SMFVc);
 
 procedure SelBoxForType()
 begin
@@ -606,6 +607,7 @@ begin
       LineTextPut(Mailr,0,txt);
       Mailrw.AddrCode = MSr.FromSystem;
 	  end else begin
+		
 			LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveEmployer.hal?c=" & SMFr.SMFCode & "&a=" & CUr.Comment);
 			Mailrw.AddrCode = MSr.Postmaster;
 	  end;
@@ -934,18 +936,45 @@ updating procedure WebJALApproveEmployer()
 begin
   record CUVc CUr,oldCUr;
   boolean okf;
-
+  record JALClassBlock JALClassbl;
+  boolean TrHs;
+  record SchoolVc SCr;
+  record RLinkVc RLr,RL2r;
+  record CUVc tCUr;
+  record SMFVc SMFr;
+  Integer i;
+	string 255 text;
+	 
+	BlockLoad(JALClassbl);
   okf = false;
 
   CUr.Code = WebGetArg("c");
+  	
+  CUr.Code = CurrentCust;
   if readfirstmain(CUr,1,true) then begin
-    if CUr.Comment == WebGetArg("a") then begin
-      recordCopy(oldCUr,CUr);
-      CUr.AllowLogin = 1;
-      if recordUpdate(oldCUr,CUr,true)==0 then begin
-        okf = true;
-      end;
-    end;
+    if readrecordlink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr) then begin
+      if (SMFr.CustCode==CurrentCust) then begin
+        tCUr.Code = WebGetArg("nemp");
+        if (nonblank(tCUr.Code) and ReadFirstMain(tCUr,1,true)) then begin
+        /*
+          i = 1;
+          while (ReadRecordLink(tCUr,i,SMFr,RL2r)) begin
+            queued.QRemoveRecordLink(RL2r);
+            i = i +1;
+          end;
+          */
+						i = 1;
+					while (ReadRecordLink(CUr,i,SMFr,RL2r)) begin
+						RecordDelete(RL2r);
+						i = i +1;
+					end;
+          if (ReadFirstMain(tCUr,1,true) and ReadFirstMain(SMFr,1,true)) then begin
+            CreateRecordLink(SMFr,CurrentCompany,tCUr,CurrentCompany);
+						CreateRecordLink(tCUr,CurrentCompany,SMFr,CurrentCompany);
+					end;	
+				end;
+			end;
+		end;	
   end;
 
   if okf then begin
