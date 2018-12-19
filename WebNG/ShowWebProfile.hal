@@ -671,7 +671,7 @@ begin
             end;
             WebOutStringFormatNL("</div>");
           end;
-          WebOutStringFormatNL("<input class=""loginbutton"" type=""submit"" value=""APSTIPRINT"" >");
+          WebOutStringFormatNL("<input class=""loginbutton spbutton"" type=""submit"" value=""APSTIPRINT"" >");
           WebOutStringFormatNL("</form>");
         end else begin
           ShowRedirectHTML(FormatSimpleLink(GetLinkToStruct(JCbl.ProfileCorrectionStruct,true),true),false);
