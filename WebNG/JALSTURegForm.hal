@@ -952,8 +952,15 @@ begin
           if (ReadFirstMain(tCUr,1,true) and ReadFirstMain(SMFr,1,true)) then begin
             CreateRecordLink(SMFr,CurrentCompany,tCUr,CurrentCompany);
 						CreateRecordLink(tCUr,CurrentCompany,SMFr,CurrentCompany);
+						if(Blank(SMFr.Member)) then begin
+							SMFr.Member = tCUr.Name;
+						end else begin
+							SMFr.Member = SMFr.Member & "," & tCUr.Name;
+						end;
+						RecordStore(SMFr,true);
 					end;	
 				end;
+
 
 
   if okf then begin
