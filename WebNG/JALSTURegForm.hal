@@ -608,7 +608,7 @@ begin
       Mailrw.AddrCode = MSr.FromSystem;
 	  end else begin
 		
-			LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveEmployer.hal?c=" & SMFr.SMFCode & "&a=" & CUr.Comment);
+			LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveEmployer.hal?smu=" & SMFr.SMFCode & "&emp=" & CUr.Code);
 			Mailrw.AddrCode = MSr.Postmaster;
 	  end;
     MatRowPut(Mailr,0,Mailrw);
@@ -945,35 +945,16 @@ begin
 	 
 	BlockLoad(JALClassbl);
   okf = false;
-
-  CUr.Code = WebGetArg("c");
-  	
-  CUr.Code = CurrentCust;
-  if readfirstmain(CUr,1,true) then begin
-    if readrecordlink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr) then begin
-      if (SMFr.CustCode==CurrentCust) then begin
-        tCUr.Code = WebGetArg("nemp");
+        tCUr.Code = WebGetArg("emp");
         if (nonblank(tCUr.Code) and ReadFirstMain(tCUr,1,true)) then begin
-        /*
-          i = 1;
-          while (ReadRecordLink(tCUr,i,SMFr,RL2r)) begin
-            queued.QRemoveRecordLink(RL2r);
-            i = i +1;
-          end;
-          */
-						i = 1;
-					while (ReadRecordLink(CUr,i,SMFr,RL2r)) begin
-						RecordDelete(RL2r);
-						i = i +1;
-					end;
+					SMFr.SMFCode = WebGetArg("smu");
+					ReadFirstMain(SMFr,1,true);
           if (ReadFirstMain(tCUr,1,true) and ReadFirstMain(SMFr,1,true)) then begin
             CreateRecordLink(SMFr,CurrentCompany,tCUr,CurrentCompany);
 						CreateRecordLink(tCUr,CurrentCompany,SMFr,CurrentCompany);
 					end;	
 				end;
-			end;
-		end;	
-  end;
+
 
   if okf then begin
     ShowRedirectHtml(FormatSimpleLink("/index",true),false);
