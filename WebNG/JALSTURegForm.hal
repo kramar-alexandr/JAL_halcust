@@ -587,7 +587,7 @@ return;
 end;
 
 global
-updating procedure GenMailForEmployer(string txt,string head,string conf,var record SMFVc SMFr,boolean testf,record CUVc CUr,string pass)
+updating procedure GenMailForEmp(string txt,string head,string conf,var record SMFVc SMFr,boolean testf,record CUVc CUr,string pass)
 begin
   record MailVc Mailr;
   row MailVc Mailrw;
