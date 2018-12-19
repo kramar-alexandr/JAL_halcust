@@ -549,7 +549,7 @@ begin
       LineTextPut(Mailr,0,txt);
       Mailrw.AddrCode = MSr.FromSystem;
 	  end else begin
-			LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveTeacher.hal?c=" & CUr.Code & "&a=" & CUr.Comment);
+			LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveTeacher.hal?c=" & SMFr.SMFCode & "&a=" & CUr.Comment);
       Mailrw.AddrCode = MSr.Postmaster;
 	  end;
     MatRowPut(Mailr,0,Mailrw);

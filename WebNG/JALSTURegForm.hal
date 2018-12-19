@@ -886,15 +886,13 @@ begin
 					if(ReadFirstMain(TCr,1,true)) then begin
 						tCUr.Code = TCr.CustCode;
 						if(ReadFirstMain(tCur,1,true)) then begin
-							GenMailForTeacher(text,USetStr(32485),tCUr.eMail,SMFr,false,CUr,"");
+							GenMailForTeacher(text,USetStr(32485),tCUr.eMail,SMFr,false,tCUr,"");
 						end;
 					end;
 					if (SMFr.AgeFlag != 0) then begin
 						GenMailForParents(text,USetStr(32484),SMFr.ParenteMail,SMFr,false,CUr,"");
 
 					end;
-								SMFr.ConfirmSKL = 1;
-								recordStore(SMFr, true);
 				end;
 			end;
 		end else begin
@@ -922,8 +920,8 @@ begin
 		RecordStore(SMFr,true);
   end;
 
-  if okf then begin
-    ShowRedirectHtml(FormatSimpleLink("/profile_acc",true),false);
+  if !okf then begin
+    ShowRedirectHtml(FormatSimpleLink("/index",true),false);
   end;
 
 return;
@@ -949,9 +947,9 @@ begin
   end;
 
   if okf then begin
-    ShowRedirectHtml(FormatSimpleLink("/profile_acc",true),false);
+    ShowRedirectHtml(FormatSimpleLink("/index",true),false);
   end else begin
-    ShowRedirectHtml(FormatSimpleLink("/profile_decl",true),false);
+    ShowRedirectHtml(FormatSimpleLink("/index",true),false);
   end;
 
 return;
@@ -965,8 +963,9 @@ begin
   SMFr.SMFCode = WebGetArg("c");
   if readfirstmain(SMFr,1,true) then begin
     SMFr.ConfirmTech = 1;
+    RecordStore(SMFr,true);
   end;
-	ShowRedirectHtml(FormatSimpleLink("/",true),false);
+	ShowRedirectHtml(FormatSimpleLink("/index",true),false);
 
 return;
 end;
