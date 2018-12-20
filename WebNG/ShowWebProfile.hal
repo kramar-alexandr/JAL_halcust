@@ -316,7 +316,7 @@ begin
             end;
             WebOutStringFormatNL("</div>");
           end;
-          WebOutStringFormatNL("<div class=""addbutton""><button class=""spbutton"" id=""confirmMainInfo"" type=""button"">" & ToolWebNGTranslateText(20212) & "</button></div>");
+          WebOutStringFormatNL("<div class=""addbuttonn""><button class=""spbutton grey"" id=""confirmMainInfo"" type=""button"">" & ToolWebNGTranslateText(20212) & "</button></div>");
           WebOutStringFormatNL("</form>");
         end else begin
           ShowRedirectHTML(FormatSimpleLink(GetLinkToStruct(JCbl.ProfileCorrectionStruct,true),true),false);
@@ -378,7 +378,7 @@ begin
 				end;
 				WebOutStringFormatNL("</div>");
 			end;
-	WebOutStringFormatNL("<div class=""addbutton""><button class=""spbutton"" id=""confirmParentInfo"" type=""button"">" & ToolWebNGTranslateText(20212) & "</button></div>");
+	WebOutStringFormatNL("<div class=""addbutton""><button class=""spbutton grey"" id=""confirmParentInfo"" type=""button"">" & ToolWebNGTranslateText(20212) & "</button></div>");
 	WebOutStringFormatNL("</form>");
 		end;
 		end;
@@ -429,7 +429,7 @@ begin
         WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(25921) & "</span><input type=""text"" class=""name"" name=""prodinfo"" value=""" & SMFr.ProdSpec & """>");
         WebOutStringFormatNL("</div>");
         ShowClassSelect(SMFr);
-        WebOutStringFormatNL("<div class=""addbutton""><button class=""spbutton"" type=""button"" value="""" id=""confirmSmuInfo"">" & ToolWebNGTranslateText(23073) & "</button></div>");
+        WebOutStringFormatNL("<div class=""addbutton""><button class=""spbutton grey"" type=""button"" value="""" id=""confirmSmuInfo"">" & ToolWebNGTranslateText(23073) & "</button></div>");
         WebOutStringFormatNL("</form>");
         WebOutStringFormatNL("</div>");
         WebOutStringFormatNL("</div>");
@@ -450,7 +450,7 @@ begin
          
 //          WebOutStringFormatNL("<div class=""deletebutton  delleft"">");
           if (SMFr.CustCode <> tCUr.Code and CUr.Code == SMFr.CustCode) then begin   
-            WebOutStringFormatNL("<input class=""spbutton"" type=""submit"" value=""" & ToolWebNGTranslateText(23074) & """>");
+            WebOutStringFormatNL("<input class=""spbutton grey"" type=""submit"" value=""" & ToolWebNGTranslateText(23074) & """>");
           end else begin
             WebOutStringFormatNL("&nbsp;");
           end;
@@ -476,7 +476,7 @@ begin
         end;
         if (emp < 5 and SMFr.CustCode == CUr.Code) then begin
 
-          WebOutStringFormatNL("<div id=""addemp""><button class=""spbutton addEmp"">" & ToolWebNGTranslateText(20080) & "</button></div>");
+          WebOutStringFormatNL("<div id=""addemp""><button class=""spbutton grey addEmp"">" & ToolWebNGTranslateText(20080) & "</button></div>");
         end;
         
         WebOutStringFormatNL("</div>");
@@ -594,7 +594,7 @@ begin
             end;
             WebOutStringFormatNL("</div>");
           end;
-          WebOutStringFormatNL("<div class=""addEmpBtn""><input class=""spbutton"" type=""submit"" value=""" & ToolWebNGTranslateText(20210) & """ ><button type='button' class=""spbutton addEmpCancel"">" & ToolWebNGTranslateText(20211) & "</button></div>");
+          WebOutStringFormatNL("<div class=""addEmpBtn""><input class=""spbutton grey"" type=""submit"" value=""" & ToolWebNGTranslateText(20210) & """ ><button type='button' class=""spbutton grey addEmpCancel"">" & ToolWebNGTranslateText(20211) & "</button></div>");
           WebOutStringFormatNL("</form>");
         end else begin
           ShowRedirectHTML(FormatSimpleLink(GetLinkToStruct(JCbl.ProfileCorrectionStruct,true),true),false);
@@ -673,7 +673,7 @@ begin
             end;
             WebOutStringFormatNL("</div>");
           end;
-          WebOutStringFormatNL("<input class=""loginbutton spbutton"" type=""submit"" value=""APSTIPRINT"" >");
+          WebOutStringFormatNL("<input class=""loginbutton spbutton grey"" type=""submit"" value=""APSTIPRINT"" >");
           WebOutStringFormatNL("</form>");
         end else begin
           ShowRedirectHTML(FormatSimpleLink(GetLinkToStruct(JCbl.ProfileCorrectionStruct,true),true),false);
@@ -1105,7 +1105,7 @@ begin
   WebOutStringFormatNL("<div id=""passw"" class=""smallinput""><div class=""addinput"" id=""oldpassword""><span>Vec‚ parole :</span><input class=""spinputa"" type=""password"" name=""oldpassword""></div><div class=""addinput"" id=""pass1""><span>Jaun‚ parole :</span><input class=""spinputa"" type=""password"" name=""password1""></div>");
   WebOutStringFormatNL("<div  class=""addinput"" id=""passw2""><span>Jaun‚ parole atk‚rtoti :</span><input class=""spinputa"" type=""password"" name=""password2""></div></div>");
   WebOutStringFormatNL("<div  class=""addinput"" id=""errormsg""><div id=""epassword""></div></div>");
-  WebOutStringFormatNL("<input class=""spbutton"" type=""submit"" value=""APSTIPRINT"">");
+  WebOutStringFormatNL("<input class=""spbutton grey"" type=""submit"" value=""APSTIPRINT"">");
   WebOutStringFormatNL("</form>");
 
 return;

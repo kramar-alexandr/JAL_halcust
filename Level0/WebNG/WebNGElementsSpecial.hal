@@ -819,35 +819,36 @@ begin
     if (firstline==false) then begin
       WebOutTagClose("</ul>");
     end;
-//CUST-BEGIN
-    if pagecnt > 1 then begin
-      if page > 1 then begin
-        fr = page - 1;
-      end else begin
-        fr = 1;
-      end;
-      if ((pagecnt-page)<1) then begin
-        to = pagecnt;
-      end else begin
-        to = page + 1;
-      end;
-      WebOutStringFormatNL("<div id=""pagenav"" class=""dots flex"">");
-      if fr > 1 then begin
-       //WebOutStringFormatNL("... ");
-      end;
-      for (i = fr; i <= to; i = i + 1)begin
-        if i <> page then begin
-          WebOutStringFormatNL("<a class=""dot-news"" href=""" & FormatSimpleLink(WebGetArg("path"),true) & "?p=" & i & """></a>");
-        end else begin
-          WebOutStringFormatNL("<span class='active dot-news'></span>");
-        end;
-      end;
-      if to < pagecnt then begin
-        //WebOutStringFormatNL(" ...");
-      end;
-      WebOutStringFormatNL("</div>");
-    end;
-//CUST-END
+    WebOutStringFormatNL("<div id=""pagenave""></div>");
+////CUST-BEGIN
+//    if pagecnt > 1 then begin
+//      if page > 1 then begin
+//        fr = page - 1;
+//      end else begin
+//        fr = 1;
+//      end;
+//      if ((pagecnt-page)<1) then begin
+//        to = pagecnt;
+//      end else begin
+//        to = page + 1;
+//      end;
+//      WebOutStringFormatNL("<div id=""pagenav"" class=""dots flex"">");
+//      if fr > 1 then begin
+//       //WebOutStringFormatNL("... ");
+//      end;
+//      for (i = fr; i <= to; i = i + 1)begin
+//        if i <> page then begin
+//          WebOutStringFormatNL("<a class=""dot-news"" href=""" & FormatSimpleLink(WebGetArg("path"),true) & "?p=" & i & """></a>");
+//        end else begin
+//          WebOutStringFormatNL("<span class='active dot-news'></span>");
+//        end;
+//      end;
+//      if to < pagecnt then begin
+//        //WebOutStringFormatNL(" ...");
+//      end;
+//      WebOutStringFormatNL("</div>");
+//    end;
+////CUST-END
   end;
 
   return;
