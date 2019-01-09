@@ -2626,3 +2626,39 @@ begin
 return;
 end;
 //CUST-END
+
+global webpublic
+updating procedure GetEvents()
+begin
+record JALEventVc JEr;
+
+JEr.SerNr = "";
+while(loopMain(JEr,1,true)) begin
+	if(JEr.EndDate > CurrentDate) then begin
+		WebOutString("{");
+				 WebOutString("serNr:" & JEr.SerNr & ",");
+				 WebOutString("dataStart:" & JEr.StartDate & ",");
+				 WebOutString("dataEnd:" & JEr.EndDate & ",");
+				 WebOutString("nameEvent:" & "'" & JEr.Comment & "',");
+				 WebOutString("description:" & "'" &  "'");
+		WebOutString("}");		 
+	end;
+end;
+return;
+end;
+
+global webpublic
+updating procedure IzvedScol()
+begin
+string 50 code;
+record JALTeacherAccVc JTAr;
+code = webGetArg("code");
+if nonblank(code) then begin
+	JTAr.SerNr = code;
+	if(ReadFirstMain(JTAr,1,true)) then begin
+		JTAr.StatusFlag = 0;
+		RecordStore(JTAr,true);
+	end;
+end;
+return;
+end;
