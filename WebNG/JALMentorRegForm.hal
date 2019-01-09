@@ -243,7 +243,7 @@ begin
         tCUr.CustType = 1;
         tCUr.CUType = 0;
         tCUr.Password = CalcPassword(tstr,tCUr.Code,0);
-        if recordUpdate(oldCUr,tCUr,true)== 0 then begin code = tCUr.Code; end;
+        if recordStore(tCUr,true)== 0 then begin code = tCUr.Code; end;
       end;
     
 

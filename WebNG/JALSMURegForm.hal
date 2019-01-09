@@ -782,7 +782,7 @@ begin
             tCUr.CustType = 1;
             tCUr.CUType = 1;
             tCUr.Password = CalcPassword(tstr,tCUr.Code,0);
-            if recordUpdate(oldCUr,tCUr,true)== 0 then begin 
+            if recordStore(tCUr,true)== 0 then begin 
               testf = true;
               CreateRecordLink(SMFr,CurrentCompany,tCUr,CurrentCompany);
               CreateRecordLink(tCUr,CurrentCompany,SMFr,CurrentCompany);

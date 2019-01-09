@@ -213,7 +213,7 @@ begin
       if (ReadFirstMain(CUr,1,true)) then begin
         RecordCopy(oldCUr,CUr);
         CUr.AllowLogin = 1;
-        RecordUpdate(oldCUr,CUr,true);
+        RecordStore(CUr,true);
       end;
     end else begin
       RecordCheckError(1080,USetStr(32275),-1,"SchoolCode");      
@@ -228,7 +228,7 @@ begin
     if (ReadFirstMain(CUr,1,true)) then begin
       RecordCopy(oldCUr,CUr);
       CUr.AllowLogin = 0;
-      RecordUpdate(oldCUr,CUr,true);
+      RecordStore(CUr,true);
     end;
   end;
   

@@ -385,7 +385,7 @@ begin
           tCUr.VATNr = WebGetArg("pk");
           tCUr.CUType = 1;
           tCUr.Password = CalcPassword(tstr,tCUr.Code,0);
-          if recordUpdate(oldCUr,tCUr,true)== 0 then begin code = tCUr.Code; end;
+          if recordStore(tCUr,true)== 0 then begin code = tCUr.Code; end;
         end;
     end else begin
       RecordNew(CUr);
