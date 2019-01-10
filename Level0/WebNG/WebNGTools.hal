@@ -2648,16 +2648,60 @@ return;
 end;
 
 global webpublic
-updating procedure IzvedScol()
+updating procedure CreateEventPieteikum()
 begin
+record JALEventEntryVc JEr;
+record SMFVc SMFr;
+row SMFVc SMFrw;
+record CUVc CUr;
 string 50 code;
-record JALTeacherAccVc JTAr;
-code = webGetArg("code");
-if nonblank(code) then begin
-	JTAr.SerNr = code;
-	if(ReadFirstMain(JTAr,1,true)) then begin
-		JTAr.StatusFlag = 0;
-		RecordStore(JTAr,true);
+
+SMFr.CustCode = WebGetArg("code");
+if(ReadFirstMAin(SMFr,1,true)) then begin 
+	RecordNew(JEr);
+	JEr.SerNr =  NextSerNr("JALEventEntryVc",CurrentDate,-1,false,"");
+	JEr.EventNr = WebGetArg("event");
+	JEr.TransDate = CurrentDate;
+	MatRowGet(SMFr,0,SMFrw);
+	JEr.AddCode = SMFrw.Code;
+	JEr.CustCode = SMFr.SMFCode;
+	JEr.StatusFlag = 1;
+	RecordStore(JEr,true);
+end;
+return;	
+end;
+
+global 
+updating procedure CreateTeachApp(string SMFCode, string teacherCode)
+begin
+record JALTeacherAccVc JTr;
+
+RecordNew(JTr);
+JTr.SerNr =  NextSerNr("JALTeacherAccVc",CurrentDate,-1,false,"");
+JTr.SMFCode = SMFCode;
+JTr.RecCode = teacherCode;
+JTr.StatusFlag = 1;
+JTr.TransDate = CurrentDate;
+RecordStore(JTr,true);
+
+return;
+end;
+
+global webpublic
+updating procedure GetEventsPieteikum()
+begin
+record JALEventEntryVc JEr;
+
+JEr.SerNr = "";
+while(loopMain(JEr,1,true)) begin
+	if(JEr.StatusFlag==1) then begin
+		WebOutString("{");
+				 WebOutString("serNr:" & JEr.SerNr & ",");
+				 WebOutString("data:" & JEr.TransDate & ",");
+				 WebOutString("smu:"  & JEr.CustCode & ",");
+				 WebOutString("teacher:"  & JEr.AddCode & ",");
+				 WebOutString("satus:" & JEr.StatusFlag);
+		WebOutString("}");		 
 	end;
 end;
 return;
