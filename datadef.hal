@@ -32,24 +32,24 @@ begin
   RecordField(Lang,M4Str,20,0);
   RecordField(Approved,M4Mark,0,0);
   RecordField(District,M4Str,100,0);
-  //p•c skolas koda
+  //pï¿½c skolas koda
   MainKeyBegin(SchoolCode,0);
   KeySegment(SchoolCode);
-  //p•c skolas nosaukuma
+  //pï¿½c skolas nosaukuma
   KeyBegin(SchoolName);
   KeySegment(SchoolName);
   KeySegment(SchoolCode);
-  //p•c re®iona
+  //pï¿½c reï¿½iona
   KeyBegin(Region);
   KeySegment(Region);
   KeySegment(SchoolName);
   KeySegment(SchoolCode);
-  //p•c telefona
+  //pï¿½c telefona
   KeyBegin(Telephone);
   KeySegment(Telephone);
   KeySegment(SchoolName);
   KeySegment(SchoolCode);
-  //p•c skol•nu skaita
+  //pï¿½c skolï¿½nu skaita
   KeyBegin(PupilCount);
   KeySegment(PupilCount);
   KeySegment(SchoolName);
@@ -68,9 +68,9 @@ begin
   EndRecord;
 
 
-//Skolot‚ji:
+//Skolotï¿½ji:
   RecordBegin(TeacherVc,-,"");
-  RecordField(TeacherCode,M4Code,3,0);
+  RecordField(TeacherCode,M4Code,20,0);
   RecordField(TeacherName,M4Str,60,0);
   //RecordField(Telephone,M4Str,20,0);
   //RecordField(Email,M4Str,60,0);
@@ -89,37 +89,37 @@ begin
   ArrayField(SchoolCode,M4Code,4,0);
   ArrayField(SchoolName,M4Str,80,0);
   EndArray;
-  //p•c skolot‚ja koda
+  //pï¿½c skolotï¿½ja koda
   MainKeyBegin(TeacherCode,0);
   KeySegment(TeacherCode);
-  //p•c skolot‚ja v‚rda
+  //pï¿½c skolotï¿½ja vï¿½rda
   KeyBegin(TeacherName);
   KeySegment(TeacherName);
   KeySegment(TeacherCode);
-  //p•c skolas koda
+  //pï¿½c skolas koda
   /*MainKeyBegin(SchoolCode,0);
   KeySegment(SchoolCode);
   KeySegment(TeacherCode);
-  //p•c skolas nosaukuma
+  //pï¿½c skolas nosaukuma
   KeyBegin(SchoolName);
   KeySegment(SchoolName);  
   KeySegment(TeacherCode);*/
-  //p•c apstiprin‚tajiem/neapstiprin‚tajiem
+  //pï¿½c apstiprinï¿½tajiem/neapstiprinï¿½tajiem
   /*KeyBegin(Approved);
   KeySegment(Approved);
   KeySegment(SchoolCode);
   KeySegment(TeacherName);
   KeySegment(TeacherCode);*/
-  //p•c glob‚l‚ lietot‚ja
+  //pï¿½c globï¿½lï¿½ lietotï¿½ja
   KeyBegin(GlobalUser);
   KeySegment(GlobalUser);
   KeySegment(TeacherCode);
-  //p•c kontakta koda
+  //pï¿½c kontakta koda
   KeyBegin(CustCode);
   KeySegment(CustCode);
   KeySegment(TeacherCode);
 
-  //p•c jaunajiem skolas kodiem
+  //pï¿½c jaunajiem skolas kodiem
   SubSetKeyBegin2(Approved);
   StoreInBaseKey;
   AppendMatrixFieldToKeyName(SchoolCode,0);
@@ -130,7 +130,7 @@ begin
   KeyBegin(SchoolName);
   KeySegment(SchoolName);  
   KeySegment(TeacherCode)
-  //p•c re®. datuma
+  //pï¿½c reï¿½. datuma
   KeyBegin(TransDate);
   KeySegment(TransDate);
   KeySegment(TeacherCode);
@@ -150,38 +150,38 @@ begin
   RecordField(TransDate,M4Date,0,0);
   RecordField(Text,M4TextField,0,0);
   RecordField(CustCode,M4Str,100,0);
-  //p•c Mentora koda
+  //pï¿½c Mentora koda
   MainKeyBegin(MentorCodeCode,0);
   KeySegment(MentorCode);
-  //p•c Mentora v‚rda
+  //pï¿½c Mentora vï¿½rda
   KeyBegin(MentorName);
   KeySegment(MentorName);
   KeySegment(MentorCode);
   
-  //p•c regiona
+  //pï¿½c regiona
   KeyBegin(Region);
   KeySegment(Region);
   KeySegment(MentorName);
   KeySegment(MentorCode);
 
-  //p•c komp‚nijas
+  //pï¿½c kompï¿½nijas
   KeyBegin(Company);
   KeySegment(Company);
   KeySegment(MentorName);
   KeySegment(MentorCode);
 
-  //p•c novada
+  //pï¿½c novada
   KeyBegin(District);
   KeySegment(District);
   KeySegment(MentorName);
   KeySegment(MentorCode);
  
-  //p•c apstiprin‚tajiem/neapstiprin‚tajiem
+  //pï¿½c apstiprinï¿½tajiem/neapstiprinï¿½tajiem
   KeyBegin(Approved);
   KeySegment(Approved);
   KeySegment(MentorName);
   KeySegment(MentorCode);
-  //p•c kontakta koda
+  //pï¿½c kontakta koda
   KeyBegin(CustCode);
   KeySegment(CustCode);
   KeySegment(MentorCode);
@@ -245,14 +245,14 @@ begin
   ArrayField(Code,M4Code,10,0);
   ArrayField(Name,M4Str,50,0);
   EndArray;
-  //p•c SMF koda
+  //pï¿½c SMF koda
   MainKeyBegin(SMFCode,0);
   KeySegment(SMFCode);
-  //p•c SMF nosaukuma
+  //pï¿½c SMF nosaukuma
   KeyBegin(SMFName);
   KeySegment(SMFName);
   KeySegment(SMFCode);
-  //p•c statusa
+  //pï¿½c statusa
   KeyBegin(Status);
   KeySegment(StatusName);
   KeySegment(SMFName);
@@ -261,12 +261,12 @@ begin
   KeySegment(StatusFlag);
   KeySegment(SMFName);
   KeySegment(SMFCode);
-  //p•c tipa
+  //pï¿½c tipa
   KeyBegin(Type);
   KeySegment(TypeName);
   KeySegment(SMFName);
   KeySegment(SMFCode);
-  //p•c skolas nosaukuma
+  //pï¿½c skolas nosaukuma
   KeyBegin(SchoolName);
   KeySegment(SchoolName);
   KeySegment(SMFName);
@@ -275,7 +275,7 @@ begin
   KeyBegin(SchoolCode);
   KeySegment(SchoolCode);
   KeySegment(SMFCode);
-  //p•c skolot‚ja v‚rda
+  //pï¿½c skolotï¿½ja vï¿½rda
   KeyBegin(TeacherName);
   KeySegment(TeacherName);
   KeySegment(SMFName);
@@ -285,7 +285,7 @@ begin
   KeySegment(TeacherCode);
   KeySegment(SMFName);
   KeySegment(SMFCode);
-  //peec komp‚nijas nr
+  //peec kompï¿½nijas nr
   KeyBegin(CompNr);
   KeySegment(CompNr);
   KeySegment(SMFCode);
@@ -294,11 +294,11 @@ begin
   KeySegment(CustCode);
   KeySegment(SchoolCode);
   KeySegment(SMFCode);
-  //p•c e-pasta
+  //pï¿½c e-pasta
   KeyBegin(Email);
   KeySegment(Email);
   KeySegment(SMFCode);
-  //p•c re®. datuma
+  //pï¿½c reï¿½. datuma
   KeyBegin(TransDate);
   KeySegment(TransDate);
   KeySegment(SMFCode);
@@ -322,25 +322,25 @@ begin
   RecordField(Textc,M4TextField,0,0);
 //  RecordField(SentStatuss,M4Int,0,0);
   RecordField(SentStatuss,M4Mark,0,0);
-  //p•c atskaites koda
+  //pï¿½c atskaites koda
   MainKeyBegin(RepCode,0);
   KeySegment(RepCode);
   KeySegment(SMFName);
-  //p•c SMF koda
+  //pï¿½c SMF koda
   KeyBegin(SMFCode);
   KeySegment(SMFCode);
   KeySegment(SMFName);
   KeySegment(RepCode);
-  //p•c SMF nosaukuma
+  //pï¿½c SMF nosaukuma
   KeyBegin(SMFName);
   KeySegment(SMFName);
   KeySegment(RepCode);
-  //p•c nos. datuma
+  //pï¿½c nos. datuma
   KeyBegin(SentDate);
   KeySegment(SentDate);
   KeySegment(SMFName);
   KeySegment(RepCode);
-  //p•c statusa
+  //pï¿½c statusa
   KeyBegin(SentStatuss);
   KeySegment(SentStatuss);
   KeySegment(SentDate);
@@ -360,7 +360,7 @@ begin
   RecordField(STUMail,M4Str,70,ConfVc);
   EndBlock;
   
-//Numuru s•riju bloks:
+//Numuru sï¿½riju bloks:
   BlockBegin(SRBlock,SRType,"serier2");
   RecordField(LastOrdNr,M4Long,0,0);
   RecordField(LastShipNr,M4Long,0,0);
@@ -589,7 +589,7 @@ begin
   EndBlock;
   
 
-  //koment‚ra lauka garuma izmainas abiem ierakstiem
+  //komentï¿½ra lauka garuma izmainas abiem ierakstiem
   RecordAddBegin(WebNGTranslateVc,"jal_translate");
   ChangeField(FileName,M4Set,505,0);
   SubsetKeyBegin2(EventLangCode);
