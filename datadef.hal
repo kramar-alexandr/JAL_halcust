@@ -789,6 +789,7 @@ begin
   RecordField(StatusFlag,M4Int,0,0);
   RecordField(EventNr,M4Long,0,0);
   RecordField(Math,M4Matrix,0,0);
+	RecordField(OkFlag,M4Int,0,0);
   ArrayBegin(Math,-,1);
   ArrayField(Field,M4Long,0,0);
   ArrayField(Comment,M4Str,60,0);
