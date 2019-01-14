@@ -202,6 +202,7 @@ begin
 
   WebOutStringFormatNL("<select class='spinput' name='prclass'>");
   WebOutStringFormatNL("<option value="""">" & ToolWebNGTranslateText(25922) & "</option>");
+	 WebOutStringFormatNL("<option value=""" & SMFr.SMFCode & """ selected>" & SMFr.Manager & "</option>");
   while loopmain(OBr,1,true) begin
     if (SetInSet(OBr.Code,SMFr.Objects)) then begin
       WebOutStringFormatNL("<option value=""" & OBr.Code & """ selected>" & OBr.Comment & "</option>");
@@ -527,7 +528,6 @@ begin
 			end;	
     end;
   end;
-	WebOutString("<option value='" & SMFr.SMFCode & "'>" & SMFr.Manager & "</div>");
   
   return;
 end;
@@ -1125,7 +1125,7 @@ begin
   	if(CUr.Password==CalcPassword(oldpass,CUr.Code,0))then begin
 			RecordCopy(oldCUr,CUr);
 			CUr.Password = CalcPassword(WebGetArg("password1"),CUr.Code,0);
-			if recordstore(CUr,true) then begin end;
+			if recordStore(CUr,true) then begin end;
 			ShowRedirectHTML(FormatSimpleLink("/labotProfile",true),false);
     end else begin
     	ShowRedirectHTML(FormatSimpleLink("/changeParole",true),false);
