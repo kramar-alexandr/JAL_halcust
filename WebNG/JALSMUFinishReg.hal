@@ -110,7 +110,7 @@ begin
     SMFr.TypeFlag = StringToLongInt(WebGetArg("type"));
     SMFr.TypeName = USetStr(32131 + SMFr.TypeFlag);
     SMFr.ReadyFlag = 1;
-    text = SMFr.Manager & USetStr(32345) & 1 & USetStr(32346);
+    text = USetStr(32488);
     GenMailForSMU(text,USetStr(32344) & " - " & SMFr.SMFName,RMbl.SMUMail,SMFr,true,CUr,""); 
     if (RecordUpdate(oldSMFr,SMFr,true)==0) then begin
     
