@@ -8,6 +8,7 @@ external function string 4 GiveCode(var string);
 external procedure SelBoxForDistrictForTeacher(string);
 external procedure SelBoxForSchoolForTeacher(string);
 external procedure SelBoxForDistrictForMentor(string);
+external updating procedure CreateTeachApp(string, string);
 external updating procedure GenMailForSMU(string,string,string,var record SMFVc,boolean,record CUVc,string);
 external updating procedure GenMailForParents(string,string,string,var record SMFVc,boolean,record CUVc,string);
 external updating procedure GenMailForEmp(string,string,string,var record SMFVc,boolean,record CUVc,string);
@@ -761,7 +762,8 @@ begin
 		SMFr.ParenteMail = WebGetArg("parentemail");// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 5 October 2018 17:42:33
 		SMFr.AgeFlag = stringtoint(WebGetArg("age"));// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 5 October 2018 17:42:33
   
-    if recordStore(SMFr,false) then begin 
+    if recordStore(SMFr,false) then begin
+      CreateTeachApp(SMFr.SMFCode, TCr.TeacherCode);
       //text = name[0] & USetStr(32345) & (size) & USetStr(32346);
       //GenMailForSMU(text,USetStr(32344) & " - " & SMFr.SMFName,RMbl.SMUMail,SMFr,true,CUr,""); 
       
