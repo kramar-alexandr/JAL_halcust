@@ -567,6 +567,7 @@ begin
       LineTextPut(Mailr,0,txt);
       Mailrw.AddrCode = MSr.FromSystem;
 	  end else begin
+			LineTextPut(Mailr,0,txt);
 			LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveParents.hal?c=" & SMFr.SMFCode & "&a=" & CUr.Comment);
 			Mailrw.AddrCode = MSr.Postmaster;
 	  end;
@@ -607,7 +608,7 @@ begin
       LineTextPut(Mailr,0,txt);
       Mailrw.AddrCode = MSr.FromSystem;
 	  end else begin
-		
+			LineTextPut(Mailr,0,txt);
 			LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveEmployer.hal?smu=" & SMFr.SMFCode & "&emp=" & CUr.Code);
 			Mailrw.AddrCode = MSr.Postmaster;
 	  end;
@@ -892,6 +893,7 @@ begin
 						end;
 					end;
 					if (SMFr.AgeFlag != 0) then begin
+						text = "test confirm link";
 						GenMailForParents(text,USetStr(32484),SMFr.ParenteMail,SMFr,false,CUr,"");
 
 					end;

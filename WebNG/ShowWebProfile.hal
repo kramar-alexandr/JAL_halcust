@@ -527,6 +527,7 @@ begin
 			end;	
     end;
   end;
+	WebOutString("<option value='" & SMFr.SMFCode & "'>" & SMFr.Manager & "</div>");
   
   return;
 end;
