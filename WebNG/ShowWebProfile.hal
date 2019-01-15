@@ -445,7 +445,7 @@ begin
           if (SMFr.CustCode <> tCUr.Code and CUr.Code == SMFr.CustCode) then begin
             WebOutStringFormatNL("<form class=""deleteform"" action=""/WebDeleteEmp.hal"" method=""POST"" onsubmit=""return confirm('" & ToolWebNGTranslateText(23076) & "');"">");
           end; 
-            WebOutStringFormatNL("<div class=""emp""><div class=""empname""><span>" & ToolWebNGTranslateText(20030) & ": </span><p>" & tCUr.Name & "</p></div><div class=""empemail""><span>E-pasta adrese: </span><p>" & tCUr.eMail & "</p></div></div><input type=""hidden"" name=""emp"" value=""" & tCUr.Code & """>");
+            WebOutStringFormatNL("<div class=""empe""><div class=""empname""><span>" & ToolWebNGTranslateText(20030) & ": </span><p>" & tCUr.Name & "</p></div><div class=""empemail""><span>E-pasta adrese: </span><p>" & tCUr.eMail & "</p></div></div><input type=""hidden"" name=""emp"" value=""" & tCUr.Code & """>");
             WebOutStringFormatNL("<input type=""hidden"" name=""tpath"" value=""" & WebGetArg("path") & """><input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");
           
          
