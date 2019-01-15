@@ -417,7 +417,7 @@ begin
           end;
           WebOutStringFormatNL("</div>");
         end;
-        WebOutStringFormatNL("<input type=""hidden"" name=""tpath"" value=""" & WebGetArg("path") & """>");
+				WebOutStringFormatNL("<input type=""hidden"" name=""tpath"" value=""" & WebGetArg("path") & """>");
         WebOutStringFormatNL("<div class=""addinput""><span>SMU Nosaukums</span><input type=""text"" name=""name"" value='" & EscapeText(SMFr.SMFName) & "'>");
         WebOutStringFormatNL("</div>");
         WebOutStringFormatNL("<input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");
@@ -440,9 +440,11 @@ begin
         emp = 0;
         WebOutStringFormatNL("<div id=""removeemp"">");
         WebOutStringFormatNL("<h2>" & ToolWebNGTranslateText(23071) & "</h2>");
+				WebOutStringFormatNL("<div class=""emprow"">");
+				WebOutStringFormatNL("<div class=""emp""><div class=""empname""><span>"  &ToolWebNGTranslateText(20030) & ": </span><p>" & SMFr.Manager & "</p></div><div class=""empemail""><span>, E-pasta adrese: </span><p>" & CUr.eMail & "</p></div></div><input type=""hidden"" name=""emp"" value=""" & CUr.Code & """></div>");
         while readrecordlink(SMFr,i,tCUr,RLr) begin
-          WebOutStringFormatNL("<div class=""emprow"">");
-          if (SMFr.CustCode <> tCUr.Code and CUr.Code == SMFr.CustCode) then begin
+						WebOutStringFormatNL("<div class=""emprow"">")
+            if (SMFr.CustCode <> tCUr.Code and CUr.Code == SMFr.CustCode) then begin
             WebOutStringFormatNL("<form class=""deleteform"" action=""/WebDeleteEmp.hal"" method=""POST"" onsubmit=""return confirm('" & ToolWebNGTranslateText(23076) & "');"">");
           end; 
             WebOutStringFormatNL("<div class=""empe""><div class=""empname""><span>" & ToolWebNGTranslateText(20030) & ": </span><p>" & tCUr.Name & "</p></div><div class=""empemail""><span>E-pasta adrese: </span><p>" & tCUr.eMail & "</p></div></div><input type=""hidden"" name=""emp"" value=""" & tCUr.Code & """>");
