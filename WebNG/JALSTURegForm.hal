@@ -576,6 +576,7 @@ begin
     MatRowPut(Mailr,1,Mailrw);
     Mailr.SendFlag = 1;
     if recordStore(Mailr,true) then begin 
+			RecordAction_raEMailQue(Mailr,false);
 	end;
 
 return;
@@ -613,6 +614,7 @@ begin
     MatRowPut(Mailr,1,Mailrw);
     Mailr.SendFlag = 1;
     if recordStore(Mailr,true) then begin 
+			RecordAction_raEMailQue(Mailr,false);
 	end;
 
 return;

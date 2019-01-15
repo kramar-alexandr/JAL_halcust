@@ -12,6 +12,7 @@ external updating procedure CreateTeachApp(string, string);
 external updating procedure GenMailForSMU(string,string,string,var record SMFVc,boolean,record CUVc,string);
 external updating procedure GenMailForParents(string,string,string,var record SMFVc,boolean,record CUVc,string);
 external updating procedure GenMailForEmp(string,string,string,var record SMFVc,boolean,record CUVc,string);
+external updating function Boolean RecordAction_raEMailQue(var record MailVc,Boolean);
 
 SetLangMode(LangLatvian,"LAT",0);
 
@@ -561,6 +562,7 @@ begin
     MatRowPut(Mailr,1,Mailrw);
     Mailr.SendFlag = 1;
     if recordStore(Mailr,true) then begin 
+			RecordAction_raEMailQue(Mailr,false);
 		end;
 
 return;
