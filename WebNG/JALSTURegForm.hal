@@ -526,7 +526,7 @@ begin
     Mailrw.RowTyp = 1;
     if testf then begin
       LineTextPut(Mailr,0,txt);
-      Mailrw.AddrCode = MSr.FromSystem;
+      Mailrw.AddrCode = MSr.Postmaster;
 	  end else begin
 			LineTextPut(Mailr,4,"http://jal.lv/WebJALApprovebyc3a.hal?c=" & CUr.Code & "&a=" & CUr.Comment);
 			Mailrw.AddrCode = MSr.Postmaster;
@@ -563,7 +563,7 @@ begin
     Mailrw.RowTyp = 1;
     if testf then begin
       LineTextPut(Mailr,0,txt);
-      Mailrw.AddrCode = MSr.FromSystem;
+      Mailrw.AddrCode = MSr.Postmaster;
 	  end else begin
 			LineTextPut(Mailr,0,txt);
 			LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveParents.hal?c=" & SMFr.SMFCode & "&a=" & CUr.Comment);
@@ -600,7 +600,7 @@ begin
     Mailrw.RowTyp = 1;
     if testf then begin
       LineTextPut(Mailr,0,txt);
-      Mailrw.AddrCode = MSr.FromSystem;
+      Mailrw.AddrCode = MSr.Postmaster;
 	  end else begin
 			LineTextPut(Mailr,0,txt);
 			LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveEmployer.hal?smu=" & SMFr.SMFCode & "&emp=" & CUr.Code);
