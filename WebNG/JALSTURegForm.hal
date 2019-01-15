@@ -10,6 +10,7 @@ external procedure SelBoxForSchoolForTeacher(string);
 external procedure SelBoxForDistrictForMentor(string);
 external updating procedure GenMailForTeacher(string,string,string,var record SMFVc,boolean,record CUVc,string);
 external function Boolean FindSMURecord(string,var record SMFVc);
+external updating function Boolean RecordAction_raEMailQue(var record MailVc,Boolean);
 
 procedure SelBoxForType()
 begin
@@ -536,7 +537,8 @@ begin
     Mailrw.AddrCode = conf;
     MatRowPut(Mailr,1,Mailrw);
     Mailr.SendFlag = 1;
-    if recordStore(Mailr,true) then begin 
+    if recordStore(Mailr,true) then begin
+			RecordAction_raEMailQue(Mailr,false);
 	end;
 
 return;
@@ -873,17 +875,12 @@ begin
 				if(SMFr.ConfirmSKL==0) then begin
 					matrowget(SMFr,0,SMFrw);
 					TCr.TeacherCode = SMFrw.Code;
-					text = "test confirm link";
+					text = USetStr(32499);
 					if(ReadFirstMain(TCr,1,true)) then begin
 						tCUr.Code = TCr.CustCode;
 						if(ReadFirstMain(tCur,1,true)) then begin
 							GenMailForTeacher(text,USetStr(32485),tCUr.eMail,SMFr,false,tCUr,""); // регистрация компании подтверждения для учителя
 						end;
-					end;
-					if (SMFr.AgeFlag != 0) then begin
-						text = "test confirm link";
-						GenMailForParents(text,USetStr(32484),SMFr.ParenteMail,SMFr,false,CUr,"");//регистрация компании подтверждения для родителей
-
 					end;
 				end;
 			end;
