@@ -846,10 +846,14 @@ begin
   v = 10; vs = 22; h = 100; h2 = 280; h3=400;
   EditField(h,v=6,90,"S•r. nr.",Normal,SerNr,false,0);
   EditField(h2,v,90,"Datums",Normal,TransDate,false,PasteCurDate);
-  CheckBox(h3,v,0,"Akt´vs",ActiveFlag);
-  
+  CheckBox(h3-30,v,0,"Akt´vs",ActiveFlag);
+  ButtonFrame(h3+30,v,90,4,"Participation");
+  RadioButton(h3+30,v,0,0,"Cits (other)",StatusFlag);
+  RadioButton(h3+30,v+16,1,0,"Enu diena",StatusFlag);
+  RadioButton(h3+30,v+32,2,0,"TITAN",StatusFlag);
   EditField(h,v+=vs,270,"Koment‚rs",Normal,Comment,false,0);
-  CheckBox(h3,v,0,"Sl•gts",ClosedFlag);  
+  CheckBox(h3-30,v,0,"Sl•gts",ClosedFlag);  
+	
   EditField(h,v+=vs,90,"S‚kuma Datums",Normal,StartDate,false,PasteCurDate);
   EditField(h2,v,90,"Beigu Datums",Normal,EndDate,false,PasteCurDate);
   CheckBox(h-5,v+=vs,0,"Tikai re®istr•tiem lietot‚jiem",RegFlag);
