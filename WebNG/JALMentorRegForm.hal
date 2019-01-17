@@ -286,7 +286,7 @@ begin
       Mentr.TransDate = CurrentDate;
       Mentr.CustCode = code;
       if RecordStore(Mentr,true) then begin 
-        GenMail(text,USetStr(32340),RMbl.MentorMail,Mentr,true,CUr,""); 
+        GenMail(text,USetStr(32340),RMbl.MentorMail,Mentr,true,CUr,"");
         text = USetStr(32347) & chr(13) & USetStr(10018) & " " & CUr.eMail &  chr(13) & USetStr(10029) & ": " & tstr;
         if foundf then begin
           GenMail(text,USetStr(32348),tCUr.eMail,Mentr,false,tCUr,tstr); 
