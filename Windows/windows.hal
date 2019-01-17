@@ -717,10 +717,12 @@ begin
   WindowBegin("Dokuments",JALFileDClass,CGView,-);
   v=6;h=100;h2=250;vs=20;
   UseView(JALFileVc);
-  SetWRect(80,80,440,300);
+  SetWRect(80,80,440,400);
   EditField(h,v,80,"S•r. nr.",Normal,SerNr,false,0);
+	EditField(h,v+=vs,-40,"Dok name",Normal,Name,false,0);
   EditField(h,v+=vs,80,"SMU kods",Normal,SMFCode,false,SMFSClass);
   EditField(h,v+=vs,-40,"SMU nosaukums",Normal,SMFName,false,0);
+	EditField(h,v+=vs,-40,"Reg Date",Normal,TransDate,false,0);
   ButtonFrame(h,v+=50,100,4,"Status");
   RadioButton(h,v,0,0,"Iesðt´ts",Status);
   RadioButton(h,v+=16,1,0,"Apstiprin‚ts(skolot‚js)",Status);

@@ -644,6 +644,7 @@ begin
   RecordField(Status,M4Int,0,0);
   RecordField(TransDate,M4Date,0,0);
   RecordField(Score,M4Int,0,0);
+	RecordField(Name,M4Str,200,0);
   MainKeyBegin(SerNr,0);
   KeySegment(SerNr);
   KeyBegin(SMFCode);
