@@ -978,6 +978,7 @@ begin
   RadioButton(h3,v,0,0,"Jauns",StatusFlag);
   RadioButton(h3,v+=16,1,0,"Apstiprin‚ts",StatusFlag);
   RadioButton(h3,v+=16,2,0,"Noraid´ts",StatusFlag);
+	RadioButton(h3,v+=16,3,0,"Apmekleja",StatusFlag);
   v = vm;
 
   MatrixBegin(4,v+=40,-21,-10,-,20);
