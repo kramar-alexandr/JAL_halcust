@@ -723,15 +723,14 @@ begin
   EditField(h,v+=vs,80,"SMU kods",Normal,SMFCode,false,SMFSClass);
   EditField(h,v+=vs,-40,"SMU nosaukums",Normal,SMFName,false,0);
 	EditField(h,v+=vs,-40,"Reg Date",Normal,TransDate,false,0);
-  ButtonFrame(h,v+=50,100,4,"Status");
+	EditField(h,v+=vs,80,"V•rt•jums",Normal,Score,false,0);
+  ButtonFrame(h,v+=40,100,4,"Status");
   RadioButton(h,v,0,0,"Iesðt´ts",Status);
   RadioButton(h,v+=16,1,0,"Apstiprin‚ts(skolot‚js)",Status);
   RadioButton(h,v+=16,2,0,"Apstiprin‚ts(JAL)",Status);
   RadioButton(h,v+=16,3,0,"Noraid´ts",Status);
   RadioButton(h,v+=16,4,0,"Att•ls",Status);
-
-  EditField(h,v+=vs,80,"V•rt•jums",Normal,Score,false,0);
-  
+ 
   EndWindow;
 
   WindowBegin("Atskaite par skol‚m",JALDocsRClass,CGRcW,RcType);
