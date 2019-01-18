@@ -789,6 +789,10 @@ begin
               CreateRecordLink(tCUr,CurrentCompany,SMFr,CurrentCompany);
               text = USetStr(32498);
               GenMailForSMU(text,USetStr(32486),tCUr.eMail,SMFr,false,tCUr,tstr);   // регистрация компании для создателя
+							if(SMFr.AgeFlag!=0) then begin
+								text = USetStr(32489);
+								GenMailForParents(text,text,SMFr.ParenteMail,SMFr,true,tCUr,tstr); //изменение информации о родителях
+							end;
             end;
           end;
         end else begin
@@ -814,6 +818,10 @@ begin
             text = USetStr(32347) & chr(13) & USetStr(10018) & " " & email[i] &  chr(13) & USetStr(10029) & ": " & tstr;
 						text = USetStr(32498);
             GenMailForSMU(text,USetStr(32486),CUr.eMail,SMFr,false,CUr,tstr);  //регистрация компании для создателя
+						if(SMFr.AgeFlag!=0) then begin
+							text = USetStr(32489);
+							GenMailForParents(text,text,SMFr.ParenteMail,SMFr,false,tCUr,tstr); //изменение информации о родителях
+						end;
           end;
         end;
         if i == 0 then begin
