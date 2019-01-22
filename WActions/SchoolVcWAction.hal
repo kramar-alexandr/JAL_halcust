@@ -40,7 +40,6 @@ begin
 end;
 
 
-
 global
 function Boolean JALLangSClassOnOpenWindow(Integer wn)
 begin
