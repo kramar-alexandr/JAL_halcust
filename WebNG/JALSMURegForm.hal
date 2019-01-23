@@ -842,6 +842,21 @@ begin
  
 return;
 end;
+function string 255 CreateJson(string toparse)
+begin
+integer i;
+string 255 out;
+out = "";
+for(i=0;i<len(toparse);i=i+1) begin
+	if(mid(toparse,i,1)=="\"") then begin
+		out = out & "'";
+	end else begin
+		out = mid(toparse,i,1);
+	end;
+end;	
+CreateJson = out;
+return;
+end;
 
 global webpublic
 procedure WebGetTeacher()
@@ -852,6 +867,7 @@ begin
   string 20 region;
 	array string 20 schools;
 	boolean TrHs;
+	string 255 name;
 	integer i,cnt,count;
   region = webGetArg("reg");
 	TrHs = true;
@@ -881,9 +897,10 @@ begin
 					count = count + 1;
 				 CUr.Code = TRr.CustCode;
 				 ReadFirstMain(CUr,1,true);
+				 name = CreateJson(SCr.SchoolName);
 				 WebOutStringFormatNL("{");
 				 WebOutStringFormatNL("\"nameTeacher\":\"" & TRr.TeacherName & "\",");
-				 WebOutStringFormatNL("\"schoolName\":\"" & SCr.SchoolName & "\",");
+				 WebOutStringFormatNL("\"schoolName\":\"" & name & "\",");
 				If(TRr.PSKFlag!=0) then begin 
 					WebOutStringFormatNL("\"psk\":\"" & "true" & "\",");
 				end else begin 
