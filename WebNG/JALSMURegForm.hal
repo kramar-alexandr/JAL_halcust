@@ -867,6 +867,7 @@ begin
 	ResetLoop(SCr);
 	count = 0;
 	cnt = schools.length;
+	WebOutStringFormatNL("[");
 	for(i=0;i<cnt;i=i+1) begin
 		TRr.Approved = 1;
 		TRr.TeacherName = "";
@@ -904,7 +905,9 @@ begin
 			end;	 
 		end;	
 		ResetLoop(TRr);
+
 	end;
+	WebOutStringFormatNL("]");
 return;
 end;	
 
