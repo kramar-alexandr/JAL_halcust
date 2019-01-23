@@ -851,7 +851,7 @@ for(i=0;i<len(toparse);i=i+1) begin
 	if(mid(toparse,i,1)=="\"") then begin
 		out = out & "'";
 	end else begin
-		out = mid(toparse,i,1);
+		out = out & mid(toparse,i,1);
 	end;
 end;	
 CreateJson = out;
