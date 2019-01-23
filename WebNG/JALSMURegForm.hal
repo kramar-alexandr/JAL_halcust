@@ -843,3 +843,68 @@ begin
 return;
 end;
 
+global webpublic
+procedure WebGetTeacher()
+begin
+	record TeacherVc TRr;
+	record CUVc CUr;
+	record SchoolVc SCr;
+  string 20 region;
+	array string 20 schools;
+	boolean TrHs;
+	integer i,cnt,count;
+  region = webGetArg("reg");
+	TrHs = true;
+	SCr.Region = region;
+	i=0;
+	while(LoopKey("Region",SCr,1,TrHs)) begin
+		if(SCr.Region!=region) then begin TrHs = false; end;
+		if(TrHs) then begin
+			schools[i] = SCr.SchoolCode;
+			i = i + 1;
+		end;
+	end;
+	ResetLoop(SCr);
+	count = 0;
+	cnt = schools.length;
+	for(i=0;i<cnt;i=i+1) begin
+		TRr.Approved = 1;
+		TRr.TeacherName = "";
+		TrHs = true;
+		SCr.SchoolCode = schools[i];
+		ReadFirstMain(SCr,1,true);
+		while loopkey("Approved:" & schools[i],TRr,2,TrHs) begin
+			if TRr.Approved <> 1 then begin
+				TrHs = false;
+			end else begin
+					if(count>0) then begin WebOutStringFormatNL(","); end;
+					count = count + 1;
+				 CUr.Code = TRr.CustCode;
+				 ReadFirstMain(CUr,1,true);
+				 WebOutStringFormatNL("{");
+				 WebOutStringFormatNL("\"nameTeacher\":\"" & TRr.TeacherName & "\",");
+				 WebOutStringFormatNL("\"schoolName\":\"" & SCr.SchoolName & "\",");
+				If(TRr.PSKFlag!=0) then begin 
+					WebOutStringFormatNL("\"psk\":\"" & "true" & "\",");
+				end else begin 
+					WebOutStringFormatNL("\"psk\":\"" & "false" & "\",");
+				end;	
+				If(TRr.VSKFlag!=0) then begin 
+					WebOutStringFormatNL("\"vsk\":\"" & "true" & "\",");
+				end else begin 
+					WebOutStringFormatNL("\"vsk\":\"" & "false" & "\",");
+				end;	
+				If(TRr.PROFFlag!=0) then begin 
+					WebOutStringFormatNL("\"prof\":\"" & "true" & "\",");
+				end else begin 
+					WebOutStringFormatNL("\"prof\":\"" & "false" & "\",");
+				end;	
+				 WebOutStringFormatNL("\"email\":\"" & CUr.eMail & "\"");
+				 WebOutStringFormatNL("}");
+			end;	 
+		end;	
+		ResetLoop(TRr);
+	end;
+return;
+end;	
+
