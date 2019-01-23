@@ -85,6 +85,9 @@ begin
   RecordField(Subject,M4Str,60,0);
   RecordField(Math,M4Matrix,0,0);
   RecordField(ContractNr,M4Str,50,0);
+	RecordField(PSKFlag,M4Int,0,0);
+	RecordField(VSKFlag,M4Int,0,0);
+	RecordField(PROFFlag,M4Int,0,0);
   ArrayBegin(Math,-,1);
   ArrayField(SchoolCode,M4Code,4,0);
   ArrayField(SchoolName,M4Str,80,0);

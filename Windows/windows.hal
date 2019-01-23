@@ -91,7 +91,7 @@ begin
   EndWindow;
 
   WindowBegin("Skolot‚js",TeacherDClass,CGview,-);
-  SetWRect(64,80,560,300);
+  SetWRect(64,80,560,600);
   UseView(TeacherVc);
   v = 10; vs = 22; h = 100; h2 = 260;
   EditField(h,v+=vs, 30,"Skolot‚ja kods",ViewOnly,TeacherCode,false,0);
@@ -105,7 +105,10 @@ begin
   EditField(h,v+=vs,40,"Glob. lietot‚js",Normal,GlobalUser,false,GlobalUserSClass);
   EditField(h2,v,-25,"Pap. darba vieta",Normal,OtherJob,false,0);
   EditField(h2,v+=vs,-25,"L´guma nr.",Normal,ContractNr,false,0);
-  CheckBox(h-3,v,0,"Apstiprin‚ts",Approved);
+  CheckBox(h-3,v+=vs,0,"Apstiprin‚ts",Approved);
+	CheckBox(h-3,v+=vs,0,"PSK",PSKFlag);
+	CheckBox(h-3,v+=vs,0,"VSK",VSKFlag);
+	CheckBox(h-3,v+=vs,0,"PROF",PROFFlag);
   MatrixBegin(4,v+=40,-21,v+=90,-,20);
   MatCol(1,32,"Skolas kods",0,SchoolCode,false,SchoolSClass);
   MatCol(1,186,"Skolas nos.",0,SchoolName,false,0);
