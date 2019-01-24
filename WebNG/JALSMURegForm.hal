@@ -842,7 +842,8 @@ begin
  
 return;
 end;
-function string 255 CreateJson(string toparse)
+
+global function string 255 CreateJson(string toparse)
 begin
 integer i;
 string 255 out;
