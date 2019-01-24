@@ -903,19 +903,19 @@ begin
 				 WebOutStringFormatNL("\"nameTeacher\":\"" & TRr.TeacherName & "\",");
 				 WebOutStringFormatNL("\"schoolName\":\"" & name & "\",");
 				If(TRr.PSKFlag!=0) then begin 
-					WebOutStringFormatNL("\"psk\":\"" & "true" & "\",");
+					WebOutStringFormatNL("\"PSK\":\"" & "true" & "\",");
 				end else begin 
-					WebOutStringFormatNL("\"psk\":\"" & "false" & "\",");
+					WebOutStringFormatNL("\"PSK\":\"" & "false" & "\",");
 				end;	
 				If(TRr.VSKFlag!=0) then begin 
-					WebOutStringFormatNL("\"vsk\":\"" & "true" & "\",");
+					WebOutStringFormatNL("\"VSK\":\"" & "true" & "\",");
 				end else begin 
-					WebOutStringFormatNL("\"vsk\":\"" & "false" & "\",");
+					WebOutStringFormatNL("\"VSK\":\"" & "false" & "\",");
 				end;	
 				If(TRr.PROFFlag!=0) then begin 
-					WebOutStringFormatNL("\"prof\":\"" & "true" & "\",");
+					WebOutStringFormatNL("\"PROF\":\"" & "true" & "\",");
 				end else begin 
-					WebOutStringFormatNL("\"prof\":\"" & "false" & "\",");
+					WebOutStringFormatNL("\"PROF\":\"" & "false" & "\",");
 				end;	
 				 WebOutStringFormatNL("\"email\":\"" & CUr.eMail & "\"");
 				 WebOutStringFormatNL("}");
