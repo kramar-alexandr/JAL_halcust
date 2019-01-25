@@ -514,6 +514,17 @@ begin
   SearchField("Mekl•t");
   EndWindow;
 
+	WindowBegin("Piesl•gäan‚s",SetLoginFlagVClass,CGMnt,RcType);
+  SetWRect(80,80,500,150);
+  StaticText(80,25,"Spied OK",false);
+  EndWindow;
+
+  WindowBegin("Run",EmptyVClass,CGMnt,RcType);
+  SetWRect(64,80,860,350);
+  Sizeable(-1,-1,0,0);
+
+  EndWindow;
+	
   WindowBegin("Mentors",MentorDClass,CGview,-);
   SetWRect(64,80,560,250);
   UseView(MentorVc);

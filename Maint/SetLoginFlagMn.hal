@@ -25,3 +25,17 @@ begin
 
   return;
 end;
+
+global
+updating procedure ActivateSchoolsMn(record RCVc RepSpec)
+begin
+record SchoolVc Sr;
+Sr.SchoolCode = "";
+while(LoopMain(Sr,1,true)) begin
+	if(Sr.Approved==0) then begin 
+		Sr.Approved = 1;
+		RecordStore(Sr,true);
+	end;
+end;	
+return;
+end;

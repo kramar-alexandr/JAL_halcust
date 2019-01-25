@@ -121,12 +121,10 @@ begin
   integer confcode;
   string 50 frommail;
 
-
   BlockLoad(JCbl);
   TrHs = true;
   
   Confr.AddrName = JCbl.StartConf;
- 
   if ReadFirstKey("AddrName",Confr,1,TrHs) begin
     confcode = Confr.SerNr;
   end;
@@ -176,7 +174,10 @@ begin
         MatRowPut(mailr,i,mailrw);
       end;
     end;
-
+		
+			if(mailr.SerNr==41171) then begin
+				RecordDelete(mailr);
+			end;	
     if RecordUpdate(oldmailr,mailr,true)==0 then begin
       if savef then begin
         //SendMailForAttachments(SMFr,mailr);
