@@ -8,7 +8,7 @@ external function string 4 GiveCode(var string);
 external procedure SelBoxForDistrictForTeacher(string);
 external procedure SelBoxForSchoolForTeacher(string);
 external procedure SelBoxForDistrictForMentor(string);
-external updating procedure GenMailForTeacher(string,string,string,var record SMFVc,boolean,record CUVc,string);
+external updating procedure GenMailForTeacherMy(string,string,string,var record SMFVc,boolean,record CUVc,string);
 external function Boolean FindSMURecord(string,var record SMFVc);
 external updating function Boolean RecordAction_raEMailQue(var record MailVc,Boolean);
 
@@ -881,7 +881,7 @@ begin
 					if(ReadFirstMain(TCr,1,true)) then begin
 						tCUr.Code = TCr.CustCode;
 						if(ReadFirstMain(tCur,1,true)) then begin
-							GenMailForTeacher(text,USetStr(32485),tCUr.eMail,SMFr,false,tCUr,""); // регистрация компании подтверждения для учителя
+							GenMailForTeacherMy(text,USetStr(32485),tCUr.eMail,SMFr,false,tCUr,""); // регистрация компании подтверждения для учителя
 						end;
 					end;
 				end;

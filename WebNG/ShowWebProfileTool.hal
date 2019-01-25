@@ -9,7 +9,7 @@ external function Boolean FindTchrRecord(string,var record TeacherVc);// Edit **
 external updating procedure GenMailForSMU(string,string,string,var record SMFVc,boolean,record CUVc,string);
 external updating procedure GenMailForParents(string,string,string,var record SMFVc,boolean,record CUVc,string);
 external updating procedure GenMailForEmp(string,string,string,var record SMFVc,boolean,record CUVc,string);
-external updating procedure GenMailForTeacher(string,string,string,var record SMFVc,boolean,record CUVc,string);
+external updating procedure GenMailForTeacherMy(string,string,string,var record SMFVc,boolean,record CUVc,string);
 external updating function Boolean RecordAction_raEMailQue(var record MailVc,Boolean);
 
 function string 255 GenerateRandomHash()
@@ -141,7 +141,7 @@ begin
 						ReadFirstMain(tCUr,1,true);
 						text=USetStr(32502);
 						SMFr.FirstUpd = 1;
-						GenMailForTeacher(text,USetStr(32485),tCUr.eMail,SMFr,false,tCUr,"");
+						GenMailForTeacherMy(text,USetStr(32485),tCUr.eMail,SMFr,false,tCUr,"");
 					end;	
 					if(SMFr.AgeFlag!=0) then begin
 						GenMailForParents(text,text,SMFr.ParenteMail,SMFr,true,CUr,"");// ��������� �������

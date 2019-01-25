@@ -531,7 +531,7 @@ begin
 
 
 global
-updating procedure GenMailForTeacher(string txt,string head,string conf,var record SMFVc SMFr,boolean testf,record CUVc CUr,string pass)
+updating procedure GenMailForTeacherMy(string txt,string head,string conf,var record SMFVc SMFr,boolean testf,record CUVc CUr,string pass)
 begin
   record MailVc Mailr;
   row MailVc Mailrw;
