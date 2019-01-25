@@ -86,7 +86,8 @@ global webpublic
 updating procedure WebChangeProfile()
 begin
   record SMFVc SMFr,oldSMFr;
-  record CUVc CUr;
+	row SMFVc SMFrw;
+  record CUVc CUr,tCUr;
   integer err;
   string 30 name,comp,cust;
   boolean savef;
@@ -130,10 +131,18 @@ begin
           SMFr.ProdSpec = prspec;
           SMFr.ReadyFlag = 1;
           WebGetText("comment",SMFr);
+					Matrowget(SMFr,0,SMFrw);
           if recordStore(SMFr,true) then begin end;
           savef = true;
 					text=USetStr(32488);
 					GenMailForSMU(text,text,CUr.eMail,SMFr,true,CUr,"");   // ��������� �������
+					if(SMFr.FirstUpd==0) then begin
+						tCUr.Code = SMFrw.Code;
+						ReadFirstMain(tCUr,1,true);
+						text=USetStr(32502);
+						SMFr.FirstUpd = 1;
+						GenMailForTeacher(text,USetStr(32485),tCUr.eMail,SMFr,false,tCUr,"");
+					end;	
 					if(SMFr.AgeFlag!=0) then begin
 						GenMailForParents(text,text,SMFr.ParenteMail,SMFr,true,CUr,"");// ��������� �������
 					end;
