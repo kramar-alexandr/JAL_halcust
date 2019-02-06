@@ -43,7 +43,7 @@ begin
   record RLinkVc RLr;
   boolean res;
   integer i;
-	string 255 text; 
+	string 255 text,headertext; 
 	record JALClassblock JALClassbl;
 	 
 	BlockLoad(JALClassbl);
@@ -65,12 +65,14 @@ begin
           end;
           i = i + 1;
         end;
+						
 						text=USetStr(32501);
-						GenMailForSMU(text,text,SMFr.Email,SMFr,true,tCUr,"");  //�������� ����������
-						GenMailForEmp(text,USetStr(32487),tCUr.eMail,SMFr,true,tCUr,"");  //�������� ���������� 
+						headertext = "Skolēna dalība skolēnu mācību uzņēmumā";
+						GenMailForSMU(text,headertext,SMFr.Email,SMFr,true,tCUr,"");  //�������� ����������
+						GenMailForEmp(text,headertext,tCUr.eMail,SMFr,true,tCUr,"");  //�������� ���������� 
 						if(SMFr.AgeFlag!=0) then begin
 							text = USetStr(32500);
-							GenMailForParents(text,text,SMFr.ParenteMail,SMFr,true,CUr,"");//�������� ����������
+							GenMailForParents(text,headertext,SMFr.ParenteMail,SMFr,true,CUr,"");//�������� ����������
 						end;
       end;
     end;
@@ -171,7 +173,7 @@ begin
   integer err;
   boolean foundf,savef;
   record RLinkVc RLr;
-  string 255 text;
+  string 255 text,headertext;
 	
 	BlockLoad(JALClassbl);
 		
@@ -240,7 +242,8 @@ begin
               CreateRecordLink(SMFr,CurrentCompany,tCUr,CurrentCompany);
               CreateRecordLink(tCUr,CurrentCompany,SMFr,CurrentCompany);
               text = USetStr(32347) & chr(13) & USetStr(10018) & " " & email &  chr(13) & USetStr(10029) & ": " & tstr;
-              GenMailForSMU(text,USetStr(32348),tCUr.eMail,SMFr,false,tCUr,tstr);   //���������� ����������
+			  headertext = "Skolēna dalība skolēnu mācību uzņēmumā";
+              GenMailForSMU(text,headertext,tCUr.eMail,SMFr,false,tCUr,tstr);   //���������� ����������
             end;
             savef = true;
           end else begin
@@ -262,7 +265,8 @@ begin
               CreateRecordLink(SMFr,CurrentCompany,CUr,CurrentCompany);
               CreateRecordLink(CUr,CurrentCompany,SMFr,CurrentCompany);
               text = USetStr(32347) & chr(13) & USetStr(10018) & " " & email &  chr(13) & USetStr(10029) & ": " & tstr;
-              GenMailForSMU(text,USetStr(32348),CUr.eMail,SMFr,false,CUr,tstr); //���������� ����������
+			  headertext = "Skolēna dalība skolēnu mācību uzņēmumā";
+              GenMailForSMU(text,headertext,CUr.eMail,SMFr,false,CUr,tstr); //���������� ����������
             end;
             savef = true;
           end;
@@ -330,7 +334,7 @@ begin
   record CUVc CUr,tCUr;
   record SMFVc SMFr;
   Integer i;
-	string 255 text;
+	string 255 text,headertext;
 	boolean res;
 	
   BlockLoad(JALClassbl);
@@ -354,7 +358,8 @@ begin
                         tCUr.Code = WebGetArg("nemp");
 						ReadFirstMain(tCUr,1,true);
 						text = USetStr(32501);
-						GenMailForEmp(text,USetStr(32487),tCUr.eMail,SMFr,false,tCUr,""); //���������� ����������
+						headertext = "Skolēna dalība skolēnu mācību uzņēmumā";
+						GenMailForEmp(text,headertext,tCUr.eMail,SMFr,false,tCUr,""); //���������� ����������
 						text = USetStr(32490);
 						GenMailForSMU(text,text,CUr.eMail,SMFr,true,CUr,"");  //���������� ���������� 
 						if(SMFr.AgeFlag!=0) then begin

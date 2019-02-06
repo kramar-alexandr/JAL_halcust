@@ -866,7 +866,7 @@ begin
 	record TeacherVc TCr;
 	record SMFVc SMFr;
 	row SMFVc SMFrw;
-	string 255 text;
+	string 255 text,headertext;
 
   CUr.Code = WebGetArg("c");
  if(ReadFirstMain(CUr,1,true)) then begin
@@ -881,7 +881,8 @@ begin
 					if(ReadFirstMain(TCr,1,true)) then begin
 						tCUr.Code = TCr.CustCode;
 						if(ReadFirstMain(tCur,1,true)) then begin
-							GenMailForTeacherMy(text,USetStr(32485),tCUr.eMail,SMFr,false,tCUr,""); // регистрация компании подтверждения для учителя
+							headertext = "JA Latvia lapā reģistrēts jūsu konsultēts SMU";
+							GenMailForTeacherMy(text,headertext,tCUr.eMail,SMFr,false,tCUr,""); // регистрация компании подтверждения для учителя
 						end;
 					end;
 				end;

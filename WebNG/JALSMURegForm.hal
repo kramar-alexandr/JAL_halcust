@@ -646,6 +646,7 @@ begin
   integer year;
   row SMFVc SMFrw;
   record ConfVc Cr;
+  string 255 headertext;
   BlockLoad(RMbl);
   BlockLoad(JALClassbl);
   smuname = WebGetArg("smuname");
@@ -788,10 +789,12 @@ begin
               CreateRecordLink(SMFr,CurrentCompany,tCUr,CurrentCompany);
               CreateRecordLink(tCUr,CurrentCompany,SMFr,CurrentCompany);
               text = USetStr(32498);
-              GenMailForSMU(text,USetStr(32486),tCUr.eMail,SMFr,false,tCUr,tstr);   // регистрация компании для создателя
+			  headertext = "SMU registracija JA Latvia lapa"; 
+              GenMailForSMU(text,headertext,tCUr.eMail,SMFr,false,tCUr,tstr);   // регистрация компании для создателя
 							if(SMFr.AgeFlag!=0) then begin
 								text = USetStr(32489);
-								GenMailForParents(text,text,SMFr.ParenteMail,SMFr,false,tCUr,tstr); //изменение информации о родителях
+								headertext = "Skolena registracijas apstiprinajums JA Latvia lapa";
+								GenMailForParents(text,headertext,SMFr.ParenteMail,SMFr,false,tCUr,tstr); // родителях
 							end;
             end;
           end;
@@ -816,12 +819,15 @@ begin
             CreateRecordLink(SMFr,CurrentCompany,CUr,CurrentCompany);
             CreateRecordLink(CUr,CurrentCompany,SMFr,CurrentCompany);
             text = USetStr(32347) & chr(13) & USetStr(10018) & " " & email[i] &  chr(13) & USetStr(10029) & ": " & tstr;
-						text = USetStr(32498);
-            GenMailForSMU(text,USetStr(32486),CUr.eMail,SMFr,false,CUr,tstr);  //регистрация компании для создателя
-						if(SMFr.AgeFlag!=0) then begin
-							text = USetStr(32489);
-							GenMailForParents(text,text,SMFr.ParenteMail,SMFr,false,tCUr,tstr); //изменение информации о родителях
-						end;
+			 text = USetStr(32498);
+			  headertext = "SMU registracija JA Latvia lapa"; 
+              GenMailForSMU(text,headertext,tCUr.eMail,SMFr,false,tCUr,tstr);   // регистрация компании для создателя
+							if(SMFr.AgeFlag!=0) then begin
+								text = USetStr(32489);
+								headertext = "Skolena registracijas apstiprinajums JA Latvia lapa";
+								GenMailForParents(text,headertext,SMFr.ParenteMail,SMFr,false,tCUr,tstr); // родителях
+							end;
+            end;
           end;
         end;
         if i == 0 then begin
@@ -832,7 +838,7 @@ begin
           end;
         end;
       end;
-    end;
+
 
     //stopalert("asdf");
     ShowRedirectHtml(FormatSimpleLink("/afterreg1",true),false);
