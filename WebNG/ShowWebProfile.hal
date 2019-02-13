@@ -450,18 +450,16 @@ begin
             WebOutStringFormatNL("<form class=""deleteform"" action=""/WebDeleteEmp.hal"" method=""POST"" onsubmit=""return confirm('" & ToolWebNGTranslateText(23076) & "');"">");
         end;
         if ( CUr.Code == SMFr.CustCode) then begin
-            WebOutStringFormatNL("<div class=""empe""><div class=""empname""><span>" & ToolWebNGTranslateText(20030) & ": </span><p>" & tCUr.Name & "</p></div><div class=""empemail""><span>E-pasta adrese: </span><p>" & tCUr.eMail & "</p></div></div><input type=""hidden"" name=""emp"" value=""" & tCUr.Code & """></div>");
+            WebOutStringFormatNL("<div class=""empe""><div class=""empname""><span>" & ToolWebNGTranslateText(20030) & ": </span><p>" & tCUr.Name & "</p></div><div class=""empemail""><span>E-pasta adrese: </span><p>" & tCUr.eMail & "</p></div></div><input type=""hidden"" name=""emp"" value=""" & tCUr.Code & """><input class=""spbutton grey"" type=""submit"" value=""" & ToolWebNGTranslateText(23074) & """></div>");
             WebOutStringFormatNL("<input type=""hidden"" name=""tpath"" value=""" & WebGetArg("path") & """><input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");
         end;
-         
+
 //          WebOutStringFormatNL("<div class=""deletebutton  delleft"">");
-          if ( CUr.Code == SMFr.CustCode) then begin
-            WebOutStringFormatNL("<input class=""spbutton grey"" type=""submit"" value=""" & ToolWebNGTranslateText(23074) & """>");
-          end else begin
+
           if (CUr.Code == SMFr.CustCode) then begin
             WebOutStringFormatNL("&nbsp;");
           end;
-          end;
+
 //          WebOutStringFormatNL("</div>");
 //          WebOutStringFormatNL("<div class=""deletebutton"">");
           if ((CUr.Code == tCUr.Code)) then begin
