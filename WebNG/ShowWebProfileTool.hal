@@ -66,12 +66,11 @@ begin
           i = i + 1;
         end;
 						
-						text=USetStr(32501);
+						text=USetStr(32504);
 						headertext = "Skolēna dalība skolēnu mācību uzņēmumā";
-						GenMailForSMU(text,headertext,SMFr.Email,SMFr,true,tCUr,"");  //�������� ����������
 						GenMailForEmp(text,headertext,tCUr.eMail,SMFr,true,tCUr,"");  //�������� ���������� 
 						if(SMFr.AgeFlag!=0) then begin
-							text = USetStr(32500);
+							text = USetStr(32503);
 							GenMailForParents(text,headertext,SMFr.ParenteMail,SMFr,true,CUr,"");//�������� ����������
 						end;
       end;

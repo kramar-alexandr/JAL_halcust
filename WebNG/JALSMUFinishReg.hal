@@ -111,7 +111,7 @@ begin
     SMFr.TypeName = USetStr(32131 + SMFr.TypeFlag);
     SMFr.ReadyFlag = 1;
     text = USetStr(32488);
-    GenMailForSMU(text,USetStr(32344) & " - " & SMFr.SMFName,RMbl.SMUMail,SMFr,true,CUr,""); 
+    GenMailForSMU(text,USetStr(32489) & " - " & SMFr.SMFName,RMbl.SMUMail,SMFr,true,CUr,""); 
     if (RecordUpdate(oldSMFr,SMFr,true)==0) then begin
     
     end;

@@ -552,7 +552,7 @@ begin
       Mailrw.AddrCode = MSr.Postmaster;
 	  end else begin
 			LineTextPut(Mailr,0,txt);
-			LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveTeacher.hal?c=" & SMFr.SMFCode & "&a=" & CUr.Comment);
+			LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveTeacher.hal?c=" & SMFr.SMFCode & "&a=" & CUr.Comment & ", ludzam to izskatit un apstiprinat vai noraidit.");
       Mailrw.AddrCode = MSr.Postmaster;
 	  end;
     MatRowPut(Mailr,0,Mailrw);
