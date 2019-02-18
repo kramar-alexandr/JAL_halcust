@@ -6,6 +6,8 @@ external procedure ShowWebElement(string);
 external procedure ShowRedirectHtml(string,boolean);
 external function string 255 GetLinkToStruct(LongInt,boolean);
 external procedure ShowDocumentList(string,integer,string);
+external procedure ExtractObj(string,var Integer,var string);
+
 SetLangMode(LangLatvian,"LAT",0);
 
 
@@ -174,22 +176,20 @@ end;
 
 function integer GetEmpCnt(record SMFVc SMFr)
 begin
-  integer res;
-  record CUVc CUr;
-  record RLinkVc RLr;
-  integer i;
-
-  i = 1;
-  res = 0;
-
-  while readrecordlink(SMFr,i,CUr,RLr) begin
-    i = i + 1;
-    res = res + 1;
-  end;
+	string 255 name;
+  integer i,pos;
+	i = 0;
+ pos=0;
+	ExtractObj(SMFr.Member,pos,name);
+	while(nonblank(name)) begin
+		i = i +1;
+		ExtractObj(SMFr.Member,pos,name);
+	end;
+	
 
   
 
-  GetEmpCnt = res;
+  GetEmpCnt = i;
 return;
 end;
 
@@ -443,22 +443,15 @@ begin
 		WebOutStringFormatNL("<div class=""emprow"">");
 		WebOutStringFormatNL("<div class=""empe""><div class=""empname""><span>"  &ToolWebNGTranslateText(20030) & ": </span><p>" & SMFr.Manager & "</p></div><div class=""empemail""><span>E-pasta adrese: </span><p>" & CUr.eMail & "</p></div></div><input type=""hidden"" name=""emp"" value=""" & CUr.Code & """></div>");
         while readrecordlink(SMFr,i,tCUr,RLr) begin
-        if ( CUr.Code == SMFr.CustCode) then begin
-			WebOutStringFormatNL("<div class=""emprow"">");
-		end;
-        if ( CUr.Code == SMFr.CustCode) then begin
-            WebOutStringFormatNL("<form class=""deleteform"" action=""/WebDeleteEmp.hal"" method=""POST"" onsubmit=""return confirm('" & ToolWebNGTranslateText(23076) & "');"">");
-        end;
-        if ( CUr.Code == SMFr.CustCode) then begin
-            WebOutStringFormatNL("<div class=""empe""><div class=""empname""><span>" & ToolWebNGTranslateText(20030) & ": </span><p>" & tCUr.Name & "</p></div><div class=""empemail""><span>E-pasta adrese: </span><p>" & tCUr.eMail & "</p></div></div><input type=""hidden"" name=""emp"" value=""" & tCUr.Code & """><input class=""spbutton grey"" type=""submit"" value=""" & ToolWebNGTranslateText(23074) & """></div>");
-            WebOutStringFormatNL("<input type=""hidden"" name=""tpath"" value=""" & WebGetArg("path") & """><input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");
-        end;
+			if ( CUr.Code == SMFr.CustCode) then begin
+				WebOutStringFormatNL("<div class=""emprow"">");
+				WebOutStringFormatNL("<form class=""deleteform"" action=""/WebDeleteEmp.hal"" method=""POST"" onsubmit=""return confirm('" & ToolWebNGTranslateText(23076) & "');"">");
+				WebOutStringFormatNL("<div class=""empe""><div class=""empname""><span>" & ToolWebNGTranslateText(20030) & ": </span><p>" & tCUr.Name & "</p></div><div class=""empemail""><span>E-pasta adrese: </span><p>" & tCUr.eMail & "</p></div></div><input type=""hidden"" name=""emp"" value=""" & tCUr.Code & """><input class=""spbutton grey"" type=""submit"" value=""" & ToolWebNGTranslateText(23074) & """></div>");
+				WebOutStringFormatNL("<input type=""hidden"" name=""tpath"" value=""" & WebGetArg("path") & """><input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");
 
-//          WebOutStringFormatNL("<div class=""deletebutton  delleft"">");
-
-          if (CUr.Code == SMFr.CustCode) then begin
-            WebOutStringFormatNL("&nbsp;");
-          end;
+//          	WebOutStringFormatNL("<div class=""deletebutton  delleft"">");
+				WebOutStringFormatNL("&nbsp;");
+			end;
 
 //          WebOutStringFormatNL("</div>");
 //          WebOutStringFormatNL("<div class=""deletebutton"">");
@@ -527,7 +520,7 @@ begin
 						end;
 					end;
 				end else begin
-        if (ReadRecordLink(CUr,1,SCr,RLr)) begin
+        if (ReadRecordLink(CUr,1,SCr,RLr)) then begin
           if (SCr.SchoolCode==school) then begin
 						if (!ReadRecordLink(CUr,1,SMFr,RLr)) then begin
 							WebOutString("<option value='" & CUr.Code & "'>" & CUr.Name & "</div>");
@@ -557,7 +550,7 @@ begin
     CUr.Code = CurrentCust;
     if readfirstmain(CUr,1,true) then begin
       if readrecordlink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr) then begin
-        if SMFr.CustCode == CUr.Code and GetEmpCnt(SMFr) < 5 then begin
+        if SMFr.CustCode == CUr.Code and GetEmpCnt(SMFr) < 6 then begin
           //stopalert(GetEmpCnt(SMFr) & " ee");
         // te ir j?p?rbauda vai nav 5 daliibnieki jau
           WebOutStringFormatNL("<form method=""POST"" action=""/WebSaveCompEmp2.hal"">");
