@@ -463,6 +463,59 @@ begin
 
   EndWindow;
 
+ WindowBegin("Mentori",FCSMULClass,CGmlist,-);
+	SpawnClass(FCSMUDClass);
+  SetWRect(64,80,860,350);
+  Sizeable(-1,-1,0,0);
+  UseView(FCSMUVc);
+  RecordList(4,17,-21,-39);
+  h = 250; v=0; vs=100; h2 = 550;
+  RlColKey(v=v+vs,v,"Code",SMUCode,false,0);
+  RlColKey(v=v+vs,v,"Employee 1 contact",contact1,false,0);
+  RlColKey(v=v+vs,v,"Employee 2 contact",contact2,false,0);
+  RlColKey(v=v+vs,v,"Employee 3 contact",contact3,false,0);
+  RlColKey(v=v+vs,v,"Employee 4 contac",contact4,false,0);
+  RlColKey(v=v+vs,v,"Employee 1 salary",salary1,false,0);
+  RlColKey(v=v+vs,v,"Employee 2 salary",salary2,false,0);
+  RlColKey(v=v+vs,v,"Employee 3 salary",salary3,false,0);
+  RlColKey(v=v+vs,v,"Employee 4 salary",salary4,false,0);
+  RlColKey(v=v+vs,v,"Employee 1 position",position1,false,0);
+  RlColKey(v=v+vs,v,"Employee 2 position",position2,false,0);
+  RlColKey(v=v+vs,v,"Employee 3 position",position3,false,0);
+  RlColKey(v=v+vs,v,"Employee 4 position",position4,false,0);
+  SearchField("Mekl•t");
+  EndWindow;
+ 
+  
+WindowBegin("Financial calculations",FCSMUDClass,CGmlist,-);
+  SetWRect(80,80,800,700);
+   Sizeable(-1,-1,0,0);
+  UseView(FCSMUVc);
+  h = 150; v=0; vs=20; h2 = 550;
+  Editfield(h,v,100,"Code",Normal,SMUCode,false,0);
+  Editfield(h,v=v+vs,100,"Employee 1 contact",Normal,contact1,false,0);
+  Editfield(h,v=v+vs,100,"Employee 2 contact",Normal,contact2,false,0);
+  Editfield(h,v=v+vs,100,"Employee 3 contact ",Normal,contact3,false,0);
+  EditField(h,v=v+vs,100,"Employee 4 contac",Normal,contact4,false,0);
+  EditField(h,v=v+vs,100,"Employee 1 salary",Normal,salary1,false,0);
+  Editfield(h,v=v+vs,100,"Employee 2 salary",Normal,salary2,false,0);
+  EditField(h,v=v+vs,100,"Employee 3 salary",Normal,salary3,false,0);
+  EditField(h,v=v+vs,100,"Employee 4 salary",Normal,salary4,false,0);
+  EditField(h,v=v+vs,100,"Employee 1 position",Normal,position1,false,0);
+  EditField(h,v=v+vs,100,"Employee 2 position",Normal,position2,false,0);
+  EditField(h,v=v+vs,100,"Employee 3 position",Normal,position3,false,0);
+  EditField(h,v=v+vs,100,"Employee 4 position",Normal,position4,false,0);
+  MatrixBegin(10,v=v+vs+50,-30,-10,-,10);
+  MatCol(1,4,"Product name",0,ProdName,false,0);
+  MatCol(1,100,"Unit cost",0,UCost,false,0);
+  MatCol(1,200,"Unit price",0,UPrice,false,0);
+  MatCol(1,250,"Sold units",0,SoldUnits,false,0);
+  MatCol(1,400,"Income",0,Income,false,0);
+  MatCol(1,500,"Costs",0,Costs,false,0);
+  EndMatrix;
+  EndWindow;
+
+  
   WindowBegin("Dz•st visas skolas",DelSchoolVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   StaticText(80,25,"Spied OK",false);
