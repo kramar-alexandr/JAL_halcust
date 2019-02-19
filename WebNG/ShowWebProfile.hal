@@ -1180,3 +1180,62 @@ begin
 	end;
 end;
 
+global 
+webpublic updating procedure WebFillFinSMU()
+begin
+record FCSMUVc FUr;
+row FCSMUVc FUrw;
+record CUVc CUr;
+string 100 cont;
+record SMFVc SMFr;
+integer i,j,pos;
+area Data;
+json datajson;
+	WebGetPostData(Data);
+	datajson = ParseJsonArea(Data);
+	SMFr.CustCode = CurrentCust;
+	if(ReadFirstKey("CustCode",SMFr,1,true)) then begin
+		FUr.SMUCode = SMFr.SMFCode;
+		if(ReadFirstMain(FUr,1,true)) then begin
+				for(i=0;i<JSONCountChildren(datajson,"data");i=i+1) begin
+					FUrw.ProdName = JSONGet(datajson,"[" & i & "]/[0]");
+					FUrw.UCost = StringToVal(JSONGet(datajson,"[" & i & "]/[1]"),M4Val);
+					FUrw.UPrice = StringToVal(JSONGet(datajson,"[" & i & "]/[2]"),M4Val);
+					FUrw.SoldUnits = JSONGet(datajson,"[" & i & "]/[3]");
+					FUrw.Income = StringToVal(JSONGet(datajson,"[" & i & "]/[4]"),M4Val);
+					FUrw.Costs = StringToVal(JSONGet(datajson,"[" & i & "]/[5]"),M4Val);
+					matrowput(FUr,i,FUrw);
+				end;
+				pos = 0;
+				ExtractObj(SMFr.Member,pos,FUr.contact1); 
+				ExtractObj(SMFr.Member,pos,FUr.contact2); 
+				ExtractObj(SMFr.Member,pos,FUr.contact3); 
+				ExtractObj(SMFr.Member,pos,FUr.contact4);  
+				RecordStore(FUr,true);
+				WebOutString("OK Upd")
+		end else begin
+			RecordNew(FUr);
+			FUr.SMUCode = SMFr.SMFCode;
+			for(i=0;i<JSONCountChildren(datajson,"data");i=i+1) begin
+					FUrw.ProdName = JSONGet(datajson,"[" & i & "]/[0]");
+					FUrw.UCost = StringToVal(JSONGet(datajson,"[" & i & "]/[1]"),M4Val);
+					FUrw.UPrice = StringToVal(JSONGet(datajson,"[" & i & "]/[2]"),M4Val);
+					FUrw.SoldUnits = JSONGet(datajson,"[" & i & "]/[3]");
+					FUrw.Income = StringToVal(JSONGet(datajson,"[" & i & "]/[4]"),M4Val);
+					FUrw.Costs = StringToVal(JSONGet(datajson,"[" & i & "]/[5]"),M4Val);
+					matrowput(FUr,i,FUrw);
+			end;
+				pos = 0;
+				ExtractObj(SMFr.Member,pos,FUr.contact1); 
+				ExtractObj(SMFr.Member,pos,FUr.contact2); 
+				ExtractObj(SMFr.Member,pos,FUr.contact3); 
+				ExtractObj(SMFr.Member,pos,FUr.contact4); 
+				RecordStore(FUr,true);
+				WebOutString("OK New");
+		end;
+	end else begin
+		WebOutString("ERR");
+	end;	
+return;
+end;
+
