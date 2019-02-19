@@ -1197,7 +1197,7 @@ json datajson;
 	if(ReadFirstKey("CustCode",SMFr,1,true)) then begin
 		FUr.SMUCode = SMFr.SMFCode;
 		if(ReadFirstMain(FUr,1,true)) then begin
-				for(i=0;i<JSONCountChildren(datajson,"data");i=i+1) begin
+				for(i=0;i<JSONCountChildren(datajson,"");i=i+1) begin
 					FUrw.ProdName = JSONGet(datajson,"[" & i & "]/[0]");
 					FUrw.UCost = StringToVal(JSONGet(datajson,"[" & i & "]/[1]"),M4Val);
 					FUrw.UPrice = StringToVal(JSONGet(datajson,"[" & i & "]/[2]"),M4Val);
@@ -1216,7 +1216,7 @@ json datajson;
 		end else begin
 			RecordNew(FUr);
 			FUr.SMUCode = SMFr.SMFCode;
-			for(i=0;i<JSONCountChildren(datajson,"data");i=i+1) begin
+			for(i=0;i<JSONCountChildren(datajson,"");i=i+1) begin
 					FUrw.ProdName = JSONGet(datajson,"[" & i & "]/[0]");
 					FUrw.UCost = StringToVal(JSONGet(datajson,"[" & i & "]/[1]"),M4Val);
 					FUrw.UPrice = StringToVal(JSONGet(datajson,"[" & i & "]/[2]"),M4Val);
