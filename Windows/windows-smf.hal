@@ -51,8 +51,7 @@ begin
   EditField(h,v+=vs,50,"Serveris",ViewOnly,ServerCode,false,0);
   EditField(h2,v,90,"Komp‚nija",ViewOnly,CompNr,false,0);
   //EditField(h,v+=vs,50,"Serveris",Normal,ServerCode,false,0);
-  //EditField(h2,v,90,"Komp‚nija",Normal,CompNr,false,0);
-
+  //EditField(h2,v+=vs,90,"Komp‚nija",Normal,CompNr,false,0);
 	
   ButtonFrame(h,v=(vm+=(v+40)),90,4,"Statuss");
   RadioButton(h,v,0,0,"Neapstiprin‚ta",StatusFlag);
@@ -75,6 +74,7 @@ begin
   ButtonFrame(h,v+=vs,160,2,"Age");
   RadioButton(h,v,0,0,"Man jau ir 13 gadu",AgeFlag);
   RadioButton(h,v+=16,1,0,"Man v•l nav 13 gadu",AgeFlag);
+  EditField(h2,v+=20,90,"Darbojas lidz",ViewOnly,RegDate,false,0);
   vm = vm + 150;
 	// Edit End ---------------------------------------------- Edit End
 	

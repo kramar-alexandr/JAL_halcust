@@ -245,6 +245,7 @@ begin
 	RecordField(ConfirmTech,M4Mark,0,0);//Edit_________________ABR 26.11.18 17:10
 	RecordField(LiquidDate,M4Date,0,0);//Edit_________________ABR 26.11.18 17:10
 	RecordField(FirstUpd,M4Int,0,0);//Edit_________________ABR 26.11.18 17:10
+	RecordField(RegDate,M4Str,75,0);//Edit_________________ABR 26.11.18 17:10
 	
   ArrayBegin(Math,-,1);
   ArrayField(Type,M4Set,1005,0);
