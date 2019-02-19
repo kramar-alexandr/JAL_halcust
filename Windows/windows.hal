@@ -459,36 +459,36 @@ begin
   EditField(h2,v=v+vs,100,"Augäupl‚des direktorija",Normal,UploadDir,false,0);
   EditField(h2,v=v+vs,100,"Lejupl‚des id",Normal,DownloadReq,false,0);
   EditField(h2,v=v+vs,100,"Lejupl‚des stat",Normal,DownloadReqStat,false,0);
-
-
   EndWindow;
 
+
+
  WindowBegin("Financial calculations",FCSMULClass,CGmlist,-);
-	SpawnClass(FCSMUDClass);
-  SetWRect(64,80,860,350);
+  SpawnClass(FCSMUDClass);
+  SetWRect(64,80,860,350); 
   Sizeable(-1,-1,0,0);
   UseView(FCSMUVc);
   RecordList(4,17,-21,-39);
   h = 250; v=0; vs=100; h2 = 550;
-  RlColKey(v=v+vs,v,"Code",SMUCode,false,0);
-  RlColKey(v=v+vs,v,"Employee 1 contact",contact1,false,0);
-  RlColKey(v=v+vs,v,"Employee 2 contact",contact2,false,0);
-  RlColKey(v=v+vs,v,"Employee 3 contact",contact3,false,0);
-  RlColKey(v=v+vs,v,"Employee 4 contac",contact4,false,0);
-  RlColKey(v=v+vs,v,"Employee 1 salary",salary1,false,0);
-  RlColKey(v=v+vs,v,"Employee 2 salary",salary2,false,0);
-  RlColKey(v=v+vs,v,"Employee 3 salary",salary3,false,0);
-  RlColKey(v=v+vs,v,"Employee 4 salary",salary4,false,0);
-  RlColKey(v=v+vs,v,"Employee 1 position",position1,false,0);
-  RlColKey(v=v+vs,v,"Employee 2 position",position2,false,0);
-  RlColKey(v=v+vs,v,"Employee 3 position",position3,false,0);
-  RlColKey(v=v+vs,v,"Employee 4 position",position4,false,0);
+  RlColKey(v=v+vs,v,"Code",SMUCode,false,SmuCode);
+  RlCol(v=v+vs,v,"Employee 1 contact",contact1,false);
+  RlCol(v=v+vs,v,"Employee 2 contact",contact2,false);
+  RlCol(v=v+vs,v,"Employee 3 contact",contact3,false);
+  RlCol(v=v+vs,v,"Employee 4 contac",contact4,false);
+  RlCol(v=v+vs,v,"Employee 1 salary",salary1,false);
+  RlCol(v=v+vs,v,"Employee 2 salary",salary2,false);
+  RlCol(v=v+vs,v,"Employee 3 salary",salary3,false);
+  RlCol(v=v+vs,v,"Employee 4 salary",salary4,false);
+  RlCol(v=v+vs,v,"Employee 1 position",position1,false);
+  RlCol(v=v+vs,v,"Employee 2 position",position2,false);
+  RlCol(v=v+vs,v,"Employee 3 position",position3,false);
+  RlCol(v=v+vs,v,"Employee 4 position",position4,false);
   SearchField("Mekl•t");
   EndWindow;
  
   
-WindowBegin("Financial calculations",FCSMUDClass,CGmlist,-);
-  SetWRect(80,80,800,700);
+WindowBegin("Financial calculations",FCSMUDClass,CGview,-);
+  SetWRect(64,80,860,350);
    Sizeable(-1,-1,0,0);
   UseView(FCSMUVc);
   h = 150; v=0; vs=20; h2 = 550;
