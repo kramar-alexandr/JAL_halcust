@@ -1191,6 +1191,7 @@ record SMFVc SMFr;
 integer i,j,pos;
 area Data;
 json datajson;
+if (WebLoginStatus==3) then begin
 	WebGetPostData(Data);
 	datajson = ParseJsonArea(Data);
 	SMFr.CustCode = CurrentCust;
@@ -1236,6 +1237,49 @@ json datajson;
 	end else begin
 		WebOutString("ERR");
 	end;	
+end else begin
+	WebOutString("You might be registered");
+end;		
 return;
 end;
 
+global webpublic procedure WebGetFinSMU()
+begin
+record FCSMUVc FUr;
+row FCSMUVc FUrw;
+record CUVc CUr;
+string 100 cont;
+record SMFVc SMFr;
+integer i,j,pos;
+if (WebLoginStatus==3) then begin
+	SMFr.SMFCode = CurrentCust;
+	if(ReadFirstKey("CustCode",SMFr,1,true)) then begin
+		FUr.SMUCode = SMFr.SMFCode;
+		if(ReadFirstMain(FUr,1,true)) then begin
+			WebOutString("[");
+			pos = 0;
+			for(i=0;i<matrowcnt(FUr);i=i+1) begin
+				if(pos>0) then begin WebOutString(","); end;
+				pos = pos + 1;
+				matrowget(FUr,i,FUrw);
+				WebOutString("{");
+				WebOutString(FUrw.ProdName & ",");
+				WebOutString(FUrw.UCost & ",");
+				WebOutString(FUrw.UPrice & ",");
+				WebOutString(FUrw.SoldUnits & ",");
+				WebOutString(FUrw.Income & ",");
+				WebOutString(FUrw.Costs & ",");
+				WebOutString("}");
+			end;	
+		end else begin
+			WebOutString("Not exist Finance table");
+		end;
+		
+	end else begin
+		WebOutString("You havn't company");
+	end;
+end else begin
+	WebOutString("You might be registered");
+end;	
+return;
+end;		
