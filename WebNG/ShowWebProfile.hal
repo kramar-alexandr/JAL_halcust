@@ -1252,7 +1252,7 @@ string 100 cont;
 record SMFVc SMFr;
 integer i,j,pos;
 if (WebLoginStatus==3) then begin
-	SMFr.SMFCode = CurrentCust;
+	SMFr.CustCode = CurrentCust;
 	if(ReadFirstKey("CustCode",SMFr,1,true)) then begin
 		FUr.SMUCode = SMFr.SMFCode;
 		if(ReadFirstMain(FUr,1,true)) then begin
@@ -1262,24 +1262,25 @@ if (WebLoginStatus==3) then begin
 				if(pos>0) then begin WebOutString(","); end;
 				pos = pos + 1;
 				matrowget(FUr,i,FUrw);
-				WebOutString("{");
-				WebOutString(FUrw.ProdName & ",");
-				WebOutString(FUrw.UCost & ",");
-				WebOutString(FUrw.UPrice & ",");
-				WebOutString(FUrw.SoldUnits & ",");
-				WebOutString(FUrw.Income & ",");
-				WebOutString(FUrw.Costs & ",");
-				WebOutString("}");
-			end;	
+				WebOutString("[");
+				WebOutString("\"" & FUrw.ProdName & "\",");
+				WebOutString("\"" & FUrw.UCost & "\",");
+				WebOutString("\"" & FUrw.UPrice & "\",");
+				WebOutString("\"" & FUrw.SoldUnits & "\",");
+				WebOutString("\"" & FUrw.Income & "\",");
+				WebOutString("\"" & FUrw.Costs & "\"");
+				WebOutString("]");
+			end;
+			WebOutString("]");
 		end else begin
-			WebOutString("Not exist Finance table");
+			WebOutString("""Not exist Finance table""");
 		end;
 		
 	end else begin
-		WebOutString("You havn't company");
+		WebOutString("""You havnt company""");
 	end;
 end else begin
-	WebOutString("You might be registered");
+	WebOutString("""You might be registered""");
 end;	
 return;
 end;		
