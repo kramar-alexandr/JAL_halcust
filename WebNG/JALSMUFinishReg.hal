@@ -1,7 +1,7 @@
 external function string 255 FormatSimpleLink(string,boolean);
 external function string 255 ToolWebNGTranslateText(integer);
 external procedure ShowRedirectHtml(string,boolean);
-external updating procedure GenMailForSMU(string,string,string,var record SMFVc,boolean,record CUVc,string);
+external updating procedure GenMailForSMU(string,string,string,string,var record SMFVc,boolean,record CUVc,string);
 
 procedure ShowUploadForm()
 begin
@@ -111,7 +111,7 @@ begin
     SMFr.TypeName = USetStr(32131 + SMFr.TypeFlag);
     SMFr.ReadyFlag = 1;
     text = USetStr(32488);
-    GenMailForSMU(text,USetStr(32489) & " - " & SMFr.SMFName,RMbl.SMUMail,SMFr,true,CUr,""); 
+    GenMailForSMU(text,"",USetStr(32489) & " - " & SMFr.SMFName,RMbl.SMUMail,SMFr,true,CUr,""); 
     if (RecordUpdate(oldSMFr,SMFr,true)==0) then begin
     
     end;
