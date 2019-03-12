@@ -85,9 +85,9 @@ begin
   RecordField(Subject,M4Str,60,0);
   RecordField(Math,M4Matrix,0,0);
   RecordField(ContractNr,M4Str,50,0);
-	RecordField(PSKFlag,M4Int,0,0);
-	RecordField(VSKFlag,M4Int,0,0);
-	RecordField(PROFFlag,M4Int,0,0);
+  RecordField(PSKFlag,M4Int,0,0);
+  RecordField(VSKFlag,M4Int,0,0);
+  RecordField(PROFFlag,M4Int,0,0);
   ArrayBegin(Math,-,1);
   ArrayField(SchoolCode,M4Code,4,0);
   ArrayField(SchoolName,M4Str,80,0);
@@ -239,14 +239,17 @@ begin
   RecordField(ParenteMail,M4Str,255,0);// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 5 October 2018 17:38:30
   RecordField(AgeFlag,M4Int,0,0);// Edit ************************** BPI Ukraine - KramarAlexandr - Friday, 5 October 2018 17:38:51
   RecordField(Member,M4Str,255,0); //Edit_________________ABR 26.11.18 15:00
-	RecordField(TargetAud,M4Str,255,0); //Edit_________________ABR 26.11.18 17:10
-	RecordField(ConfirmSKL,M4Mark,0,0);//Edit_________________ABR 26.11.18 17:10
-	RecordField(ConfirmPar,M4Mark,0,0);//Edit_________________ABR 26.11.18 17:10
-	RecordField(ConfirmTech,M4Mark,0,0);//Edit_________________ABR 26.11.18 17:10
-	RecordField(LiquidDate,M4Date,0,0);//Edit_________________ABR 26.11.18 17:10
-	RecordField(FirstUpd,M4Int,0,0);//Edit_________________ABR 26.11.18 17:10
-	RecordField(RegDate,M4Str,75,0);//Edit_________________ABR 26.11.18 17:10
-	
+  RecordField(TargetAud,M4Str,255,0); //Edit_________________ABR 26.11.18 17:10
+  RecordField(ConfirmSKL,M4Mark,0,0);//Edit_________________ABR 26.11.18 17:10
+  RecordField(ConfirmPar,M4Mark,0,0);//Edit_________________ABR 26.11.18 17:10
+  RecordField(ConfirmTech,M4Mark,0,0);//Edit_________________ABR 26.11.18 17:10
+  RecordField(LiquidDate,M4Date,0,0);//Edit_________________ABR 26.11.18 17:10
+  RecordField(FirstUpd,M4Int,0,0);//Edit_________________ABR 26.11.18 17:10
+  RecordField(RegDate,M4Str,75,0);//Edit_________________ABR 26.11.18 17:10
+  RecordField(ActDateStart,M4Date,0,0);
+  RecordField(ActDateEnd,M4Date,0,0);
+  RecordField(Education,M4Str,255,0);
+  
   ArrayBegin(Math,-,1);
   ArrayField(Type,M4Set,1005,0);
   ArrayField(Code,M4Code,10,0);
@@ -418,113 +421,113 @@ begin
   EndBlock;
 
   RecordBegin(WebNGBlogCommentVc,-,"");
-	RecordField(SerNr,M4Long,0,0);
-	RecordField(MailSerNr,M4Code,20,0);
-	RecordField(MailboxName,M4Str,50,0);
-	RecordField(MailHeader,M4Str,200,0);
-	RecordField(CommentHeader,M4Str,200,0);
-	RecordField(TransDate,M4Date,0,0);
-	RecordField(TransTime,M4Time,0,0);
-	RecordField(IPAddress,M4Str,20,0);
-	RecordField(Email,M4Str,200,0);
-	RecordField(UserName,M4Str,200,0);
-	RecordField(CommentType,M4Int,0,0);
-	RecordField(AcceptFlag,M4Int,0,0);
-	RecordField(CustCode,M4Code,20,0);
-	RecordField(Math,M4TextField,0,0);
-	RecordField(TextType,M4Int,0,0);
-	MainKeyBegin(SerNr,1);
-	AppendFieldToKeyName(MailSerNr);
-	StoreInBaseKey;
-	KeySegment(SerNr);
+  RecordField(SerNr,M4Long,0,0);
+  RecordField(MailSerNr,M4Code,20,0);
+  RecordField(MailboxName,M4Str,50,0);
+  RecordField(MailHeader,M4Str,200,0);
+  RecordField(CommentHeader,M4Str,200,0);
+  RecordField(TransDate,M4Date,0,0);
+  RecordField(TransTime,M4Time,0,0);
+  RecordField(IPAddress,M4Str,20,0);
+  RecordField(Email,M4Str,200,0);
+  RecordField(UserName,M4Str,200,0);
+  RecordField(CommentType,M4Int,0,0);
+  RecordField(AcceptFlag,M4Int,0,0);
+  RecordField(CustCode,M4Code,20,0);
+  RecordField(Math,M4TextField,0,0);
+  RecordField(TextType,M4Int,0,0);
+  MainKeyBegin(SerNr,1);
+  AppendFieldToKeyName(MailSerNr);
+  StoreInBaseKey;
+  KeySegment(SerNr);
 
-	SubSetKeyBegin2(MailHeader);
-	AppendFieldToKeyName(MailSerNr);
-	StoreInBaseKey;
-	KeySegment(MailHeader);
-	KeySegment(MailboxName);
-	KeySegment(SerNr);
+  SubSetKeyBegin2(MailHeader);
+  AppendFieldToKeyName(MailSerNr);
+  StoreInBaseKey;
+  KeySegment(MailHeader);
+  KeySegment(MailboxName);
+  KeySegment(SerNr);
 
-	SubSetKeyBegin2(MailSerNr);
-	AppendFieldToKeyName(MailSerNr);
-	StoreInBaseKey;
-	KeySegment(MailSerNr);
-	KeySegment(SerNr);
+  SubSetKeyBegin2(MailSerNr);
+  AppendFieldToKeyName(MailSerNr);
+  StoreInBaseKey;
+  KeySegment(MailSerNr);
+  KeySegment(SerNr);
 
-	SubSetKeyBegin2(MailboxName);
-	AppendFieldToKeyName(MailSerNr);
-	StoreInBaseKey;
-	KeySegment(MailboxName);
-	KeySegment(MailSerNr);
-	KeySegment(SerNr);
+  SubSetKeyBegin2(MailboxName);
+  AppendFieldToKeyName(MailSerNr);
+  StoreInBaseKey;
+  KeySegment(MailboxName);
+  KeySegment(MailSerNr);
+  KeySegment(SerNr);
 
-	SubSetKeyBegin2(UserName);
-	AppendFieldToKeyName(MailSerNr);
-	StoreInBaseKey;
-	KeySegment(UserName);
-	KeySegment(MailboxName);
-	KeySegment(MailSerNr);
-	KeySegment(SerNr);
+  SubSetKeyBegin2(UserName);
+  AppendFieldToKeyName(MailSerNr);
+  StoreInBaseKey;
+  KeySegment(UserName);
+  KeySegment(MailboxName);
+  KeySegment(MailSerNr);
+  KeySegment(SerNr);
 
-	SubSetKeyBegin2(TransDate);
-	AppendFieldToKeyName(MailSerNr);
-	StoreInBaseKey;
-	KeySegment(TransDate);
-	KeySegment(MailboxName);
-	KeySegment(MailSerNr);
-	KeySegment(SerNr);
+  SubSetKeyBegin2(TransDate);
+  AppendFieldToKeyName(MailSerNr);
+  StoreInBaseKey;
+  KeySegment(TransDate);
+  KeySegment(MailboxName);
+  KeySegment(MailSerNr);
+  KeySegment(SerNr);
 
-	SubSetKeyBegin2(IPAddress);
-	AppendFieldToKeyName(MailSerNr);
-	StoreInBaseKey;
-	KeySegment(IPAddress);
-	KeySegment(MailboxName);
-	KeySegment(MailSerNr);
-	KeySegment(SerNr);
+  SubSetKeyBegin2(IPAddress);
+  AppendFieldToKeyName(MailSerNr);
+  StoreInBaseKey;
+  KeySegment(IPAddress);
+  KeySegment(MailboxName);
+  KeySegment(MailSerNr);
+  KeySegment(SerNr);
 
-	SubSetKeyBegin2(Email);
-	AppendFieldToKeyName(MailSerNr);
-	StoreInBaseKey;
-	KeySegment(Email);
-	KeySegment(MailboxName);
-	KeySegment(MailSerNr);
-	KeySegment(SerNr);
+  SubSetKeyBegin2(Email);
+  AppendFieldToKeyName(MailSerNr);
+  StoreInBaseKey;
+  KeySegment(Email);
+  KeySegment(MailboxName);
+  KeySegment(MailSerNr);
+  KeySegment(SerNr);
 
-	SubSetKeyBegin2(ActSerNr);
-	AppendFieldToKeyName(MailSerNr);
-	StoreInBaseKey;
-	KeySegment(SerNr);
+  SubSetKeyBegin2(ActSerNr);
+  AppendFieldToKeyName(MailSerNr);
+  StoreInBaseKey;
+  KeySegment(SerNr);
 
-	SubSetKeyBegin2(PosSerNr);
-	AppendFieldToKeyName(MailSerNr);
-	StoreInBaseKey;
-	KeySegment(SerNr);
+  SubSetKeyBegin2(PosSerNr);
+  AppendFieldToKeyName(MailSerNr);
+  StoreInBaseKey;
+  KeySegment(SerNr);
 
-	SubSetKeyBegin2(NegSerNr);
-	AppendFieldToKeyName(MailSerNr);
-	StoreInBaseKey;
-	KeySegment(SerNr);
+  SubSetKeyBegin2(NegSerNr);
+  AppendFieldToKeyName(MailSerNr);
+  StoreInBaseKey;
+  KeySegment(SerNr);
 
-	SubSetKeyBegin2(ContPosSerNr);
-	AppendFieldToKeyName(MailSerNr);
-	StoreInBaseKey;
-	KeySegment(SerNr);
+  SubSetKeyBegin2(ContPosSerNr);
+  AppendFieldToKeyName(MailSerNr);
+  StoreInBaseKey;
+  KeySegment(SerNr);
 
-	SubSetKeyBegin2(ContNegSerNr);
-	AppendFieldToKeyName(MailSerNr);
-	StoreInBaseKey;
-	KeySegment(SerNr);
+  SubSetKeyBegin2(ContNegSerNr);
+  AppendFieldToKeyName(MailSerNr);
+  StoreInBaseKey;
+  KeySegment(SerNr);
 
-	SubSetKeyBegin2(ContActSerNr);
-	AppendFieldToKeyName(MailSerNr);
-	StoreInBaseKey;
-	KeySegment(SerNr);
+  SubSetKeyBegin2(ContActSerNr);
+  AppendFieldToKeyName(MailSerNr);
+  StoreInBaseKey;
+  KeySegment(SerNr);
 
-	SubSetKeyBegin2(CustCode);
-	AppendFieldToKeyName(MailSerNr);
-	StoreInBaseKey;
-	KeySegment(CustCode);
-	KeySegment(SerNr);
+  SubSetKeyBegin2(CustCode);
+  AppendFieldToKeyName(MailSerNr);
+  StoreInBaseKey;
+  KeySegment(CustCode);
+  KeySegment(SerNr);
 
   EndRecord;
 
@@ -593,6 +596,15 @@ begin
   RecordField(UploadDir,M4Str,255,0);
   RecordField(DownloadReq,M4Str,255,0);
   RecordField(DownloadReqStat,M4Int,0,0);
+  RecordField(StudentRegText,M4Code,10,LTxtVc);
+  RecordField(EmployeeAddText,M4Code,10,LTxtVc);
+  RecordField(TeacherRequestText,M4Code,10,LTxtVc);
+  RecordField(StudentParentText,M4Code,10,LTxtVc);
+  RecordField(EmployeeRemoveText,M4Code,10,LTxtVc);
+  RecordField(EmployeeRemoveText2,M4Code,10,LTxtVc);
+  RecordField(PasswordChangeText,M4Code,10,LTxtVc);
+  RecordField(EmployeeAddText2,M4Code,10,LTxtVc);
+  RecordField(TeacherRequestText2,M4Code,10,LTxtVc);
   EndBlock;
   
 
@@ -649,7 +661,7 @@ begin
   RecordField(Status,M4Int,0,0);
   RecordField(TransDate,M4Date,0,0);
   RecordField(Score,M4Int,0,0);
-	RecordField(Name,M4Str,200,0);
+  RecordField(Name,M4Str,200,0);
   MainKeyBegin(SerNr,0);
   KeySegment(SerNr);
   KeyBegin(SMFCode);
@@ -701,7 +713,7 @@ begin
   RecordField(TransTime,M4Time,0,0);
   RecordField(SMFCode,M4Code,20,0);
   RecordField(CustCode,M4Code,20,0);
-  RecordField(RecType,M4Set,1005,0);
+  RecordField(RecType,M4Set,1005,0);//also for employees
   RecordField(RecCode,M4Code,10,0);
   RecordField(StatusFlag,M4Int,0,0);
   MainKeyBegin(SerNr,0);
@@ -741,7 +753,7 @@ begin
   RecordField(RegFlag,M4Mark,0,0);
   RecordField(Math,M4Matrix,0,0);
   RecordField(ClosedFlag,M4Int,0,0);
-	RecordField(StatusFlag,M4Int,0,0);
+  RecordField(StatusFlag,M4Int,0,0);
   ArrayBegin(Math,-,1);
   ArrayField(Field,M4Long,0,0);
   ArrayField(Comment,M4Str,60,0);
@@ -798,7 +810,7 @@ begin
   RecordField(StatusFlag,M4Int,0,0);
   RecordField(EventNr,M4Long,0,0);
   RecordField(Math,M4Matrix,0,0);
-	RecordField(OkFlag,M4Int,0,0);
+  RecordField(OkFlag,M4Int,0,0);
   ArrayBegin(Math,-,1);
   ArrayField(Field,M4Long,0,0);
   ArrayField(Comment,M4Str,60,0);
@@ -846,36 +858,53 @@ begin
   EndRecordAdd;
 
 
-	BlockBegin(SmuNewActBlock,-,"");
-		RecordField(ActType,M4Str,100,0);
-		RecordField(ActText,M4Str,100,0);
-		RecordField(ActPerson,M4Str,100,0);
-	EndBlock;	
-	
-	RecordBegin(FCSMUVc,-,"");
-		RecordField(SMUCode,M4Code,50,0);
-		RecordField(contact1,M4Str,50,0);
-		RecordField(contact2,M4Str,50,0);
-		RecordField(contact3,M4Str,50,0);
-		RecordField(contact4,M4Str,50,0);
-		RecordField(salary1,M4Val,50,0);
-		RecordField(salary2,M4Val,50,0);
-		RecordField(salary3,M4Val,50,0);
-		RecordField(salary4,M4Val,50,0);
-		RecordField(position1,M4Str,50,0);
-		RecordField(position2,M4Str,50,0);
-		RecordField(position3,M4Str,50,0);
-		RecordField(position4,M4Str,50,0);
-		RecordField(Math,M4Matrix,0,0);
-		ArrayBegin(Math,-,1);
-			ArrayField(ProdName,M4Str,100,0);
-			ArrayField(UCost,M4Val,0,0);
-			ArrayField(UPrice,M4Val,0,0);
-			ArrayField(SoldUnits,M4Str,255,0);
-			ArrayField(Income,M4Val,0,0);
-			ArrayField(Costs,M4Val,0,0);
-		EndArray;
-	MainKeyBegin(SmuCode,0);
-	KeySegment(SMUCode);
-	endRecord;	
+  BlockBegin(SmuNewActBlock,-,"");
+  RecordField(ActType,M4Str,100,0);
+  RecordField(ActText,M4Str,100,0);
+  RecordField(ActPerson,M4Str,100,0);
+  EndBlock;  
+  
+  RecordBegin(FCSMUVc,-,"");
+  RecordField(SMUCode,M4Code,50,0);
+  RecordField(contact1,M4Str,50,0);
+  RecordField(contact2,M4Str,50,0);
+  RecordField(contact3,M4Str,50,0);
+  RecordField(contact4,M4Str,50,0);
+  RecordField(salary1,M4Val,50,0);
+  RecordField(salary2,M4Val,50,0);
+  RecordField(salary3,M4Val,50,0);
+  RecordField(salary4,M4Val,50,0);
+  RecordField(position1,M4Str,50,0);
+  RecordField(position2,M4Str,50,0);
+  RecordField(position3,M4Str,50,0);
+  RecordField(position4,M4Str,50,0);
+  RecordField(Math,M4Matrix,0,0);
+  ArrayBegin(Math,-,1);
+  ArrayField(ProdName,M4Str,100,0);
+  ArrayField(UCost,M4Val,0,0);
+  ArrayField(UPrice,M4Val,0,0);
+  ArrayField(SoldUnits,M4Str,255,0);
+  ArrayField(Income,M4Val,0,0);
+  ArrayField(Costs,M4Val,0,0);
+  EndArray;
+  MainKeyBegin(SmuCode,0);
+  KeySegment(SMUCode);
+  EndRecord;  
+  
+  RecordAddBegin(CUVc,"JALCUVc");
+  RecordField(ParentName,M4Str,255,0);
+  RecordField(ParentSurName,M4Str,255,0);
+  RecordField(ParenteMail,M4Str,255,0);
+  RecordField(AgeFlag,M4Int,0,0);  
+  RecordField(ClassNum,M4Str,3,0);
+  RecordField(ClassChar,M4Str,4,0);
+  RecordField(ConfirmSKL,M4Mark,0,0);//CHN::doubt that it's even used
+  RecordField(ConfirmPar,M4Mark,0,0);
+  RecordField(ConfirmTeach,M4Mark,0,0);
+  RecordField(SchoolCode,M4Code,4,0);
+  RecordField(TeacherCode,M4Code,20,0);
+  RecordField(Salary,M4Val,0,0);
+  EndRecordAdd;
+  
+  return;
 end;

@@ -44,6 +44,8 @@ external procedure DrawPasswordRecoveryPage();
 external procedure WebShowEntry();
 external procedure WebShowSmuEntry();
 external procedure ExtractObjWithSeparator(string,string,Boolean,var Integer,var string);
+external procedure ShowLastNewsPicture(string);
+external procedure ShowSMUEditPage();
 //CUST-END
 
 procedure GetMenuActiveClass(record WebNGMenuVc WMr,var string actclass,var string class)
@@ -218,6 +220,10 @@ begin
     WebShowEntry; res = true;
   case "WebShowSmuEntry":
     WebShowSmuEntry; res = true;
+  case "ShowLastNewsPicture":
+    ShowLastNewsPicture(WEr.WebMenu); res = true;
+  case "ShowSMUEditPage":
+    ShowSMUEditPage; res = true;
 //CUST-END
   end;
   ShowHALFunction = res;

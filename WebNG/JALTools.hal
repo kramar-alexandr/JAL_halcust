@@ -1,0 +1,162 @@
+external function Boolean FindMatchingContentTranslation(record WebNGContentVc,var record WebNGTranslateVc);
+external function Boolean CheckAttachedFilesSizeToLetter(record LetVc);
+
+
+global
+procedure ShowLastNewsPicture(string style)
+begin
+  record WebNGContentVc WCr;
+  Boolean foundf,testf;
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+  record WebNGTranslateVc WTr;
+
+  WCr.ContentStyle = style;
+  WCr.SpecDate = AddYear(CurrentDate,1);
+  foundf = true;
+  while (LoopBackKey("ContentStyle",WCr,2,foundf)) begin
+    if (WCr.ContentStyle!=style) then begin
+      foundf = false;
+    end;
+    testf = foundf;
+    if (FindMatchingContentTranslation(WCr,WTr)==false) then begin
+      testf = false;
+    end;
+    if (testf) then begin
+      if (ReadRecordLink(WCr,1,Attachr,RLr)) begin
+        foundf = false;
+        WebOutString("<style>#banner{background-image:url(/WebShowContentImage.hal?s=" & WCr.SerNr & ") !important;}</style>");      
+      end;
+    end;
+  end;
+  
+  return;
+end;
+
+global webpublic
+procedure WebShowContentImage()
+begin
+  record WebNGContentVc WCr;
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+  
+  WCr.SerNr = StringToLongint(WebGetArg("s"));
+  if (ReadFirstMain(WCr,1,true)) then begin
+    if (ReadRecordLink(WCr,1,Attachr,RLr)) then begin
+      WebSetContentDisposition("inline; filename=" & Attachr.FileName);
+      WebOutAttachment(Attachr.SerNr);
+    end;
+  end;
+
+  return;
+end;
+
+global
+updating procedure StoreJALEmail(record LTxtVc LTxtr,record RCVc RepSpec,string mailbox)
+begin
+  record EMailQueVc emqrp;
+  row EMailQueVc emarw;
+  string 255 tstr;
+  LongInt pos,l;
+  Integer i,emcnt,cscnt;
+  area a;
+  record MailSettingsBlock MSr;
+  record LTxtVc LTxt2r;
+  
+  BlockLoad(MSr);
+
+  emarw.RowTyp = 1;
+  emarw.AddrCode = MSr.Postmaster;;
+  MatRowPut(emqrp,MatRowCnt(emqrp),emarw);
+
+  emarw.RowTyp = 0;
+  emarw.AddrCode = mailbox;
+  MatRowPut(emqrp,MatRowCnt(emqrp),emarw);
+  emqrp.Header = LTxtr.Comment;
+  if (LTxtr.HtmlFlag==0) then begin
+    ParseTextField(a,LTxtr,RepSpec,"JALLTxtVcReplaceToken");
+    l = GetAreaLength(a);
+    pos = 0;
+    while (pos<l) begin
+      tstr = GetStringFromArea(a,pos,255);
+      AddToText(tstr,LTxt2r); 
+      pos = pos+255;
+    end;
+    cscnt = LineTextCnt(LTxt2r);
+    if (cscnt>0) then begin
+      for (i=0;i<cscnt;i=i+1) begin
+        tstr = LineTextGet(LTxt2r,i);
+        LineTextPut(emqrp,LineTextCnt(emqrp),tstr);
+      end;  
+    end;
+  end;
+  emqrp.SerNr = NextSerNr("EMailQueVc",CurrentDate,-1,false,"");
+  emqrp.OrgSerNr = -1;
+  emqrp.FileName = "";
+  emqrp.TransDate = CurrentDate;
+  emqrp.TransTime = CurrentTime;
+  emqrp.HasFileAtt = 0;
+  emqrp.HasRecAtt = 0;
+  emqrp.Priority = 1;
+  emqrp.EMailSent = 0;
+  emqrp.Lifespan = 0;
+  emqrp.QueDate = CurrentDate;
+  emqrp.QueTime = CurrentTime;
+  emqrp.HtmlFlag = LTxtr.HtmlFlag;
+
+  if (CheckAttachedFilesSizeToLetter(LTxtr)) then begin
+    if (RecordStore(emqrp,false)) then begin
+      CopyRecordLinks(LTxtr,emqrp);
+      if (LTxtr.HtmlFlag==1) then begin
+        ParseHtmlField(emqrp,RepSpec,"JALLTxtVcReplaceToken");
+      end;
+    end;
+  end;
+  
+  return;
+end;
+
+global
+procedure SendJALEmail(vector string vVals,string textcode,string email)
+begin
+  record RcVc RepSpec;
+  record LTxtVc LTxtr;
+
+  RepSpec.f1 = vVals["custcode"];
+  RepSpec.f2 = vVals["smucode"];
+  RepSpec.f4 = vVals["link"];
+
+  LTxtr.Code = textcode;
+  if (ReadFirstMain(LTxtr,1,true)) then begin
+    queued.StoreJALEmail(LTxtr,RepSpec,email);
+  end;
+
+  return;
+end;
+
+global
+function string 255 JALLTxtVcReplaceToken(record LTxtVc LTxtr,record RcVc RepSpec,string token)
+begin
+  record SMFVc SMFr;
+  record CUVc CUr;
+  string 255 res;
+
+  switch (token) begin
+    case "smuname":
+      SMFr.SMFCode = RepSpec.f2;
+      if (ReadFirstMain(SMFr,1,true)) then begin
+        res = SMFr.SMFName;
+      end;
+    case "empname":
+      CUr.Code = RepSpec.f1;
+      if (ReadFirstMain(CUr,1,true)) begin
+        res = CUr.Name;
+      end;
+    case "link":
+      res = RepSpec.f4;
+  end;
+
+  JALLTxtVcReplaceToken = res;
+  return;
+end;
+

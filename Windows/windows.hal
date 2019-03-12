@@ -10,6 +10,22 @@
 //biksessadfads
 
 remote procedure GetElementGroupAr(array string,array string,var integer);
+external inner function Boolean HasMetroTestFeatures();
+external inner function Boolean HasJewelleryInterface();
+external inner function Boolean HasModHotel();
+external inner function Boolean HasModHRM();
+external inner function Boolean IsEnterprise();
+external inner function Boolean StandardHansa();
+external inner function Boolean HasCharts();
+external inner function string 60 UserDefined(string,string);
+external inner function Boolean HasExtTax();
+external inner function Boolean HasSalesGroup();
+external inner function Boolean HasTaxMatrix();
+external inner function real VATZoneButtonsLabelsLAT(real,real,real,real);
+external inner function Boolean HasWithholdingTax();
+external inner function Boolean HasCustomerStatusReport();
+external inner function Boolean HasSalesman();
+external inner function Boolean HasSalesmanBonus();
 
 
 event DefineWindows
@@ -20,7 +36,7 @@ begin
   boolean TrHs;
   real fs;
 
-  real h,h2,h3,hc,v,v2,vs,vm;
+  real h,h2,h3,hc,v,v2,vs,vm,tilenr;
   
   SetLangMode(LangLatvian,"LAT",0);
 
@@ -224,13 +240,13 @@ begin
   StaticText(80,25,"Spied OK",false);
   EndWindow;
 
- WindowBegin("Smu New Act",SmuNewActTClass,CGSbl,SRType);
+ WindowBegin("Jauna SMU Aktivit‚te",SmuNewActTClass,CGSbl,SRType);
    SetBlid(SmuNewActBlock);
    SetWRect(20,80,570,298);
    Sizeable(-1,-1,0,0);
-   EditField(30,10,130,"Act Type",Normal,ActType,false,0);
-   EditField(30,30,130,"Act Text ID",Normal,ActText,false,0);
-   EditField(30,60,130,"Act Persone",Normal,ActPerson,false,0);
+   EditField(130,10,130,"Aktivit‚tes tips",Normal,ActType,false,0);
+   EditField(130,30,130,"Teksts",Normal,ActText,false,0);
+   EditField(130,60,130,"Persona",Normal,ActPerson,false,0);
    EndWindow;
 
   WindowBegin("Komp‚nijas",CompaniesTClass,CGHbl,HBlRecType);
@@ -424,94 +440,117 @@ begin
   SetWRect(80,80,800,500);
   SetBlid(JALClassBlock);
   h = 250; v=0; vs=20; h2 = 550;
-  StaticText(h-100,v=v+vs,"Iestat´jumi SMU re®istr‚cijas un citu procesu darb´bai",false);
-  Editfield(h,v=v+vs,100,"Skol•niem",Normal,Schoolar,false,CClassSClass);
-  Editfield(h,v=v+vs,100,"Skolot‚jiem",Normal,Teacher,false,CClassSClass);
-  Editfield(h,v=v+vs,100,"Mentoriem",Normal,Mentor,false,CClassSClass);
+  
+  Tile(0,20,false,"",-);  
+  tilenr = 1;
+  TileButton(tilenr,"Epasti"); tilenr = tilenr + 1;  
+  TileButton(tilenr,"T´meklis"); tilenr = tilenr + 1;  
+  TileButton(tilenr,"Citi"); tilenr = tilenr + 1;  
+  tilenr = 1;
+  Tile(tilenr,250,false,"1",STDTextTerm); tilenr = tilenr + 1;  
+//  EditField(h2,v=v+vs,100,"Paroles atjaunoäanas virsraksts",Normal,RecoveryHead,false,LTxtSClass);
+//  EditField(h2,v=v+vs,100,"Paroles atjaunoäanas s‚kuma teksts",Normal,RecoveryStartTxt,false,LTxtSClass);
+//  EditField(h2,v=v+vs,100,"Paroles atjaunoäanas beigu teksts",Normal,RecoveryEndTxt,false,LTxtSClass);
+  EditField(h,v=6,100,"Likvid•ta SMU teksts",Normal,STDTextTerm,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"Neakt´va SMU teksts",Normal,STDTextDis,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"Atjaunotas SMU teksts",Normal,STDTextEn,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"Apstiprin‚ts pas‚kumam",Normal,EventAccepted,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"Noraid´ts pas‚kumam",Normal,EventDeclined,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"Skol•na re®. teksts",Normal,StudentRegText,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"Skol•na re®. teksts vec‚kam",Normal,StudentParentText,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"Darbinieka piev. teksts",Normal,EmployeeAddText,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"Darbinieka piev. teksts vec‚kam",Normal,EmployeeAddText2,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"Skol•na apst. piepr. skolot‚jam",Normal,TeacherRequestText,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"SMU apst. piepr. skolot‚jam",Normal,TeacherRequestText2,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"NoÀemts darbinieks skol•nam",Normal,EmployeeRemoveText,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"NoÀemts darbinieks vec‚kam",Normal,EmployeeRemoveText2,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"Paroles maiÀa",Normal,PasswordChangeText,false,LTxtSClass);
+
+  Tile(tilenr,350,false,"2",Template); tilenr = tilenr + 1;  
+  EditField(h,v=6,100,"áablona lapa komp‚nij‚m",Normal,Template,false,WebNGPageSClass);
+  EditField(h,v=v+vs,100,"Struktðras elements",Normal,Struct,false,WebNGStructSClass);
+  EditField(h,v=v+vs,100,"Profila elements",Normal,ProfileElement,false,WebNGElementSClass);
+  EditField(h,v=v+vs,100,"Profila laboäanas struktðra",Normal,ProfileCorrectionStruct,false,WebNGStructSClass);
+  EditField(h,v=v+vs,100,"Darbinieka pievienoäanas struktðra",Normal,AddEmpStruct,false,WebNGStructSClass);
+  EditField(h,v=v+vs,100,"Darbinieka laboäanas struktðra",Normal,EmpChangeStruct,false,WebNGStructSClass);
+  EditField(h,v=v+vs,100,"Struktðra p•c veiksm´gas augäupl.",Normal,UploadAfter,false,WebNGStructSClass);
+  EditField(h,v=v+vs,100,"Struktðra p•c neveiksm´gas augäupl.",Normal,UploadFail,false,WebNGStructSClass);
+  EditField(h,v=v+vs,100,"Augäupl‚des direktorija",Normal,UploadDir,false,0);
+  EditField(h,v=v+vs,100,"Lejupl‚des id",Normal,DownloadReq,false,0);
+  EditField(h,v=v+vs,100,"Lejupl‚des stat",Normal,DownloadReqStat,false,0);
+
+
+  Tile(tilenr,250,false,"3",Schoolar); tilenr = tilenr + 1;  
+  Editfield(h,v=6,100,"Klienta klase skol•niem",Normal,Schoolar,false,CClassSClass);
+  Editfield(h,v=v+vs,100,"Klienta klase skolot‚jiem",Normal,Teacher,false,CClassSClass);
+  Editfield(h,v=v+vs,100,"Klienta klase sentoriem",Normal,Mentor,false,CClassSClass);
   EditField(h,v=v+vs,100,"Satura stils pas‚kumiem",Normal,CStyle,false,WebNGContentStyleSClass);
   EditField(h,v=v+vs,100,"Satura stils apstiprin‚tiem pas‚kumiem",Normal,EventSmall,false,WebNGContentStyleSClass);
   Editfield(h,v=v+vs,100,"Kategorija pas‚kumiem",Normal,Cat,false,WebNGContentCatSClass);
-  EditField(h,v=v+vs,100,"áablona lapa komp‚nij‚m",Normal,Template,false,WebNGPageSClass);
-  EditField(h,v=v+vs,100,"Struktðras elements",Normal,Struct,false,WebNGStructSClass);
   EditField(h,v=v+vs,100,"Skolot‚ja lietot‚ja grupa",Normal,GUTeacher,false,AccessSClass);
   EditField(h,v=v+vs,100,"Skolot‚ja lietot‚ja sl•gt‚ grupa",Normal,GUTeacherClosed,false,AccessSClass);
   EditField(h,v=v+vs,100,"S‚kuma konference saÀemtajiem failiem",Normal,StartConf,false,ConfSClass);
   EditField(h,v=v+vs,100,"Konference veiksm´gi saÀemtajiem failiem",Normal,GoodConf,false,ConfSClass);
   EditField(h,v=v+vs,100,"Konference neveiksm´gi saÀemtajiem failiem",Normal,BadConf,false,ConfSClass);
-  EditField(h,v=v+vs,100,"Profila elements",Normal,ProfileElement,false,WebNGElementSClass);
   EditField(h,v=v+vs,100,"No pas‚kumiem re®istr•to kontaktu klasif.",Normal,EventPart,false,CClassSClass);
   EditField(h,v=v+vs,100,"Konference paziÀojumam par nosðt´tiem failiem",Normal,AttachConf,false,ConfSClass);
-  EditField(h,v=v+vs,100,"Profila laboäanas struktðra",Normal,ProfileCorrectionStruct,false,WebNGStructSClass);
-  EditField(h,v=v+vs,100,"Darbinieka pievienoäanas struktðra",Normal,AddEmpStruct,false,WebNGStructSClass);
-  EditField(h,v=v+vs,100,"Darbinieka laboäanas struktðra",Normal,EmpChangeStruct,false,WebNGStructSClass);
-  EditField(h2,v=40,100,"Struktðra p•c veiksm´gas augäupl.",Normal,UploadAfter,false,WebNGStructSClass);
-  EditField(h2,v=v+vs,100,"Struktðra p•c neveiksm´gas augäupl.",Normal,UploadFail,false,WebNGStructSClass);
-  EditField(h2,v=v+vs,100,"Paroles atjaunoäanas virsraksts",Normal,RecoveryHead,false,LTxtSClass);
-  EditField(h2,v=v+vs,100,"Paroles atjaunoäanas s‚kuma teksts",Normal,RecoveryStartTxt,false,LTxtSClass);
-  EditField(h2,v=v+vs,100,"Paroles atjaunoäanas beigu teksts",Normal,RecoveryEndTxt,false,LTxtSClass);
-  EditField(h2,v=v+vs,100,"V•rt•jums no",Normal,ScoreFrom,false,0);
-  EditField(h2,v=v+vs,100,"V•rt•jums l´dz",Normal,ScoreTo,false,0);
-  EditField(h2,v=v+vs,100,"Likvid•ta SMU teksts",Normal,STDTextTerm,false,LTxtSClass);
-  EditField(h2,v=v+vs,100,"Neakt´va SMU teksts",Normal,STDTextDis,false,LTxtSClass);
-  EditField(h2,v=v+vs,100,"Atjaunotas SMU teksts",Normal,STDTextEn,false,LTxtSClass);
-  EditField(h2,v=v+vs,100,"Apstiprin‚ts pas‚kumam",Normal,EventAccepted,false,LTxtSClass);
-  EditField(h2,v=v+vs,100,"Noraid´ts pas‚kumam",Normal,EventDeclined,false,LTxtSClass);
-  EditField(h2,v=v+vs,100,"Augäupl‚des direktorija",Normal,UploadDir,false,0);
-  EditField(h2,v=v+vs,100,"Lejupl‚des id",Normal,DownloadReq,false,0);
-  EditField(h2,v=v+vs,100,"Lejupl‚des stat",Normal,DownloadReqStat,false,0);
+  EditField(h,v=v+vs,100,"V•rt•jums no",Normal,ScoreFrom,false,0);
+  EditField(h,v=v+vs,100,"V•rt•jums l´dz",Normal,ScoreTo,false,0);
+
+
   EndWindow;
 
 
 
- WindowBegin("Financial calculations",FCSMULClass,CGmlist,-);
+ WindowBegin("Finanäu apr•úini",FCSMULClass,CGmlist,-);
   SpawnClass(FCSMUDClass);
   SetWRect(64,80,860,350); 
   Sizeable(-1,-1,0,0);
   UseView(FCSMUVc);
   RecordList(4,17,-21,-39);
   h = 250; v=0; vs=100; h2 = 550;
-  RlColKey(v=v+vs,v,"Code",SMUCode,false,SmuCode);
-  RlCol(v=v+vs,v,"Employee 1 contact",contact1,false);
-  RlCol(v=v+vs,v,"Employee 2 contact",contact2,false);
-  RlCol(v=v+vs,v,"Employee 3 contact",contact3,false);
-  RlCol(v=v+vs,v,"Employee 4 contac",contact4,false);
-  RlCol(v=v+vs,v,"Employee 1 salary",salary1,false);
-  RlCol(v=v+vs,v,"Employee 2 salary",salary2,false);
-  RlCol(v=v+vs,v,"Employee 3 salary",salary3,false);
-  RlCol(v=v+vs,v,"Employee 4 salary",salary4,false);
-  RlCol(v=v+vs,v,"Employee 1 position",position1,false);
-  RlCol(v=v+vs,v,"Employee 2 position",position2,false);
-  RlCol(v=v+vs,v,"Employee 3 position",position3,false);
-  RlCol(v=v+vs,v,"Employee 4 position",position4,false);
+  RlColKey(v=v+vs,v,"Kods",SMUCode,false,SmuCode);
+  RlCol(v=v+vs,v,"Darbinieka 1 v‚rds,uzv‚rds",contact1,false);
+  RlCol(v=v+vs,v,"Darbinieka 2 v‚rds,uzv‚rds",contact2,false);
+  RlCol(v=v+vs,v,"Darbinieka 3 v‚rds,uzv‚rds",contact3,false);
+  RlCol(v=v+vs,v,"Darbinieka 4 v‚rds,uzv‚rds",contact4,false);
+  RlCol(v=v+vs,v,"Darbinieka 1 alga",salary1,false);
+  RlCol(v=v+vs,v,"Darbinieka 2 alga",salary2,false);
+  RlCol(v=v+vs,v,"Darbinieka 3 alga",salary3,false);
+  RlCol(v=v+vs,v,"Darbinieka 4 alga",salary4,false);
+  RlCol(v=v+vs,v,"Darbinieka 1 amats",position1,false);
+  RlCol(v=v+vs,v,"Darbinieka 2 amats",position2,false);
+  RlCol(v=v+vs,v,"Darbinieka 3 amats",position3,false);
+  RlCol(v=v+vs,v,"Darbinieka 4 amats",position4,false);
   SearchField("Mekl•t");
   EndWindow;
  
   
-WindowBegin("Financial calculations",FCSMUDClass,CGview,-);
+WindowBegin("Finanäu apr•úini",FCSMUDClass,CGview,-);
   SetWRect(64,80,860,350);
    Sizeable(-1,-1,0,0);
   UseView(FCSMUVc);
   h = 150; v=0; vs=20; h2 = 550;
-  Editfield(h,v,100,"Code",Normal,SMUCode,false,0);
-  Editfield(h,v=v+vs,100,"Employee 1 contact",Normal,contact1,false,0);
-  Editfield(h,v=v+vs,100,"Employee 2 contact",Normal,contact2,false,0);
-  Editfield(h,v=v+vs,100,"Employee 3 contact ",Normal,contact3,false,0);
-  EditField(h,v=v+vs,100,"Employee 4 contac",Normal,contact4,false,0);
-  EditField(h,v=v+vs,100,"Employee 1 salary",Normal,salary1,false,0);
-  Editfield(h,v=v+vs,100,"Employee 2 salary",Normal,salary2,false,0);
-  EditField(h,v=v+vs,100,"Employee 3 salary",Normal,salary3,false,0);
-  EditField(h,v=v+vs,100,"Employee 4 salary",Normal,salary4,false,0);
-  EditField(h,v=v+vs,100,"Employee 1 position",Normal,position1,false,0);
-  EditField(h,v=v+vs,100,"Employee 2 position",Normal,position2,false,0);
-  EditField(h,v=v+vs,100,"Employee 3 position",Normal,position3,false,0);
-  EditField(h,v=v+vs,100,"Employee 4 position",Normal,position4,false,0);
+  Editfield(h,v,100,"Kods",Normal,SMUCode,false,0);
+  Editfield(h,v=v+vs,100,"Darbinieka 1 v‚rds,uzv‚rds",Normal,contact1,false,0);
+  Editfield(h,v=v+vs,100,"Darbinieka 2 v‚rds,uzv‚rds",Normal,contact2,false,0);
+  Editfield(h,v=v+vs,100,"Darbinieka 3 v‚rds,uzv‚rds ",Normal,contact3,false,0);
+  EditField(h,v=v+vs,100,"Darbinieka 4 v‚rds,uzv‚rds",Normal,contact4,false,0);
+  EditField(h,v=v+vs,100,"Darbinieka 1 alga",Normal,salary1,false,0);
+  Editfield(h,v=v+vs,100,"Darbinieka 2 alga",Normal,salary2,false,0);
+  EditField(h,v=v+vs,100,"Darbinieka 3 alga",Normal,salary3,false,0);
+  EditField(h,v=v+vs,100,"Darbinieka 4 alga",Normal,salary4,false,0);
+  EditField(h,v=v+vs,100,"Darbinieka 1 amats",Normal,position1,false,0);
+  EditField(h,v=v+vs,100,"Darbinieka 2 amats",Normal,position2,false,0);
+  EditField(h,v=v+vs,100,"Darbinieka 3 amats",Normal,position3,false,0);
+  EditField(h,v=v+vs,100,"Darbinieka 4 amats",Normal,position4,false,0);
   MatrixBegin(10,v=v+vs+50,-30,-10,-,10);
-  MatCol(1,4,"Product name",0,ProdName,false,0);
-  MatCol(1,100,"Unit cost",0,UCost,false,0);
-  MatCol(1,200,"Unit price",0,UPrice,false,0);
-  MatCol(1,250,"Sold units",0,SoldUnits,false,0);
-  MatCol(1,400,"Income",0,Income,false,0);
-  MatCol(1,500,"Costs",0,Costs,false,0);
+  MatCol(1,32,"Produkta nosaukums",0,ProdName,false,0);
+  MatCol(1,150,"1 vien. paäizm. EUR",0,UCost,false,0);
+  MatCol(1,280,"1 vien. cena",0,UPrice,false,0);
+  MatCol(1,380,"P‚rdoto vien. sk.",0,SoldUnits,false,0);
+  MatCol(1,480,"Ien‚kumi",0,Income,false,0);
+  MatCol(1,580,"Izdevumi",0,Costs,false,0);
   EndMatrix;
   EndWindow;
 
@@ -1240,3 +1279,567 @@ begin
   EndWindow;
 end;
 
+window CUDClass:14
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,h1,h2,h3,h4,h5,l,v,vm,vm2,vs;
+  string 255 label;
+  record CUVc CUr;
+  Integer wn,tilenr;
+  record ModuleBlock Modb;
+  
+  BlockLoad(Modb);
+  WindowBegin("Kontakts",CUDClass,CGview,-);
+  DynamicWindow;
+  SetWRect(20,80,850,441);
+  Sizeable(-1,-1,0,0);
+  UseView(CUVc);
+  FormName(PrintCUD);  
+  
+  wn = CurWindow;
+  if (wn>0) then begin
+    if (GetWindowClass(wn)=="CUDClass") then begin 
+      GetWindowRecord(wn,CUr);
+    end;
+  end;
+  
+  if (HasLocalization("EST,GBR,LTU,LVA,NOR")) then begin
+  ActiveFieldOnNew("Code"); //dont change, otherwise automatic address lookup helper window wont show automatically //wns
+                              // this should not be based on localization, but rather on if the
+                              // address lookup is enabled, erik
+  end else begin
+    ActiveFieldOnNew("Name");
+  end;
+  if (HasMetroTestFeatures or GUIType!=kGUIMetro) then begin
+  CommunicateButton;
+  end;
+  if (HasJewelleryInterface) then begin
+    Tile(0,155,false,"",Code); 
+  end else begin
+  Tile(0,95,false,"",Code);
+  end;
+  v = 6; h = 130; l=223; vs = 20; h1=410; h2 = 350; h3 = 430; h4 = 580; h5 = 460;
+  EditField(h,v ,   95,"Nr.",Normal,Code,false,TSerSClass);
+  EditField(h1,v,50,"Klienta kategorija",Normal,CustCat,false,CCatSClass);
+  EditField(h,v+=vs,95,"Kods",Normal,SearchKey,false,0);
+  EditField(h1,v,50,"Pieg‚d‚t‚ja kategorija",Normal,VECat,false,VGSClass);
+  if (HasJewelleryInterface) then begin
+    EditField(h,v+=vs,95,"Uzruna 1",Normal,Salutation1,false,0); 
+    EditField(h1,v,50,"Sufikss",Normal,ANACode,false,0); 
+    EditField(h,v+=vs,h1-h+50,"Uzruna 2",Normal,Salutation2,false,0); 
+    EditField(h,v+=vs,h1-h+50,"Uzruna 3",Normal,Salutation3,false,0); 
+  EditField(h,v+=vs,h1-h+50,"Nosaukums",Normal,Name,false,0);
+  end else begin
+    EditField(h,v+=vs,h1-h+50,"Nosaukums",Normal,Name,false,0);
+  end;
+  CheckBox(h1+80,v=6,0,"K_lients",CUType);
+  CheckBox(h1+80,v+=16,0,"P_ieg‚d‚t‚js",VEType);
+  if (HasModHotel) then begin
+  CheckBox(h1+80,v+=16,0,"Viesis",GuestType);
+  end;
+  if (HasJewelleryInterface) then begin
+    CheckBox(h1+80,v+=16,0,"Bez masu v•stul•m",NoLetterPosting);  
+    CheckBox(h1+80,v+=16,0,"Bez masu e-pastiem",NoMailPosting);  
+    EditField(h1+120,v+=20,100,"A®ents",Normal,SalesMan,false,UserSClass);  
+  end;
+  v=6;
+  if (HasModHRM or IsEnterprise) then begin
+    CheckBox(h1+180,v,0,"Darbinieks",EmployeeType); v = v + 16;
+  end;
+  if (StandardHansa==false) then begin
+    CheckBox(h1+180,v,0,"Partneris",DealerType);  
+  end;
+  CheckBox(h1+180,v+=16,0,"Iesp•ja",LeadType);
+//  HalPushButton(h1+170,v=10,h1+170+100,v+20,"CreditInfoCUDsm","Credit Info");
+  CheckBox(h1+280,v=6,0,"Fili‚le",BranchType);
+
+//  HalPushButton(h1+170,v=10,h1+170+100,v+20,"CreditInfoCUDsm","");
+//  HalPushButton(h1+170,v=10,h1+170+100,v+20,"UpdCustomerAddressCUDsm","Update Address");
+  tilenr = 1;
+  TileButton(tilenr,"Kontaktinf."); tilenr = tilenr + 1;
+//CUST-BEGIN  
+  TileButton(tilenr,"JAL"); tilenr = tilenr + 1;  
+//CUST-END
+  TileButton(tilenr,"Pieg‚de"); tilenr = tilenr + 1;  
+  TileButton(tilenr,"Nosac."); tilenr = tilenr + 1;  
+  TileButton(tilenr,"Cenas"); tilenr = tilenr + 1;  
+  TileButton(tilenr,"Komp‚nija"); tilenr = tilenr + 1;  
+  TileButton(tilenr,"Konti"); tilenr = tilenr + 1;  
+  TileButton(tilenr,"E-ieraksti"); tilenr = tilenr + 1; 
+  if (StandardHansa==false) then begin
+    TileButton(tilenr,"T´m."); tilenr = tilenr + 1;  
+  end;
+  TileButton(tilenr,"Koment‚rs"); tilenr = tilenr + 1;  
+  if (true) then begin//HasModHotel
+    TileButton(tilenr,"Viesis"); tilenr = tilenr + 1;  
+  end;
+  if (StandardHansa==false) then begin
+    if (GuiType==kGuiMetro) then begin//UGLY
+      TileButton(tilenr,"Cits"); tilenr = tilenr + 1;  
+    end else begin
+      TileButton(tilenr,"Liet. def."); tilenr = tilenr + 1;  
+    end;
+  end;
+  TileButton(tilenr,"Piez´mes"); tilenr = tilenr + 1;  
+  if (CUr.CUType!=0 and HasCharts) then begin
+    TileButton(tilenr,"BI"); tilenr = tilenr + 1;   
+  end;
+  tilenr = 1;
+  Tile(tilenr,290,true,tilenr,InvAddr0); tilenr = tilenr + 1;
+  v=6;
+  HalPushButton(h+120,v,h+120+100,v+20,"UpdCustomerAddressCUDsm","Atjaunot adresi");
+  v=v+10;
+  StaticText(h,v+13,"R•úina adrese",false);
+  label = UserDefined("CUVc","InvAddr0");
+  EditField(h,v+=vs,-20,label,Normal,InvAddr0,false,0);
+  label = UserDefined("CUVc","InvAddr1");
+  EditField(h,v+=vs,-20,label,Normal,InvAddr1,false,0);
+  label = UserDefined("CUVc","InvAddr2");
+  EditField(h,v+=vs,-20,label,Normal,InvAddr2,false,0);
+  label = UserDefined("CUVc","InvAddr3");
+  EditField(h,v+=vs,-20,label,Normal,InvAddr3,false,0);
+  label = UserDefined("CUVc","InvAddr4");
+  EditField(h,v+=vs,-20,label,Normal,InvAddr4,false,0);
+  EditField(h,v+=vs,50,"Valsts",Normal,CountryCode,false,CountrySClass);//tsp-101118
+  if (HasLocalization("BRA")) then begin   
+    EditField(h2-159,v,214,"",ViewOnly,InvCountryName,false,0);  
+    v = v + vs;
+  end;  
+  EditField(h1,v,-20,"Departaments",Normal,Department,false,0);
+  EditField(h,v+=vs,150,"T‚lrunis 1",Normal,Phone,false,0);
+  EditField(h1,v,-20,"Fakss",Normal,Fax,false,0);
+  EditField(h,v+=vs,150,"T‚lrunis 2",Normal,AltPhone,false,0);
+  EditField(h1,v,-20,"Mobilais tel.",Normal,Mobile,false,0);
+  EditField(h,v+=vs,150,"Skype v‚rds",Normal,SkypeName,false,0);
+  EditField(h1,v,-20,"SIP v‚rds",Normal,SIPCode,false,0);
+  EditField(h,v+=vs,150,"E-pasts",Normal,eMail,false,0);  
+  EditField(h1,v,-20,"Paplaäin‚jums",Normal,Extension,false,0);
+  EditField(h,v+=vs,150,"Sazin‚ties ar",Normal,Person,false,ContactSClass);
+  EditField(h1,v,-20,"Interneta lapa",Normal,wwwAddr,false,0);
+  EditField(h,v+=vs,-20,"Klasifik‚cija",Normal,Classification,false,CClassSClass);
+  if (HasLocalization("CHN")) then begin  
+    EditField(h,v+=vs,150,"QQ konta numurs",Normal,QQName,false,0);   
+    EditField(h1,v,-20,"Weibo konta numurs",Normal,WeiboName,false,0);   
+  end;
+  RecordList2(10,v+=40,-30,-39,"ContactRelVc");
+  RlColKey(4,4,"Kods",ContactCode,false,ActCustContactCode);
+  RlCol(55,55,"Amats",ContactTitle,false);
+  RlColKey(105,105,"V‚rds",ContactName,false,ActCustContactName);
+  RlCol(235,235,"T‚lr.",ContactPhone,false);
+  RlCol(335,335,"Mobilais",ContactMobile,false);
+  RlCol(435,435,"Profesija",JobTitle,false);
+  RlCol(535,535,"E-pasts",ContacteMail,false);
+  //  RlCol(-1,-1,"",Invalid,true);
+//CUST-BEGIN
+  Tile(tilenr,240,false,tilenr,DelAddr0); tilenr = tilenr + 1;
+  EditField(h,v=6,100,"Skola",Normal,SchoolCode,false,0);
+  EditField(h,v=v+vs,100,"Skolot‚ja",Normal,TeacherCode,false,0);
+  EditField(h,v=v+vs,50,"Klase",Normal,ClassNum,false,0);
+  EditField(h+80,v=v,50,"",Normal,ClassChar,false,0);
+  EditField(h,v=v+vs,100,"Alga",Normal,Salary,false,0);
+  EditField(h,v=v+vs,100,"Amats",Normal,JobDesc,false,0);
+
+  CheckBox(h,v=v+30,0,"Zem 13 gadu vecuma",AgeFlag);
+  EditField(h,v=v+vs,150,"Vec‚ka v‚rds",Normal,ParentName,false,0);
+  EditField(h,v=v+vs,150,"Vec‚ka uzv‚rds",Normal,ParentSurName,false,0);
+  EditField(h,v=v+vs,150,"Vec‚ka e-pasts",Normal,ParenteMail,false,0);
+  
+  ButtonFrame(h,v=v+40,150,3,"Apstiprin‚ts");
+  CheckBox(h,v=v,0,"Skol•ns",ConfirmSKL);
+  CheckBox(h,v=v+16,0,"Vec‚k/aizbildnis",ConfirmPar);
+  CheckBox(h,v=v+16,0,"Skolot‚js",ConfirmTeach);
+//CUST-END
+  Tile(tilenr,240,false,tilenr,DelAddr0); tilenr = tilenr + 1;
+  v=6;
+  if (HasLocalization("CAN,GBR,LVA,EST,SWE,USA")) then begin
+  HalPushButton(h+120,v,h+120+100,v+20,"UpdDeliveryAddressCUDsm","Atjaunot adresi");
+  end;
+  v=v+12;
+  StaticText(h,v+13,"Pieg‚des adrese",false);
+  label = UserDefined("CUVc","DelAddr0");
+  EditField(h,v+=vs,-20,label,Normal,DelAddr0,false,0);
+  label = UserDefined("CUVc","DelAddr1");
+  EditField(h,v+=vs,-20,label,Normal,DelAddr1,false,0);
+  label = UserDefined("CUVc","DelAddr2");
+  EditField(h,v+=vs,-20,label,Normal,DelAddr2,false,0);
+  label = UserDefined("CUVc","DelAddr3");
+  EditField(h,v+=vs,-20,label,Normal,DelAddr3,false,0);
+  label = UserDefined("CUVc","DelAddr4");
+  EditField(h,v+=vs,-20,label,Normal,DelAddr4,false,0);  
+  EditField(h,v+=vs,50,"Valsts",Normal,DelCountry,false,CountrySClass);
+  if (HasLocalization("BRA")) then begin   
+    EditField(h2-159,v,203,"",ViewOnly,DelCountryName,false,0);  
+    v = v + vs;
+  end;    
+  EditField(h2+50,v,-20,"Pasðt. koment‚rs",Normal,OrderComment,false,0);
+  EditField(h,v+=vs,120,"Kravas Nr.",Normal,FreightNr,false,0);
+  EditField(h2+50,v,70,"Re®ions",Normal,Region,false,RegionSClass); 
+  EditField(h,vm=(v+=vs),120,"Klienta nosðt. nosac.",Normal,ShipDeal,false,ShipDealSClass);
+  EditField(h2+50,v,70,"Nosðt´äanas tips",Normal,VEShipDeal,false,ShipDealSClass); 
+  EditField(h,v+=vs,120,"Klienta nosðt. veids",Normal,ShipMode,false,DMSClass);
+  EditField(h2+50,v,70,"Nosðt´äanas veids",Normal,VEShipMode,false,DMSClass); 
+  EditField(h,v+=vs,120,"Maräruts",Normal,Sorting,false,DelRouteSClass);
+/* these fields were used for securities trading, this module doesnt exist in hansa anymore */
+/* Two of these fields are used in Russia and Ukraine */
+//  EditField(h,vm=(v+=vs),120,"Securities Acc.",Normal,SecAccount,false,0);
+//  EditField(h,v+=vs,120,"Bank Account",Normal,BankAccount,false,0);//xx
+//  EditField(h,v+=vs,120,"Account Operator",Normal,AccOperator,false,BankSClass);//xx
+//##  EditField(h,v+=vs ,70, "Com. Matrix",Normal,ComCode,false,ComSClass);
+  ButtonFrame(h5+30,v=vm,150,2,"Nosðt. dat., pamatojoties uz");
+  RadioButton(h5+30,v,0,0,"Paäreiz•jo datumu",DeliveryBasedOn);
+  RadioButton(h5+30,v+=16,1,0,"Pl‚noto nosðt. datumu",DeliveryBasedOn);  
+  Tile(tilenr,190,false,tilenr,PayDeal); tilenr = tilenr + 1;
+  EditField(h,v=6,35,"Klienta sam. term",Normal,PayDeal,false,PDSClass);
+  EditField(h,v+=vs,80,"Klienta kred´tlimits",Normal,CreditLimit,true,0);
+  EditField(h,v+=vs,80,"Kl. kred´tlimita dienas",Normal,CreditLimitDays,false,0);
+  EditField(h,v+=vs,80,"Klienta pieg. kods",Normal,TheirCode,false,0);  
+  EditField(h,v+=vs,80,"R•úina adres‚ts",Normal,InvoiceToCode,false,CUSClass);
+//  EditField(h,v+=vs,80,"On Account A/C",Normal,ANACode,false,0);
+  EditField(h,v+=2*vs,80,"Soda %",Normal,IntRate,false,0);
+  EditField(h,v+=vs,80,"Izveides datums",ViewOnly,DateCreated,false,0);
+  EditField(h,v+=vs,80,"Galv. partneris",Normal,MainPartner,false,CUSClass);
+  EditField(h2,v=6,35,"Pieg. sam. term.",Normal,VEPayDeal,false,PDSClass);
+  EditField(h2,v+=vs,80,"Pieg. kred´tlimits",Normal,VECreditLimit,true,0);
+  EditField(h2,v+=vs,80,"Pieg. kred´tlimita dienas",Normal,VECreditLimitDays,false,0);
+  EditField(h2,v+=vs,80,"Pieg. klienta kods",Normal,VECustID,false,0);  
+  EditField(h2,v+=vs,80,"R•úina adres‚ts",Normal,VEInvoiceToCode,false,VESClass);
+  EditField(h2,v+=vs,80,"Faktorings",Normal,VEFactoring,false,VESClass);
+  EditField(h2,v+=vs,80,"Min. pasðt. summa",Normal,MinOrdSum,false,0);
+  EditField(h2,v+=vs,80,"Atsauksme",Normal,RefStr,false,0);
+  EditField(h2,v+=vs,80,"P•d•j‚s izmaiÀas",Normal,DateChanged,false,0);
+  CheckBox(h5,v=12,0,"Sl•gts",blockedFlag);
+  CheckBox(h5,v+=16,0,"Dar´jumi aptur•ti",OnHoldFlag);
+  CheckBox(h5,v+=16,0,"Atg‚din‚jumi",RemndrFlag);
+//  CheckBox(h5,v+=16,0,"Iekas•ts",ColectionFlag);
+  CheckBox(h5,v+=16,0,"Soda nauda",InterestFlag);
+  CheckBox(h5,v+=16,0,"Priekäapmaksas",OnAccount);
+  if (StandardHansa==false) then begin
+  CheckBox(h5,v+=16,0,"Bez faktoringa",NoFactoringFlag);
+  CheckBox(h5,v+=16,0,"Bez papildnod.",NoTax1);
+  CheckBox(h5,v+=16,0,"Tikai apvien. r•ú.",GroupInv);
+  CheckBox(h5,v+=16,0,"Paäu r•úini",SelfBilling);
+    CheckBox(h5,v+=16,0,"Piem•rots úimiskai uzglab‚äanai",ChemicalStorageApproved);  
+  CheckBox(h4,v=12,0,"EGO klients",EGOFlag);
+  CheckBox(h4,v+=16,0,"EDI klients",EDIFlag);
+  CheckBox(h4,v+=16,0,"Atºaut piesl•gties",AllowLogin);
+//  CheckBox(h4,v+=16,0,"Atºaut piesl•gties FTP",FTPLogin);
+  CheckBox(h4,v+=16,0,"Tikai fisk‚lie ‹eki",FiscalFlag);
+  CheckBox(h4,v+=16,0,"Neiekº. v•st. kopsar.",NoLetterPosting);
+  end else begin
+    CheckBox(h4,v=12,0,"Neiekº. v•st. kopsar.",NoLetterPosting);  
+  end;
+  CheckBox(h4,v+=16,0,"Neiekº. epasta kops.",NoMailPosting);
+  CheckBox(h4,v+=16,0,"Bez vides nodokºa",NoRepa);
+  if (HasLocalization("GBR,LTU,POL,LVA")) then begin
+    CheckBox(h4,v+=16,0,"Reversais #PVN#",RvrsVAT);
+  end;
+  if (HasExtTax) then begin
+  CheckBox(h4,v+=16,0,"Bez re®iona nodokºa",NoTax2);
+  end;
+  Tile(tilenr,110,false,tilenr,PLCode); tilenr = tilenr + 1;
+  EditField(h,v=6,  80,"Real. valðta",Normal,CurncyCode,false,CurncyCodeSClass);
+  EditField(h,v+=vs ,80, "Cenu lapa",Normal,PLCode,false,PLDefSClass);
+  EditField(h,v+=vs ,80, "Atlaiìu matrica",Normal,RebCode,false,RebSClass);
+  if (HasSalesman or HasSalesmanBonus) then begin
+  EditField(h,v+=vs,80,"A®ents",Normal,SalesMan,false,UserSClass);
+  end;
+  EditField(h,v+=vs,80,"Nokl. artikuli",Normal,CompItemCode,false,CompItemSClass);
+  EditField(h2,v=6,80,"Ieg. valðta",Normal,VECurncyCode,false,CurncyCodeSClass);
+  EditField(h2,v+=2*vs ,80, "Pieg. atl. matrica",Normal,VERebCode,false,RebSClass);
+  if (HasSalesGroup) then begin
+  EditField(h2,v+=vs,80,"A®entu grupa",Normal,SalesGroup,false,SalesGroupSClass);
+  end;
+  ButtonFrame(h5,v=24,150,3,"Cenas p•c");
+  RadioButton(h5,v,0,0,"Pasðt´juma datuma",PriceBasedOn);
+  RadioButton(h5,v+=16,1,0,"Pl‚not‚ nosðt´äanas dat.",PriceBasedOn);
+  RadioButton(h5,v+=16,2,0,"Izveäanas datuma",PriceBasedOn);  
+  Tile(tilenr,180,false,tilenr,Comment); tilenr = tilenr + 1;
+  EditField(h,v=6,-20,"Koment‚rs",Normal,Comment,false,0);
+  EditField(h,v+=vs,-20,"Real. br´din‚jums",Normal,WarnText1,false,0);
+  EditField(h,v+=vs,-20,"Pieg. br´din‚jums",Normal,VEWarnText1,false,0);
+  EditField(h,v+=vs,120,"PVN re®. Nr.",Normal,VATNr,false,0);  
+  EditField(h2-20,v,120,"Re®. Nr.1",Normal,RegNr1,false,0);
+  ButtonFrame(h5+30,v+18,143,1,"Tips");  
+  RadioButton(h5+30,v+18,0,0,"Komp‚nija",CustType);  
+  RadioButton(h5+110,v+18,1,0,"Persona",CustType);  
+  v = v + vs;
+	EditField(h,v,120,"Valsts PVN Re®. Nr.",Normal,CountryVATNr,false,0);
+  EditField(h2-20,v,120,"Re®. Nr.2",Normal,RegNr2,false,RegDefSClass);  
+  EditField(h,v+=vs,120,"PVN Nr. p‚rb. dat.",Normal,VATNrCheckDate,false,PasteCurDate);  
+  EditField(h2-20,v,120,"GVN",Normal,RecipientGLN,false,0); 
+  if (HasLocalization("HRV,SVN")) then begin 
+    EditField(h,v+=vs,120,"Juridisk‚ forma",Normal,LegalForm,false,CULegalFormSClass);
+  end;  
+  EditField(h,v+=vs,20,"Real. PVN kods",Normal,VATCode,false,VATCodeSClass);
+  if (HasTaxMatrix) then begin
+  EditField(h+135,v,50,"Real. nod.veidne",Normal,TaxTemplateCode,false,TaxTemplateSClass);
+  end;
+  HalPushButton(h2-10,v,h2-10+100,v+20,"UpdCustomerAddressCUDsm","Atjaunot adresi");
+  EditField(h,v+=vs,20,"Pieg. PVN kods",Normal,VEVATCode,false,VATCodeSClass);
+  if (HasTaxMatrix) then begin
+  EditField(h+135,v,50,"Pieg. nod.veidne",Normal,VETaxTemplateCode,false,TaxTemplateSClass);
+  end;
+  EditField(h,v+=vs,50,"Valoda",Normal,LangCode,false,LangSClass);  
+  EditField(h2-20, v,50,"Biznesa daba",Normal,BusinessNature,false,BNSClass); 
+  EditField(h,v+=vs, 260,"UzÀ•mums",Normal,BusinessEntity,false,SetSClass); 
+  if (HasLocalization("ARG")) then begin 
+	  ButtonFrame(h+125,v+=20,177,4,"Nodokºu nosac´jumi "); 
+    RadioButton(h+125,v,2,0,"Bez ieraksta",TaxCondition); 
+    RadioButton(h+125,v+=16,0,0,"Viet•jais",TaxCondition); 
+    RadioButton(h+125,v+=16,1,0,"Daudzpus•js l´gums",TaxCondition); 
+    RadioButton(h+125,v+=16,3,0,"Simplified Taxpaying Regimen",TaxCondition);    
+  end;  
+  if (HasLocalization("BRA")) then begin  
+    EditField(h,v+=vs,120,"SUFRAMA Re®. Nr.",Normal,SuframaRegNr,false,0);  
+  end;
+//  EditField(h,v+=vs,120,"Kan‚ls",Normal,WebServiceChannel,false,SetSClass);
+  v = 130;
+  v = VATZoneButtonsLabelslat(h5+30,v,170,16);
+  Tile(tilenr,130,false,tilenr,AccAP); tilenr = tilenr + 1;
+  EditField(h,v=6,80,"Kreditoru konts",Normal,AccAP,false,AccSClass);
+  EditField(h,v+=vs,80,"Izmaksu konts",Normal,AccCost,false,AccSClass);
+  EditField(h,v+=vs,80,"Kred. priekä. konts",Normal,OnAccAccAP,false,AccSClass);
+  EditField(h,v+=vs,120,"Real. objekti",Normal,Objects,false,ObjSClass);
+  EditField(h,v+=vs,120,"Pieg. objekti",Normal,VEObjects,false,ObjSClass);  
+  EditField(h,v+=vs,50,"Maks‚juma uzd. kods",Normal,PaymentCode,false,PaymentCodeSClass);  
+  EditField(h,v+=vs,50,"Nodokºu atvieglojumi",Normal,TaxExemption,false,TaxExemptionsSClass); 
+  if (HasLocalization("HRV,HUN,POL,SRB,SLV,SVN")) then begin
+  ButtonFrame(h,v+=40,150,3,"Gr‚matot maks‚juma PVN");  
+  RadioButton(h,v,0,0,"Noklus•juma",IPBookVAT);  
+  RadioButton(h,v+=16,1,0,"Gr‚matot PVN",IPBookVAT);  
+  RadioButton(h,v+=16,2,0,"Negr‚matot PVN",IPBookVAT);  
+  end;
+  EditField(h1,v=6,200,"IBAN kods",Normal,IBANCode,false,0);  
+  EditField(h1,v+=vs,-20,"Banka",Normal,AccOperator,false,BankSClass);  
+  EditField(h1,v+=vs,-20,"Bankas konts",Normal,BankAccount,false,0);  
+  EditField(h1,v+=vs,-20,"Bankas konts 2",Normal,Bank,false,0);  
+  EditField(h1,v+=vs,80,"K‚rt. atsl.",Normal,SortCode,false,0);
+  if (HasWithholdingTax) then begin
+  EditField(h1,v+=vs,120,"Ietur•juma samaksas veidi",Normal,WithPayMode,false,PMSClass);
+  end;
+  if (HasLocalization("HRV,HUN,POL,SRB,SLV,SVN")) then begin
+    ButtonFrame(h1,v+=60,150,3,"Gr‚matot maks‚juma uzd. PVN");
+  RadioButton(h1,v,0,0,"Noklus•juma",OPBookVAT);  
+  RadioButton(h1,v+=16,1,0,"Gr‚matot PVN",OPBookVAT);  
+  RadioButton(h1,v+=16,2,0,"Negr‚matot PVN",OPBookVAT);  
+  end;  
+  Tile(tilenr,170,false,tilenr,ANACode); tilenr = tilenr + 1;
+  StaticText(h,v=20,"E-r•úini",true); 
+  EditField(h,vm=(v+=10),80,"E-r•úinu konts",Normal,ANACode,false,0); 
+  EditField(h,v+=vs,80,"Alt. E-r•úinu konts",Normal,eInvAlternativeAccount,false,0);
+
+  ButtonFrame(h,v+=40,163,1,"R•úina veids"); 
+  RadioButton(h,v,kEInvoiceRcvPreferenceDefault,0,"Noklus•juma",eInvRcvPref); 
+  RadioButton(h,v+=16,kEInvoiceRcvPreferenceElectronic,0,"Elektroniskais",eInvRcvPref); 
+  if (HasLocalization("LVA")) then begin
+    RadioButton(h,v+=16,kEInvoiceRcvPreferenceEMail,0,"e-pasts",eInvRcvPref); 
+    RadioButton(h,v+=16,kEInvoiceRcvPreferencePaper,0,"Pap´ra r•úins",eInvRcvPref); 
+    RadioButton(h,v+=16,kEInvoiceRcvPreferenceInternetBank,0,"Internete banka",eInvRcvPref); 
+  end else begin
+  if (HasLocalization("FIN,NOR,SWE")) then begin
+    RadioButton(h,v+=16,kEInvoiceRcvPreferenceEMail,0,"E-pasts",eInvRcvPref);
+  end else begin
+    RadioButton(h,v+=16,kEInvoiceRcvPreferencePaper,0,"Pap´ra",eInvRcvPref); 
+    end;
+  end;  
+  if (Modb.InterCompany) then begin
+    RadioButton(h,v+=16,kEInvoiceRcvPreferenceInternal,0,"Iekä•jais",eInvRcvPref); 
+    EditField(h+130,v,30,"",Normal,eInvRcvToCompanyCode,false,Companies2SClass);
+  end;
+  RadioButton(h,v+=16,kEInvoiceRcvPreferenceNone,0,"NesaÀemt",eInvRcvPref); 
+  EndFrame;
+  if (HasLocalization("EST,LTU")) then begin
+    ButtonFrame(h,v+=40,143,1,"Papildu pieg‚de (nav oblig.)"); 
+    RadioButton(h,v,kEInvoiceRcvPreferenceDefault,0,"Neizmantot",eInvAltRcvPref); 
+    RadioButton(h,v+=16,kEInvoiceRcvPreferenceElectronic,0,"Elektronisks r•úins",eInvAltRcvPref); 
+    RadioButton(h,v+=16,kEInvoiceRcvPreferencePaper,0,"Reúins pap. form‚",eInvAltRcvPref); 
+    RadioButton(h,v+=16,kEInvoiceRcvPreferenceEMail,0,"E-pasts",eInvAltRcvPref); 
+    RadioButton(h,v+=16,kEInvoiceRcvPreferenceInternetBank,0,"Internetbanka",eInvAltRcvPref); 
+    EndFrame;
+  end;
+  vm2 = v;
+
+  CheckBox(h1,v=vm,0,"Nesðt´t e-r•úinus",eInvStop); 
+  if (HasLocalization("FIN")==false) then begin
+    CheckBox(h1,v+=16,0,"E-r•úini ar pdf failiem",eInvAttachPDF); 
+    ButtonFrame(h1,v+=44,143,3,"Pasta tarifs pap´ra r•úiniem"); 
+  end else begin
+    ButtonFrame(h1,v+=60,143,3,"Pasta tarifs pap´ra r•úiniem"); 
+  end;
+  RadioButton(h1,v,2,0,"Noklus•juma",eInvPostage); 
+  RadioButton(h1,v+=16,0,0,"Priorit‚rs",eInvPostage); 
+  RadioButton(h1,v+=16,1,0,"Ekonomisks",eInvPostage); 
+  if (HasLocalization("EST,LTU")) then begin
+    CheckBox(h1,v+=84,0,"Sa´sin‚ti e-r•úini",eInvShortNote); 
+  end;
+  StaticText(h,v=(vm2+40),"Pieg‚d‚t‚ju pasðt´jumi",true);
+  ButtonFrame(h,v+=20,163,3,"SaÀemäanas veids"); 
+  RadioButton(h,v,kPORcvPreferenceNone,0,"NesaÀemt",ePORcvPref); 
+  RadioButton(h,v+=16,kPORcvPreferenceDefault,0,"Noklus•juma",ePORcvPref); 
+  if (Modb.InterCompany) then begin
+  RadioButton(h,v+=16,kPORcvPreferenceInternal,0,"Iekä•j‚ komp‚nija",ePORcvPref); 
+  EditField(h+130,v,30,"",Normal,ePORcvToCompanyCode,false,Companies2SClass);
+  end;
+  EndFrame;
+
+  if (StandardHansa==false) then begin
+    Tile(tilenr,70,false,tilenr,WebConf); tilenr = tilenr + 1;
+  EditField(h,vm=(v=6),120,"Interneta konf.",Normal,WebConf,true,0);
+  EditField(h1,v,150,"Galven‚ klasifik‚cija",Normal,MainDispGroup,false,WebNGProductCatSClass);
+  EditField(h,v+=vs,120,"Web s‚kuma lapa",Normal,WebStartPage,false,0);
+  EditField(h1,v,150,"R‚d´t m‚jas lap‚",Normal,WebDisplays,false,WebDisplaySClass);
+  EditField(h,v+=vs,120,"Pieg‚des kods",Normal,FreightCode,false,WebFreightSClass);
+    EditField(h1,v,150,"T´mekºa objekta tips",Normal,WebOTCode,false,OTSClass); 
+  end;
+  Tile(tilenr,170,false,tilenr,Comment0); tilenr = tilenr + 1;
+  EditField(h,v=6,-20,"Koment‚rs",Normal,Comment0,false,0);
+  EditField(h,v+=vs,-20,"",Normal,Comment1,false,0);
+  EditField(h,v+=vs,-20,"",Normal,Comment2,false,0);
+  EditField(h,v+=vs,-20,"Tituls",Normal,Title,false,CourtesyTitlesSClass);
+  EditField(h,v+=vs,-20,"Amats",Normal,JobDesc,false,JobTitleSClass);
+  EditField(h,v+=vs,-20,"Uzruna 1",Normal,Salutation1,false,0);
+  EditField(h,v+=vs,-20,"Uzruna 2",Normal,Salutation2,false,0);
+  EditField(h,v+=vs,-20,"Uzruna 3",Normal,Salutation3,false,0);
+  if (true) then begin//HasModHotel
+    Tile(tilenr,250,false,tilenr,DocType); tilenr = tilenr + 1;
+  EditField(h,v=6,100,"Dok. tips",Normal,DocType,false,CUDocTypeSClass);
+  EditField(h2,v,-20,"ID",Normal,PassportNr,false,0); 
+    EditField(h2,v+=vs,-20,"V‚rds dokument‚",Normal,NameinDocument,false,0); 
+//  EditFieldTL(h,vm=(v+=20),100,"Nationality",M4StrSet,Normal,423,Nationality,false,StrSetSClass);
+  EditField(h,vm=(v+=20),100,"Taut´ba",Normal,Nationality,false,CountrySClass);
+    EditField(h,v+=20,100,"Dzimis",Normal,BirthDate,false,PasteCurDate);
+    EditField(h,v+=20,100,"Dzim. vieta",Normal,BirthPlace,false,0);  
+    EditField(h,v+=20,100,"Dzim. valsts",Normal,BirthCountry,false,CountrySClass);  
+  EditField(h,v+=20,100,"Profesija",Normal,Profesion,false,0);   
+  EditField(h,v+=20,100,"Av´ze",Normal,Newspaper,false,NewspaperSClass);
+  EditField(h,v+=20,100,"Balss parole",Normal,Passphrase,false,0);
+  EditField(h,v+=vs,100,"Tðrisma firma",Normal,TourOperator,false,CUSClass);
+  EditField(h,v+=vs,100,"A®ents",Normal,Agent,false,CUSClass);
+  EditField(h,v+=vs,100,"Maks‚äanas metode",Normal,DefGuestPayMode,false,PMSClass);
+  EditField(h,v+=vs,100,"Noklus. rezerv. avots",Normal,BookOrigin,false,BookOrgSClass);
+  EditField(h,v+=vs,300,"Uztura piez´mes",Normal,DietRemarks,false,0);
+  EditField(h,v+=vs,300,"Pras´bas",Normal,RequirementRemarks,false,0);
+
+  ButtonFrame(h2,v=vm+20,100,2,"Dzimums");
+  RadioButton(h2,v,0,0,"V´rietis",Gender);
+  RadioButton(h2,v+=17,1,0,"Sieviete",Gender);
+
+  CheckBox(h2+130,v=vm+20,0,"Sm•ú•t‚js",Smoking);
+  CheckBox(h2+130,v+=17,0,"Melnaj‚ sarakst‚",Blacklist);
+
+  ButtonFrame(h2,vm=(v+=40),100,4,"þimenes st‚voklis");
+  RadioButton(h2,v,0,0,"Neprec•jies",MarStatus);
+  RadioButton(h2,v+=17,1,0,"Prec•jies",MarStatus);
+  RadioButton(h2,v+=17,2,0,"áú´ries",MarStatus);
+  RadioButton(h2,v+=17,3,0,"Atraitnis",MarStatus);
+
+  ButtonFrame(h2=h2+130,v=vm,100,3,"Vecuma grupa");
+  RadioButton(h2,v,1,0,"B•rns",AgeStatus);
+  RadioButton(h2,v+=17,0,0,"Pieauguäais",AgeStatus);
+  RadioButton(h2,v+=17,2,0,"Pension‚rs",AgeStatus);
+  end;
+  
+  if (StandardHansa==false) then begin
+    Tile(tilenr,270,false,tilenr,UserStr1); tilenr = tilenr + 1;
+  v=6;h=180;
+  label = UserDefined("CUVc","UserStr1");
+  if (nonblank(label)) then begin
+    EditField(h,v,-20,label,Normal,UserStr1,false,0);
+  end;
+  label = UserDefined("CUVc","UserStr2");
+  if (nonblank(label)) then begin
+    EditField(h,v+=vs,-20,label,Normal,UserStr2,false,0);
+  end;
+  label = UserDefined("CUVc","UserStr3");
+  if (nonblank(label)) then begin
+    EditField(h,v+=vs,-20,label,Normal,UserStr3,false,0);
+  end;
+  label = UserDefined("CUVc","UserStr4");
+  if (nonblank(label)) then begin
+    EditField(h,v+=vs,-20,label,Normal,UserStr4,false,0);
+  end;
+  label = UserDefined("CUVc","UserStr5");
+  if (nonblank(label)) then begin
+    EditField(h,v+=vs,-20,label,Normal,UserStr5,false,0);
+  end;
+  label = UserDefined("CUVc","UserVal1");
+  if (nonblank(label)) then begin
+    EditField(h,v+=vs,-20,label,Normal,UserVal1,false,0);
+  end;
+  label = UserDefined("CUVc","UserVal2");
+  if (nonblank(label)) then begin
+    EditField(h,v+=vs,-20,label,Normal,UserVal2,false,0);
+  end;
+  label = UserDefined("CUVc","UserVal3");
+  if (nonblank(label)) then begin
+    EditField(h,v+=vs,-20,label,Normal,UserVal3,false,0);
+  end;
+  label = UserDefined("CUVc","UserDate1");
+  if (nonblank(label)) then begin
+      EditField(h,v+=vs,80,label,Normal,UserDate1,false,PasteCurDate);
+  end;
+  label = UserDefined("CUVc","UserDate2");
+  if (nonblank(label)) then begin
+      EditField(h,v+=vs,80,label,Normal,UserDate2,false,PasteCurDate);
+  end;
+  label = UserDefined("CUVc","UserDate3");
+  if (nonblank(label)) then begin
+      EditField(h,v+=vs,80,label,Normal,UserDate3,false,PasteCurDate);
+  end;
+  
+  EditField(h,v+=vs,-20,"Adreäu saraksti",Normal,AddressBooks,false,0);
+  end;
+
+  Tile(tilenr,500,false,tilenr,Math2); tilenr = tilenr + 1;
+  CheckBox(50,v=6,0,"HTML",HtmlFlag); 
+  StaticText(50,v+=30,"Piez´mes",true);
+  TextField(60,v-5,-20,370,Math2,0);
+  if (CUr.CUType!=0 and HasCharts) then begin
+    Tile(tilenr,400,false,tilenr,-); tilenr = tilenr + 1;
+    ChartArea(10,6,-10,390,"$CUDCLass_BIChart");  
+  end;
+  
+  if (GuiType==kGuiMetro) then begin // Temporarily disabled on Windows 8
+    if (UserCanReport("CustPSRn","",true) and HasCustomerStatusReport) then begin
+      SpecialMenu("Klienta statuss",'e',0,"CUStatusCUDsm"); 
+    end;
+    if (UserCanReport("VEPSRn","",true)) then begin 
+      SpecialMenu("Pieg‚d‚t‚ja statuss",'u',4,"VEStatusVEDsm"); 
+    end;
+    SpecialMenu("Pievienot esoäu kontaktpersonu",' ',1,"AddContactCUDsm"); 
+    SpecialMenu("Veidot jaunu kontaktpersonu",' ',1,"NewContactCUDsm"); 
+    SpecialMenu("Veidot aktivit‚ti",'c',2,"NewActCUDsm");
+  end else begin
+    if (UserCanReport("CustPSRn","",true) and HasCustomerStatusReport) then begin
+  SpecialMenu("Klienta statuss",'e',0,"CUStatusCUDsm");
+  end;
+    if (UserCanReport("VEPSRn","",true)) then begin
+      SpecialMenu("Pieg‚d‚t‚ja statuss",'u',4,"VEStatusVEDsm");
+    end;
+  SpecialMenu("Pievienot esoäu kontaktpersonu",' ',1,"AddContactCUDsm");
+  SpecialMenu("Dz•st pievienotu kontaktpersonu",' ',1,"DelContactCUDsm");
+  SpecialMenu("Labot pievienotas kontaktpers. datus",' ',1,"EditContactCUDsm");
+  SpecialMenu("Atjaunot kontaktpersonas",' ',6,"UpdContactAddrCUDsm");
+    if (HasLocalization("ARG")) then begin
+      SpecialMenu("Atv•rt re®ion‚lo p‚rskatu",' ',1,"RPCUTaxDsm"); 
+    end;
+    if (HasLocalization("ARG,BRA,ITA,KEN,MEX,PRT,SGP,ZAF")) then begin
+      SpecialMenu("Atv•rt #Supplier# ietur•jumus",' ',1,"WHVEDsm"); 
+    end; //EMZ
+  if (GuiType==kGuiCocoa) then begin
+    SpecialMenu("Kop•t uz lok‚lo adreäu gr‚matu",' ',7,"CopyToLocalAddressBookDsm");
+  end;
+  if (GuiType==kGuiiPhone) then begin
+    SpecialMenu("Main´t paroli",' ',1,"ChangePasswdCUDsm");
+  end;
+    SpecMenuGroup("",kSpecMenuGroupTypeExtendedPlusMenu,0); 
+//    SpecialMenu("Activity",'c',2,"NewActCUDsm");
+    SpecialMenu("Kontaktpersonu",' ',1,"NewContactCUDsm"); 
+    if (StandardHansa==false) then begin
+      SpecialMenu("E-pastu",'m',5,"NewMailCUDsm"); 
+    end;
+    SpecialMenu("Objektu",' ',1,"CreateObjectCUDsm"); 
+    SpecialMenu("Paroles paziÀojumu",' ',3,"RandomPassMailCUDsm"); 
+  end;
+  EndWindow;
+end;

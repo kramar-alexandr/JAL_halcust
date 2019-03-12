@@ -65,7 +65,7 @@ begin
   //stopalert("nuuu? " & district);
   TrHs = true;
   firstf=true;
-  //SCr.Approved = 1;
+  SCr.Approved = 1;
   SCr.SchoolName = "0";
   //SCr.Region = Jrblrw.Region;
   SCr.District = district;
@@ -74,27 +74,19 @@ begin
   
   WebOutStringFormatNL("<select  class=""spinput _select"" id=""schoolselect"" name=""school"">");// onchange=""getteacher()"">");
   WebOutStringFormatNL("<option value=""-1"">" & ToolWebNGTranslateText(23000) & "</option>");
-  if district <> "" then begin
-  while loopkey("District",SCr,3,TrHs) begin
-  //stopalert(SCr.SchoolCode);
-    //if SCr.Approved <> 1 then begin  
-	//  TrHs = false;
-    //end else begin
-	
-      if SCr.District <> District then begin
-	      TrHs = false;
-	    end else begin
-	      if firstf == true then begin
-	        school = SCr.SchoolCode;
-		    firstf = false;
+  if (district <> "") then begin
+    while(Loopkey("Approved",SCr,3,TrHs)) begin
+      if (SCr.Approved!=1 or SCr.District!=district) then begin  
+        TrHs = false;
+      end else begin
+        if firstf == true then begin
+          school = SCr.SchoolCode;
+          firstf = false;
         end;
-	      WebOutStringFormatNL("<option value=""" & SCr.SchoolCode & """>" & SCr.SchoolName & "</option>");
+        WebOutStringFormatNL("<option value=""" & SCr.SchoolCode & """>" & SCr.SchoolName & "</option>");
       end;
-	  //stopalert(SCr.District & " " & TrHs);
-    //end;
+    end;
   end;
-  end;
-
 
   WebOutStringFormatNL("</select>");
   //WebOutStringFormatNL("<div>" & ToolWebNGtranslateText(20070) & "</div>");
@@ -199,7 +191,7 @@ begin
   WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path") & """>");
   WebOutStringFormatNL("<input class=""spinput"" type=""text"" required name=""name"" placeholder=""V&#257rds, Uzv&#257rds"">");
   //WebOutStringFormatNL("<input class=""spinput"" type=""text"" required name=""pk"" placeholder=" & ToolWebNGtranslateText(20031) & ">");
-  WebOutStringFormatNL("<input class=""spinput"" type=""tel"" required name=""tel"" pattern='[+][0-9]{5,10}' placeholder='Tel.nr'><div data-title='Tikai cipari un simbols (+)' class='info-sign'><img src='img/information.png'></img></div>");
+  WebOutStringFormatNL("<input class=""spinput"" type=""tel"" required name=""tel"" pattern='[0-9]{5,10}' placeholder='Tel.nr'><div data-title='Tikai cipari' class='info-sign'><img src='img/information.png'></img></div>");
   WebOutStringFormatNL("<input id=""regemail"" placeholder=" & ToolWebNGtranslateText(20033) & " class=""spinput"" type=""email"" required name=""email""  onchange=""testemail(this.value); compemails('" & ToolWebNGTranslateText(21102) & "',1);""><div data-title='J‚ievada ir aktu‚lais e-pasts, kas tiek izmantots ikdien‚' class='info-sign'><img src='img/information.png'></img></div>");
   WebOutStringFormatNL("<input id=""regemail2"" placeholder=""Atk&#257rtojiet e-pastu"" class=""spinput"" type=""email"" required name=""email2""  onchange=""compemails('" & ToolWebNGTranslateText(21102) & "',0);"">");
   SelBoxForRegForTeacher;

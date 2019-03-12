@@ -7,6 +7,8 @@ external procedure ShowRedirectHtml(string,boolean);
 external function string 255 GetLinkToStruct(LongInt,boolean);
 external procedure ShowDocumentList(string,integer,string);
 external procedure ExtractObj(string,var Integer,var string);
+external procedure OutPutJALWebTexts(Integer);
+external function string 255 ToolWebNGTranslateText2(longint);
 
 SetLangMode(LangLatvian,"LAT",0);
 
@@ -163,7 +165,7 @@ begin
   JFr.SMFCode = SMFr.SMFCode;
   JFr.Status = 4;
   if readlastkey("SMFCode",JFr,2,true) then begin
-    if readrecordlink(JFr,1,Attachr,RLr) then begin
+    if ReadRecordLink(JFr,1,Attachr,RLr) then begin
     //stopalert("adsf " & Attachr.FileName);
       if FileNameIsImage(Attachr.FileName) then begin
         WebOutStringFormatNL("<img id=""main_prof_pic"" src=""/WebShowProfileImg.hal?sernr=" & Attachr.SerNr & """>");
@@ -241,10 +243,12 @@ global
 function Boolean FindSMURecord(string code,var record SMFVc SMFr)
 begin
   Boolean res;
+  record SMFVc tSMFr;
   
-  SMFr.CustCode = code;
-  if (ReadFirstKey("CustCode",SMFr,1,true)) then begin
+  tSMFr.CustCode = code;
+  if (ReadFirstKey("CustCode",tSMFr,1,true)) then begin
     res = true;
+    RecordCopy(SMFr,tSMFr);
   end;
 
   FindSMURecord = res;
@@ -274,56 +278,50 @@ begin
   integer i;
   record JALClassBlock JCbl;
   string 30 cust;
+  record SchoolVc SCr;
 
   BlockLoad(JCbl);
 
-  cust = CurrentCust;
-
-  if nonblank(cust) then begin
-    CUr.Code = cust;
-    cCUr.Code = CurrentCust;
-    if readfirstmain(cCUr,1,true) then begin end;
-    if readfirstmain(CUr,1,true) then begin
-      if readrecordlink(CUr,1,SMFr,RLr) or FindSMURecord(cCUr.Code,SMFr) then begin
-        if (cust == CurrentCust or  cCUr.Code == SMFr.CustCode) then begin
-          WebOutStringFormatNL("<form class=""changeprofile"" method=""POST"" id=""forma"">");
-          WebOutStringFormatNL("<input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");
-          WebOutStringFormatNL("<input type=""hidden"" name=""cust"" value=""" & CUr.Code & """>");
-          WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path")& """>");
-          WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(20030) & "</span><input type=""text"" name=""name"" value=""" & CUr.Name & """></div>");
-          WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">Skola:</span><input readonly type=""text"" name=""name"" value=""" & SMFr.SchoolName & """></div>");
-          WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(20033) & "</span><input readonly type=""text"" name=""email"" value=""" & CUr.eMail & """></div>");
-          WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(23010) & "</span><input type=""password"" name=""passw1""></div>");
-          WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(23011) & "</span><input type=""password"" name=""passw2""></div>");
-          //error
-          err = StringToLongInt(getSessionString("err"));
-          PutSessionString("err","");
-          if err > 0 then begin
-            WebOutStringFormatNL("<div id=""error"">");
-            if (BitAnd(err,2)==2) then begin
-              WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20200) & "</li>");
-            end;
-            if (BitAnd(err,4)==4) then begin
-              WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20201) & "</li>");
-            end;
-            if (BitAnd(err,8)==8) then begin
-              WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20202) & "</li>");
-            end;
-            if (BitAnd(err,16)==16) then begin
-              WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20203) & "</li>");
-            end;
-            if (BitAnd(err,64)==64) then begin
-              WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20205) & "</li>");
-            end;
-            WebOutStringFormatNL("</div>");
+  if nonblank(CurrentCust) then begin
+    CUr.Code = CurrentCust;
+    if (ReadFirstMain(CUr,1,true)) then begin
+      SCr.SchoolCode = CUr.SchoolCode;
+      if (ReadFirstMain(SCr,1,true)) then begin
+        WebOutStringFormatNL("<form class=""changeprofile"" method=""POST"" id=""forma"">");
+        //WebOutStringFormatNL("<input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");
+        WebOutStringFormatNL("<input type=""hidden"" name=""cust"" value=""" & CUr.Code & """>");
+        WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path")& """>");
+        WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(20030) & "</span><input type=""text"" name=""name"" value=""" & CUr.Name & """></div>");
+        WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText2(80000) & "</span><input readonly type=""text"" name=""name"" value=""" & SCr.SchoolName & """></div>");
+        WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(20033) & "</span><input readonly type=""text"" name=""email"" value=""" & CUr.eMail & """></div>");
+        WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(23010) & "</span><input type=""password"" name=""passw1""></div>");
+        WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(23011) & "</span><input type=""password"" name=""passw2""></div>");
+        //error
+        err = StringToLongInt(getSessionString("err"));
+        PutSessionString("err","");
+        if err > 0 then begin
+          WebOutStringFormatNL("<div id=""error"">");
+          if (BitAnd(err,2)==2) then begin
+            WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20200) & "</li>");
           end;
-          WebOutStringFormatNL("<div class=""addbuttonn""><button class=""spbutton grey"" id=""confirmMainInfo"" type=""button"">" & ToolWebNGTranslateText(20212) & "</button></div>");
-          WebOutStringFormatNL("</form>");
-        end else begin
-          ShowRedirectHTML(FormatSimpleLink(GetLinkToStruct(JCbl.ProfileCorrectionStruct,true),true),false);
+          if (BitAnd(err,4)==4) then begin
+            WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20201) & "</li>");
+          end;
+          if (BitAnd(err,8)==8) then begin
+            WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20202) & "</li>");
+          end;
+          if (BitAnd(err,16)==16) then begin
+            WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20203) & "</li>");
+          end;
+          if (BitAnd(err,64)==64) then begin
+            WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(20205) & "</li>");
+          end;
+          WebOutStringFormatNL("</div>");
         end;
+        WebOutStringFormatNL("<div class=""addbuttonn""><button class=""spbutton grey"" id=""confirmMainInfo"" type=""button"">" & ToolWebNGTranslateText(20212) & "</button></div>");
+        WebOutStringFormatNL("</form>");
       end else begin
-        ShowFailPage;
+        ShowRedirectHTML(FormatSimpleLink(GetLinkToStruct(JCbl.ProfileCorrectionStruct,true),true),false);
       end;
     end else begin
       ShowFailPage;
@@ -336,8 +334,6 @@ end;
 
 global procedure ParentChangeForm()
 begin
-		record SMFVc SMFr;
-	row SMFVc SMFrw;
 	integer i,mtrw,cnt;
 	string 50 code,status,type;
 	record CUVc CUr;
@@ -346,17 +342,15 @@ begin
 
 		CUr.Code = CurrentCust;
 		if(ReadFirstMain(CUr,1,true)) then begin
-      SMFr.CustCode=CurrentCust;
-			ReadFirstKey("CustCode",SMFr,1,true);
-		if (SMFr.AgeFlag!=0) then begin
-		    WebOutStringFormatNL("<h2>Inform‚cija par vec‚ku vai aizbildni:</h2>");
+  		if (CUr.AgeFlag!=0) then begin
+		    WebOutStringFormatNL("<h2>" & ToolWebNGTranslateText2(80001) & "</h2>");
 			WebOutStringFormatNL("<form class=""changeprofile"" method=""POST"" id=""formaTree"">");
-			WebOutStringFormatNL("<input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");
+			//WebOutStringFormatNL("<input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");
 			WebOutStringFormatNL("<input type=""hidden"" name=""cust"" value=""" & CUr.Code & """>");
 			WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path")& """>");
-			WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">V‚rds</span><input type=""text"" name=""firstName"" value=""" & SMFr.ParentName & """></div>");
-			WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">Uzv‚rds</span><input type=""text"" name=""secondName"" value=""" & SMFr.ParentSurName &  """></div>");
-			WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(20033) & "</span><input type=""text"" name=""email"" value=""" & SMFr.ParenteMail & """></div>");
+			WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText2(80002) & "</span><input type=""text"" name=""firstName"" value=""" & CUr.ParentName & """></div>");
+			WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText2(80003) & "</span><input type=""text"" name=""secondName"" value=""" & CUr.ParentSurName &  """></div>");
+			WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(20033) & "</span><input type=""text"" name=""email"" value=""" & CUr.ParenteMail & """></div>");
 	//error
 			err = StringToLongInt(getSessionString("err"));
 			PutSessionString("err","");
@@ -385,107 +379,119 @@ begin
 		end;
 end;
 
-global procedure ShowProfileCorrectionInfo()
+procedure ShowActiveEmpApplications(string smfcode,var Integer emp)
+begin
+  record JALTeacherAccVc JTr;
+  Boolean TrHs;
+  record CUVc CUr;
+
+  TrHs = true;
+  JTr.SMFCode = smfcode;
+  JTr.StatusFlag = 0;
+  while (LoopKey("SMFStatus",JTr,2,TrHs)) begin
+    if (JTr.SMFCode!=smfcode or JTr.StatusFlag!=0) then begin
+      TrHs = false;
+    end else begin
+      if (JTr.RecType==2) then begin
+        CUr.Code = JTr.RecCode;
+        if (ReadFirstMain(CUr,1,true)) then begin
+          WebOutStringFormatNL("<div class=""emprow inactive"">");
+          WebOutStringFormatNL("<form class=""deleteform"" action=""/WebDeleteEmpApp.hal"" method=""POST"" onsubmit=""return confirm('" & ToolWebNGTranslateText(23076) & "');"">");
+          WebOutStringFormatNL("<div class=""empe""><div class=""empname""><span>" & ToolWebNGTranslateText(20030) & ": </span><p>" & CUr.Name & "</p></div><div class=""empemail""><span>E-pasta adrese: </span><p>" & CUr.eMail & "</p></div></div><input type=""hidden"" name=""emp"" value=""" & CUr.Code & """><input class=""spbutton grey"" type=""submit"" value=""" & ToolWebNGTranslateText(23074) & """></div>");
+          WebOutStringFormatNL("<input type=""hidden"" name=""tpath"" value=""" & WebGetArg("path") & """><input type=""hidden"" name=""smu"" value=""" & smfcode & """>");
+          WebOutStringFormatNL("<input type=""hidden"" name=""empapp"" value=""" & JTr.SerNr & """>");
+
+    //          	WebOutStringFormatNL("<div class=""deletebutton  delleft"">");
+          WebOutStringFormatNL("&nbsp;");
+          WebOutStringFormatNL("</form>") ;
+          WebOutStringFormatNL("</div>");
+          emp = emp + 1;
+        end;
+      end;
+    end;
+  end;
+
+  return;
+end;
+
+global
+procedure ShowSMUCorrectionInfo()
 begin
   record CUVc CUr,tCUr;
   record SMFVc SMFr;
+  Boolean smuf;
+  Integer err,i,emp;
   record RLinkVc RLr;
-  integer i,err,emp;
-  record JALClassBlock JCbl;
 
-  BlockLoad(JCbl);
 
-	logtext(0,"ShowProfileCorrectionInfo " & CurrentCust);
   if nonblank(CurrentCust) then begin
     CUr.Code = CurrentCust;
     if readfirstmain(CUr,1,true) then begin
-      if readrecordlink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr) then begin
-        err = StringToLongInt(getSessionString("err"));
-        PutSessionString("err","");
-        WebOutStringFormatNL("<div id=""compinfo"">");
-        EmpChangePage;
-		ParentChangeForm;
-		WebOutStringFormatNL("<div class=""correction-smu-info"">");
-        WebOutStringFormatNL("<h2>Skol•nu m‚c´bu uzÀ•mums</h2>");
-        WebOutStringFormatNL("<p>P•c ä´s inform‚cijas maiÀas atk‚rtoti tiek iesniegts SMU re®istr‚cijas pieteikums. P•c t‚ apstiprin‚juma saÀemäanas no skolot‚ja un JA Latvia jaun‚ Re®istr‚cijas apliec´ba ar atjaunoto inform‚ciju bðs pieejama sadaº‚ Atskaites/Dokumenti. Atjaunoto dokumentu oblig‚ti nepiecieäams izdruk‚t un iesniegt parakst´äanai SMU skolot‚jam/konsultantam un skolas direktoram, cit‚d‚k SMU darb´bu nevar turpin‚t.áo inform‚ciju var labot tikai SMU vad´t‚js.</p>");
-        WebOutStringFormatNL("<form class=""changeprofile"" id=""formaTwo"" method=""POST"" action=""/WebChangeProfile.hal"">");
-        if err > 0 then begin
-          WebOutStringFormatNL("<div id=""error"">");
-          if (BitAnd(err,2)==2) then begin
-            WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(23080) & "</li>");
+      smuf = (ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr));
+      err = StringToLongInt(getSessionString("err"));
+      PutSessionString("err","");
+      WebOutStringFormatNL("<div id=""compinfo"">");
+      WebOutStringFormatNL("<div class=""correction-smu-info"">");
+      WebOutStringFormatNL("<form class=""changeprofile"" id=""formaTwo"" method=""POST"" action=""/WebChangeProfile.hal"">");
+      if err > 0 then begin
+        WebOutStringFormatNL("<div id=""error"">");
+        if (BitAnd(err,2)==2) then begin
+          WebOutStringFormatNL("<li>" & ToolWebNGTranslateText(23080) & "</li>");
 
-          end;
-          WebOutStringFormatNL("</div>");
         end;
-		WebOutStringFormatNL("<input type=""hidden"" name=""tpath"" value=""" & WebGetArg("path") & """>");
-        WebOutStringFormatNL("<div class=""addinput""><span>SMU Nosaukums</span><input type=""text"" name=""name"" value='" & EscapeText(SMFr.SMFName) & "'>");
         WebOutStringFormatNL("</div>");
-        WebOutStringFormatNL("<input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");
-        WebOutStringFormatNL("<input type=""hidden"" name=""emp"" value=""" & CUr.Code & """>");
-//        WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(23070) & "</span>");
-//        WebOutStringFormatNL("<textarea type=""text"" name=""comment"">");
-//        WebOutText(SMFr,false,"");
-//        WebOutStringFormatNL("</textarea>");
-//        WebOutStringFormatNL("</div>");
-        WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(25921) & "</span><input type=""text"" class=""name"" name=""prodinfo"" value=""" & SMFr.ProdSpec & """>");
-        WebOutStringFormatNL("</div>");
-        ShowClassSelect(SMFr);
-        WebOutStringFormatNL("<div class=""addbutton""><button class=""spbutton grey"" type=""button"" value="""" id=""confirmSmuInfo"">" & ToolWebNGTranslateText(23073) & "</button></div>");
-        WebOutStringFormatNL("</form>");
-        WebOutStringFormatNL("</div>");
-        WebOutStringFormatNL("</div>");
+      end;
+      WebOutStringFormatNL("<input type=""hidden"" name=""tpath"" value=""" & WebGetArg("path") & """>");
+      WebOutStringFormatNL("<div class=""addinput""><span>SMU Nosaukums</span><input type=""text"" name=""name"" value='" & EscapeText(SMFr.SMFName) & "'>");
+      WebOutStringFormatNL("</div>");
+      WebOutStringFormatNL("<input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");
+      WebOutStringFormatNL("<input type=""hidden"" name=""emp"" value=""" & CUr.Code & """>");
+      WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(23070) & "</span>");
+      WebOutStringFormatNL("<textarea type=""text"" name=""comment"">");
+      WebOutText(SMFr,false,"");
+      WebOutStringFormatNL("</textarea>");
+      WebOutStringFormatNL("</div>");
+      WebOutStringFormatNL("<div class=""addinput""><span class=""addlabel"">" & ToolWebNGTranslateText(25921) & "</span><input type=""text"" class=""name"" name=""prodinfo"" value=""" & SMFr.ProdSpec & """>");
+      WebOutStringFormatNL("</div>");
+      //ShowClassSelect(SMFr);
+      WebOutStringFormatNL("<div class=""addbutton""><button class=""spbutton grey"" type=""button"" value="""" id=""confirmSmuInfo"">" & ToolWebNGTranslateText(23073) & "</button><button class=""spbutton grey"" type=""button"" value="""" id=""sendconfirmSmu"">" & ToolWebNGTranslateText2(80005) & "</button></div>");
+      WebOutStringFormatNL("</form>");
+      WebOutStringFormatNL("</div>");
+      WebOutStringFormatNL("</div>");
 //        ShowDocUploadForm;
 //        ShowUploadForm;
-        i = 1;
-        emp = 0;
-        WebOutStringFormatNL("<div id=""removeemp"">");
-        WebOutStringFormatNL("<h2>" & ToolWebNGTranslateText(23071) & "</h2>");
-		WebOutStringFormatNL("<div class=""emprow"">");
-		WebOutStringFormatNL("<div class=""empe""><div class=""empname""><span>"  &ToolWebNGTranslateText(20030) & ": </span><p>" & SMFr.Manager & "</p></div><div class=""empemail""><span>E-pasta adrese: </span><p>" & CUr.eMail & "</p></div></div><input type=""hidden"" name=""emp"" value=""" & CUr.Code & """></div>");
-        while readrecordlink(SMFr,i,tCUr,RLr) begin
-			if ( CUr.Code == SMFr.CustCode) then begin
-				WebOutStringFormatNL("<div class=""emprow"">");
-				WebOutStringFormatNL("<form class=""deleteform"" action=""/WebDeleteEmp.hal"" method=""POST"" onsubmit=""return confirm('" & ToolWebNGTranslateText(23076) & "');"">");
-				WebOutStringFormatNL("<div class=""empe""><div class=""empname""><span>" & ToolWebNGTranslateText(20030) & ": </span><p>" & tCUr.Name & "</p></div><div class=""empemail""><span>E-pasta adrese: </span><p>" & tCUr.eMail & "</p></div></div><input type=""hidden"" name=""emp"" value=""" & tCUr.Code & """><input class=""spbutton grey"" type=""submit"" value=""" & ToolWebNGTranslateText(23074) & """></div>");
-				WebOutStringFormatNL("<input type=""hidden"" name=""tpath"" value=""" & WebGetArg("path") & """><input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");
+      i = 1;
+      emp = 0;
+      WebOutStringFormatNL("<div id=""removeemp"">");
+      WebOutStringFormatNL("<h2>" & ToolWebNGTranslateText(23071) & "</h2>");
+      WebOutStringFormatNL("<div class=""emprow"">");
+      WebOutStringFormatNL("<div class=""empe""><div class=""empname""><span>" & ToolWebNGTranslateText(20030) & ": </span><p>" & SMFr.Manager & "</p></div><div class=""empemail""><span>E-pasta adrese: </span><p>" & CUr.eMail & "</p></div></div><input type=""hidden"" name=""emp"" value=""" & CUr.Code & """></div>");
+      while (ReadRecordLink(SMFr,i,tCUr,RLr)) begin
+        if (CUr.Code == SMFr.CustCode) then begin
+          WebOutStringFormatNL("<div class=""emprow"">");
+          WebOutStringFormatNL("<form class=""deleteform"" action=""/WebDeleteEmp.hal"" method=""POST"" onsubmit=""return confirm('" & ToolWebNGTranslateText(23076) & "');"">");
+          WebOutStringFormatNL("<div class=""empe""><div class=""empname""><span>" & ToolWebNGTranslateText(20030) & ": </span><p>" & tCUr.Name & "</p></div><div class=""empemail""><span>E-pasta adrese: </span><p>" & tCUr.eMail & "</p></div></div><input type=""hidden"" name=""emp"" value=""" & tCUr.Code & """><input class=""spbutton grey"" type=""submit"" value=""" & ToolWebNGTranslateText(23074) & """></div>");
+          WebOutStringFormatNL("<input type=""hidden"" name=""tpath"" value=""" & WebGetArg("path") & """><input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");
 
-//          	WebOutStringFormatNL("<div class=""deletebutton  delleft"">");
-				WebOutStringFormatNL("&nbsp;");
-			end;
-
-//          WebOutStringFormatNL("</div>");
-//          WebOutStringFormatNL("<div class=""deletebutton"">");
-          if ((CUr.Code == tCUr.Code)) then begin
-//            WebOutStringFormatNL("<a class=""spbutton"" href=""" & FormatSimpleLink(GetLinkToStruct(JCbl.EmpChangeStruct,true),true) & "?cust=" & CUr.Code & """>" & ToolWebNGTranslateText(25930) & "</a>");
-          end else begin
-            if (SMFr.CustCode == tCUr.Code and CUr.Code <> SMFr.CustCode) then begin
+  //          	WebOutStringFormatNL("<div class=""deletebutton  delleft"">");
           WebOutStringFormatNL("&nbsp;");
-          end;
-          end;
-//          WebOutStringFormatNL("</div>");
-          if (SMFr.CustCode <> tCUr.Code and CUr.Code == SMFr.CustCode) then begin
-            WebOutStringFormatNL("</form>") ;
-          end;
-          if (SMFr.CustCode == tCUr.Code and CUr.Code <> SMFr.CustCode) then begin
-            WebOutStringFormatNL("</div>");
-          end;
-         
-            emp = emp + 1;
-          
-          i = i + 1;
+          WebOutStringFormatNL("</form>") ;
+          WebOutStringFormatNL("</div>");
         end;
-        if emp == 0 then begin
-          WebOutStringFormatNL("<div id=""noemp"">" & ToolWebNGTranslateText(23075) & "</div>");
-        end;
-        if (emp < 5 and SMFr.CustCode == CUr.Code) then begin
 
-          WebOutStringFormatNL("<div id=""addemp""><button class=""spbutton grey addEmp"">" & ToolWebNGTranslateText(20080) & "</button></div>");
-        end;
-        
-        WebOutStringFormatNL("</div>");
-      end else begin
-        ShowFailPage;
+        emp = emp + 1;
+        i = i + 1;
       end;
+      ShowActiveEmpApplications(SMFr.SMFCode,emp);
+      
+      if emp == 0 then begin
+        WebOutStringFormatNL("<div id=""noemp"">" & ToolWebNGTranslateText(23075) & "</div>");
+      end;
+      if (emp < 5 and SMFr.CustCode == CUr.Code) then begin
+        WebOutStringFormatNL("<div id=""addemp""><button class=""spbutton grey addEmp"">" & ToolWebNGTranslateText(20080) & "</button></div>");
+      end;
+        
+      WebOutStringFormatNL("</div>");
     end else begin
       ShowFailPage;
     end;
@@ -494,8 +500,41 @@ begin
   end;
 
 
+  return;
+end;
 
-return;
+global 
+procedure ShowProfileCorrectionInfo()
+begin
+  record CUVc CUr,tCUr;
+  record SMFVc SMFr;
+  record RLinkVc RLr;
+  integer i,err,emp;
+  record JALClassBlock JCbl;
+  Boolean smuf;
+
+  BlockLoad(JCbl);
+
+	logtext(0,"ShowProfileCorrectionInfo " & CurrentCust);
+  if nonblank(CurrentCust) then begin
+    CUr.Code = CurrentCust;
+    if readfirstmain(CUr,1,true) then begin
+      smuf = (ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr));
+      err = StringToLongInt(getSessionString("err"));
+      PutSessionString("err","");
+      WebOutStringFormatNL("<div id=""compinfo"">");
+      EmpChangePage;
+      ParentChangeForm;
+         
+      WebOutStringFormatNL("</div>");
+    end else begin
+      ShowFailPage;
+    end;
+  end else begin
+    ShowFailPage;
+  end;
+
+  return;
 end;
 
 procedure ShowSchoolEmpList(string school)
@@ -505,21 +544,19 @@ begin
   record RLinkVc RLr;
   record SMFVc SMFr;
   
-  SetLangMode(LangLatvian,"LAT",0);
-  WebOutString("<option value=''>Izv?lieties skol?nu</div>");
+  WebOutString("<option value=''>" & ToolWebNGTranslateText2(80004) & "</div>");
   
   while (LoopMain(CUr,1,true)) begin
     if (CUr.Classification=="SKLN") then begin
       if (!ReadRecordLink(CUr,1,SMFr,RLr) or !FindSMURecord(CUr.Code,SMFr)) then begin
-					if (SMFr.ReadyFlag==0) then begin
-						if (ReadRecordLink(CUr,1,SCr,RLr)) begin
-						
-							if (SMFr.SchoolCode==school) then begin					
-								WebOutString("<option value='" & CUr.Code & "'>" & CUr.Name & "</div>");
-							end;
+				if (SMFr.ReadyFlag==0) then begin
+					if (ReadRecordLink(CUr,1,SCr,RLr)) begin					
+						if (CUr.SchoolCode==school) then begin					
+							WebOutString("<option value='" & CUr.Code & "'>" & CUr.Name & "</div>");
 						end;
 					end;
-				end else begin
+				end;
+			end else begin
         if (ReadRecordLink(CUr,1,SCr,RLr)) then begin
           if (SCr.SchoolCode==school) then begin
 						if (!ReadRecordLink(CUr,1,SMFr,RLr)) then begin
@@ -549,7 +586,7 @@ begin
   if nonblank(CurrentCust) then begin
     CUr.Code = CurrentCust;
     if readfirstmain(CUr,1,true) then begin
-      if readrecordlink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr) then begin
+      if (ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr)) then begin
         if SMFr.CustCode == CUr.Code and GetEmpCnt(SMFr) < 6 then begin
           //stopalert(GetEmpCnt(SMFr) & " ee");
         // te ir j?p?rbauda vai nav 5 daliibnieki jau
@@ -643,7 +680,7 @@ begin
     logtext(0,"TchChangePage2 " & cCUr.Code);
     if readfirstmain(CUr,1,true) then begin
     	logtext(0,"TchChangePage3 " & CUr.Code);
-      if readrecordlink(CUr,1,Tchr,RLr) or FindTchrRecord(cCUr.Code,Tchr) then begin
+      if ReadRecordLink(CUr,1,Tchr,RLr) or FindTchrRecord(cCUr.Code,Tchr) then begin
       	logtext(0,"TchChangePage4 " & Tchr.CustCode);
         if (cust == CurrentCust or  cCUr.Code == Tchr.CustCode) then begin
           WebOutStringFormatNL("<form method=""POST"" action=""/WebChangeCompTch.hal"">");
@@ -772,7 +809,7 @@ begin
           WeboutStringFormatNL("<div id='emp_list'>");
           WeboutStringFormatNL("<div class='emp_row'>" & ToolWebNGTranslateText(25904) & "</div>");
           i = 1;
-          while readrecordlink(SMFr,i,CU2r,RL2r) begin
+          while ReadRecordLink(SMFr,i,CU2r,RL2r) begin
             WeboutStringFormatNL("<div class='emp_row'><div class='emp_code'>" & CU2r.UserStr1 & "</div><div class='emp_name'>" & CU2r.Name & "</div></div>");
             i = i + 1;
           end;
@@ -868,7 +905,9 @@ begin
   readfirstmain(CUr,1,true);
   
   rwcnt = MatRowCnt(TCr);
-
+  
+  /*Using this a the central place for teacher web strings in javascript*/
+  OutPutJALWebTexts(1);
   WebOutStringFormatNL("<table id=""profiletable"">");
   WebOutStringFormatNL("<tr><td id=""first"">V‚rds, Uzv‚rds:<td/><td>" & TCr.TeacherName & "</td></tr>");
   //WebOutStringFormatNL("<tr><td id=""first"">" & ToolWebNGTranslateText(20031) & ":<td/><td>" & CUr.VATNr & "</td></tr>");
@@ -1033,43 +1072,35 @@ begin
   if curcust <> "" then begin
     CUr.Code = curcust;
     if readfirstmain(CUr,1,true) then begin
-      if readrecordlink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr) then begin
+      if ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr) then begin
         foundf = true;
-		logtext(0, "Profile [SMU]");
+		    logtext(0, "Profile [SMU]");
         ShowRedirectHTML(FormatSimpleLink("/profilePupil",true),false);
-    //while loopkey("CustCode",SMFr,1,TrHs) begin
-      //TrHs = false;
-     // if SMFr.CustCode == curcust then begin
-
-       // foundf = true;
-       // ShowRedirectHTML(FormatSimpleLink("/ProfileSMU",true),false);
-        /*
-        if WebGetArg("img") <> "true" then begin
-          blockload(JCbl);
-          ShowProfileForSMU(SMFr);
-        ShowWebElement(JCbl.ProfileElement);
-        end else begin
-            ShowProfileImg(SMFr);
-        end;
-        */
       end else begin
         SMFr.CustCode = Cur.Code;
         if (ReadFirstKey("CustCode",SMFr,1,true)) then begin
           foundf = true;
-		logtext(0, "Profile [SMU]");
+		      logtext(0, "Profile [SMU]");
           ShowRedirectHTML(FormatSimpleLink("/profilePupil",true),false);
+        end;
+      end;
+      if (foundf==false) then begin
+        BlockLoad(JCbl);
+        if (SetInSet(JCbl.Schoolar,CUr.Classification)) then begin
+          foundf = true;
+		      logtext(0, "Profile [SMU]");
+          ShowRedirectHTML(FormatSimpleLink("/profilePupil",true),false);        
         end;
       end;
     end;
     if foundf == false begin
       TrHs = true;
       TCr.CustCode = curcust;
-      while loopkey("CustCode",TCr,1,TrHs) begin
-          TrHs = false;
+      if (ReadFirstKey("CustCode",TCr,1,true)) begin
         if TCr.CustCode == curcust then begin
           foundf = true;
           logtext(0, "Profile [TEACHER]");
-        ShowRedirectHTML(FormatSimpleLink("/profileTeacher",true),false);
+          ShowRedirectHTML(FormatSimpleLink("/profileTeacher",true),false);
           //ShowProfileForTeacher(TCr);
         end;
       end;
@@ -1077,8 +1108,7 @@ begin
     if foundf == false begin
       TrHs = true;
       Mentr.CustCode = curcust;
-      while loopkey("CustCode",Mentr,1,TrHs) begin
-          TrHs = false;
+      if (ReadFirstKey("CustCode",Mentr,1,true)) begin
         if Mentr.CustCode == curcust then begin
           foundf = true;
         ShowRedirectHTML(FormatSimpleLink("/ProfileMentor",true),false);
@@ -1142,12 +1172,12 @@ global webpublic
 updating procedure WebJALConfirmPupilRegistration()
 begin
   record CUVc CUr,oldCUr;
-	record SMFVc SMFr;
 	
-	SMFr.CustCode = CurrentCust;
-	if(ReadFirstKey("CustCode",SMFr,1,true)) then begin
-		SMFr.ConfirmSKL = 1;
-		RecordStore(SMFr,true);
+	CUr.Code = CurrentCust;
+	if(ReadFirstMain(CUr,1,true)) then begin
+	  RecordCopy(oldCUr,CUr);
+		CUr.ConfirmSKL = 1;
+		RecordUpdate(oldCUr,CUr,true);
 		WebOutStringFormatNL("OK");
 	end;
 end;
@@ -1156,12 +1186,12 @@ global webpublic
 updating procedure WebJALConfirmTeachRegistration()
 begin
   record CUVc CUr,oldCUr;
-	record SMFVc SMFr;
-
-	SMFr.CustCode = CurrentCust;
-	if(ReadFirstKey("CustCode",SMFr,1,true)) then begin
-		SMFr.ConfirmTech = 1;
-		RecordStore(SMFr,true);
+	
+	CUr.Code = CurrentCust;
+	if(ReadFirstMain(CUr,1,true)) then begin
+	  RecordCopy(oldCUr,CUr);
+		CUr.ConfirmTeach = 1;
+		RecordUpdate(oldCUr,CUr,true);
 		WebOutStringFormatNL("OK");
 	end;
 end;
@@ -1170,12 +1200,12 @@ global webpublic
 updating procedure WebJALConfirmParRegistration()
 begin
   record CUVc CUr,oldCUr;
-	record SMFVc SMFr;
-
-	SMFr.CustCode = CurrentCust;
-	if(ReadFirstKey("CustCode",SMFr,1,true)) then begin
-		SMFr.ConfirmPar = 1;
-		RecordStore(SMFr,true);
+	
+	CUr.Code = CurrentCust;
+	if(ReadFirstMain(CUr,1,true)) then begin
+	  RecordCopy(oldCUr,CUr);
+		CUr.ConfirmPar = 1;
+		RecordUpdate(oldCUr,CUr,true);
 		WebOutStringFormatNL("OK");
 	end;
 end;

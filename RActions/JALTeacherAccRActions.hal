@@ -1,7 +1,7 @@
 external inner function string 50 GetEntryPersonName(record JALTeacherAccVc);
+external inner procedure SendJALEmail(vector string,string,string);
 
-
-global 
+global
 updating function LongInt JALTeacherAccVcRecordUpdate(var record JALTeacherAccVc JTr,record JALTeacherAccVc JT2r,LongInt stat,LongInt long4)
 begin
   record SMFVc oldSMFr,SMFr;
@@ -9,29 +9,55 @@ begin
   integer i,rwcnt;
   boolean foundf;
   LongInt res;
+  record CUVc CUr;
+  vector string 255 vVals;
+  record JALClassBlock JALClassBl;
  
   res = 0;
   if JTr.StatusFlag <> JT2r.StatusFlag then begin
     if JTr.StatusFlag == 1 then begin
       SMFr.SMFCode = JTr.SMFCode;
-      if readfirstmain(SMFr,1,true) then begin
-        rwcnt = MatRowCnt(SMFr);
-        foundf = false;
-        for ( i = 0 ; i < rwcnt; i = i + 1) begin
-          MatRowGet(SMFr,i,SMFrw);
-          if SMFrw.Type == JTr.RecType and SMFrw.Code == JTr.RecCode then begin
-            foundf = true;
-          end;
-        end;
-        if foundf == false then begin
-          recordCopy(oldSMFr,SMFr);
-          ClearRow(SMFr,SMFrw,1);
-          SMFrw.Type = JTr.RecType;
-          SMFrw.Code = JTr.RecCode;
-          SMFrw.Name = GetEntryPersonName(JTr);
-          MatRowPut(SMFr,rwcnt,SMFrw);
-          if recordUpdate(oldSMFr,SMFr,true) then begin end;
-        end;
+      if (ReadFirstMain(SMFr,1,true)) then begin
+        switch (JTr.RecType) begin
+          case 0:
+            rwcnt = MatRowCnt(SMFr);
+            foundf = false;
+            for ( i = 0 ; i < rwcnt; i = i + 1) begin
+              MatRowGet(SMFr,i,SMFrw);
+              if SMFrw.Type == JTr.RecType and SMFrw.Code == JTr.RecCode then begin
+                foundf = true;
+              end;
+            end;
+            if foundf == false then begin
+              recordCopy(oldSMFr,SMFr);
+              ClearRow(SMFr,SMFrw,1);
+              SMFrw.Type = JTr.RecType;
+              SMFrw.Code = JTr.RecCode;
+              SMFrw.Name = GetEntryPersonName(JTr);
+              MatRowPut(SMFr,rwcnt,SMFrw);
+              if recordUpdate(oldSMFr,SMFr,true) then begin end;
+            end;
+          case 1://Mentors
+          case 2://employees
+            CUr.Code = JTr.RecCode;
+            if (ReadFirstMain(CUr,1,true)) then begin
+              CreateRecordLink(SMFr,CurrentCompany,CUr,CurrentCompany);
+              CreateRecordLink(CUr,CurrentCompany,SMFr,CurrentCompany);
+              RecordCopy(oldSMFr,SMFr);
+              if (Blank(SMFr.Member)) then begin
+                SMFr.Member = CUr.Name;
+              end else begin
+                SMFr.Member = SMFr.Member & "," & CUr.Name;
+              end;
+              RecordUpdate(oldSMFr,SMFr,true);
+              BlockLoad(JALClassBl);
+              vVals["custcode"] = CUr.Code;
+              SendJALEmail(vVals,JALCLassbl.EmployeeAddText,CUr.eMail);
+              if (CUr.AgeFlag==1) then begin
+                SendJALEmail(vVals,JALCLassbl.EmployeeAddText2,CUr.ParenteMail);        
+              end;
+            end;  
+        end;          
       end;
     end;
   end;
