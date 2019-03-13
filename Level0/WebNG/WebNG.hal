@@ -60,6 +60,9 @@ external procedure HansaWorldFormsApp(record WebNGStructVc,string,string);
 //std hal
 external function string 255 ConvertXml(string);
 external procedure HansaWorldHALApp(record WebNGStructVc,string,string);
+//CUST-BEGIN
+external procedure ShowWebProfile();
+//CUST-END
 
 procedure SetCountryAndLanguage(var string path)
 begin
@@ -310,8 +313,14 @@ begin
       GetNextSubstring(tstr,pos,"/",tstr2);
       HansaWorldHALApp(WSr,path,tstr2);
     otherwise
-      tstr = "Calling app: " & name & ". Passing path (" & path & ")";
+//CUST-BEGIN
+    if (name=="ShowWebProfile") then begin
+      ShowWebProfile;
+    end else begin
+//CUST-END
+      tstr = "Calling app KSZ: " & name & ". Passing path (" & path & ")";
       ShowErrorPage(tstr);
+    end;
   end;
   return;
 end;

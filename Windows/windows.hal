@@ -125,6 +125,7 @@ begin
 	CheckBox(h-3,v+=vs,0,"PSK",PSKFlag);
 	CheckBox(h-3,v+=vs,0,"VSK",VSKFlag);
 	CheckBox(h-3,v+=vs,0,"PROF",PROFFlag);
+	CheckBox(h-3,v+=vs,0,"R‚d´t SMU Nolikumu lap‚",ShowAsConsultant);
   MatrixBegin(4,v+=40,-21,v+=90,-,20);
   MatCol(1,32,"Skolas kods",0,SchoolCode,false,SchoolSClass);
   MatCol(1,186,"Skolas nos.",0,SchoolName,false,0);
