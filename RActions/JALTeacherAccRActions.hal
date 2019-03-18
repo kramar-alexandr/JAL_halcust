@@ -9,9 +9,10 @@ begin
   integer i,rwcnt;
   boolean foundf;
   LongInt res;
-  record CUVc CUr;
+  record CUVc CUr,oldCUr;
   vector string 255 vVals;
   record JALClassBlock JALClassBl;
+  record TeacherVc TCr;
  
   res = 0;
   if JTr.StatusFlag <> JT2r.StatusFlag then begin
@@ -57,6 +58,19 @@ begin
                 SendJALEmail(vVals,JALCLassbl.EmployeeAddText2,CUr.ParenteMail);        
               end;
             end;  
+        end;
+      end else begin
+        TCr.TeacherCode = JTr.RecCode;
+        if (ReadFirstMain(TCr,1,true)) then begin
+          switch (JTr.RecType) begin
+            case 3://students
+              CUr.Code = JTr.SMFCode;
+              if (ReadFirstMain(CUr,1,true)) then begin
+                RecordCopy(oldCUr,CUr);
+                CUr.ConfirmTeach = 1;
+                RecordUpdate(oldCUr,CUr,true);
+              end; 
+          end; 
         end;          
       end;
     end;
