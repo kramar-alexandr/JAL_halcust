@@ -906,6 +906,13 @@ begin
   RecordField(TeacherCode,M4Code,20,0);
   RecordField(Salary,M4Val,0,0);
   EndRecordAdd;
-  
+
+  BlockBegin(JALPartnerBlock,-,"");
+  RecordField(Math,M4Matrix,0,0);
+  ArrayBegin(Math,-,1);
+  ArrayField(Classification,M4Code,10,CClassVc);
+  EndArray;
+  EndBlock;
+    
   return;
 end;

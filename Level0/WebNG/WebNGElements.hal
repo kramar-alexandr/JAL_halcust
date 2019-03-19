@@ -46,6 +46,7 @@ external procedure WebShowSmuEntry();
 external procedure ExtractObjWithSeparator(string,string,Boolean,var Integer,var string);
 external procedure ShowLastNewsPicture(string);
 external procedure ShowSMUEditPage();
+external procedure ShowJALPartnerList();
 //CUST-END
 
 procedure GetMenuActiveClass(record WebNGMenuVc WMr,var string actclass,var string class)
@@ -224,6 +225,8 @@ begin
     ShowLastNewsPicture(WEr.WebMenu); res = true;
   case "ShowSMUEditPage":
     ShowSMUEditPage; res = true;
+  case "ShowJALPartnerList":
+    ShowJALPartnerList; res = true;
 //CUST-END
   end;
   ShowHALFunction = res;

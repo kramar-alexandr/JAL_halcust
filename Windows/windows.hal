@@ -1239,6 +1239,14 @@ WindowBegin("Finanäu apr•úini",FCSMUDClass,CGview,-);
   WindowBegin("Atskaite par studentiem",StudentAnomaliesRClass,CGRcW,RcType);
   SetWRect(80,80,500,150);
   EndWindow;
+  
+  WindowBegin("JAL partneri",JALPartnerTClass,CGHBl,-);
+  SetWRect(80,80,400,280);
+  SetBlid(JALPartnerBlock);
+  MatrixBegin(10,20,-30,-10,-,10);
+  MatCol(1,25,"Klasifik‚cijas",0,Classification,false,CClassSClass);
+  EndMatrix;
+  EndWindow;
 
   return;
 end;

@@ -1,5 +1,6 @@
 external function Boolean FindMatchingContentTranslation(record WebNGContentVc,var record WebNGTranslateVc);
 external function Boolean CheckAttachedFilesSizeToLetter(record LetVc);
+external procedure SetContentTypeForExtension(string);
 
 
 global
@@ -160,3 +161,57 @@ begin
   return;
 end;
 
+
+global
+procedure ShowJALPartnerList()
+begin
+  record JALPartnerBlock JPb;
+  row JALPartnerBlock JPbrw;
+  record CClassVc CClassr;
+  record CUVc CUr;
+  Integer i,rwcnt;
+  
+  BlockLoad(JPb);
+  
+  rwcnt = MatRowCnt(JPb);
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(JPb,i,JPbrw);
+    CClassr.Code = JPbrw.Classification;
+    if (ReadFirstMain(CClassr,1,true)) then begin
+      WebOutString("<div class='flex-partneri'>");
+      WebOutString("<div class='one-flex-header'>" & CClassr.Comment & "</div>");
+    
+      ResetLoop(CUr);
+      RecordClear(CUr);
+      while (LoopKey("Classification:" & JPbrw.Classification,CUr,1,true)) begin
+        WebOutString("<div class='one-flex'><div><img src='/WebShowPartnerImage.hal?id=" & CUr.UUID & "&code=" & CUr.Code & "'></div></div>");
+      end;
+      WebOutString("</div>");
+    end;
+  end;
+
+  return;
+end;
+
+global webpublic
+procedure WebShowPartnerImage()
+begin
+  record CUVc CUr;
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+  string 255 ext;
+
+  CUr.UUID = StringToUUID(WebGetArg("id"));
+  if (ReadFirstKey("UUID",CUr,1,true)) then begin
+    if (CUr.Code==WebGetArg("code")) then begin
+      if (ReadRecordLink(CUr,1,Attachr,RLr)) begin
+        ext = right(Attachr.FileName,4);
+        SetContentTypeForExtension(ext);
+        WebSetContentDisposition("inline; filename=" & Attachr.FileName);
+        WebOutAttachment(Attachr.SerNr);
+      end;
+    end;
+  end;
+
+  return;
+end;
