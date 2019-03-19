@@ -34,12 +34,14 @@ begin
   return;
 end;
 
-
-procedure ShowFinancialTable()
+global
+procedure ShowFinancialTable(string id,Boolean showwrapf)
 begin
 
-  WebOutString("        <div class=""profile table-salary smu-border"">");
-  WebOutString("            <table id=""findata_table"">");
+  if (showwrapf) then begin
+    WebOutString("        <div class=""profile table-salary smu-border"">");
+  end;
+  WebOutString("            <table id=""" & id & """>");
   WebOutString("                <thead>");
   WebOutString("                <tr>");
   WebOutString("                    <th class='hidden'></th>");
@@ -80,13 +82,15 @@ begin
   WebOutString("                </tr>");
   WebOutString("                </tfoot>");
   WebOutString("            </table>");
-  WebOutString("        </div>");
- 
+  if (showwrapf) then begin
+    WebOutString("        </div>");
+  end;
 
   return;
 end;
 
 
+global
 procedure ShowEventTable()
 begin
 
@@ -181,7 +185,7 @@ begin
   OutPutJALWebTexts(0);
   ShowSMUBasicSection;
   ShowEmpSection;
-  ShowFinancialTable;
+  ShowFinancialTable("findata_table",true);
   ShowEventTable;
   
   WebOutString("<div class='smu_submit_wrap'>");
@@ -224,6 +228,7 @@ begin
   return;
 end;
 
+global
 procedure GetEmpList(record SMFVc SMFr)
 begin
   record CUVc CUr;
@@ -250,6 +255,7 @@ begin
   return;
 end;
 
+global
 procedure GetFinData(record SMFVc SMFr)
 begin
   record FCSMUVc FCr;
