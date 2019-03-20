@@ -26,7 +26,7 @@ begin
     if (testf) then begin
       if (ReadRecordLink(WCr,1,Attachr,RLr)) begin
         foundf = false;
-        WebOutString("<style>#banner{background-image:url(/WebShowContentImage.hal?s=" & WCr.SerNr & ") !important;}</style>");      
+        WebOutString("<style>#banner{background-image:url(/WebShowContentImage.hal?s=" & WCr.SerNr & ") !important;box-shadow: inset 0 0 0 1000px rgba(0,0,0,0.65)}</style>");      
       end;
     end;
   end;
@@ -126,7 +126,8 @@ begin
   RepSpec.f1 = vVals["custcode"];
   RepSpec.f2 = vVals["smucode"];
   RepSpec.f4 = vVals["link"];
-
+  RepSpec.f5 = vVals["TeacherCode"];
+logtext(0,"SendJALEmail " & textcode & ":" & email);
   LTxtr.Code = textcode;
   if (ReadFirstMain(LTxtr,1,true)) then begin
     queued.StoreJALEmail(LTxtr,RepSpec,email);
@@ -141,6 +142,8 @@ begin
   record SMFVc SMFr;
   record CUVc CUr;
   string 255 res;
+  record TeacherVc TCr;
+  row TeacherVc TCrw;
 
   switch (token) begin
     case "smuname":
@@ -153,8 +156,19 @@ begin
       if (ReadFirstMain(CUr,1,true)) begin
         res = CUr.Name;
       end;
+    case "name":
+      CUr.Code = RepSpec.f1;
+      if (ReadFirstMain(CUr,1,true)) begin
+        res = CUr.Name;
+      end;
     case "link":
       res = RepSpec.f4;
+    case "schoolname":
+      TCr.TeacherCode = RepSpec.f5;
+      if (ReadFirstMain(TCr,1,true)) then begin
+        MatRowGet(TCr,0,TCrw);
+        res = TCrw.SchoolName;
+      end;
   end;
 
   JALLTxtVcReplaceToken = res;
@@ -189,7 +203,16 @@ begin
         if (cnt==6) then begin
           WebOutString("<div class='one-flex-header'></div>");//CHN::So ugly - please forgive me
         end;
-        WebOutString("<div class='one-flex'><div><img src='/WebShowPartnerImage.hal?id=" & CUr.UUID & "&code=" & CUr.Code & "'></div></div>");
+        WebOutString("<div class='one-flex'>");
+        if (nonblank(CUr.wwwAddr)) then begin
+          WebOutString("<a href='" & CUr.wwwAddr & "' target='_blank'>");        
+        end;
+        WebOutString("<div><img src='/WebShowPartnerImage.hal?id=" & CUr.UUID & "&code=" & CUr.Code & "'></div>");
+        if (nonblank(CUr.wwwAddr)) then begin
+          WebOutString("</a>");
+        end;
+        
+        WebOutString("</div>");
       end;
       WebOutString("</div>");
     end;

@@ -465,6 +465,8 @@ begin
   EditField(h,v=v+vs,100,"SMU apst. piepr. skolot‚jam",Normal,TeacherRequestText2,false,LTxtSClass);
   EditField(h,v=v+vs,100,"NoÀemts darbinieks skol•nam",Normal,EmployeeRemoveText,false,LTxtSClass);
   EditField(h,v=v+vs,100,"NoÀemts darbinieks vec‚kam",Normal,EmployeeRemoveText2,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"Skolot‚ja re®istr•äan‚s",Normal,TeacherRegText,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"Skolot‚ja apstiprin‚äana",Normal,TeacherApproveText,false,LTxtSClass);
   EditField(h,v=v+vs,100,"Paroles maiÀa",Normal,PasswordChangeText,false,LTxtSClass);
 
   Tile(tilenr,350,false,"2",Template); tilenr = tilenr + 1;  
@@ -1861,3 +1863,4 @@ begin
   
 
 end;
+

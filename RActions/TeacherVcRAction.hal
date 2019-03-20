@@ -1,5 +1,6 @@
 external inner procedure NextM4Number(string,var string);
 external function string 4 GiveCode(var string);
+external inner procedure SendJALEmail(vector string,string,string);
 
 global 
 Updating function Boolean GetNextTeacherCode(var string itemnr)
@@ -161,7 +162,11 @@ begin
   record SchoolVc Schoolr;
   string 4 sc;
   record CUVc CUr,oldCUr;
-  
+  vector string 255 vVals;
+  record JALClassblock JALClassbl;
+
+  BlockLoad(JALClassbl);
+ 
   res = 0;
   /*
   if (blank(Teacherr.TeacherCode)) then begin
@@ -208,12 +213,15 @@ begin
     //Schoolr.SchoolCode = Teacherr.SchoolCode;
     if (GetApprovedSchool(Teacherr,sc)) then begin
       Teacherr.GlobalUser = "SK" & sc & Teacherr.TeacherCode;
-      GenMailForApprovedTeacher(Teacherr,sc);
+      //GenMailForApprovedTeacher(Teacherr,sc);
       CUr.Code = Teacherr.CustCode;
       if (ReadFirstMain(CUr,1,true)) then begin
         RecordCopy(oldCUr,CUr);
         CUr.AllowLogin = 1;
         RecordStore(CUr,true);
+        vVals["CustCode"] = CUr.Code;
+        vVals["TeacherCode"] = Teacherr.TeacherCode;
+        SendJALEmail(vVals,JALClassbl.TeacherApproveText,CUr.eMail);
       end;
     end else begin
       RecordCheckError(1080,USetStr(32275),-1,"SchoolCode");      

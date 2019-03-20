@@ -5,6 +5,7 @@ external procedure ShowRedirectHtml(string,boolean);
 external function Boolean GetNextCustNr(var string);
 //external procedure SelBoxForReg(boolean);
 external procedure NextM4Number(string,var string);
+external procedure SendJALEmail(vector string,string,string);
 
 SetLangMode(LangLatvian,"LAT",0);
 
@@ -328,6 +329,7 @@ begin
   integer err;
   row TeacherVc TCrw;
   string 50 contract;
+  vector string 255 vVals;
 
   BlockLoad(RMbl);
 
@@ -410,7 +412,6 @@ begin
       RecordNew(TCr);
       
       if (GetNextTeacherCode(tstr2)) then begin end;
-      stopalert(tstr2 & ":");
       TCr.TeacherCode = tstr2;
       clearRow(TCr,TCrw,1);
       TCrw.SchoolCode = WebGetArg("school");
@@ -431,6 +432,7 @@ begin
       TCr.OtherJob = WebGetArg("extrajob");
       TCr.Subject = ToolWebNGTranslateText(StringToLongInt(WebGetArg("subject")));
       if recordStore(TCr,false) then begin 
+        /*
         GenMailForTeacher(text,USetStr(32342) & " : " & name,RMbl.TeacherMail,TCr,true,CUr,""); 
         text = USetStr(32347) & chr(13) & USetStr(10018) & " " & email &  chr(13) & USetStr(10029) & ": " & tstr;
         if foundf then begin
@@ -438,7 +440,12 @@ begin
         end else begin
           //GenMailForTeacher(text,USetStr(32348),email,TCr,false,CUr,tstr); 
         end;
+        */
       end;
+      vVals["CustCode"] = CUr.Code;
+      vVals["TeacherCode"] = TCr.TeacherCode;
+      SendJALEmail(vVals,JALClassbl.TeacherRegText,CUr.eMail);
+
       ShowRedirectHtml(FormatSimpleLink("/afterreg",true),false);
     end else begin
       ShowRedirectHtml(FormatSimpleLink("/badreg",true),false);
