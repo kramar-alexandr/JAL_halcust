@@ -755,6 +755,8 @@ begin
   RecordField(Math,M4Matrix,0,0);
   RecordField(ClosedFlag,M4Int,0,0);
   RecordField(StatusFlag,M4Int,0,0);
+  RecordField(RegFrom,M4Date,0,0);
+  RecordField(RegUntil,M4Date,0,0);
   ArrayBegin(Math,-,1);
   ArrayField(Field,M4Long,0,0);
   ArrayField(Comment,M4Str,60,0);
@@ -812,6 +814,7 @@ begin
   RecordField(EventNr,M4Long,0,0);
   RecordField(Math,M4Matrix,0,0);
   RecordField(OkFlag,M4Int,0,0);
+  RecordField(TeacherCode,M4Code,20,TeacherVc);
   ArrayBegin(Math,-,1);
   ArrayField(Field,M4Long,0,0);
   ArrayField(Comment,M4Str,60,0);
@@ -824,6 +827,22 @@ begin
   KeySegment(EventNr);
   KeySegment(StatusFlag);
   KeySegment(TransDate);
+  KeySegment(SerNr);
+  
+  KeyBegin(CustEvent);
+  KeySegment(CustCode);
+  KeySegment(EventNr);
+  KeySegment(StatusFlag);
+  KeySegment(SerNr);
+  
+  KeyBegin(TeacherCode);
+  KeySegment(TeacherCode);
+  KeySegment(StatusFlag);
+  KeySegment(SerNr);
+  
+  KeyBegin(CustCode);
+  KeySegment(CustCode);
+  KeySegment(StatusFlag);
   KeySegment(SerNr);
 
   KeyBegin(CustType);

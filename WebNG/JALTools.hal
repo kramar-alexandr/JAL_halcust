@@ -169,7 +169,7 @@ begin
   row JALPartnerBlock JPbrw;
   record CClassVc CClassr;
   record CUVc CUr;
-  Integer i,rwcnt;
+  Integer i,rwcnt,cnt;
   
   BlockLoad(JPb);
   
@@ -183,7 +183,12 @@ begin
     
       ResetLoop(CUr);
       RecordClear(CUr);
+      cnt = 0;
       while (LoopKey("Classification:" & JPbrw.Classification,CUr,1,true)) begin
+        cnt = cnt + 1;
+        if (cnt==6) then begin
+          WebOutString("<div class='one-flex-header'></div>");//CHN::So ugly - please forgive me
+        end;
         WebOutString("<div class='one-flex'><div><img src='/WebShowPartnerImage.hal?id=" & CUr.UUID & "&code=" & CUr.Code & "'></div></div>");
       end;
       WebOutString("</div>");

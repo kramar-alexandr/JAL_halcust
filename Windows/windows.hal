@@ -831,7 +831,7 @@ WindowBegin("Finanäu apr•úini",FCSMUDClass,CGview,-);
   EditField(h,v+=vs,-40,"SMU nosaukums",Normal,SMFName,false,0);
 	EditField(h,v+=vs,-40,"Reg Date",Normal,TransDate,false,0);
 	EditField(h,v+=vs,80,"V•rt•jums",Normal,Score,false,0);
-  ButtonFrame(h,v+=40,100,4,"Status");
+  ButtonFrame(h,v+=40,100,4,"Statuss");
   RadioButton(h,v,0,0,"Iesðt´ts",Status);
   RadioButton(h,v+=16,1,0,"Apstiprin‚ts(skolot‚js)",Status);
   RadioButton(h,v+=16,2,0,"Apstiprin‚ts(JAL)",Status);
@@ -918,7 +918,7 @@ WindowBegin("Finanäu apr•úini",FCSMUDClass,CGview,-);
   EditField(h2,v,90,"Laiks",Normal,TransTime,false,PasteCurTime);
   EditField(h,v+=vs,90,"Tips",Normal,RecType,false,SetSClass);
   EditField(h2,v,90,"Kods",Normal,RecCode,false,0);
-  ButtonFrame(h,v+=40,120,3,"Status");
+  ButtonFrame(h,v+=40,120,3,"Statuss");
   RadioButton(h,v,0,0,"Izveidots",StatusFlag);
   RadioButton(h,v+=16,1,0,"Apstiprin‚ts",StatusFlag);
   RadioButton(h,v+=16,2,0,"Noraid´ts",StatusFlag);
@@ -964,6 +964,8 @@ WindowBegin("Finanäu apr•úini",FCSMUDClass,CGview,-);
 	
   EditField(h,v+=vs,90,"S‚kuma Datums",Normal,StartDate,false,PasteCurDate);
   EditField(h2,v,90,"Beigu Datums",Normal,EndDate,false,PasteCurDate);
+  EditField(h,v+=vs,90,"Re®istr•äan‚s no",Normal,RegFrom,false,PasteCurDate);
+  EditField(h2,v,90,"Re®istr•äan‚s l´dz",Normal,RegUntil,false,PasteCurDate);
   CheckBox(h-5,v+=vs,0,"Tikai re®istr•tiem lietot‚jiem",RegFlag);
   HalPushButton(-130,v,-30,v+20,"NewJALEventTranslationDsm","Jauns tulkojums");
   HalPushButton(-250,v,-150,v+20,"OpenJALEventTranslationDsm","Atv•rt tulkojumu");
@@ -1081,12 +1083,15 @@ WindowBegin("Finanäu apr•úini",FCSMUDClass,CGview,-);
   EditField(h2,v,90,"Kods",Normal,AddCode,false,0);
   EditField(h,v+=vs,90,"Klients",Normal,CustCode,false,CUDClass);
   EditField(h,v+=vs,90,"Pas‚kums",Normal,EventNr,false,0);
+  EditField(h,v+=vs,90,"Skolot‚js",Normal,TeacherCode,false,0);
+  
   vm = v;
-  ButtonFrame(h3,v=20,120,3,"Status");
+  ButtonFrame(h3,v=20,150,5,"Statuss");
   RadioButton(h3,v,0,0,"Jauns",StatusFlag);
   RadioButton(h3,v+=16,1,0,"Apstiprin‚ts",StatusFlag);
   RadioButton(h3,v+=16,2,0,"Noraid´ts",StatusFlag);
 	RadioButton(h3,v+=16,3,0,"Apmekleja",StatusFlag);
+	RadioButton(h3,v+=16,4,0,"Apstiprin‚ts - skolot‚js",StatusFlag);
   v = vm;
 
   MatrixBegin(4,v+=40,-21,-10,-,20);
@@ -1287,6 +1292,8 @@ begin
   SpecialMenu("Kop•t apakäizv•lni",'t',1,"DuplicateSubMenuDsm");
   EndWindow;
 end;
+
+
 
 window CUDClass:14
   wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
@@ -1851,4 +1858,6 @@ begin
     SpecialMenu("Paroles paziÀojumu",' ',3,"RandomPassMailCUDsm"); 
   end;
   EndWindow;
+  
+
 end;
