@@ -23,6 +23,7 @@ external function string 50 GetFirstImage(string,string);
 external function string 255 AddStr(string,string,string);
 external procedure DrawEventForm(string);
 external function boolean FileNameIsImage(string);
+external procedure ShowActualNewsImage(string);
 
 //CUST
 
@@ -1005,8 +1006,8 @@ begin
   cnt = 1;
   while (LoopKey("ContActSerNr:" & sernr,WebComr,1,TrHs) and (cnt <= sEnd))begin
     if WebComr.AcceptFlag==0 then begin
-	  if WebComr.TextType == 1 then begin
-	    if sStart < cnt then begin
+    if WebComr.TextType == 1 then begin
+      if sStart < cnt then begin
           WebOutStringFormatNL("<div id=""blog-comment-head"">");  
           WebOutStringFormatNL("<div id=""blog-comment""><b>" & WebComr.UserName & "</b></div><div id=""blog-comtime"">" & WebComr.TransDate & "  " & WebComr.TransTime & "</div>");
           WebOutStringFormatNL("</div>");  
@@ -1017,9 +1018,9 @@ begin
           WebOutStringFormatNL("</p>");  
           foundf = true;
         end;
-		cnt = cnt + 1;
+    cnt = cnt + 1;
       end;
-	    
+      
     end;
   end;
   if foundf==false then begin
@@ -1149,8 +1150,8 @@ begin
       WebSetContentDisposition("inline; filename=" & Attachr.FileName);
     end;
     //WebOutStringFormatNL("<img src=""" & 
-	WebOutAttachment(Attachr.SerNr) ;
-	//& """/>");
+  WebOutAttachment(Attachr.SerNr) ;
+  //& """/>");
   end;
   
   return;
@@ -1224,7 +1225,7 @@ begin
           WebOutStringFormatNL("<img src=""/WebShowImg.hal?sernr=" & WCr.SerNr & "&num=" & i & """ onerror=""changepicture(this);"" alt=""" & Attachr.FileName & """>");
           WebOutStringFormatNL("</a><input type=""hidden"" id=""imgcom" & (j) & """ value=""" & RLr.Comment & """>");
           count = count + 1;
-		  j = j + 1;
+      j = j + 1;
         end;
       end else begin
         count = count + 1;
@@ -1234,7 +1235,7 @@ begin
 
 
     WebOutTagClose("</div>");
-	if (pagecnt > 1) then begin
+  if (pagecnt > 1) then begin
       WebOutStringFormat("<div id=""comnav"">");
       for (i = 1; i <= pagecnt; i = i + 1) begin
         if (page <> i) then begin
@@ -1259,8 +1260,8 @@ begin
   WCr.SerNr = StringToLongInt(WebGetArg("sernr"));
   if readfirstmain(WCr,1,true) then begin
     if readrecordLink(WCr,StringToLongInt(WebGetArg("num")),Attachr,RLr) then begin
-	  SendAttachedFile(Attachr,false);
-	end;
+    SendAttachedFile(Attachr,false);
+  end;
   end;
 
 
@@ -1281,7 +1282,7 @@ begin
   res = false;
   while (ReadRecordLink(WCr,num,Attachr,RLr) and res==false) begin
     SendAttachedFile(Attachr,false);
-	res = true;
+  res = true;
   end;
 
   return;
@@ -1400,7 +1401,7 @@ begin
             WebOutString("</div>");//jzs
             WebOutString("</div>");
           end else begin
-		        if (WCSr.ListViewFlag==1) then begin
+            if (WCSr.ListViewFlag==1) then begin
               if piclink <> "" then begin 
                // WebOutStringFormatNL("<div id=""contlistimg""><img src=""" & piclink & """ onerror=""changepicture(this);""></div>");
               end;
@@ -1419,10 +1420,10 @@ begin
               WebOutString(WebNGTranslaterw.OverviewText);
               WebOutString("</div>");
             end else begin
-			        if (WCSr.ListViewFlag==2) then begin
+              if (WCSr.ListViewFlag==2) then begin
                 if piclink <> "" then begin 
                   WebOutStringFormatNL("<div id=""gallistimg"">");
-        				  if linkstr <>"" then begin
+                  if linkstr <>"" then begin
                     WebOutStringFormat("<a href=""" & linkstr & """>");
                   end;
                   WebOutStringFormat("<img src=""" & piclink & """ onerror=""changepicture(this);"">");
@@ -1437,7 +1438,7 @@ begin
                 end;
                 MatRowGet(WebNGTranslater,0,WebNGTranslaterw);
                 WebOutString(WebNGTranslaterw.OverviewText);
-				
+        
                 if linkstr <>"" then begin
                   WebOutStringFormat("</a>");
                 end;
@@ -1461,7 +1462,7 @@ begin
                 end;
                 MatRowGet(WebNGTranslater,0,WebNGTranslaterw);
                 WebOutString(WebNGTranslaterw.OverviewText);
-				
+        
                 if linkstr <>"" then begin
                   WebOutStringFormat("</a>");
                 end;
@@ -1482,7 +1483,7 @@ begin
                 end else begin
                   WebOutString("<a href=""" & FormatSimpleLink("/login/",true) & """>" & toolwebngtranslatetext(20085) & "</a>");
                 end;
-				WebOutString("</div>");
+        WebOutString("</div>");
                 WebOutString("</div>");
                 WebOutString("</div>");
               end;
@@ -1494,60 +1495,65 @@ begin
           if (WCSr.PrintDate!=0) then begin
             WebOutString(outdate1);
           end;
-		  //stopalert("asdf");
-		  
+      //stopalert("asdf");
+      
           if (WCSr.CommentFlag!=0) then begin
-		    //stopalert("nav nulle");
+        //stopalert("nav nulle");
             if (nonblank(WCSr.HeadingClass)) then begin
               WebOutTagOpen("<h1 class=""" & WCSr.HeadingClass & """>");
             end else begin
               WebOutTagOpen("<h1>");
             end;
-			
+      
             WebOutString(WebNGTranslater.Comment);
             if WebNGTranslater.FileName==1 then begin
-			  //stopalert("aa");
+        //stopalert("aa");
               if WCSr.ListViewFlag == 0 then begin
-			    //stopalert("asdf");
+          //stopalert("asdf");
                 WebOutStringFormatNL("<div id=""blog-head-item"">" & "<a href=""" & FormatSimpleLink(WebGetArg("path"),true) & "?sernr=" & WebNGTranslater.Code & "&detlevel=2"" id=""comment""> " & toolwebngtranslatetext(21040) & " (" & RecordsInIndex("WebNGBlogCommentVc","MailSerNr:" & WebNGTranslater.Code) & ")</a></div>");
               end;
             end;
             WebOutTagClose("</h1>");
           end;
-		
+    
           if WebNGTranslater.FileName==1 then begin
             if WCSr.ListViewFlag==2 then begin
-			        WebOutText(WebNGTranslater,WebNGTranslater.HtmlTranslation==1,"");
+              WebOutText(WebNGTranslater,WebNGTranslater.HtmlTranslation==1,"");
               ContentOutImages(WebNGTranslater.Code);
             end else begin
               //WebOutStringFormatNL("<div id=""blog-head-item"">" & "<a href=""" & WebGetArg("path") & "hwindex.htm?sernr=" & WebNGTranslater.Code & "&detlevel=2"" id=""comment""> " & toolwebngtranslatetext(21040) & " (" & RecordsInIndex("WebNGBlogCommentVc","MailSerNr:" & WebNGTranslater.Code) & ")</a></div>");
               piclink = GetFirstImage(WebNGTranslater.Code,linkstr);
-			  
+        
               if piclink <> "" then begin 
                 //WebOutStringFormatNL("<div id=""contimgbig""><img src=""" & piclink & """ onerror=""changepicture(this);""></div>");
               end; 
               WebOutText(WebNGTranslater,WebNGTranslater.HtmlTranslation==1,"");
-			  WebOutStringFormatNL("<div id=""com-form"">");
+        WebOutStringFormatNL("<div id=""com-form"">");
               AddComment(true,WebNGTranslater.Code,"WebJALComment.hal","");
-			  WebOutStringFormatNL("</div>");
+        WebOutStringFormatNL("</div>");
             end;
-			if WCSr.ListViewFlag == 3 then begin
-				WebOutString("<div class=""log"">");
-                if CurrentCust <> "" then begin
-                  if getCourseCode(WebNGTranslater.Code,CourseCode) then begin
-                    WebOutString("<a href=""/WebPartCourse.hal?cc=" & CourseCode & "&cpath=" & WebGetArg("path") & """>" & toolwebngtranslatetext(20090) & "</a>");
-                  end else begin
-                    WebOutString("<a href=""/WebDeleteFromCourse.hal?cc=" & CourseCode & "&cpath=" & WebGetArg("path") & """>" & toolwebngtranslatetext(20091) & "</a>");
-                  end;
+            if WCSr.ListViewFlag == 3 then begin
+              WebOutString("<div class=""log"">");
+              if CurrentCust <> "" then begin
+                if getCourseCode(WebNGTranslater.Code,CourseCode) then begin
+                  WebOutString("<a href=""/WebPartCourse.hal?cc=" & CourseCode & "&cpath=" & WebGetArg("path") & """>" & toolwebngtranslatetext(20090) & "</a>");
                 end else begin
-                  WebOutString("<a href=""" & FormatSimpleLink("/login/",true) & """>" & toolwebngtranslatetext(20085) & "</a>");
-				  if getCourseCode(WebNGTranslater.Code,CourseCode) then begin
-				    DrawEventForm(CourseCode);
-				  end;
+                  WebOutString("<a href=""/WebDeleteFromCourse.hal?cc=" & CourseCode & "&cpath=" & WebGetArg("path") & """>" & toolwebngtranslatetext(20091) & "</a>");
                 end;
-				WebOutString("</div>");
-				//WebOutStringFormat("<a href=""javascript:history.back();"">" & ToolWebNGTranslateText(25509) & "</a>"); //Back
-			  end;
+              end else begin
+                WebOutString("<a href=""" & FormatSimpleLink("/login/",true) & """>" & toolwebngtranslatetext(20085) & "</a>");
+                if getCourseCode(WebNGTranslater.Code,CourseCode) then begin
+                  DrawEventForm(CourseCode);
+                end;
+              end;
+              WebOutString("</div>");
+              //WebOutStringFormat("<a href=""javascript:history.back();"">" & ToolWebNGTranslateText(25509) & "</a>"); //Back
+            end;
+            //CUST-BEGIN
+            ShowActualNewsImage(code);
+
+            //CUST-END
+            
           end else begin
             WebOutText(WebNGTranslater,WebNGTranslater.HtmlTranslation==1,"");
           end;
@@ -2466,7 +2472,7 @@ if nonblank(CurrentCust) then begin
     //result = WebGetArg("result");
     textarea = WebGetArg("comment-text");
     errflags = 0;
-	/*
+  /*
     if result <>"7" then begin
       errflags = 2;
     end;*/
@@ -2497,8 +2503,8 @@ if nonblank(CurrentCust) then begin
       end;
       
       savef = true;
-	    Trhs = true;
-	    timep = AddMinutes(WebComr.TransTime,-1);
+      Trhs = true;
+      timep = AddMinutes(WebComr.TransTime,-1);
       WCr.IPAddress = WebComr.IPAddress;
       while loopkey("IPAddress:" & WContr.SerNr,WCr,1,Trhs) begin
         if (WebComr.IPAddress == WCr.IPAddress) then begin
@@ -2511,17 +2517,17 @@ if nonblank(CurrentCust) then begin
         end else begin
           Trhs = false;
         end;
-	    end;
+      end;
       if savef then begin
         if recordStore(WebComr,true) then begin end;
-		PutSessionString("cname","");      
+    PutSessionString("cname","");      
         PutSessionString("cemail","");      
         PutSessionString("ctext","");   
       end else begin
-	    PutSessionString("cname",username);      
+      PutSessionString("cname",username);      
         PutSessionString("cemail",email);      
         PutSessionString("ctext",textarea);    
-	  end;
+    end;
          
       //PutSessionString("chead","");      
       PutSessionString("err",errflags);      
@@ -2553,10 +2559,10 @@ begin
   //trace("asdf",t2);
   if (sl == t1) then begin
     WebHWLCommentContent;
-	//stopalert("koment�jam tomer");
+  //stopalert("koment�jam tomer");
   end else begin
       //stopalert("apskatam");
-	  ShowRedirectHtml(FormatSimpleLink(WebGetArg("contpath"),true) & "?sernr=" & serstr & "&detlevel=2",false);
+    ShowRedirectHtml(FormatSimpleLink(WebGetArg("contpath"),true) & "?sernr=" & serstr & "&detlevel=2",false);
   end;
   return;
 end;
@@ -2575,7 +2581,7 @@ begin
   act = WebGetArg("fb");
   sernr = webGetArg("sernr");
     WContr.SerNr = StringToLongInt(sernr);
-	if readfirstmain(WContr,1,true) then begin
+  if readfirstmain(WContr,1,true) then begin
 
   //Mailr.SerNr = sernr;
   //if ReadFirstMain(Mailr,1,true) then begin
@@ -2586,9 +2592,9 @@ begin
     //MatRowGet(Mailr,0,Mailrw);
     //WCr.MailboxName = Mailrw.AddrCode;
     //WCr.MailHeader = Mailr.Header;
-	
-	WCr.TextType = 1;
-	//stopalert(WebGetArg("tt") & " " & WCr.TextType);
+  
+  WCr.TextType = 1;
+  //stopalert(WebGetArg("tt") & " " & WCr.TextType);
     WCr.TransDate = CurrentDate;
     WCr.TransTime = CurrentTime;
     WCr.IPAddress = WebRemoteIPAddress;
@@ -2607,13 +2613,13 @@ begin
       while LoopKey("IPAddress:" & WCr.MailSerNr,tWCr,1,TrHs) begin
         if tWCr.IPAddress == WCr.IPAddress then begin
           if tWCr.TextType == WCr.TextType then begin
-		    if ((tWCr.CommentType == 1) or (tWCr.CommentType == 2)) then begin	
+        if ((tWCr.CommentType == 1) or (tWCr.CommentType == 2)) then begin  
               trhs = False;
-			  foundf = true;
-			end;
+        foundf = true;
+      end;
           end;
         end;
-	  end;
+    end;
       //end; 
 
 
@@ -2621,7 +2627,7 @@ begin
         if recordStore(WCr,true) then begin end;
       end;
    
-	end;
+  end;
   //end;
   //resetCompany(1);
   ShowRedirectHtml(FormatSimpleLink(WebGetArg("profpath"),true),false);

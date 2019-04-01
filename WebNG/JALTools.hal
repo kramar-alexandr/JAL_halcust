@@ -34,6 +34,23 @@ begin
   return;
 end;
 
+global
+procedure ShowActualNewsImage(string code)
+begin
+  record WebNGContentVc WCr;
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+ 
+  WCr.SerNr = StringToLongint(code);
+  if (ReadFirstMain(WCr,1,true)) then begin
+    if (ReadRecordLink(WCr,1,Attachr,RLr)) begin
+      WebOutString("<style>#banner{background-image:url(/WebShowContentImage.hal?s=" & WCr.SerNr & ") !important;box-shadow: inset 0 0 0 1000px rgba(0,0,0,0.65)}</style>");      
+    end;
+  end;
+
+  return;
+end;
+
 global webpublic
 procedure WebShowContentImage()
 begin

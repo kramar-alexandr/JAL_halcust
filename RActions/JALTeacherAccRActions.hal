@@ -52,9 +52,8 @@ begin
               end;
               RecordUpdate(oldSMFr,SMFr,true);
               BlockLoad(JALClassBl);
-              vVals["custcode"] = CUr.Code;
-              SendJALEmail(vVals,JALCLassbl.EmployeeAddText,CUr.eMail);
               if (CUr.AgeFlag==1) then begin
+                vVals["custcode"] = CUr.Code;
                 SendJALEmail(vVals,JALCLassbl.EmployeeAddText2,CUr.ParenteMail);        
               end;
             end;  
