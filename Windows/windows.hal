@@ -499,42 +499,28 @@ begin
   EditField(h,v=v+vs,100,"Konference paziÀojumam par nosðt´tiem failiem",Normal,AttachConf,false,ConfSClass);
   EditField(h,v=v+vs,100,"V•rt•jums no",Normal,ScoreFrom,false,0);
   EditField(h,v=v+vs,100,"V•rt•jums l´dz",Normal,ScoreTo,false,0);
-
-
   EndWindow;
 
-
-
- WindowBegin("Finanäu apr•úini",FCSMULClass,CGmlist,-);
+  WindowBegin("Finanäu apr•úini",FCSMULClass,CGmlist,-);
   SpawnClass(FCSMUDClass);
   SetWRect(64,80,860,350); 
   Sizeable(-1,-1,0,0);
   UseView(FCSMUVc);
   RecordList(4,17,-21,-39);
   h = 250; v=0; vs=100; h2 = 550;
-  RlColKey(v=v+vs,v,"Kods",SMUCode,false,SmuCode);
-  RlCol(v=v+vs,v,"Darbinieka 1 v‚rds,uzv‚rds",contact1,false);
-  RlCol(v=v+vs,v,"Darbinieka 2 v‚rds,uzv‚rds",contact2,false);
-  RlCol(v=v+vs,v,"Darbinieka 3 v‚rds,uzv‚rds",contact3,false);
-  RlCol(v=v+vs,v,"Darbinieka 4 v‚rds,uzv‚rds",contact4,false);
-  RlCol(v=v+vs,v,"Darbinieka 1 alga",salary1,false);
-  RlCol(v=v+vs,v,"Darbinieka 2 alga",salary2,false);
-  RlCol(v=v+vs,v,"Darbinieka 3 alga",salary3,false);
-  RlCol(v=v+vs,v,"Darbinieka 4 alga",salary4,false);
-  RlCol(v=v+vs,v,"Darbinieka 1 amats",position1,false);
-  RlCol(v=v+vs,v,"Darbinieka 2 amats",position2,false);
-  RlCol(v=v+vs,v,"Darbinieka 3 amats",position3,false);
-  RlCol(v=v+vs,v,"Darbinieka 4 amats",position4,false);
+  RlColKey(32,32,"Kods",SMUCode,false,MainKey);
+  RlCol   (120,120,"Prece",ItemName,false);
   SearchField("Mekl•t");
   EndWindow;
- 
   
-WindowBegin("Finanäu apr•úini",FCSMUDClass,CGview,-);
+  WindowBegin("Finanäu apr•úini",FCSMUDClass,CGview,-);
   SetWRect(64,80,860,350);
-   Sizeable(-1,-1,0,0);
+  Sizeable(-1,-1,0,0);
   UseView(FCSMUVc);
   h = 150; v=0; vs=20; h2 = 550;
   Editfield(h,v,100,"Kods",Normal,SMUCode,false,0);
+  Editfield(h,v+=vs,100,"Prece",Normal,ItemName,false,0);
+
   Editfield(h,v=v+vs,100,"Darbinieka 1 v‚rds,uzv‚rds",Normal,contact1,false,0);
   Editfield(h,v=v+vs,100,"Darbinieka 2 v‚rds,uzv‚rds",Normal,contact2,false,0);
   Editfield(h,v=v+vs,100,"Darbinieka 3 v‚rds,uzv‚rds ",Normal,contact3,false,0);
@@ -543,17 +529,10 @@ WindowBegin("Finanäu apr•úini",FCSMUDClass,CGview,-);
   Editfield(h,v=v+vs,100,"Darbinieka 2 alga",Normal,salary2,false,0);
   EditField(h,v=v+vs,100,"Darbinieka 3 alga",Normal,salary3,false,0);
   EditField(h,v=v+vs,100,"Darbinieka 4 alga",Normal,salary4,false,0);
-  EditField(h,v=v+vs,100,"Darbinieka 1 amats",Normal,position1,false,0);
-  EditField(h,v=v+vs,100,"Darbinieka 2 amats",Normal,position2,false,0);
-  EditField(h,v=v+vs,100,"Darbinieka 3 amats",Normal,position3,false,0);
-  EditField(h,v=v+vs,100,"Darbinieka 4 amats",Normal,position4,false,0);
+
   MatrixBegin(10,v=v+vs+50,-30,-10,-,10);
   MatCol(1,32,"Produkta nosaukums",0,ProdName,false,0);
   MatCol(1,150,"1 vien. paäizm. EUR",0,UCost,false,0);
-  MatCol(1,280,"1 vien. cena",0,UPrice,false,0);
-  MatCol(1,380,"P‚rdoto vien. sk.",0,SoldUnits,false,0);
-  MatCol(1,480,"Ien‚kumi",0,Income,false,0);
-  MatCol(1,580,"Izdevumi",0,Costs,false,0);
   EndMatrix;
   EndWindow;
 
@@ -1252,6 +1231,44 @@ WindowBegin("Finanäu apr•úini",FCSMUDClass,CGview,-);
   SetBlid(JALPartnerBlock);
   MatrixBegin(10,20,-30,-10,-,10);
   MatCol(1,25,"Klasifik‚cijas",0,Classification,false,CClassSClass);
+  EndMatrix;
+  EndWindow;
+
+  WindowBegin("JAL darbinieku amati",JALJobPositionTClass,CGHBl,-);
+  SetWRect(80,80,400,280);
+  SetBlid(JALJobPositionBlock);
+  MatrixBegin(10,20,-30,-10,-,10);
+  MatCol(1,25,"Amati",0,JobPosition,false,JobTitleSClass);
+  EndMatrix;
+  EndWindow;
+
+  WindowBegin("Pas‚kumu ien‚kumi",EventTurnoverLClass,CGmlist,-);
+  SpawnClass(EventTurnoverVcDClass);
+  SetWRect(64,80,860,350); 
+  Sizeable(-1,-1,0,0);
+  UseView(EventTurnoverVc);
+  RecordList(4,17,-21,-39);
+  h = 250; v=0; vs=100; h2 = 550;
+  RlColKey(32,32,"Kods",SMUCode,false,MainKey);
+  RlCol   (120,120,"Prece",ItemName,false);
+  SearchField("Mekl•t");
+  EndWindow;
+ 
+  
+  WindowBegin("Pas‚kumu ien‚kumi",EventTurnoverVcDClass,CGview,-);
+  SetWRect(64,80,860,350);
+  UseView(EventTurnoverVc);
+  h = 100; v=6; vs=20; h2 = 550;
+  Editfield(h,v,100,"Kods",Normal,SMUCode,false,0);
+  Editfield(h,v+=vs,100,"Prece",Normal,ItemName,false,0);
+  MatrixBegin(10,v=v+vs+50,-30,-10,-,10);
+  MatCol(1,32,"Pas‚kums",0,EventType,false,SetSClass);
+  MatCol(1,150,"1 vien. paäizm. EUR",0,UCost,false,0);
+  MatCol(1,280,"1 vien. cena",0,UPrice,false,0);
+  MatCol(1,380,"P‚rdoto vien. sk.",0,SoldUnits,false,0);
+  MatCol(1,480,"Ien‚kumi",0,Income,false,0);
+  MatCol(1,580,"Izdevumi",0,Costs,false,0);
+  MatCol(1,680,"PeºÀa",0,Profit,false,0);
   EndMatrix;
   EndWindow;
 

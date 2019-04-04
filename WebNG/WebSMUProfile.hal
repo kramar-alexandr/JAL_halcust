@@ -39,7 +39,11 @@ procedure ShowFinancialTable(string id,Boolean showwrapf)
 begin
 
   if (showwrapf) then begin
-    WebOutString("        <div class=""profile table-salary smu-border"">");
+    WebOutString("        <div class=""profile table-salary smu-border""><div id='cost_table_wrap'>");
+    WebOutString("<div class='table_header'>" & ToolWebNGTranslateText2(80084) & "</div><div id='temp_table_wrap'><div class='field_wrap'>");
+    WebOutString("<div class='table_field itemname'><div class='table_field_label'>" & ToolWebNGTranslateText2(80085) & "</div><input type='text'></div>");
+    WebOutString("<div class='table_field itemprice'><div class='table_field_label'>" & ToolWebNGTranslateText2(80086) & "</div><input type='text'></div>");
+    WebOutString("<div class='table_field costprice'><div class='table_field_label'>" & ToolWebNGTranslateText2(80087) & "</div><input type='text' readonly></div></div>");
   end;
   WebOutString("            <table id=""" & id & """>");
   WebOutString("                <thead>");
@@ -47,8 +51,8 @@ begin
   WebOutString("                    <th class='hidden'></th>");
   WebOutString("                    <th colspan=""2"">" & ToolWebNGTranslateText2(80031) & "</th>");//
   WebOutString("                    <th colspan=""2"">" & ToolWebNGTranslateText2(80032) & "</th>");
-  WebOutString("                    <th>" & ToolWebNGTranslateText2(80033) & "</th>");
-  WebOutString("                    <th>" & ToolWebNGTranslateText2(80034) & "</th>");
+  //WebOutString("                    <th>" & ToolWebNGTranslateText2(80033) & "</th>");
+  //WebOutString("                    <th>" & ToolWebNGTranslateText2(80034) & "</th>");
   WebOutString("                </tr>");
   WebOutString("                <tr>");
   WebOutString("                    <th class='hidden'></th>");
@@ -56,8 +60,8 @@ begin
   WebOutString("                    <th>" & ToolWebNGTranslateText2(80036) & "</th>");
   WebOutString("                    <th>" & ToolWebNGTranslateText2(80037) & "</th>");
   WebOutString("                    <th>" & ToolWebNGTranslateText2(80038) & "</th>");
-  WebOutString("                    <th>" & ToolWebNGTranslateText2(80039) & "</th>");
-  WebOutString("                    <th>" & ToolWebNGTranslateText2(80040) & "</th>");
+//  WebOutString("                    <th>" & ToolWebNGTranslateText2(80039) & "</th>");
+//  WebOutString("                    <th>" & ToolWebNGTranslateText2(80040) & "</th>");
   WebOutString("                </tr>");
   WebOutString("                </thead>");
   WebOutString("                <tbody>");
@@ -67,7 +71,7 @@ begin
   WebOutString("                    <td></td>");
   WebOutString("                    <td></td>");
   WebOutString("                    <td></td>");
-  WebOutString("                    <td colspan='2' class='inactive'></td>");
+//  WebOutString("                    <td colspan='2' class='inactive'></td>");
   //WebOutString("                    <td></td>");
   WebOutString("                </tr>");
   WebOutString("                </tbody>");
@@ -78,12 +82,12 @@ begin
   WebOutString("                    <td></td>");
   WebOutString("                    <td>" & ToolWebNGTranslateText2(80041) & "</td>");
   WebOutString("                    <td></td>");
-  WebOutString("                    <td></td>");
+//  WebOutString("                    <td></td>");
   WebOutString("                </tr>");
   WebOutString("                </tfoot>");
   WebOutString("            </table>");
   if (showwrapf) then begin
-    WebOutString("        </div>");
+    WebOutString("        <div class='clear'></div></div></div><div id='add_item_button' class='spbutton'>" & ToolWebNGTranslateText2(80083) & "</div></div>");
   end;
 
   return;
@@ -91,37 +95,52 @@ end;
 
 
 global
-procedure ShowEventTable()
+procedure ShowEventTable(string id,Boolean showwrapf)
 begin
 
-  WebOutString("        <div class=""profile table-plan smu-border"">");
-  WebOutString("            <table id=""finplan_table"">");
+  //id=finplan_table
+
+  if (showwrapf) then begin
+    WebOutString("        <div class=""profile table-plan smu-border"">");
+    WebOutString("<div class='table_header'>" & ToolWebNGTranslateText2(80066) & "</div>");
+  end;
+  WebOutString("            <table id=""" & id & """>");
+  WebOutString("                <thead>");
   WebOutString("                <tr>");
-  WebOutString("                    <th>1. Pa‰izmaksa</th>");
-  WebOutString("                    <th>2. Produkta cena</th>");
-  WebOutString("                    <th>Materiali</th>");
-  WebOutString("                    <th>EUR</th>");
   WebOutString("                    <th></th>");
-  WebOutString("                    <th></th>");
+  WebOutString("                    <th>" & ToolWebNGTranslateText2(80067) & "</th>");
+  WebOutString("                    <th>" & ToolWebNGTranslateText2(80060) & "</th>");
+  WebOutString("                    <th>" & ToolWebNGTranslateText2(80061) & "</th>");
+  WebOutString("                    <th>" & ToolWebNGTranslateText2(80062) & "</th>");
+  WebOutString("                    <th>" & ToolWebNGTranslateText2(80063) & "</th>");
+  WebOutString("                    <th>" & ToolWebNGTranslateText2(80064) & "</th>");
+  WebOutString("                    <th>" & ToolWebNGTranslateText2(80065) & "</th>");
   WebOutString("                </tr>");
+  WebOutString("                </thead>");
+  WebOutString("                <tbody>");
   WebOutString("                <tr>");
-  WebOutString("                    <td>Ralfs Rogo∫ovs</td>");
+  WebOutString("                    <td></td>");
+  WebOutString("                    <td></td>");
+  WebOutString("                    <td></td>");
   WebOutString("                    <td></td>");
   WebOutString("                    <td></td>");
   WebOutString("                    <td></td>");
   WebOutString("                    <td></td>");
   WebOutString("                    <td></td>");
   WebOutString("                </tr>");
+  WebOutString("                </tbody>");
   WebOutString("                <tfoot>");
   WebOutString("                <tr>");
-  WebOutString("                    <td>KOPÅ:</td>");
+  WebOutString("                    <td colspan='5'>" & ToolWebNGTranslateText2(80068) & "</td>");
   WebOutString("                    <td></td>");
-  WebOutString("                    <td>KOPÅ:</td>");
+  WebOutString("                    <td></td>");
   WebOutString("                    <td></td>");
   WebOutString("                </tr>");
   WebOutString("                </tfoot>");
   WebOutString("            </table>");
-  WebOutString("        </div>");
+  if (showwrapf) then begin
+    WebOutString("        </div>");
+  end;
  
 
 
@@ -144,6 +163,22 @@ begin
   return;
 end;
 
+procedure OutputJopPositionOptions()
+begin
+  record JALJobPositionBlock JPb;
+  row JALJobPositionBlock JPbrw;
+  Integer i,rwcnt;
+  
+  BlockLoad(JPb);
+  rwcnt = MatRowCnt(JPb);
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(JPb,i,JPbrw);
+    WebOutString("<option value='" & JPbrw.JobPosition & "'>" & JPbrw.JobPosition & "</option>");
+  end;
+
+  return;
+end;
+
 procedure ShowEmpSection()
 begin
 
@@ -152,11 +187,13 @@ begin
   WebOutString("                <thead>");
   WebOutString("                <tr>");
   WebOutString("                    <th>" & ToolWebNGTranslateText2(80024) & "</th>");
-  WebOutString("                    <th colspan=2>" & ToolWebNGTranslateText2(80025) & "</th>");
+  WebOutString("                    <th >" & ToolWebNGTranslateText2(80025) & "</th>");
+  WebOutString("                    <th colspan=2>" & ToolWebNGTranslateText2(80081) & "</th>");
   WebOutString("                </tr>");
   WebOutString("                </thead>");
   WebOutString("                <tbody>");
   WebOutString("                <tr>");
+  WebOutString("                    <td></td>");
   WebOutString("                    <td></td>");
   WebOutString("                    <td></td>");
   WebOutString("                    <td>" & ToolWebNGTranslateText2(80026) & "</td>");
@@ -166,8 +203,12 @@ begin
   
   WebOutString("<div class='newEmp_button'><a class='spbutton'>" & ToolWebNGTranslateText2(80027) & "</a></div>");
   WebOutString("<div class='newEmp_form'>");
-  WebOutString("<select name='nemp'>");
+  WebOutString("<select name='nemp' class='nemp_code'>");
   WebOutString("<option value=''>" & ToolWebNGTranslateText2(80004) & "</div>");
+  WebOutString("</select>");
+  WebOutString("<select name='nemp_position' class='nemp_pos'>");
+  WebOutString("<option value=''>" & ToolWebNGTranslateText2(80080) & "</div>");
+  OutputJopPositionOptions;
   WebOutString("</select>");
   WebOutString("<div class='newEmp_button_submit'><a class='spbutton'>" & ToolWebNGTranslateText2(80028) & "</a></div>");
   
@@ -186,7 +227,7 @@ begin
   ShowSMUBasicSection;
   ShowEmpSection;
   ShowFinancialTable("findata_table",true);
-  ShowEventTable;
+  ShowEventTable("finplan_table",true);;
   
   WebOutString("<div class='smu_submit_wrap'>");
   WebOutString("<div class='smu_submit'><a class='spbutton save_only'>" & ToolWebNGTranslateText2(80042) & "</a></div>");
@@ -260,27 +301,127 @@ procedure GetFinData(record SMFVc SMFr)
 begin
   record FCSMUVc FCr;
   row FCSMUVc FCrw;
-  Integer rwcnt,i;
+  record EventTurnoverVc ETr;
+  row EventTurnoverVc ETrw;
+  Integer rwcnt,i,j,k;
+  Boolean TrHs,foundf;
+  string 255 c,s;
+  vector Boolean vItems;
+  vector string 255 vItemName;
+  array string 255 arr;
 
   WebOutString("""FinData"":{");
   
+  TrHs = true;
   FCr.SMUCode = SMFr.SMFCode;
-  if (ReadFirstMain(FCr,1,true)) then begin
-    WebOutString("""materials"":[");
-    rwcnt = MatRowCnt(FCr);
-    for (i=0;i<rwcnt;i=i+1) begin
-      MatRowGet(FCr,i,FCrw);
-      if (i>0) then begin
+  j = 0;
+  WebOutString("""materials"":[");
+  while (LoopMain(FCr,1,TrHs)) begin
+    if (FCr.SMUCode!=SMFr.SMFCode) then begin
+      TrHs = false;
+    end else begin
+      if (j>0) then begin
         WebOutString(",");
       end;
-      WebOutString("{");
-      WebOutString("""ProdName"":""" & FCrw.ProdName & """,");
-      WebOutString("""UCost"":""" & FCrw.UCost & """,");
-      WebOutString("""UPrice"":""" & FCrw.UPrice & """");
-      WebOutString("}");
+      j = j + 1;
+      vItems[FCr.ItemName] = false;
+      vItemName[FCr.ItemName] = FCr.ItemName;
+      WebOutString("{""ItemName"":""" & FCr.ItemName & """,");
+      WebOutString("""Price"":""" & FCr.Price & """,");
+      WebOutString("""costs"":[");
+      rwcnt = MatRowCnt(FCr);
+      for (i=0;i<rwcnt;i=i+1) begin
+        MatRowGet(FCr,i,FCrw);
+        if (i>0) then begin
+          WebOutString(",");
+        end;
+        WebOutString("{");
+        WebOutString("""type"":""0"",");
+        WebOutString("""ProdName"":""" & FCrw.ProdName & """,");
+        WebOutString("""UCost"":""" & FCrw.UCost & """");
+        WebOutString("}");
+      end;
+      for (i=0;i<3;i=i+1) begin
+        c = GetFieldValueByName(FCr,"contact" & i,-1);
+        s = GetFieldValueByName(FCr,"salary" & i,-1);
+        if (nonblank(c)) then begin
+          WebOutString(",");
+          WebOutString("{");
+          WebOutString("""type"":""1"",");
+          WebOutString("""code"":""" & c & """,");
+          WebOutString("""salary"":""" & s & """");
+          WebOutString("}");
+        end;
+      end;
+      WebOutString("]}");
     end;
-    WebOutString("]");
   end;
+  WebOutString("],");
+  j = 0;
+  TrHs = true;
+  ETr.SMUCode = SMFr.SMFCode;
+  WebOutString("""eventturnover"":[");
+  while (LoopMain(ETr,1,TrHs)) begin
+    if (ETr.SMUCode!=SMFr.SMFCode) then begin
+      TrHs = false;
+    end else begin
+      foundf = true;
+      if (j>0) then begin
+        WebOutString(",");
+      end;
+      j = j + 1;
+      vItems[ETr.ItemName] = true;
+      WebOutString("{""ItemName"":""" & ETr.ItemName & """,");
+      WebOutString("""turnover"":[");
+      rwcnt = MatRowCnt(ETr);
+      for (i=0;i<rwcnt;i=i+1) begin
+        MatRowGet(ETr,i,ETrw);
+        if (i>0) then begin
+          WebOutString(",");
+        end;
+        WebOutString("{");
+        WebOutString("""EventName"":""" & StringFromSet(3000,ETrw.EventType) & """,");
+        WebOutString("""EventID"":""" & ETrw.EventType & """,");
+        WebOutString("""UCost"":""" & ETrw.UCost & """,");
+        WebOutString("""UPrice"":""" & ETrw.UPrice & """,");
+        WebOutString("""SoldUnits"":""" & ETrw.SoldUnits & """,");
+        WebOutString("""Income"":""" & ETrw.Income & """,");
+        WebOutString("""Costs"":""" & ETrw.Costs & """,");
+        WebOutString("""Profit"":""" & ETrw.Profit & """");
+        WebOutString("}");
+      end;
+      WebOutString("]}");
+    end;
+  end;
+  GetVectorTags(vItems,arr);
+  for (k=0;k<arr.length;k=k+1) begin
+    if (vItems[arr[k]]==false) then begin
+      if (j>0) then begin
+        WebOutString(",");
+      end;
+      j = j + 1;
+      WebOutString("{""ItemName"":""" & vItemName[arr[k]] & """,");
+      WebOutString("""turnover"":[");
+      for (i=0;i<5;i=i+1) begin
+        if (i>0) then begin
+          WebOutString(",");
+        end;
+        WebOutString("{");
+        WebOutString("""EventName"":""" & StringFromSet(3000,i) & """,");
+        WebOutString("""EventID"":""" & i & """,");
+        WebOutString("""UCost"":"""",");
+        WebOutString("""UPrice"":"""",");
+        WebOutString("""SoldUnits"":"""",");
+        WebOutString("""Income"":"""",");
+        WebOutString("""Costs"":"""",");
+        WebOutString("""Profit"":""""");
+        WebOutString("}");
+      end;
+      WebOutString("]}");
+    end;
+  end;
+  WebOutString("]");
+
 
   WebOutString("},");
 
@@ -307,6 +448,7 @@ begin
   WebOutString("""newemplist"":[");
   while (LoopMain(CUr,1,true)) begin
     if (CUr.Classification=="SKLN") then begin
+/*
       if (ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr)) then begin
 				if (SMFr.ReadyFlag==0) then begin
 					if (ReadRecordLink(CUr,1,SCr,RLr)) begin					
@@ -320,6 +462,7 @@ begin
 					end;
 				end;
 			end else begin
+*/
         if (ReadRecordLink(CUr,1,SCr,RLr)) then begin
           if (SCr.SchoolCode==school) then begin
 						if (!ReadRecordLink(CUr,1,SMFr,RLr)) then begin
@@ -331,7 +474,7 @@ begin
 						end;
 					end;
 				end;
-			end;	
+//			end;	
     end;
   end;
   WebOutString("],");
@@ -395,6 +538,62 @@ begin
   return;
 end;
 
+updating procedure RemoveSMUItems(string smucode)
+begin
+  record FCSMUVc FCr;
+  Boolean TrHs;
+  
+  FCr.SMUCode = smucode;
+  TrHs = true;
+  while (LoopMain(FCr,1,TrHs)) begin
+    if (FCr.SMUCode!=smucode) then begin
+      TrHs = false;
+    end else begin
+      RecordRemove(FCr);
+      StepBack(FCr);
+    end;
+  end;
+
+  return;
+end;
+
+procedure SetupSMFItem(string smucode,string itemname,var record FCSMUVc FCr)
+begin
+  RecordClear(FCr);
+  RecordNew(FCr);
+  FCr.SMUCode = smucode;
+  FCr.ItemName = itemname;
+  return;
+end;
+
+updating procedure RemoveSMUTurnovers(string smucode)
+begin
+  record EventTurnoverVc ETr;
+  Boolean TrHs;
+  
+  ETr.SMUCode = smucode;
+  TrHs = true;
+  while (LoopMain(ETr,1,TrHs)) begin
+    if (ETr.SMUCode!=smucode) then begin
+      TrHs = false;
+    end else begin
+      RecordRemove(ETr);
+      StepBack(ETr);
+    end;
+  end;
+
+  return;
+end;
+
+procedure SetupSMFTurnover(string smucode,string itemname,var record EventTurnoverVc ETr)
+begin
+  RecordClear(ETr);
+  RecordNew(ETr);
+  ETr.SMUCode = smucode;
+  ETr.ItemName = itemname;
+  return;
+end;
+
 global webpublic
 updating procedure WebSaveSMUDataFromEditing()
 begin
@@ -403,7 +602,9 @@ begin
   json js;
   record FCSMUVc FCr;
   row FCSMUVc FCrw;
-  Integer i;
+  record EventTurnoverVc ETr;
+  row EventTurnoverVc ETrw;
+  Integer i,j;
   string 255 root;
   record TeacherVc TCr;
   record JALClassBlock JALClassbl;
@@ -435,37 +636,53 @@ begin
       SetTextField(SMFr,JSONGet(js,"Text"));
       RecordStore(SMFr,true);
     
-      FCr.SMUCode = SMFr.SMFCode;
-      if (ReadFirstMain(FCr,1,true)) then begin
-      end else begin
-        RecordNew(FCr);
-        FCr.SMUCode = SMFr.SMFCode;
-      end;
-      for (i=MatRowCnt(FCr)-1;i>=0;i=i-1) begin
-        MatRowDelete(FCr,i);
-      end;
       i = 0;
       root = "FinData/materials/";
+      RemoveSMUItems(SMFr.SMFCode);//Too harsh?
       while (JSONNodeExists(js,root & "[" & i  & "]")) begin
-        ClearRow(FCr,FCrw,1);
-        FCrw.UCost = StringToVal(JSONGet(js,root & "[" & i & "]/UCost"),M4Val);
-        FCrw.UPrice = StringToVal(JSONGet(js,root & "[" & i & "]/UPrice"),M4Val);
-        FCrw.ProdName = JSONGet(js,root & "[" & i & "]/ProdName");
-        MatRowPut(FCr,i,FCrw);
+        SetupSMFItem(SMFr.SMFCode,JSONGet(js,root & "[" & i & "]/ItemName"),FCr);
+        FCr.Price = StringToVal(JSONGet(js,root & "[" & i & "]/UPrice"),M4Val);
+        j = 0;
+        while (JSONNodeExists(js,root & "[" & i  & "]/costs/[" & j & "]")) begin
+          ClearRow(FCr,FCrw,1);
+          FCrw.UCost = StringToVal(JSONGet(js,root & "[" & i & "]/costs/[" & j & "]/UCost"),M4Val);
+          FCrw.ProdName = JSONGet(js,root & "[" & i & "]/costs/[" & j & "]/ProdName");
+          MatRowPut(FCr,j,FCrw);
+          j = j + 1;
+        end;
+        j = 0;
+        while (JSONNodeExists(js,root & "[" & i  & "]/emps/[" & j & "]")) begin
+          ClearRow(FCr,FCrw,1);
+          SetFieldValueByName(FCr,"contact" & (j+1),JSONGet(js,root & "[" & i & "]/emps/[" & j & "]/custcode"),-1);
+          SetFieldValueByName(FCr,"salary" & (j+1),StringToVal(JSONGet(js,root & "[" & i & "]/emps/[" & j & "]/salary"),M4Val),-1);
+          j = j + 1;
+          if (j>3) then begin
+            goto l33;
+          end;
+        end;
+l33:;
+        RecordStore(FCr,true);
         i = i + 1;
       end;
-      RecordStore(FCr,true);
       i = 0;
-      root = "FinData/employees/";
+      root = "FinData/eventturnover/";
+      RemoveSMUTurnovers(SMFr.SMFCode);//Too harsh?
       while (JSONNodeExists(js,root & "[" & i  & "]")) begin
-        ClearRow(FCr,FCrw,1);
-        tCUr.Code = JSONGet(js,root & "[" & i & "]/CustCode");
-        logtext(0,"ttt " & tCUr.Code & ":" & JSONGet(js,root & "[" & i & "]/Salary"));
-        if (ReadFirstMain(tCUr,1,true) and IsEmployee(tCUr,SMFr)) then begin
-          RecordCopy(oldCUr,tCUr);
-          tCUr.Salary = StringToVal(JSONGet(js,root & "[" & i & "]/Salary"),M4Val);
-          RecordUpdate(oldCUr,tCUr,true);
+        SetupSMFTurnover(SMFr.SMFCode,JSONGet(js,root & "[" & i & "]/ItemName"),ETr);
+        j = 0;
+        while (JSONNodeExists(js,root & "[" & i  & "]/costs/[" & j & "]")) begin
+          ClearRow(ETr,ETrw,1);
+          ETrw.EventType = StringToInt(JSONGet(js,root & "[" & i & "]/costs/[" & j & "]/EventID"));
+          ETrw.UCost = StringToVal(JSONGet(js,root & "[" & i & "]/costs/[" & j & "]/UCost"),M4Val);
+          ETrw.UPrice = StringToVal(JSONGet(js,root & "[" & i & "]/costs/[" & j & "]/UPrice"),M4Val);
+          ETrw.SoldUnits = StringToVal(JSONGet(js,root & "[" & i & "]/costs/[" & j & "]/SoldUnits"),M4Val);
+          ETrw.Income = ETrw.UPrice*ETrw.SoldUnits;
+          ETrw.Costs = ETrw.UCost*ETrw.SoldUnits;
+          ETrw.Profit = ETrw.Income-ETrw.Costs;
+          MatRowPut(ETr,j,ETrw);
+          j = j + 1;
         end;
+        RecordStore(ETr,true);
         i = i + 1;
       end;
       if (JSONGet(js,"Approve")=="1") then begin
@@ -485,6 +702,45 @@ begin
       WebOutString("OK");
     end else begin
       WebOutString("Not OK");
+    end;
+  end;
+
+  return;
+end;
+
+global
+function Boolean ContactsFromSameSMU(record CUVc CUr,record CUVc tCUr)
+begin
+  record SMFVc SMFr,tSMFr;
+  record RLinkVc RLr;
+  Boolean res;
+
+  if (ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr)) then begin
+    if (ReadRecordLink(tCUr,1,tSMFr,RLr) or FindSMURecord(tCUr.Code,tSMFr)) then begin
+      if (nonblank(SMFr.SMFCode) and SMFr.SMFCode==tSMFr.SMFCode) then begin
+        res = true;
+      end;
+    end;
+  end;
+
+  ContactsFromSameSMU = res;
+  return;
+end;
+
+global webpublic
+updating procedure WebSetEmpPosition()
+begin
+  record CUVc CUr,tCUr,oldCUr;
+  
+ 	CUr.Code = CurrentCust;
+  if ReadFirstMain(CUr,1,true) begin
+    tCUr.Code = WebGetArg("emp");
+    if (ReadFirstMain(tCUr,1,true)) then begin
+      if (ContactsFromSameSMU(CUr,tCUr)) then begin
+        RecordCopy(oldCUr,tCUr);
+        tCUr.JobDesc = WebGetArg("njob");
+        RecordUpdate(oldCUr,tCUr,true);
+      end;
     end;
   end;
 

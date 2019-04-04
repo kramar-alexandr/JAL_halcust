@@ -474,7 +474,7 @@ begin
   boolean TrHs;
   record SchoolVc SCr;
   record RLinkVc RLr,RL2r;
-  record CUVc CUr,tCUr;
+  record CUVc CUr,tCUr,oldCUr;
   record SMFVc SMFr,oldSMFr,tSMFr;
   Integer i;
 	string 255 text,headertext;
@@ -496,6 +496,9 @@ begin
         end else begin
           if (FindActiveApplication(2,tCUr.Code,JTr)==false) then begin
             CreateTeachApp(2,SMFr.SMFCode,tCUr.Code);
+            RecordCopy(oldCUr,tCUr);
+            tCUr.JobDesc = WebGetArg("nemp_pos");
+            RecordUpdate(oldCUr,tCUr,true);
           end;
           vVals["custcode"] = tCUr.Code;
           vVals["smucode"] = SMFr.SMFCode;

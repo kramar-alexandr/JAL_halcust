@@ -238,6 +238,27 @@ begin
   return;
 end;
 
+global
+procedure ShowJALMentorList()
+begin
+  record JALClassBlock JALClassb;
+  record CClassVc CClassr;
+  record CUVc CUr;
+  Integer i,rwcnt,cnt;
+  
+  BlockLoad(JALClassb);
+  
+  while (LoopKey("Classification:" & JALClassb.Mentor,CUr,1,true)) begin
+    cnt = cnt + 1;
+    WebOutString("<div>");
+    WebOutString("<img src='/WebShowPartnerImage.hal?id=" & CUr.UUID & "&code=" & CUr.Code & "'><h2>" & CUr.Name & "</h2>");
+    
+    WebOutString("</div>");
+  end;
+
+  return;
+end;
+
 global webpublic
 procedure WebShowPartnerImage()
 begin
