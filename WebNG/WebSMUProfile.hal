@@ -45,7 +45,7 @@ begin
     WebOutString("<div class='table_field itemprice'><div class='table_field_label'>" & ToolWebNGTranslateText2(80086) & "</div><input type='text'></div>");
     WebOutString("<div class='table_field costprice'><div class='table_field_label'>" & ToolWebNGTranslateText2(80087) & "</div><input type='text' readonly></div></div>");
   end;
-  WebOutString("            <table id=""" & id & """>");
+  WebOutString("            <table id=""" & id & """ cellspacing='0'>");
   WebOutString("                <thead>");
   WebOutString("                <tr>");
   WebOutString("                    <th class='hidden'></th>");
@@ -97,14 +97,15 @@ end;
 global
 procedure ShowEventTable(string id,Boolean showwrapf)
 begin
-
+  Integer i;
+  
   //id=finplan_table
 
   if (showwrapf) then begin
     WebOutString("        <div class=""profile table-plan smu-border"">");
     WebOutString("<div class='table_header'>" & ToolWebNGTranslateText2(80066) & "</div>");
   end;
-  WebOutString("            <table id=""" & id & """>");
+  WebOutString("            <table id=""" & id & """ cellspacing='0'>");
   WebOutString("                <thead>");
   WebOutString("                <tr>");
   WebOutString("                    <th></th>");
@@ -138,6 +139,11 @@ begin
   WebOutString("                </tr>");
   WebOutString("                </tfoot>");
   WebOutString("            </table>");
+  WebOutString("<select style='display:none' id='eventlist'>");
+  for (i=0;i<5;i=i+1) begin
+    WebOutString("<option value='" & i & "'>" & StringFromSet(3000,i) & "</option>");
+  end;  
+  WebOutString("</select>");
   if (showwrapf) then begin
     WebOutString("        </div>");
   end;
@@ -393,6 +399,7 @@ begin
       WebOutString("]}");
     end;
   end;
+  /*we'll do it in javascript
   GetVectorTags(vItems,arr);
   for (k=0;k<arr.length;k=k+1) begin
     if (vItems[arr[k]]==false) then begin
@@ -420,6 +427,7 @@ begin
       WebOutString("]}");
     end;
   end;
+  */
   WebOutString("]");
 
 
