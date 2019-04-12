@@ -1,6 +1,7 @@
 external function Boolean FindMatchingContentTranslation(record WebNGContentVc,var record WebNGTranslateVc);
 external function Boolean CheckAttachedFilesSizeToLetter(record LetVc);
 external procedure SetContentTypeForExtension(string);
+external function boolean FindMatchingTranslation(string,var record WebNGTranslateVc,string);
 
 
 global
@@ -278,6 +279,40 @@ begin
       end;
     end;
   end;
+
+  return;
+end;
+
+global
+procedure ShowJALEventList()
+begin
+  record JALEventVc JEr;
+  Boolean TrHs;
+  record WebNGTranslateVc WTr;
+  string 255 daystr,datestr;
+  Date ed;
+  
+  ed = AddYear(CurrentDate,1);
+  WebOutString("<a class='date_a'><div id='date'>");
+  TrHs = true;
+  JEr.StartDate = CurrentDate;
+  while (LoopKey("StartDate",JEr,1,TrHs)) begin
+    if (JEr.StartDate>ed) then begin
+      TrHs = false;
+    end else begin
+      if (JEr.RegFlag==0 and JEr.ActiveFlag==1) then begin
+        if (FindMatchingTranslation(JEr.SerNr,WTr,JEr.DefLangCode)) then begin
+          daystr = StringFromSet(392,GetDateID(JEr.StartDate));//<a href='" & link & "'></a>//no link for now
+          datestr = DateToString(JEr.StartDate,"MM.DD");
+          if (left(datestr,1)=="0") then begin 
+            datestr = right(datestr,len(datestr)-1);
+          end;
+          WebOutString("<div class='date'><div class='day'><h1>" & daystr & "</h1><h2>" & datestr & "</h2></div><div class='time_'><h1>" & left(JEr.StartTime,5) & "</h1><p>" & WTr.Comment & "</p></div></div>");
+        end;
+      end;
+    end;
+  end;
+  WebOutString("</div></a>");
 
   return;
 end;

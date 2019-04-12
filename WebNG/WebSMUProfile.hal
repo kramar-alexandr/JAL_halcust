@@ -40,7 +40,9 @@ begin
 
   if (showwrapf) then begin
     WebOutString("        <div class=""profile table-salary smu-border""><div id='cost_table_wrap'>");
-    WebOutString("<div class='table_header'>" & ToolWebNGTranslateText2(80084) & "</div><div id='temp_table_wrap'><div class='field_wrap'>");
+    WebOutString("<div class='table_header'>" & ToolWebNGTranslateText2(80084) & "</div>");
+    WebOutString("<div class='field_descr'>" & ToolWebNGTranslateText2(80088) & "</div>");
+    WebOutString("<div id='temp_table_wrap'><div class='field_wrap'>");
     WebOutString("<div class='table_field itemname'><div class='table_field_label'>" & ToolWebNGTranslateText2(80085) & "</div><input type='text'></div>");
     WebOutString("<div class='table_field itemprice'><div class='table_field_label'>" & ToolWebNGTranslateText2(80086) & "</div><input type='text'></div>");
     WebOutString("<div class='table_field costprice'><div class='table_field_label'>" & ToolWebNGTranslateText2(80087) & "</div><input type='text' readonly></div></div>");
@@ -445,7 +447,32 @@ begin
   return;
 end;
 
-procedure GetSchoolEmpList(string school)
+function Boolean EmpNotAddedAlready(string custcode,string smfcode)
+begin
+  Boolean res;
+  record JALTeacherAccVc JTr;
+  Boolean TrHs;
+
+  TrHs = true;
+  JTr.RecType = 2;
+  JTr.StatusFlag = 0;
+  JTr.RecCode = custcode;
+  while (LoopKey("RecType",JTr,3,TrHs)) begin
+    if (JTr.RecType!=2 or JTr.StatusFlag!=0 or JTr.RecCode!=custcode) then begin
+      TrHs = false;
+    end else begin
+      if (JTr.SMFCode==smfcode) then begin
+        res = true;
+        TrHs = false;
+      end;
+    end;
+  end;
+ 
+  EmpNotAddedAlready = res;
+  return;
+end;
+
+procedure GetSchoolEmpList(string school,string smfcode)
 begin
   Record CUVc CUr;
   record SchoolVc SCr;
@@ -474,11 +501,13 @@ begin
         if (ReadRecordLink(CUr,1,SCr,RLr)) then begin
           if (SCr.SchoolCode==school) then begin
 						if (!ReadRecordLink(CUr,1,SMFr,RLr)) then begin
-							if (cnt>0) then begin
-						    WebOutString(",");
-						  end;					
-							WebOutString("{""Code"":""" & CUr.Code & """,""Name"":""" & CUr.Name & """}");
-							cnt = cnt + 1;
+              if (EmpNotAddedAlready(CUr.Code,smfcode)==false) then begin
+                if (cnt>0) then begin
+                  WebOutString(",");
+                end;					
+                WebOutString("{""Code"":""" & CUr.Code & """,""Name"":""" & CUr.Name & """}");
+                cnt = cnt + 1;
+              end;
 						end;
 					end;
 				end;
@@ -518,7 +547,7 @@ begin
         WebOutString(StrReplace(tstr,chr(13),"\\n"));
       end;
       WebOutString(""",");
-      GetSchoolEmpList(SMFr.SchoolCode);
+      GetSchoolEmpList(SMFr.SchoolCode,SMFr.SMFCode);
 
       GetEmpList(SMFr);
       GetFinData(SMFr);

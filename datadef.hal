@@ -760,6 +760,7 @@ begin
   RecordField(StatusFlag,M4Int,0,0);
   RecordField(RegFrom,M4Date,0,0);
   RecordField(RegUntil,M4Date,0,0);
+  RecordField(StartTime,M4Time,0,0);
   ArrayBegin(Math,-,1);
   ArrayField(Field,M4Long,0,0);
   ArrayField(Comment,M4Str,60,0);
@@ -776,6 +777,10 @@ begin
   
   KeyBegin(StartDate);
   KeySegment(StartDate);
+  KeySegment(SerNr);
+
+  KeyBegin(EndDate);
+  KeySegment(EndDate);
   KeySegment(SerNr);
   EndRecord;
 

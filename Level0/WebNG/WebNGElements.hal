@@ -48,6 +48,7 @@ external procedure ShowLastNewsPicture(string);
 external procedure ShowSMUEditPage();
 external procedure ShowJALPartnerList();
 external procedure ShowJALMentorList();
+external procedure ShowJALEventList();
 //CUST-END
 
 procedure GetMenuActiveClass(record WebNGMenuVc WMr,var string actclass,var string class)
@@ -230,6 +231,8 @@ begin
     ShowJALPartnerList; res = true;
   case "ShowJALMentorList":
     ShowJALMentorList; res = true;
+  case "ShowJALEventList":
+    ShowJALEventList; res = true;
 //CUST-END
   end;
   ShowHALFunction = res;

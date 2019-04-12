@@ -930,21 +930,23 @@ begin
   EndWindow;
 
   WindowBegin("Pas‚kums",JALEventDClass,CGview,-);
-  SetWRect(64,80,600,530);
+  SetWRect(64,80,690,560);
   UseView(JALEventVc);
-  v = 10; vs = 22; h = 100; h2 = 280; h3=400;
+  AutoSizeWindow(false);
+  v = 10; vs = 22; h = 100; h2 = 300; h3=450;
   EditField(h,v=6,90,"S•r. nr.",Normal,SerNr,false,0);
   EditField(h2,v,90,"Datums",Normal,TransDate,false,PasteCurDate);
   CheckBox(h3-30,v,0,"Akt´vs",ActiveFlag);
-  ButtonFrame(h3+30,v,90,4,"Participation");
-  RadioButton(h3+30,v,0,0,"Cits (other)",StatusFlag);
-  RadioButton(h3+30,v+16,1,0,"Enu diena",StatusFlag);
-  RadioButton(h3+30,v+32,2,0,"TITAN",StatusFlag);
-  EditField(h,v+=vs,270,"Koment‚rs",Normal,Comment,false,0);
+  ButtonFrame(h3+50,v+20,90,3,"Dal´ba");
+  RadioButton(h3+50,v+20,0,0,"Cits",StatusFlag);
+  RadioButton(h3+50,v+36,1,0,"”nu diena",StatusFlag);
+  RadioButton(h3+50,v+52,2,0,"TITAN",StatusFlag);
+  EditField(h,v+=vs,290,"Koment‚rs",Normal,Comment,false,0);
   CheckBox(h3-30,v,0,"Sl•gts",ClosedFlag);  
 	
   EditField(h,v+=vs,90,"S‚kuma Datums",Normal,StartDate,false,PasteCurDate);
   EditField(h2,v,90,"Beigu Datums",Normal,EndDate,false,PasteCurDate);
+  EditField(h,v+=vs,90,"S‚kuma laiks",Normal,StartTime,false,PasteCurTime);
   EditField(h,v+=vs,90,"Re®istr•äan‚s no",Normal,RegFrom,false,PasteCurDate);
   EditField(h2,v,90,"Re®istr•äan‚s l´dz",Normal,RegUntil,false,PasteCurDate);
   CheckBox(h-5,v+=vs,0,"Tikai re®istr•tiem lietot‚jiem",RegFlag);
@@ -957,7 +959,7 @@ begin
   RlColKey(270,270,"Koment‚rs",Comment,false,EventComment);
 
 
-  MatrixBegin(4,v,-21,-20,-,20);
+  MatrixBegin(10,v+=20,-30,-40,-,20);
   MatCol(1,32,"Lauks",0,Field,false,JALEventFieldSClass);
   MatCol(1,100,"Koment‚rs",0,Comment,false,0);
   MatCol(1,-100,"Oblig‚ts",0,Req,false,SetSClass);
