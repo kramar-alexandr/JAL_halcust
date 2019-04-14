@@ -155,6 +155,31 @@ begin
   return;
 end;
 
+procedure ShowSMUIndustries(string label,string name,string descr)
+begin
+  record JALIndustryBlock JIb;
+  row JALIndustryBlock JIbrw;
+  Integer i,rwcnt;
+
+   WebOutString("<div class=""field_row"">");
+  WebOutString("<div class=""field_col""><div class=""field_label"">" & label & "</div><div class=""field_wrap"">");
+  
+  WebOutString("<select class=""" & name & """ name=""" & name & """><option></option>");
+  BlockLoad(JIb);
+  rwcnt = MatRowCnt(JIb);
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(JIb,i,JIbrw);
+    WebOutString("<option value='" & JIbrw.Industry & "'>" & JIbrw.Industry & "</option>");
+  end;
+
+  WebOutString("</select>");  
+  WebOutString("</div></div><div class=""field_descr"">" & descr & "</div>");
+  WebOutString("<div class=""clear""></div>");
+  WebOutString("</div>");
+
+  return;
+end;
+
 procedure ShowSMUBasicSection()
 begin
 
@@ -162,7 +187,7 @@ begin
   WebOutString("<div class=""smu_top""><div class=""back_button_wrap""><a class=""spbutton profile_back"" href=""/profilePupil"">" & ToolWebNGTranslateText2(80022) & "</a></div><div class=""profile_header"">" & ToolWebNGTranslateText2(80023) & "</div></div>");
   ShowSMUEditField(ToolWebNGTranslateText2(80010),"smu_name",ToolWebNGTranslateText2(80011));
   ShowSMUTextArea(ToolWebNGTranslateText2(80012),"smu_descr",ToolWebNGTranslateText2(80013));
-  ShowSMUEditField(ToolWebNGTranslateText2(80014),"smu_items",ToolWebNGTranslateText2(80015));
+  ShowSMUIndustries(ToolWebNGTranslateText2(80014),"smu_items",ToolWebNGTranslateText2(80015));
   ShowSMUEditField(ToolWebNGTranslateText2(80016),"smu_period",ToolWebNGTranslateText2(80017));
   ShowSMUEditField(ToolWebNGTranslateText2(80018),"smu_education",ToolWebNGTranslateText2(80019));
   ShowSMUTextArea(ToolWebNGTranslateText2(80020),"smu_targetaud",ToolWebNGTranslateText2(80021));
@@ -238,8 +263,8 @@ begin
   ShowEventTable("finplan_table",true);;
   
   WebOutString("<div class='smu_submit_wrap'>");
-  WebOutString("<div class='smu_submit'><a class='spbutton save_only'>" & ToolWebNGTranslateText2(80042) & "</a></div>");
-  WebOutString("<div class='smu_submit'><a class='spbutton save_submit'>" & ToolWebNGTranslateText2(80043) & "</a></div>");
+  WebOutString("<div class='smu_submit'><a class='spbutton save_only' href='#'>" & ToolWebNGTranslateText2(80042) & "</a></div>");
+  WebOutString("<div class='smu_submit'><a class='spbutton save_submit' href='#'>" & ToolWebNGTranslateText2(80043) & "</a></div>");
   WebOutString("</div>")
   
   return;
@@ -631,6 +656,67 @@ begin
   return;
 end;
 
+function Boolean CheckSMFDates(record SMFVc SMFr,record SMFVc oldSMFr)
+begin
+  Boolean res;
+  record JALSemesterBlock JSb;
+  row JALSemesterBlock JSbrw;
+  Integer i,rwcnt;
+
+  res = true;
+  if (blank(oldSMFr.ActDateStart) and nonblank(SMFr.ActDateStart)) then begin
+    if (SMFr.ActDateStart<CurrentDate) then begin
+      res = false;
+      goto lout;
+    end;
+  end;
+  if (nonblank(SMFr.ActDateStart)) then begin
+    BlockLoad(JSb);
+    rwcnt = MatRowCnt(JSb);
+    res = false;
+    for (i=rwcnt-1;i>=0;i=i-1) begin
+      MatRowGet(JSb,i,JSbrw);
+      if (DateInRange(SMFr.ActDateStart,JSbrw.DateFrom,JSbrw.DateTo)) then begin
+        if (DateInRange(SMFr.ActDateEnd,JSbrw.DateFrom,JSbrw.DateTo)) then begin 
+          res = true;
+          goto lout;
+        end;
+      end;
+    end;
+  end;
+
+  
+lout:;
+  CheckSMFDates = res;
+  return;
+end;
+
+function Boolean ValidateSMUData(record SMFVc SMFr,record SMFVc oldSMFr,var Integer errtype,var string errstr)
+begin
+  Boolean res;
+  record SMFVc tSMFr;
+
+  res = true;
+  
+  if (CheckSMFDates(SMFr,oldSMFr)==false) then begin
+    res = false;
+    errtype = 1;
+    goto lout;
+  end;
+  tSMFr.SMFName = SMFr.SMFName;
+  if (ReadFirstKey("SMFName",tSMFr,1,true)) then begin
+    if (tSMFr.SMFCode!=SMFr.SMFCode) then begin
+      errtype = 2;
+      res = false;
+      goto lout;
+   end;
+  end;
+
+lout:;
+  ValidateSMUData = res;
+  return;
+end;
+
 global webpublic
 updating procedure WebSaveSMUDataFromEditing()
 begin
@@ -641,8 +727,8 @@ begin
   row FCSMUVc FCrw;
   record EventTurnoverVc ETr;
   row EventTurnoverVc ETrw;
-  Integer i,j;
-  string 255 root;
+  Integer i,j,errtype;
+  string 255 root,errstr;
   record TeacherVc TCr;
   record JALClassBlock JALClassbl;
   vector string 255 vVals;
@@ -671,6 +757,9 @@ begin
       SMFr.ActDateStart = DateFromString(JSONGet(js,"ActDateStart"),"YYYY-MM-DD");
       SMFr.ActDateEnd = DateFromString(JSONGet(js,"ActDateEnd"),"YYYY-MM-DD");
       SetTextField(SMFr,JSONGet(js,"Text"));
+      if (ValidateSMUData(SMFr,oldSMFr,errtype,errstr)==false) then begin
+        goto lend;
+      end;
       RecordStore(SMFr,true);
     
       i = 0;
@@ -736,12 +825,17 @@ l33:;
           end;
         end;
       end;
-      WebOutString("OK");
     end else begin
-      WebOutString("Not OK");
     end;
   end;
 
+lend:;
+  if (errtype>0) then begin
+    WebOutString("{\"errtype\":\"" & errtype & "\"}");  
+  end else begin
+    WebOutString("{\"ok\":\"\"}");
+  end;
+  
   return;
 end;
 

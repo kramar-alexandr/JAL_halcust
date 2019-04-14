@@ -400,19 +400,77 @@ begin
   return;
 end;
 
+procedure GetSMUSemester(record SMFVc SMFr,var string semstr,var Date sd,var Date ed)
+begin
+  record JALSemesterBlock JSb;
+  row JALSemesterBlock JSbrw;
+  Integer i,rwcnt;
+
+  BlockLoad(JSb);
+  rwcnt = MatRowCnt(JSb);
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(JSb,i,JSbrw);
+    if (DateInRange(SMFr.ActDateStart,JSbrw.DateFrom,JSbrw.DateTo)) then begin
+      i = rwcnt;
+      sd = JSbrw.DateFrom;
+      ed = JSbrw.DateTo;
+      semstr = JSBrw.YearStr;
+    end;
+  end;
+
+  return;
+end;
+
+function Boolean SMUParticipatedInEvent(record SMFVc SMFr,Longint eventnr)
+begin
+  Boolean res;
+  record JALEventEntryVc JEEr;
+
+  JEEr.AddCode = SMFr.SMFCode;
+  JEEr.EventNr = eventnr;
+  JEEr.CustType = 0;
+  if (ReadFirstKey("CustType",JEEr,3,true)) then begin
+    res = true;
+  end;
+
+  SMUParticipatedInEvent = res;
+  return;
+end;
+
+function Boolean GetEventHist(record SMFVc SMFr,Date sd,Date ed,Integer type)
+begin
+  Boolean res;
+  record JALEventVc JEr;
+  
+  JEr.StatusFlag = type;
+  JEr.StartDate = sd;
+  if (ReadFirstKey("StatusFlag",JEr,2,false)) then begin
+    if (JEr.StatusFlag==type and DateInRange(JEr.StartDate,sd,ed)) then begin
+      if (SMUParticipatedInEvent(SMFr,JEr.SerNr)) then begin
+        res = true;
+      end;
+    end;
+  end;
+
+  GetEventHist = res;
+  return;
+end;
+
 global webpublic 
 procedure WebgetTeacherInfo()
 begin
   record SMFVc SMFr;
   row SMFVc SMFrw;
-  boolean testf;
-  integer i,mtrw,cnt,totcnt;
-  string 50 code,status,type;
+  Integer i,mtrw,cnt,totcnt;
+  string 50 code,status,type,semstr;
   record JALTeacherAccVc JTr;
-  boolean TrHs;
+  Boolean TrHs,testf;
   record CUVc CUr;
   record JALEventVc JEr;
   record JALEventEntryVc JEEr;
+  record RLinkVc RLr;
+  Date sd,ed;
+  Boolean titanflag,enudienaflag;
   
   code = webgetarg("code");
   type = webgetarg("type");
@@ -422,6 +480,7 @@ begin
   if(FindTeacherRecord(CurrentCust,code))then begin
     totcnt = 0;
     WebOutStringFormatNL("{\"SMU\":[");
+  /*
     resetLoop(JTr);
     TrHs = true;
     JTR.RecType = 0;
@@ -458,6 +517,7 @@ begin
         end;
       end;
     end;
+  */
     WebOutStringFormatNL("],");
     WebOutStringFormatNL("\"Students\":[");
     RecordClear(JTr);
@@ -522,7 +582,49 @@ begin
         end;
       end;
     end;
-    WebOutStringFormatNL("],\"totcnt\":" & totcnt);
+    WebOutStringFormatNL("],");
+    
+    WebOutStringFormatNL("\"ApprovedStudents\":[");
+    RecordClear(JTr);
+    resetLoop(JTr);
+    TrHs = true;
+    cnt = 0;
+    JTR.RecType = 3;
+    JTR.StatusFlag = 1;
+    JTR.RecCode = code;//this is a big security issue
+    while (LoopKey("RecType",JTr,3,TrHs)) begin
+      if (JTr.RecCode!=code or JTr.RecType!=3 or JTr.StatusFlag!=1) then begin
+        TrHs = false;
+      end else begin
+        CUr.Code = JTr.SMFCode;
+        if (ReadFirstMain(CUr,1,true))then begin
+          cnt = cnt + 1;
+          if(cnt>1)then begin
+              weboutstring(",");
+          end;
+          WebOutStringFormatNL("{");
+          WebOutStringFormatNL("\"Nr\":\"" & cnt & "\",");
+          WebOutStringFormatNL("\"SerNr\":\"" & JTr.SerNr & "\",");
+          WebOutStringFormatNL("\"Statuss\":\"" & JTr.StatusFlag & "\",");
+          WebOutStringFormatNL("\"Datums\":\"" & JTr.TransDate & "\",");
+          WebOutStringFormatNL("\"Klase\":\"" & CUr.ClassNum & CUr.ClassChar & "\",");
+          WebOutStringFormatNL("\"Skolens\":\"" & CUr.Name & "\",");
+          ReadRecordLink(CUr,1,SMFr,RLr);
+          GetSMUSemester(SMFr,semstr,sd,ed);
+          enudienaflag = GetEventHist(SMFr,sd,ed,1);
+          titanflag = GetEventHist(SMFr,sd,ed,2);
+          WebOutStringFormatNL("\"Nosaukums\":\"" & SMFr.SMFName & "\",");
+          WebOutStringFormatNL("\"Likvidets\":\"" & SMFr.StatusFlag & "\",");
+          WebOutStringFormatNL("\"MacibuGads\":\"" & semstr & "\",");
+          WebOutStringFormatNL("\"Titan\":\"" & titanflag & "\",");
+          WebOutStringFormatNL("\"Enudiena\":\"" & enudienaflag & "\"");
+          WebOutStringFormatNL("}");
+        end;
+      end;
+    end;
+    WebOutStringFormatNL("],");
+    
+    WebOutStringFormatNL("\"totcnt\":" & totcnt);
     
     WebOutString("}");
   end;
@@ -954,9 +1056,9 @@ begin
                         testf = false;
                         testf1 = false;
                         testf2 = false;
-                        
-                        while(loopMain(JFr,1,true)) begin
-                          TrHs1 = true;
+                        ResetLoop(JFr);
+                        JFr.SMFCode = SMFr.SMFCode;
+                        while(LoopKey("SMFCode",JFr,1,TrHs1)) begin
                           if(JFr.SMFCode!=SMFr.SMFCode) then begin TrHs1 = false; end;
                           If(TrHs1) then begin
                             if(JFr.Status==0) then begin testf = true; end;

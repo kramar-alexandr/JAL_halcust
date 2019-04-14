@@ -17,6 +17,8 @@ begin
       WebOutString("jal_str['ConfirmDelete']       = '" & ToolWebNGTranslateText2(70042) & "';");//IEPRIEK·îJÅ
       WebOutString("jal_str['Wait']                = '" & ToolWebNGTranslateText2(70043) & "';");//IEPRIEK·îJÅ
       WebOutString("jal_str['PriceLowerThanCost']  = '" & ToolWebNGTranslateText2(70044) & "';");//IEPRIEK·îJÅ
+      WebOutString("jal_str['SMUName']             = '" & ToolWebNGTranslateText2(70045) & "';");//IEPRIEK·îJÅ
+      WebOutString("jal_str['SMUDate']             = '" & ToolWebNGTranslateText2(70046) & "';");//IEPRIEK·îJÅ
 
     case 1://teacher profile
       WebOutString("jal_str['prev']                = '" & ToolWebNGTranslateText2(70000) & "';");//IEPRIEK·îJÅ

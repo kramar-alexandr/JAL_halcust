@@ -47,6 +47,8 @@ begin
 	Setting("Finanäu apr•úini",FCSMULClass,modJAL);
 	Setting("Pas‚kumu ien‚kumi",EventTurnoverLClass,modJAL);
 	Setting("Darbinieku amati",JALJobPositionTClass,modJAL);
+	Setting("Nozares",JALIndustryTClass,modJAL);
+	Setting("Semestri",JALSemesterTClass,modJAL);
 
 //  Maintenance("Pievienot m‚c?bu firmu",AddSMFMnVClass,AddSMFMn,modJAL);
   Maintenance("Dz•st datus",ClearDBVClass,ClearDBMn,modJAL);

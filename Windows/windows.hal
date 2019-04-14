@@ -947,6 +947,7 @@ begin
   EditField(h,v+=vs,90,"S‚kuma Datums",Normal,StartDate,false,PasteCurDate);
   EditField(h2,v,90,"Beigu Datums",Normal,EndDate,false,PasteCurDate);
   EditField(h,v+=vs,90,"S‚kuma laiks",Normal,StartTime,false,PasteCurTime);
+  EditField(h2,v,90,"Nokl. valoda",Normal,DefLangCode,false,WebNGLanguageSClass);
   EditField(h,v+=vs,90,"Re®istr•äan‚s no",Normal,RegFrom,false,PasteCurDate);
   EditField(h2,v,90,"Re®istr•äan‚s l´dz",Normal,RegUntil,false,PasteCurDate);
   CheckBox(h-5,v+=vs,0,"Tikai re®istr•tiem lietot‚jiem",RegFlag);
@@ -1241,6 +1242,24 @@ begin
   SetBlid(JALJobPositionBlock);
   MatrixBegin(10,20,-30,-10,-,10);
   MatCol(1,25,"Amati",0,JobPosition,false,JobTitleSClass);
+  EndMatrix;
+  EndWindow;
+
+  WindowBegin("JAL nozares",JALIndustryTClass,CGHBl,-);
+  SetWRect(80,80,400,280);
+  SetBlid(JALIndustryBlock);
+  MatrixBegin(10,20,-30,-10,-,10);
+  MatCol(1,25,"Nozare",0,Industry,false,0);
+  EndMatrix;
+  EndWindow;
+
+  WindowBegin("Semestri",JALSemesterTClass,CGHBl,-);
+  SetWRect(80,80,500,280);
+  SetBlid(JALSemesterBlock);
+  MatrixBegin(10,20,-30,-10,-,10);
+  MatCol(1,25,"No",0,DateFrom,false,PasteCurDate);
+  MatCol(1,105,"L´dz",0,DateTo,false,PasteCurDate);
+  MatCol(1,185,"Gads",0,YearStr,false,0);
   EndMatrix;
   EndWindow;
 

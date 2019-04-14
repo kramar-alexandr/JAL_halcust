@@ -50,6 +50,8 @@ begin
   EditField(h2,v, 90,"Re®ions",Normal,Region,false,JALRegionSClass);
   EditField(h,v+=vs,50,"Serveris",ViewOnly,ServerCode,false,0);
   EditField(h2,v,90,"Komp‚nija",ViewOnly,CompNr,false,0);
+  EditField(h,v+=vs,50,"S‚kuma datums",ViewOnly,ActDateStart,false,0);
+  EditField(h2,v,90,"Beigu datums",ViewOnly,ActDateEnd,false,0);
   //EditField(h,v+=vs,50,"Serveris",Normal,ServerCode,false,0);
   //EditField(h2,v+=vs,90,"Komp‚nija",Normal,CompNr,false,0);
 	
