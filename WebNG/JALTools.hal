@@ -2,7 +2,8 @@ external function Boolean FindMatchingContentTranslation(record WebNGContentVc,v
 external function Boolean CheckAttachedFilesSizeToLetter(record LetVc);
 external procedure SetContentTypeForExtension(string);
 external function boolean FindMatchingTranslation(string,var record WebNGTranslateVc,string);
-
+external function string 255 FormatSimpleLink(string,boolean);
+external function string 255 GetLinkToStruct(LongInt,boolean);
 
 global
 procedure ShowLastNewsPicture(string style)
@@ -313,6 +314,49 @@ begin
     end;
   end;
   WebOutString("</div></a>");
+
+  return;
+end;
+
+global
+procedure ShowBannerNewsList(string style)
+begin
+  record WebNGContentVc WCr;
+  Boolean foundf,testf;
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+  record WebNGTranslateVc WTr;
+  record WebNGContentStyleVc WCSr;
+  Integer cnt;
+  string 255 link;
+
+  WCSr.Code = style;
+  ReadFirstMain(WCSr,1,true);
+  WCr.ContentStyle = style;
+  WCr.SpecDate = AddYear(CurrentDate,1);
+  foundf = true;
+  while (LoopBackKey("ContentStyle",WCr,2,foundf)) begin
+    if (WCr.ContentStyle!=style) then begin
+      foundf = false;
+    end;
+    testf = foundf;
+    if (FindMatchingContentTranslation(WCr,WTr)==false) then begin
+      testf = false;
+    end;
+    if (testf) then begin
+      if (ReadRecordLink(WCr,1,Attachr,RLr)) begin
+        cnt = cnt + 1;
+        if (cnt>2) then begin
+          foundf = false;
+        end;
+        link =  FormatSimpleLink(GetLinkToStruct(WCSr.HandlerAppNode,true) & WCr.SerNr,true);
+
+        WebOutString("<div class='slide' style='background-image:url(/WebShowContentImage.hal?s=" & WCr.SerNr & ") !important;box-shadow: inset 0 0 0 1000px rgba(0,0,0,0.65); opacity: 0; z-index: 1;'>");      
+				WebOutString("<h2><a href='" & link & "'>" & WTr.Comment & "</a></h2>");
+        WebOutString("</div>");
+      end;
+    end;
+  end;
 
   return;
 end;
