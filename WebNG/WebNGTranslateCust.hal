@@ -6,9 +6,18 @@ begin
 
   WebOutString("<script>");
   
-  WebOutString("jal_str['zeroRecords']             = '" & ToolWebNGTranslateText2(70050) & "';");//IEPRIEK·îJÅ
-  WebOutString("jal_str['Apply']             = '" & ToolWebNGTranslateText2(70051) & "';");//IEPRIEK·îJÅ
+  WebOutString("jal_str['zeroRecords']        = '" & ToolWebNGTranslateText2(70050) & "';");
+  WebOutString("jal_str['Apply']              = '" & ToolWebNGTranslateText2(70051) & "';");
   WebOutString("jal_str['Cancel']             = '" & ToolWebNGTranslateText2(70052) & "';");//IEPRIEK·îJÅ
+  WebOutString("jal_str['OpenApplication']    = '" & ToolWebNGTranslateText2(70053) & "';");
+  WebOutString("jal_str['CloseApplication']   = '" & ToolWebNGTranslateText2(70054) & "';");
+  WebOutString("jal_str['event_empty']        = '" & ToolWebNGTranslateText2(70055) & "';");
+  WebOutString("jal_str['event_rejected']     = '" & ToolWebNGTranslateText2(70056) & "';");
+  WebOutString("jal_str['event_sent']         = '" & ToolWebNGTranslateText2(70057) & "';");
+  WebOutString("jal_str['event_approved']     = '" & ToolWebNGTranslateText2(70058) & "';");
+  WebOutString("jal_str['reg_pending']        = '" & ToolWebNGTranslateText2(70059) & "';");
+  WebOutString("jal_str['reg_approved']       = '" & ToolWebNGTranslateText2(70060) & "';");
+  WebOutString("jal_str['reg_rejected']       = '" & ToolWebNGTranslateText2(70061) & "';");
  
   switch (type) begin
     case 0://smu profile

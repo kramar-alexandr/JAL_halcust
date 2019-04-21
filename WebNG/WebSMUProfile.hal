@@ -39,14 +39,18 @@ procedure ShowFinancialTable(string id,Boolean showwrapf)
 begin
 
   if (showwrapf) then begin
-    WebOutString("        <div class=""profile table-salary smu-border""><div id='cost_table_wrap'>");
-    WebOutString("<div class='table_header'>" & ToolWebNGTranslateText2(80084) & "</div>");
-    WebOutString("<div class='field_descr'>" & ToolWebNGTranslateText2(80088) & "</div>");
-    WebOutString("<div id='temp_table_wrap'><div class='field_wrap'>");
-    WebOutString("<div class='table_field itemname'><div class='table_field_label'>" & ToolWebNGTranslateText2(80085) & "</div><input type='text'></div>");
-    WebOutString("<div class='table_field itemprice'><div class='table_field_label'>" & ToolWebNGTranslateText2(80086) & "</div><input type='text'></div>");
-    WebOutString("<div class='table_field costprice'><div class='table_field_label'>" & ToolWebNGTranslateText2(80087) & "</div><input type='text' readonly></div></div>");
+    WebOutString("        <div class=""profile table-salary smu-border"">");
   end;
+  WebOutString("<div id='cost_table_wrap'>");
+  WebOutString("<div class='table_header'>" & ToolWebNGTranslateText2(80084) & "</div>");
+  if (showwrapf) then begin
+    WebOutString("<div class='field_descr'>" & ToolWebNGTranslateText2(80088) & "</div>");
+  end;
+  WebOutString("<div id='temp_table_wrap'><div class='field_wrap'>");
+  WebOutString("<div class='table_field itemname'><div class='table_field_label'>" & ToolWebNGTranslateText2(80085) & "</div><input type='text'></div>");
+  WebOutString("<div class='table_field itemprice'><div class='table_field_label'>" & ToolWebNGTranslateText2(80086) & "</div><input type='text'></div>");
+  WebOutString("<div class='table_field costprice'><div class='table_field_label'>" & ToolWebNGTranslateText2(80087) & "</div><input type='text' readonly></div></div>");
+  
   WebOutString("            <table id=""" & id & """ cellspacing='0'>");
   WebOutString("                <thead>");
   WebOutString("                <tr>");
@@ -88,8 +92,9 @@ begin
   WebOutString("                </tr>");
   WebOutString("                </tfoot>");
   WebOutString("            </table>");
+  WebOutString("<div class='clear'></div></div></div>");
   if (showwrapf) then begin
-    WebOutString("        <div class='clear'></div></div></div><div id='add_item_button' class='spbutton'>" & ToolWebNGTranslateText2(80083) & "</div></div>");
+    WebOutString("        <div id='add_item_button' class='spbutton'>" & ToolWebNGTranslateText2(80083) & "</div></div>");
   end;
 
   return;
@@ -105,8 +110,8 @@ begin
 
   if (showwrapf) then begin
     WebOutString("        <div class=""profile table-plan smu-border"">");
-    WebOutString("<div class='table_header'>" & ToolWebNGTranslateText2(80066) & "</div>");
   end;
+  WebOutString("<div class='table_header'>" & ToolWebNGTranslateText2(80066) & "</div>");
   WebOutString("            <table id=""" & id & """ cellspacing='0'>");
   WebOutString("                <thead>");
   WebOutString("                <tr>");
@@ -812,16 +817,22 @@ l33:;
         i = i + 1;
       end;
       if (JSONGet(js,"Approve")=="1") then begin
-        CreateUniqueTeachApp(0,SMFr.SMFCode,CUr.TeacherCode);
-        TCr.TeacherCode = CUr.TeacherCode;
-        if (ReadFirstMain(TCr,1,true)) then begin
-          tCUr.Code = TCr.CustCode;
-          if (ReadFirstMain(tCUr,1,true)) then begin
-            BlockLoad(JALClassbl);
-            vVals["custcode"] = CUr.Code;
-            vVals["smucode"] = SMFr.SMFCode;
-            vVals["link"] = "http://jal.lv/pieteikumi";
-            SendJALEmail(vVals,JALCLassbl.TeacherRequestText2,tCUr.eMail);        
+        //CreateUniqueTeachApp(0,SMFr.SMFCode,CUr.TeacherCode);
+        if (ReadFirstMain(SMFr,1,true)) then begin
+          RecordCopy(oldSMFr,SMFr);
+          SMFr.ApprovalStatus = 1;
+          if (RecordUpdate(oldSMFr,SMFr,true)==0) then begin
+            TCr.TeacherCode = CUr.TeacherCode;
+            if (ReadFirstMain(TCr,1,true)) then begin
+              tCUr.Code = TCr.CustCode;
+              if (ReadFirstMain(tCUr,1,true)) then begin
+                BlockLoad(JALClassbl);
+                vVals["custcode"] = CUr.Code;
+                vVals["smucode"] = SMFr.SMFCode;
+                vVals["link"] = "http://jal.lv/teacher-smu";
+                SendJALEmail(vVals,JALCLassbl.TeacherRequestText2,tCUr.eMail);        
+              end;
+            end;
           end;
         end;
       end;

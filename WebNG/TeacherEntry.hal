@@ -421,7 +421,7 @@ begin
   return;
 end;
 
-function Boolean SMUParticipatedInEvent(record SMFVc SMFr,Longint eventnr)
+function Boolean SMUParticipatedInEvent(record SMFVc SMFr,Longint eventnr,var Integer parttype)
 begin
   Boolean res;
   record JALEventEntryVc JEEr;
@@ -431,22 +431,24 @@ begin
   JEEr.CustType = 0;
   if (ReadFirstKey("CustType",JEEr,3,true)) then begin
     res = true;
+    parttype = JEEr.StatusFlag;
   end;
 
   SMUParticipatedInEvent = res;
   return;
 end;
 
-function Boolean GetEventHist(record SMFVc SMFr,Date sd,Date ed,Integer type)
+function Boolean GetEventHist(record SMFVc SMFr,Date sd,Date ed,Integer type,var Integer parttype)
 begin
   Boolean res;
   record JALEventVc JEr;
   
   JEr.StatusFlag = type;
   JEr.StartDate = sd;
+  parttype = -1;
   if (ReadFirstKey("StatusFlag",JEr,2,false)) then begin
     if (JEr.StatusFlag==type and DateInRange(JEr.StartDate,sd,ed)) then begin
-      if (SMUParticipatedInEvent(SMFr,JEr.SerNr)) then begin
+      if (SMUParticipatedInEvent(SMFr,JEr.SerNr,parttype)) then begin
         res = true;
       end;
     end;
@@ -471,15 +473,16 @@ begin
   record RLinkVc RLr;
   Date sd,ed;
   Boolean titanflag,enudienaflag;
+  Integer partype;
   
   code = webgetarg("code");
   type = webgetarg("type");
   status = webgetarg("status");
   
   
+  WebOutStringFormatNL("{\"SMU\":[");
   if(FindTeacherRecord(CurrentCust,code))then begin
     totcnt = 0;
-    WebOutStringFormatNL("{\"SMU\":[");
   /*
     resetLoop(JTr);
     TrHs = true;
@@ -611,8 +614,8 @@ begin
           WebOutStringFormatNL("\"Skolens\":\"" & CUr.Name & "\",");
           ReadRecordLink(CUr,1,SMFr,RLr);
           GetSMUSemester(SMFr,semstr,sd,ed);
-          enudienaflag = GetEventHist(SMFr,sd,ed,1);
-          titanflag = GetEventHist(SMFr,sd,ed,2);
+          enudienaflag = GetEventHist(SMFr,sd,ed,1,partype);
+          titanflag = GetEventHist(SMFr,sd,ed,2,partype);
           WebOutStringFormatNL("\"Nosaukums\":\"" & SMFr.SMFName & "\",");
           WebOutStringFormatNL("\"Likvidets\":\"" & SMFr.StatusFlag & "\",");
           WebOutStringFormatNL("\"MacibuGads\":\"" & semstr & "\",");
@@ -622,12 +625,11 @@ begin
         end;
       end;
     end;
-    WebOutStringFormatNL("],");
     
-    WebOutStringFormatNL("\"totcnt\":" & totcnt);
-    
-    WebOutString("}");
   end;
+  WebOutStringFormatNL("],");  
+  WebOutStringFormatNL("\"totcnt\":" & totcnt);
+  WebOutString("}");
   
   
   
@@ -827,6 +829,61 @@ begin
 return;
 end;
 
+procedure ShowSMUDocSectionTemplate()
+begin
+  
+  WebOutString("<div id='smuCard' class='info-smu'>");
+  WebOutString("<div class='smu-name'>");
+  WebOutString("<a class='open-info-smu'><h2 class='title'></h2></a>");
+  WebOutString("<p class='leader'>" & ToolWebNGTranslateText2(80103) & "</p>");
+  WebOutString("<p class='members'>" & ToolWebNGTranslateText2(80104) & "</p>");
+  WebOutString("</div>");
+  WebOutString("<div class='documents'>");
+  WebOutString("<p>" & ToolWebNGTranslateText2(80093) & "</p>");//SMU re®istr‚cijas statuss
+  WebOutString("<div class='docs'>");
+  WebOutString("<div class='docs-card'>");
+  WebOutString("<img class='posted' src='../img/doc-grey.png' alt=''>");
+  WebOutString("<p>" & ToolWebNGTranslateText2(80094) & "</p>");//Iesðt´ts dokuments
+  WebOutString("</div>");
+  WebOutString("<div class='docs-card'>");
+  WebOutString("<img class='submitTeacher' src='../img/doc-grey.png' alt=''>");
+  WebOutString("<p>" & ToolWebNGTranslateText2(80095) & "</p>");//Skolot‚js apstiprin‚jis
+  WebOutString("</div>");
+  WebOutString("<div class='docs-card'>");
+  WebOutString("<img class='submitJAL' src='../img/doc-grey.png' alt=''>");
+  WebOutString("<p>" & ToolWebNGTranslateText2(80096) & "</p>");//JA Latvija apstiprin‚jis
+  WebOutString("</div>");
+  WebOutString("</div>");
+  WebOutString("<p>" & ToolWebNGTranslateText2(80097) & "</p>");//Aktivit‚te:
+  WebOutString("<div class='activitate'>");
+  WebOutString("<div class='docs-card cbziema'>");
+  WebOutString("<img src='' alt=''>");//../img/yes.png
+  WebOutString("<p>" & ToolWebNGTranslateText2(80098) & "</p>");//Cits Baz‚rs ziema
+  WebOutString("</div>");
+  WebOutString("<div class='docs-card cbreg'>");
+  WebOutString("<img src='' alt=''>");//../img/mail.png
+  WebOutString("<p>" & ToolWebNGTranslateText2(80099) & "</p>");//Cits Baz‚rs re®ionos
+  WebOutString("</div>");
+  WebOutString("<div class='docs-card cbpav'>");
+  WebOutString("<img src='' alt=''>");//../img/space.png
+  WebOutString("<p>" & ToolWebNGTranslateText2(80100) & "</p>");//Cits Baz‚rs pavasar´
+  WebOutString("</div>");
+  WebOutString("<div class='docs-card judiena'>");
+  WebOutString("<img src='' alt=''>");//../img/no.png
+  WebOutString("<p>" & ToolWebNGTranslateText2(80101) & "</p>");//Jauno uzÀ•m•ju dienas
+  WebOutString("</div>");
+  WebOutString("</div>");
+  WebOutString("</div>");
+  WebOutString("<div class='smu-button'>");
+  WebOutString("<button class='spbutton show-info-btn'>" & ToolWebNGTranslateText2(70053) & "</button>");//ATV”RT PIETEIKUMU
+  WebOutString("<button class='spbutton reg-succes'>" & ToolWebNGTranslateText2(80102) & "</button>");//REþ.APLIEC±BA
+  WebOutString("</div>");
+  WebOutString("</div>");
+  WebOutString("</div>");  
+
+  return;
+end;
+
 procedure ShowSMUInfoTemplate()
 begin
 
@@ -845,6 +902,10 @@ end;
 global procedure ShowTeacherSmuEntry(record CUVc CUr,record TeacherVc TCr)
 begin
 
+  WebOutString("<div id='smu_doc_template'>");
+  ShowSMUDocSectionTemplate;
+  WebOutString("</div>");
+
   WebOutString("<div id='smu_info_template'>");
   WebOutString("<div class='company-detail'>");
   ShowSMUInfoTemplate;
@@ -853,7 +914,13 @@ begin
   WebOutString("<p>" & ToolWebNGTranslateText2(80054) & "</p>");//
   WebOutString("</div>");
   ShowFinancialTable("company-table",false);
-//  ShowEventTable("finplan_table",false);
+  ShowEventTable("finplan_table",false);
+  WebOutString("<div class='button-tab'>");
+  WebOutString("<button id='confirmBtn' class='spbutton'>" & ToolWebNGTranslateText2(80090) & "</button>");
+  WebOutString("<button id='rejectBtn' class='spbutton'>" & ToolWebNGTranslateText2(80091) & "</button>");
+  WebOutString("<button id='printBtn' class='spbutton'>" & ToolWebNGTranslateText2(80092) & "</button>");
+  WebOutString("</div>");
+
   WebOutString("</div>");
   WebOutString("</div>");
   
@@ -1007,88 +1074,61 @@ begin
   record JALFileVc JFr;
   record JALTeacherAccVc JTr;
   boolean TrHs,TrHs1,testf,testf1,testf2;
+  string 255 semstr;
+  Date sd,ed;
+  Integer cbziema,cbreg,cbpav,judiena;
+
   if(WebLoginStatus==3)then begin
   code = webgetarg("code");
   
   WebOutStringFormatNL("[");
   
   if(nonblank(code))then begin
-    resetLoop(JTr);
-    JTr.RecCode = code;
-    TrHs = true;
-    while(loopmain(JTr,1,TrHs))begin
-            if(JTr.RecCode==code and JTr.StatusFlag==1)then begin
+    while (LoopKey("MCode:" & code,SMFr,1,true)) begin
+      cnt = cnt + 1;
+      if(cnt>1)then begin
+          weboutstring(",");
+      end;
+      WebOutStringFormatNL("{");
+          WebOutStringFormatNL("\"regNr\":\"" & SMFr.SMFCode & "\",");
+          WebOutStringFormatNL("\"klass\":\"" & SMFr.ClassNum & "\",");
 
-                SMFr.SMFCode = JTr.SMFCode;
-                if(readfirstmain(SMFr,1,true))then begin
-                  cnt = cnt + 1;
-                  if(cnt>1)then begin
-                      weboutstring(",");
-                  end;
-                    WebOutStringFormatNL("{");
-                        WebOutStringFormatNL("\"regNr\":\"" & SMFr.SMFCode & "\",");
-                        WebOutStringFormatNL("\"klass\":\"" & SMFr.ClassNum & "\",");
-  
-                        if(SMFr.TypeFlag==0) then begin
-                            WebOutStringFormatNL("\"companyType\":\"" & "framing" & "\",");
-                        end else begin
-                          if(SMFr.TypeFlag==1) then begin
-                            WebOutStringFormatNL("\"companyType\":\"" & "services" & "\",");
-                          end else begin
-                            if(SMFr.TypeFlag==2) then begin
-                              WebOutStringFormatNL("\"companyType\":\"" & "both" & "\",");
-                            end else begin
-                              WebOutStringFormatNL("\"companyType\":\"" & "none" & "\",");
-                            end;
-                          end;  
-                        end;
-                        WebOutStringFormatNL("\"targetAudit\":\"" & SMFr.TargetAud & "\",");
-                        WebOutStringFormatNL("\"title\":\"" & SMFr.SMFName & "\",");
-                        WebOutStringFormatNL("\"leader\":\"" & SMFr.Manager & "\",");
-                        WebOutStringFormatNL("\"members\":\"" & SMFr.Member & "\",");
-                        //show fin data and employee list
-                        GetFinData(SMFr);
-                        GetEmpList(SMFr);
+          if(SMFr.TypeFlag==0) then begin
+              WebOutStringFormatNL("\"companyType\":\"" & "framing" & "\",");
+          end else begin
+            if(SMFr.TypeFlag==1) then begin
+              WebOutStringFormatNL("\"companyType\":\"" & "services" & "\",");
+            end else begin
+              if(SMFr.TypeFlag==2) then begin
+                WebOutStringFormatNL("\"companyType\":\"" & "both" & "\",");
+              end else begin
+                WebOutStringFormatNL("\"companyType\":\"" & "none" & "\",");
+              end;
+            end;  
+          end;
+          WebOutStringFormatNL("\"targetAudit\":\"" & SMFr.TargetAud & "\",");
+          WebOutStringFormatNL("\"title\":\"" & SMFr.SMFName & "\",");
+          WebOutStringFormatNL("\"leader\":\"" & SMFr.Manager & "\",");
+          WebOutStringFormatNL("\"members\":\"" & SMFr.Member & "\",");
+          //show fin data and employee list
+          GetFinData(SMFr);
+          GetEmpList(SMFr);
 
-                        
-                        WebOutStringFormatNL("\"submittedDocs\":{");
+          GetSMUSemester(SMFr,semstr,sd,ed);
+          GetEventHist(SMFr,sd,ed,3,cbziema);
+          GetEventHist(SMFr,sd,ed,4,cbreg);
+          GetEventHist(SMFr,sd,ed,5,cbpav);
+          GetEventHist(SMFr,sd,ed,6,judiena);
+          
+          WebOutStringFormatNL("\"approvalstatus\":\"" & SMFr.ApprovalStatus & "\",");
+          WebOutStringFormatNL("\"cbziema\":\"" & cbziema & "\",");
+          WebOutStringFormatNL("\"cbreg\":\"" & cbreg & "\",");
+          WebOutStringFormatNL("\"cbpav\":\"" & cbpav & "\",");
+          WebOutStringFormatNL("\"judiena\":\"" & judiena & "\"");
 
-                        testf = false;
-                        testf1 = false;
-                        testf2 = false;
-                        ResetLoop(JFr);
-                        JFr.SMFCode = SMFr.SMFCode;
-                        while(LoopKey("SMFCode",JFr,1,TrHs1)) begin
-                          if(JFr.SMFCode!=SMFr.SMFCode) then begin TrHs1 = false; end;
-                          If(TrHs1) then begin
-                            if(JFr.Status==0) then begin testf = true; end;
-                            if(JFr.Status==1) then begin testf1 = true; end;
-                            if(JFr.Status==2) then begin testf2 = true; end;
-                          end;
-                        end;
-                        if(testf) then begin
-                          WebOutStringFormatNL("\"posted\":\"" & "true" & "\",");
-                        end else begin
-                          WebOutStringFormatNL("\"posted\":\"" & "false" & "\",");
-                        end;  
-                        if(testf1) then begin
-                          WebOutStringFormatNL("\"submitTeacher\":\"" & "true" & "\",");
-                        end else begin
-                          WebOutStringFormatNL("\"submitTeacher\":\"" & "false" & "\",");
-                        end;  
-                        if(testf2) then begin
-                          WebOutStringFormatNL("\"submitJAL\":\"" & "true" & "\"");
-                        end else begin
-                          WebOutStringFormatNL("\"submitJAL\":\"" & "false" & "\"");
-                        end;       
-                        ResetLoop(JFr);
-                        WebOutStringFormatNL("}");
-                                                WebOutStringFormatNL("}");
-
-                end;
-            end;
-        end;
-        WebOutStringFormatNL("]");
+      WebOutStringFormatNL("}");
+    end;
+    WebOutStringFormatNL("]");
   end;
 
 end;
@@ -1097,21 +1137,25 @@ end;
 
 global webpublic updating procedure WEBJALSMUChangeDocsStatus()
 begin
-  record SMFVc SMFr;
+  record SMFVc SMFr,oldSMFr;
   row SMFVc SMFrw;
   boolean testf;
-  integer i,mtrw,cnt;
-  string 50 code,status,type;
+  integer i,mtrw,cnt,type;
+  string 50 code,status;
   record JALFileVc JTr,oldJTr;
   boolean TrHs;
   string 20 newstat,sernr;
+  record TeacherVc TCr;
+  record MentorVc MTr;
+  record CUVc CUr;
+
 
   if(WebLoginStatus==3)then begin
     sernr = webgetarg("sernr");
     newstat = webgetarg("status");
     
     if(nonblank(sernr) and nonblank(newstat))then begin
-
+/*
       while(LoopMain(JTr,1,true)) begin
         testf = true;
         if(JTr.SMFCode!=sernr) then begin testf = false; end;
@@ -1126,8 +1170,21 @@ begin
           end;  
         end;  
       end;
+*/
+//again security issue... anyone can call this function
+      Cur.Code = CurrentCust;
+      if (ReadFirstMain(CUr,1,true)) then begin
+        type = GetJAlCustType(CUr,SMFr,TCr,MTr);
+        if (type==1) then begin
+          SMFr.SMFCode = sernr;
+          if (ReadFirstMain(SMFr,1,true)) then begin
+            RecordCopy(oldSMFr,SMFr);
+            SMFr.ApprovalStatus = StringToInt(newstat);
+            RecordUpdate(oldSMFr,SMFr,true);
+          end;
+        end;
+      end;
       weboutstring("{\"result\":\"OK\"}");
-      ResetLoop(JTr);
     end else begin
 
       weboutstring("{\"result\":\"Error params\"}");

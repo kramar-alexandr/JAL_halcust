@@ -251,7 +251,7 @@ begin
   RecordField(ActDateStart,M4Date,0,0);
   RecordField(ActDateEnd,M4Date,0,0);
   RecordField(Education,M4Str,255,0);
-  
+  RecordField(ApprovalStatus,M4Int,0,0);//0-none,1-sent to teacher,2-sent to jal,3-approved
   ArrayBegin(Math,-,1);
   ArrayField(Type,M4Set,1005,0);
   ArrayField(Code,M4Code,10,0);

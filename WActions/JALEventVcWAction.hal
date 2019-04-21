@@ -1,1 +1,103 @@
-globalprocedure NewJALEventTranslationDsm()begin  record JALEventVc JEr;  record WebNGTranslateVc WebNGTranslater;  row WebNGTranslateVc WebNGTranslaterw;  Integer wn;    wn = CurWindow;  GetWindowRecord(wn,JEr);  RecordNew(WebNGTranslater);  WebNGTranslater.Code = JEr.SerNr;  WebNGTranslater.Comment = JEr.Comment;  WebNGTranslaterw.OverviewText = JEr.Comment;  MatRowPut(WebNGTranslater,0,WebNGTranslaterw);  WebNGTranslater.FileName = 5;  wn = OpenWindow("WebNGTranslateDClass",1,0,"","",WebNGTranslater);      return;end;globalfunction Boolean JALEventDClassUpdateWindowSubset(Integer wn,var string subsetname)begin  record JALEventVc JEr;    GetWindowRecord(wn,JEr);  subsetname = JEr.SerNr;  JALEventDClassUpdateWindowSubset = true;  RETURN;END;globalfunction Boolean JALEventDClassListDblClick(Integer wn)begin  Integer mwn;  record WebNGTranslateVc WebNGTranslater;    if (WindowState(wn)==0) then begin    if (ReadMarkedRecord(wn,WebNGTranslater)) then begin      mwn = OpenWindow("WebNGTranslateDClass",1,0,"","",WebNGTranslater);    end;  end;  JALEventDClassListDblClick = true;  return;end;globalprocedure OpenJALEventTranslationDsm()begin  Integer mwn,wn;  record WebNGTranslateVc WebNGTranslater;    wn = CurWindow;  if (WindowState(wn)==0) then begin    if (ReadMarkedRecord(wn,WebNGTranslater)) then begin      mwn = OpenWindow("WebNGTranslateDClass",1,0,"","",WebNGTranslater);    end;  end;return;end;globalupdating function Boolean JALEventDClassArtCodeEFAfter(Integer wn,Integer fn, Integer rownr,Integer changed)BEGIN  Boolean res;  record JALEventFieldVc JFr;  record JALEventVc JEr;  row JALEventVc JErw;    GetWindowRecord(wn,JEr);  MatRowGet(JEr,rownr,JErw);  JFr.SerNr = JErw.Field;  if readfirstmain(JFr,1,true) then begin    JErw.Comment = JFr.Comment;    MatRowPut(JEr,rownr,JErw);  end;  PutWindowRecord(wn,JEr);JALEventDClassArtCodeEFAfter = res;return;end;globalupdating function Boolean JALEventDClassAfterEditField(Integer wn,string fieldname,Integer fn, Integer rownr,Integer changed)BEGIN  Boolean res;  switch (fieldname) begin    case "Field": res = JALEventDClassArtCodeEFAfter(wn,fn,rownr,changed);  end;  JALEventDClassAfterEditField = res;return;end;
+global
+procedure NewJALEventTranslationDsm()
+begin
+  record JALEventVc JEr;
+  record WebNGTranslateVc WebNGTranslater;
+  row WebNGTranslateVc WebNGTranslaterw;
+  Integer wn;
+  
+  wn = CurWindow;
+  GetWindowRecord(wn,JEr);
+  RecordNew(WebNGTranslater);
+  WebNGTranslater.Code = JEr.SerNr;
+  WebNGTranslater.Comment = JEr.Comment;
+  WebNGTranslaterw.OverviewText = JEr.Comment;
+  MatRowPut(WebNGTranslater,0,WebNGTranslaterw);
+  WebNGTranslater.FileName = 5;
+  wn = OpenWindow("WebNGTranslateDClass",1,0,"","",WebNGTranslater);    
+  return;
+end;
+
+
+global
+function Boolean JALEventDClassUpdateWindowSubset(Integer wn,var string subsetname)
+begin
+  record JALEventVc JEr;
+  
+  GetWindowRecord(wn,JEr);
+  subsetname = JEr.SerNr;
+  JALEventDClassUpdateWindowSubset = true;
+  RETURN;
+END;
+
+global
+function Boolean JALEventDClassListDblClick(Integer wn)
+begin
+  Integer mwn;
+  record WebNGTranslateVc WebNGTranslater;
+  
+  if (WindowState(wn)==0) then begin
+    if (ReadMarkedRecord(wn,WebNGTranslater)) then begin
+      mwn = OpenWindow("WebNGTranslateDClass",1,0,"","",WebNGTranslater);
+    end;
+  end;
+  JALEventDClassListDblClick = true;
+  return;
+end;
+
+global
+procedure OpenJALEventTranslationDsm()
+begin
+  Integer mwn,wn;
+  record WebNGTranslateVc WebNGTranslater;
+  
+  wn = CurWindow;
+  if (WindowState(wn)==0) then begin
+    if (ReadMarkedRecord(wn,WebNGTranslater)) then begin
+      mwn = OpenWindow("WebNGTranslateDClass",1,0,"","",WebNGTranslater);
+    end;
+  end;
+return;
+end;
+
+global
+updating function Boolean JALEventDClassArtCodeEFAfter(Integer wn,Integer fn, Integer rownr,Integer changed)
+BEGIN
+  Boolean res;
+  record JALEventFieldVc JFr;
+  record JALEventVc JEr;
+  row JALEventVc JErw;
+  
+  GetWindowRecord(wn,JEr);
+  MatRowGet(JEr,rownr,JErw);
+  JFr.SerNr = JErw.Field;
+  if readfirstmain(JFr,1,true) then begin
+    JErw.Comment = JFr.Comment;
+    MatRowPut(JEr,rownr,JErw);
+  end;
+
+  PutWindowRecord(wn,JEr);
+
+JALEventDClassArtCodeEFAfter = res;
+return;
+end;
+
+global
+updating function Boolean JALEventDClassAfterEditField(Integer wn,string fieldname,Integer fn, Integer rownr,Integer changed)
+BEGIN
+  Boolean res;
+
+  switch (fieldname) begin
+    case "Field": res = JALEventDClassArtCodeEFAfter(wn,fn,rownr,changed);
+  end;
+
+  JALEventDClassAfterEditField = res;
+return;
+end;
+
+global
+procedure JALEventDClassButtonFlags(Integer wn,var Boolean duplOK,var Boolean newOK,var Boolean saveOK,var Boolean restOK)
+begin
+  saveOK = true;
+  return;
+end;

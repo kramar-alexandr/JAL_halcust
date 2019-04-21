@@ -930,17 +930,13 @@ begin
   EndWindow;
 
   WindowBegin("Pas‚kums",JALEventDClass,CGview,-);
-  SetWRect(64,80,690,560);
+  SetWRect(64,80,740,560);
   UseView(JALEventVc);
   AutoSizeWindow(false);
   v = 10; vs = 22; h = 100; h2 = 300; h3=450;
   EditField(h,v=6,90,"S•r. nr.",Normal,SerNr,false,0);
   EditField(h2,v,90,"Datums",Normal,TransDate,false,PasteCurDate);
   CheckBox(h3-30,v,0,"Akt´vs",ActiveFlag);
-  ButtonFrame(h3+50,v+20,90,3,"Dal´ba");
-  RadioButton(h3+50,v+20,0,0,"Cits",StatusFlag);
-  RadioButton(h3+50,v+36,1,0,"”nu diena",StatusFlag);
-  RadioButton(h3+50,v+52,2,0,"TITAN",StatusFlag);
   EditField(h,v+=vs,290,"Koment‚rs",Normal,Comment,false,0);
   CheckBox(h3-30,v,0,"Sl•gts",ClosedFlag);  
 	
@@ -951,8 +947,16 @@ begin
   EditField(h,v+=vs,90,"Re®istr•äan‚s no",Normal,RegFrom,false,PasteCurDate);
   EditField(h2,v,90,"Re®istr•äan‚s l´dz",Normal,RegUntil,false,PasteCurDate);
   CheckBox(h-5,v+=vs,0,"Tikai re®istr•tiem lietot‚jiem",RegFlag);
-  HalPushButton(-130,v,-30,v+20,"NewJALEventTranslationDsm","Jauns tulkojums");
-  HalPushButton(-250,v,-150,v+20,"OpenJALEventTranslationDsm","Atv•rt tulkojumu");
+  HalPushButton(-300,v,-200,v+20,"NewJALEventTranslationDsm","Jauns tulkojums");
+  //HalPushButton(-250,v,-150,v+20,"OpenJALEventTranslationDsm","Atv•rt tulkojumu");
+  ButtonFrame(h3+50,v=20,150,7,"Dal´ba");
+  RadioButton(h3+50,v,0,0,"Cits",StatusFlag);
+  RadioButton(h3+50,v+=16,1,0,"”nu diena",StatusFlag);
+  RadioButton(h3+50,v+=16,2,0,"TITAN",StatusFlag);
+  RadioButton(h3+50,v+=16,3,0,"Cits Baz‚rs ziema",StatusFlag);
+  RadioButton(h3+50,v+=16,4,0,"Cits Baz‚rs re®ionos",StatusFlag);
+  RadioButton(h3+50,v+=16,5,0,"Cits Baz‚rs pavasar´",StatusFlag);
+  RadioButton(h3+50,v+=16,6,0,"Jauno uzÀ•m•ju dienas",StatusFlag);
   RecordList2(10,v+=40,-30,v+=100,"WebNGTranslateVc");
   RlColKey(4,4,"Valoda",LangCode,false,EventLangCode);
   RlColKey(90,90,"Izmain´ts",LastChanged,false,EventLastChanged);
