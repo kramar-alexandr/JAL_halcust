@@ -55,22 +55,18 @@ begin
   //EditField(h,v+=vs,50,"Serveris",Normal,ServerCode,false,0);
   //EditField(h2,v+=vs,90,"Komp‚nija",Normal,CompNr,false,0);
 	
-  ButtonFrame(h,v=(vm+=(v+40)),90,4,"Statuss");
-  RadioButton(h,v,0,0,"Neapstiprin‚ta",StatusFlag);
-  RadioButton(h,v+=16,1,0,"Akt´va",StatusFlag);
-  RadioButton(h,v+=16,2,0,"Neakt´va",StatusFlag);
-  RadioButton(h,v+=16,3,0,"Likvid•ta",StatusFlag);
+  ButtonFrame(h,v=(vm+=(v+40)),110,6,"Statuss");
+  RadioButton(h,v,0,0,"Neapstiprin‚ta",ApprovalStatus);
+  RadioButton(h,v+=16,1,0,"Iesniegts",ApprovalStatus);
+  RadioButton(h,v+=16,2,0,"Nosðt´ts JAL",ApprovalStatus);
+  RadioButton(h,v+=16,3,0,"JAL Apstiprin‚ts",ApprovalStatus);
+  RadioButton(h,v+=16,4,0,"JAL Noraid´ts",ApprovalStatus);
+  RadioButton(h,v+=16,5,0,"Likvid•ta",ApprovalStatus);
   ButtonFrame(h2,v=vm,90,3,"Tips");
   RadioButton(h2,v,0,0,"Raìoäana",TypeFlag);
   RadioButton(h2,v+=16,1,0,"Pakalpojumi",TypeFlag);
   RadioButton(h2,v+=16,2,0,"Abi",TypeFlag);
 
-  ButtonFrame(h,v=v+60,120,5,"Apstiprin‚juma Statuss");
-  RadioButton(h,v,0,0,"Nav s‚kts",ApprovalStatus);
-  RadioButton(h,v+=16,1,0,"Nosðt´ts skolot‚jam",ApprovalStatus);
-  RadioButton(h,v+=16,2,0,"Nosðt´ts JAL",ApprovalStatus);
-  RadioButton(h,v+=16,3,0,"Apstiprin‚ts",ApprovalStatus);
-  RadioButton(h,v+=16,4,0,"JAL Noraid´ts",ApprovalStatus);
 
 // Edit Start ---------------------------------------------- Edit Start
 	//Friday, 5 October 2018 18:00:16
