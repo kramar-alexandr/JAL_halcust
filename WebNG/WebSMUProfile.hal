@@ -46,7 +46,7 @@ begin
   if (showwrapf) then begin
     WebOutString("<div class='field_descr'>" & ToolWebNGTranslateText2(80088) & "</div>");
   end;
-  WebOutString("<div id='temp_table_wrap'><div class='field_wrap'>");
+  WebOutString("<div id='temp_table_wrap'><div class='table_field_wrap'>");
   WebOutString("<div class='table_field itemname'><div class='table_field_label'>" & ToolWebNGTranslateText2(80085) & "</div><input type='text'></div>");
   WebOutString("<div class='table_field itemprice'><div class='table_field_label'>" & ToolWebNGTranslateText2(80086) & "</div><input type='text'></div>");
   WebOutString("<div class='table_field costprice'><div class='table_field_label'>" & ToolWebNGTranslateText2(80087) & "</div><input type='text' readonly></div></div>");
@@ -115,6 +115,7 @@ begin
   WebOutString("            <table id=""" & id & """ cellspacing='0'>");
   WebOutString("                <thead>");
   WebOutString("                <tr>");
+  WebOutString("                    <th></th>");//dummy column for ordering
   WebOutString("                    <th></th>");
   WebOutString("                    <th>" & ToolWebNGTranslateText2(80067) & "</th>");
   WebOutString("                    <th>" & ToolWebNGTranslateText2(80060) & "</th>");
@@ -127,6 +128,7 @@ begin
   WebOutString("                </thead>");
   WebOutString("                <tbody>");
   WebOutString("                <tr>");
+  WebOutString("                    <td></td>");//dummy column for ordering
   WebOutString("                    <td></td>");
   WebOutString("                    <td></td>");
   WebOutString("                    <td></td>");
@@ -139,7 +141,7 @@ begin
   WebOutString("                </tbody>");
   WebOutString("                <tfoot>");
   WebOutString("                <tr>");
-  WebOutString("                    <td colspan='5'>" & ToolWebNGTranslateText2(80068) & "</td>");
+  WebOutString("                    <td colspan='6'>" & ToolWebNGTranslateText2(80068) & "</td>");
   WebOutString("                    <td></td>");
   WebOutString("                    <td></td>");
   WebOutString("                    <td></td>");
@@ -722,6 +724,26 @@ lout:;
   return;
 end;
 
+function string 255 RemoveEndingLineBreaks(string tstr)
+begin
+  Integer i;
+  string 255 res;
+  Boolean testf;
+  
+  testf = true;
+  res = tstr;
+  while (testf) begin
+    if (right(res,2)=="\\n") then begin
+      res = left(res,len(res)-2);
+    end else begin
+      testf = false;
+    end;
+  end;
+
+  RemoveEndingLineBreaks = res;
+  return;
+end;
+
 global webpublic
 updating procedure WebSaveSMUDataFromEditing()
 begin
@@ -733,7 +755,7 @@ begin
   record EventTurnoverVc ETr;
   row EventTurnoverVc ETrw;
   Integer i,j,errtype;
-  string 255 root,errstr;
+  string 255 root,errstr,tstr;
   record TeacherVc TCr;
   record JALClassBlock JALClassbl;
   vector string 255 vVals;
@@ -761,7 +783,8 @@ begin
       SMFr.Education = JSONGet(js,"Education");
       SMFr.ActDateStart = DateFromString(JSONGet(js,"ActDateStart"),"YYYY-MM-DD");
       SMFr.ActDateEnd = DateFromString(JSONGet(js,"ActDateEnd"),"YYYY-MM-DD");
-      SetTextField(SMFr,JSONGet(js,"Text"));
+      tstr = RemoveEndingLineBreaks(JSONGet(js,"Text"));
+      SetTextField(SMFr,tstr);
       if (ValidateSMUData(SMFr,oldSMFr,errtype,errstr)==false) then begin
         goto lend;
       end;
