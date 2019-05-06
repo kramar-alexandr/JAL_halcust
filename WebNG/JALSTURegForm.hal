@@ -876,29 +876,33 @@ begin
 
   CUr.Code = WebGetArg("c");
   if (ReadFirstMain(CUr,1,true)) then begin
-    if (CUr.Comment==WebGetArg("a")) then begin
-      RecordCopy(oldCUr,CUr);
-  		CUr.AllowLogin = 1;  
-      if (RecordUpdate(oldCUr,CUr,true)==0) then begin
-        TCr.TeacherCode = CUr.TeacherCode;
-        if (ReadFirstMain(TCr,1,true)) then begin
-          tCUr.Code = TCr.CustCode;
-          if (ReadFirstMain(tCur,1,true)) then begin
-            CreateTeachApp(3,CUr.Code,TCr.TeacherCode);
-            BlockLoad(JALClassbl);
-            vVals["custcode"] = CUr.Code;
-            vVals["link"] = "http://jal.lv/pieteikumi";
-            SendJALEmail(vVals,JALCLassbl.TeacherRequestText,tCUr.eMail);
+    if (CUr.AllowLogin==0) then begin
+      if (CUr.Comment==WebGetArg("a")) then begin
+        RecordCopy(oldCUr,CUr);
+        CUr.AllowLogin = 1;  
+        if (RecordUpdate(oldCUr,CUr,true)==0) then begin
+          TCr.TeacherCode = CUr.TeacherCode;
+          if (ReadFirstMain(TCr,1,true)) then begin
+            tCUr.Code = TCr.CustCode;
+            if (ReadFirstMain(tCur,1,true)) then begin
+              CreateTeachApp(3,CUr.Code,TCr.TeacherCode);
+              BlockLoad(JALClassbl);
+              vVals["custcode"] = CUr.Code;
+              vVals["link"] = "http://jal.lv/pieteikumi";
+              SendJALEmail(vVals,JALCLassbl.TeacherRequestText,tCUr.eMail);
+            end;
           end;
+        end else begin
+          LogText(0,"can't save");
         end;
-		  end else begin
-			  logtext(0,"can't save");
-			end;
+      end else begin
+        LogText(0,"wrong link");
+      end;
 		end else begin
-			logtext(0,"wrong link");
+			LogText(0,"already verified " & CUr.Code);
 		end;	
 	end else begin
-		logtext(0,"wrong user");
+		LogText(0,"wrong user");
 	end;	
 	ShowRedirectHtml(FormatSimpleLink("/reg_login",true),false);
 
