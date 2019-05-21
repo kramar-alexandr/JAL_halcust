@@ -21,11 +21,11 @@ begin
 end;
 
 
-procedure ShowSMUTextArea(string label,string name,string descr)
+procedure ShowSMUTextArea(string label,string name,string descr,string extra)
 begin
 
   WebOutString("<div class=""field_row"">");
-  WebOutString("<div class=""field_col""><div class=""field_label"">" & label & "</div><div class=""field_wrap""><textarea class=""" & name & """ name=""" & name & """></textarea></div></div>");
+  WebOutString("<div class=""field_col""><div class=""field_label"">" & label & "</div><div class=""field_wrap""><textarea class=""" & name & """ name=""" & name & """ " & extra & "></textarea></div></div>");
   
   WebOutString("<div class=""field_descr"">" & descr & "</div>");
   WebOutString("<div class=""clear""></div>");
@@ -193,11 +193,11 @@ begin
   WebOutString("<div class=""profile smu_basic_info smu-border"">");
   WebOutString("<div class=""smu_top""><div class=""back_button_wrap""><a class=""spbutton profile_back"" href=""/profilePupil"">" & ToolWebNGTranslateText2(80022) & "</a></div><div class=""profile_header"">" & ToolWebNGTranslateText2(80023) & "</div></div>");
   ShowSMUEditField(ToolWebNGTranslateText2(80010),"smu_name",ToolWebNGTranslateText2(80011));
-  ShowSMUTextArea(ToolWebNGTranslateText2(80012),"smu_descr",ToolWebNGTranslateText2(80013));
+  ShowSMUTextArea(ToolWebNGTranslateText2(80012),"smu_descr",ToolWebNGTranslateText2(80013),"");
   ShowSMUIndustries(ToolWebNGTranslateText2(80014),"smu_items",ToolWebNGTranslateText2(80015));
   ShowSMUEditField(ToolWebNGTranslateText2(80016),"smu_period",ToolWebNGTranslateText2(80017));
   ShowSMUEditField(ToolWebNGTranslateText2(80018),"smu_education",ToolWebNGTranslateText2(80019));
-  ShowSMUTextArea(ToolWebNGTranslateText2(80020),"smu_targetaud",ToolWebNGTranslateText2(80021));
+  ShowSMUTextArea(ToolWebNGTranslateText2(80020),"smu_targetaud",ToolWebNGTranslateText2(80021)," maxlength='300'");
   WebOutString("</div>");
 
   return;
