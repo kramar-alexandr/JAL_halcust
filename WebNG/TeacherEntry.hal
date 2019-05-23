@@ -458,22 +458,96 @@ begin
   return;
 end;
 
+procedure OutputStudentAppForStatus(string code,Integer status,var Integer cnt)
+begin
+  record JALTeacherAccVc JTr;
+  Boolean TrHs;
+  record CUVc CUr;
+  
+  TrHs = true;
+  cnt = 0;
+  JTR.RecType = 3;
+  JTR.StatusFlag = status;
+  JTR.RecCode = code;//this is a big security issue
+  while (LoopKey("RecType",JTr,3,TrHs))begin
+    if (JTr.RecCode!=code or JTr.RecType!=3 or JTr.StatusFlag!=status)then begin
+      TrHs = false;
+    end else begin
+      CUr.Code = JTr.SMFCode;
+      if(readfirstmain(CUr,1,true))then begin
+        cnt = cnt + 1;
+        if(cnt>1)then begin
+          weboutstring(",");
+        end;
+        WebOutStringFormatNL("{");
+        WebOutStringFormatNL("\"Nr\":\"" & cnt & "\",");
+        WebOutStringFormatNL("\"SerNr\":\"" & JTr.SerNr & "\",");
+        WebOutStringFormatNL("\"Statuss\":\"" & JTr.StatusFlag & "\",");
+        WebOutStringFormatNL("\"Datums\":\"" & JTr.TransDate & "\",");
+        WebOutStringFormatNL("\"Klase\":\"" & CUr.ClassNum & CUr.ClassChar & "\",");
+        WebOutStringFormatNL("\"Skolens\":\"" & CUr.Name & "\"");
+        WebOutStringFormatNL("}");
+      end;
+    end;
+  end;
+
+  return;
+end;
+
+procedure OutputEventAppForStatus(string code,Integer status,var Integer cnt)
+begin
+  record JALEventVc JEr;
+  record JALEventEntryVc JEEr;
+  Boolean TrHs;
+  record CUVc CUr;
+  
+  cnt = 0;
+  TrHs = true;
+  JEEr.TeacherCode = code;//this is a big security issue
+  JEEr.StatusFlag = status;
+  while (LoopKey("TeacherCode",JEEr,2,TrHs))begin
+    if (JEEr.TeacherCode!=code or JEEr.StatusFlag!=status)then begin
+      TrHs = false;
+    end else begin
+      CUr.Code = JEEr.CustCode;
+      if (ReadFirstMain(CUr,1,true))then begin
+        JEr.SerNr = JEEr.EventNr;
+        if (ReadFirstMain(JEr,1,true)) then begin
+          cnt = cnt + 1;
+          if(cnt>1)then begin
+            weboutstring(",");
+          end;
+          WebOutStringFormatNL("{");
+          WebOutStringFormatNL("\"Nr\":\"" & cnt & "\",");
+          WebOutStringFormatNL("\"SerNr\":\"" & JEEr.SerNr & "\",");
+          WebOutStringFormatNL("\"EventName\":\"" & JEr.Comment & "\",");
+          WebOutStringFormatNL("\"Statuss\":\"" & JEEr.StatusFlag & "\",");
+          WebOutStringFormatNL("\"Datums\":\"" & JEEr.TransDate & "\",");
+          WebOutStringFormatNL("\"Klase\":\"" & CUr.ClassNum & CUr.ClassChar & "\",");
+          WebOutStringFormatNL("\"Skolens\":\"" & CUr.Name & "\"");
+          WebOutStringFormatNL("}");
+        end;
+      end;
+    end;
+  end;
+
+  return;
+end;
+
 global webpublic 
 procedure WebgetTeacherInfo()
 begin
   record SMFVc SMFr;
   row SMFVc SMFrw;
-  Integer i,mtrw,cnt,totcnt;
+  Integer i,mtrw,cnt,totcnt,totsmu;
   string 50 code,status,type,semstr;
-  record JALTeacherAccVc JTr;
   Boolean TrHs,testf;
-  record CUVc CUr;
-  record JALEventVc JEr;
-  record JALEventEntryVc JEEr;
   record RLinkVc RLr;
   Date sd,ed;
   Boolean titanflag,enudienaflag;
   Integer partype;
+  record JALTeacherAccVc JTr;
+  record CUVc CUr;
   
   code = webgetarg("code");
   type = webgetarg("type");
@@ -523,70 +597,23 @@ begin
   */
     WebOutStringFormatNL("],");
     WebOutStringFormatNL("\"Students\":[");
-    RecordClear(JTr);
-    resetLoop(JTr);
-    TrHs = true;
-    cnt = 0;
-    JTR.RecType = 3;
-    JTR.StatusFlag = 0;
-    JTR.RecCode = code;//this is a big security issue
-    while (LoopKey("RecType",JTr,3,TrHs))begin
-      if (JTr.RecCode!=code or JTr.RecType!=3 or JTr.StatusFlag!=0)then begin
-        TrHs = false;
-      end else begin
-        CUr.Code = JTr.SMFCode;
-        if(readfirstmain(CUr,1,true))then begin
-          cnt = cnt + 1;
-          totcnt = totcnt + 1;
-          if(cnt>1)then begin
-              weboutstring(",");
-          end;
-          WebOutStringFormatNL("{");
-          WebOutStringFormatNL("\"Nr\":\"" & cnt & "\",");
-          WebOutStringFormatNL("\"SerNr\":\"" & JTr.SerNr & "\",");
-          WebOutStringFormatNL("\"Statuss\":\"" & JTr.StatusFlag & "\",");
-          WebOutStringFormatNL("\"Datums\":\"" & JTr.TransDate & "\",");
-          WebOutStringFormatNL("\"Klase\":\"" & CUr.ClassNum & CUr.ClassChar & "\",");
-          WebOutStringFormatNL("\"Skolens\":\"" & CUr.Name & "\"");
-          WebOutStringFormatNL("}");
-        end;
-      end;
-    end;
+    OutputStudentAppForStatus(code,0,cnt);
+    totcnt = totcnt + cnt;
     WebOutStringFormatNL("],");
 
     WebOutStringFormatNL("\"Events\":[");
-    TrHs = true;
-    cnt = 0;
-    JEEr.TeacherCode = code;//this is a big security issue
-    JEEr.StatusFlag = 0;
-    while (LoopKey("TeacherCode",JEEr,2,TrHs))begin
-      if (JEEr.TeacherCode!=code or JEEr.StatusFlag!=0)then begin
-        TrHs = false;
-      end else begin
-        CUr.Code = JEEr.CustCode;
-        if (ReadFirstMain(CUr,1,true))then begin
-          JEr.SerNr = JEEr.EventNr;
-          if (ReadFirstMain(JEr,1,true)) then begin
-            cnt = cnt + 1;
-            totcnt = totcnt + 1;
-            if(cnt>1)then begin
-              weboutstring(",");
-            end;
-            WebOutStringFormatNL("{");
-            WebOutStringFormatNL("\"Nr\":\"" & cnt & "\",");
-            WebOutStringFormatNL("\"SerNr\":\"" & JEEr.SerNr & "\",");
-            WebOutStringFormatNL("\"EventName\":\"" & JEr.Comment & "\",");
-            WebOutStringFormatNL("\"Statuss\":\"" & JEEr.StatusFlag & "\",");
-            WebOutStringFormatNL("\"Datums\":\"" & JEEr.TransDate & "\",");
-            WebOutStringFormatNL("\"Klase\":\"" & CUr.ClassNum & CUr.ClassChar & "\",");
-            WebOutStringFormatNL("\"Skolens\":\"" & CUr.Name & "\"");
-            WebOutStringFormatNL("}");
-          end;
-        end;
-      end;
-    end;
+    OutputEventAppForStatus(code,0,cnt);
+    totcnt = totcnt + cnt;
     WebOutStringFormatNL("],");
-    
+
+    WebOutStringFormatNL("\"RejectedStudents\":[");
+    OutputStudentAppForStatus(code,2,cnt);
+    WebOutStringFormatNL("],");
+
+    WebOutStringFormatNL("\"RejectedEvents\":[");
+    //OutputEventAppForStatus(code,2,cnt);
+    WebOutStringFormatNL("],");
+
     WebOutStringFormatNL("\"ApprovedStudents\":[");
     RecordClear(JTr);
     resetLoop(JTr);
@@ -626,9 +653,16 @@ begin
       end;
     end;
     
+    while (LoopKey("MCode:" & code,SMFr,1,true)) begin
+      if (SMFr.ApprovalStatus==1) then begin
+        totsmu = totsmu + 1;
+      end;
+    end;
+
   end;
   WebOutStringFormatNL("],");  
   WebOutStringFormatNL("\"totcnt\":" & totcnt);
+  WebOutStringFormatNL(",\"totsmu\":" & totsmu);
   WebOutString("}");
   
   
@@ -889,6 +923,7 @@ begin
 
     WebOutString("    <div class='company-info'>");
     WebOutString("        <p class='register-number'>" & ToolWebNGTranslateText2(80050) & "</p>");//
+    WebOutString("        <p class='prod-descr'>" & ToolWebNGTranslateText2(80058) & "</p>");//Izglītības pakāpe:
     WebOutString("        <p class='education'>" & ToolWebNGTranslateText2(80055) & "</p>");//Izglītības pakāpe:
     //WebOutString("        <p class='type-company'>" & ToolWebNGTranslateText2(80051) & "</p>");//
     WebOutString("        <p class='target-type'>" & ToolWebNGTranslateText2(80052) & "</p>");//Mērkauditorija:
@@ -1074,7 +1109,7 @@ begin
   record JALFileVc JFr;
   record JALTeacherAccVc JTr;
   boolean TrHs,TrHs1,testf,testf1,testf2;
-  string 255 semstr;
+  string 255 semstr,tstr;
   Date sd,ed;
   Integer cbziema,cbreg,cbpav,judiena;
 
@@ -1107,6 +1142,13 @@ begin
             end;  
           end;
           WebOutStringFormatNL("\"targetAudit\":\"" & SMFr.TargetAud & "\",");
+          WebOutStringFormatNL("\"education\":\"" & StringFromSet(3001,SMFr.EducationType) & "\",");
+          WebOutStringFormatNL("\"prodDescr\":\"");
+          for (i=0;i<SizeTextCnt(SMFr);i=i+200) begin
+            tstr = StringFromText(SMFr,i,200);
+            WebOutString(StrReplace(tstr,chr(13),"\\n"));
+          end;
+          WebOutString("\",");
           WebOutStringFormatNL("\"title\":\"" & SMFr.SMFName & "\",");
           WebOutStringFormatNL("\"leader\":\"" & SMFr.Manager & "\",");
           WebOutStringFormatNL("\"members\":\"" & SMFr.Member & "\",");

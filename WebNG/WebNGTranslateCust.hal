@@ -21,13 +21,16 @@ begin
  
   switch (type) begin
     case 0://smu profile
-      WebOutString("jal_str['Invited']             = '" & ToolWebNGTranslateText2(70040) & "';");//IEPRIEK·îJÅ
-      WebOutString("jal_str['InvitationSent']      = '" & ToolWebNGTranslateText2(70041) & "';");//IEPRIEK·îJÅ
-      WebOutString("jal_str['ConfirmDelete']       = '" & ToolWebNGTranslateText2(70042) & "';");//IEPRIEK·îJÅ
-      WebOutString("jal_str['Wait']                = '" & ToolWebNGTranslateText2(70043) & "';");//IEPRIEK·îJÅ
-      WebOutString("jal_str['PriceLowerThanCost']  = '" & ToolWebNGTranslateText2(70044) & "';");//IEPRIEK·îJÅ
-      WebOutString("jal_str['SMUName']             = '" & ToolWebNGTranslateText2(70045) & "';");//IEPRIEK·îJÅ
-      WebOutString("jal_str['SMUDate']             = '" & ToolWebNGTranslateText2(70046) & "';");//IEPRIEK·îJÅ
+      WebOutString("jal_str['Invited']             = '" & ToolWebNGTranslateText2(70040) & "';");
+      WebOutString("jal_str['InvitationSent']      = '" & ToolWebNGTranslateText2(70041) & "';");
+      WebOutString("jal_str['ConfirmDelete']       = '" & ToolWebNGTranslateText2(70042) & "';");
+      WebOutString("jal_str['Wait']                = '" & ToolWebNGTranslateText2(70043) & "';");
+      WebOutString("jal_str['PriceLowerThanCost']  = '" & ToolWebNGTranslateText2(70044) & "';");
+      WebOutString("jal_str['SMUName']             = '" & ToolWebNGTranslateText2(70045) & "';");
+      WebOutString("jal_str['SMUDate']             = '" & ToolWebNGTranslateText2(70046) & "';");
+      WebOutString("jal_str['ApprovalMsg1']         = '" & ToolWebNGTranslateText2(70047) & "';");
+      WebOutString("jal_str['ApprovalMsg2']         = '" & ToolWebNGTranslateText2(70048) & "';");
+      WebOutString("jal_str['ApprovalMsg3']         = '" & ToolWebNGTranslateText2(70049) & "';");
 
     case 1://teacher profile
       WebOutString("jal_str['prev']                = '" & ToolWebNGTranslateText2(70000) & "';");//IEPRIEK·îJÅ

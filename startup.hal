@@ -405,5 +405,12 @@ begin
   SetText(4,"Citi pas‚kumi, tirgoäan‚s vietas");
   EndSet;
 
+  SetBegin(3001);
+  SetText(0,"-");
+  SetText(1,"Pamatskola");
+  SetText(2,"Vidusskola");
+  SetText(3,"Profesion‚l‚ izgl´t´ba");
+  EndSet;
+
   return;
 end;

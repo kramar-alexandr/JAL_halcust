@@ -187,6 +187,27 @@ begin
   return;
 end;
 
+procedure ShowSMUEducation(string label,string name,string descr)
+begin
+  Integer i,rwcnt;
+
+  WebOutString("<div class=""field_row"">");
+  WebOutString("<div class=""field_col""><div class=""field_label"">" & label & "</div><div class=""field_wrap"">");
+  
+  WebOutString("<select class=""" & name & """ name=""" & name & """><option></option>");
+  for (i=1;i<4;i=i+1) begin
+    WebOutString("<option value='" & i & "'>" & StringFromSet(3001,i) & "</option>");
+  end;
+
+  WebOutString("</select>");  
+  WebOutString("</div></div><div class=""field_descr"">" & descr & "</div>");
+  WebOutString("<div class=""clear""></div>");
+  WebOutString("</div>");
+
+  return;
+end;
+
+
 procedure ShowSMUBasicSection()
 begin
 
@@ -196,7 +217,7 @@ begin
   ShowSMUTextArea(ToolWebNGTranslateText2(80012),"smu_descr",ToolWebNGTranslateText2(80013),"");
   ShowSMUIndustries(ToolWebNGTranslateText2(80014),"smu_items",ToolWebNGTranslateText2(80015));
   ShowSMUEditField(ToolWebNGTranslateText2(80016),"smu_period",ToolWebNGTranslateText2(80017));
-  ShowSMUEditField(ToolWebNGTranslateText2(80018),"smu_education",ToolWebNGTranslateText2(80019));
+  ShowSMUEducation(ToolWebNGTranslateText2(80018),"smu_education",ToolWebNGTranslateText2(80019));
   ShowSMUTextArea(ToolWebNGTranslateText2(80020),"smu_targetaud",ToolWebNGTranslateText2(80021)," maxlength='300'");
   WebOutString("</div>");
 
@@ -514,7 +535,7 @@ begin
   
   WebOutString("""newemplist"":[");
   while (LoopMain(CUr,1,true)) begin
-    if (CUr.Classification=="SKLN") then begin
+    if (CUr.Classification=="SKLN" and CUr.ConfirmTeach==1) then begin
 /*
       if (ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr)) then begin
 				if (SMFr.ReadyFlag==0) then begin
@@ -570,9 +591,10 @@ begin
       WebOutString("""ActCU"":""" & (CurrentCust==SMFr.CustCode) & """,");
       WebOutString("""ProdSpec"":""" & SMFr.ProdSpec & """,");
       WebOutString("""TargetAud"":""" & SMFr.TargetAud & """,");
-      WebOutString("""Education"":""" & SMFr.Education & """,");
+      WebOutString("""Education"":""" & SMFr.EducationType & """,");
       WebOutString("""ActDateStart"":""" & DateToString(SMFr.ActDateStart,"YYYY-MM-DD") & """,");
       WebOutString("""ActDateEnd"":""" & DateToString(SMFr.ActDateEnd,"YYYY-MM-DD") & """,");
+      WebOutString("""ApprovalStatus"":""" & SMFr.ApprovalStatus & """,");
       WebOutString("""Text"":""");
       for (i=0;i<SizeTextCnt(SMFr);i=i+200) begin
         tstr = StringFromText(SMFr,i,200);
@@ -774,13 +796,16 @@ begin
       RecordNew(SMFr);
       FillNewSMUData(SMFr,CUr);
     end;
+    if (SMFr.ApprovalStatus>0) then begin
+      goto lend;
+    end;
     WebGetRawPostData(a);
     js = ParseJSONArea(a);
     if (nonblank(JSONGet(js,"SMFName"))) then begin
       SMFr.SMFName = JSONGet(js,"SMFName");
       SMFr.ProdSpec = JSONGet(js,"ProdSpec");
       SMFr.TargetAud = JSONGet(js,"TargetAud");
-      SMFr.Education = JSONGet(js,"Education");
+      SMFr.EducationType = StringToInt(JSONGet(js,"Education"));
       SMFr.ActDateStart = DateFromString(JSONGet(js,"ActDateStart"),"YYYY-MM-DD");
       SMFr.ActDateEnd = DateFromString(JSONGet(js,"ActDateEnd"),"YYYY-MM-DD");
       tstr = RemoveEndingLineBreaks(JSONGet(js,"Text"));
