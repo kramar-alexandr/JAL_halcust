@@ -18,6 +18,9 @@ begin
   WebOutString("jal_str['reg_pending']        = '" & ToolWebNGTranslateText2(70059) & "';");
   WebOutString("jal_str['reg_approved']       = '" & ToolWebNGTranslateText2(70060) & "';");
   WebOutString("jal_str['reg_rejected']       = '" & ToolWebNGTranslateText2(70061) & "';");
+  WebOutString("jal_str['Reg_FillIn']         = '" & ToolWebNGTranslateText2(70062) & "';");
+  WebOutString("jal_str['Reg_Class']          = '" & ToolWebNGTranslateText2(70063) & "';");
+  WebOutString("jal_str['Reg_Phone']          = '" & ToolWebNGTranslateText2(70064) & "';");
  
   switch (type) begin
     case 0://smu profile

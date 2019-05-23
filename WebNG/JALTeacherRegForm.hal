@@ -6,6 +6,7 @@ external function Boolean GetNextCustNr(var string);
 //external procedure SelBoxForReg(boolean);
 external procedure NextM4Number(string,var string);
 external procedure SendJALEmail(vector string,string,string);
+external procedure OutPutJALWebTexts(Integer);
 
 SetLangMode(LangLatvian,"LAT",0);
 
@@ -187,6 +188,7 @@ procedure TeacherRegForm()
 begin
   integer err;
   //stopalert("ads");
+  OutPutJALWebTexts(-1);
   WebOutStringFormatNL("<form method=""POST"" action=""/WebTeacherReg.hal"" onSubmit=""return TestFieldsForTeacher(this,'" & ToolWebNGtranslateText(20055) & "','" & ToolWebNGtranslateText(20056) & "','" & ToolWebNGtranslateText(20057) & "','" & ToolWebNGtranslateText(20058) & "','" & ToolWebNGtranslateText(20063) & "','" & toolwebngtranslatetext(21102) & "',");
   WebOutStringFormatNL("'" & toolwebngtranslatetext(20015) & "','" & toolwebngtranslatetext(20017) & "','" & toolwebngtranslatetext(20018) & "','" & toolwebngtranslatetext(20019) & "','" & toolwebngtranslatetext(20020) & "','" & toolwebngtranslatetext(20022) & "')"">");
   WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path") & """>");
