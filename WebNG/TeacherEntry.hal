@@ -643,11 +643,13 @@ begin
           GetSMUSemester(SMFr,semstr,sd,ed);
           enudienaflag = GetEventHist(SMFr,sd,ed,1,partype);
           titanflag = GetEventHist(SMFr,sd,ed,2,partype);
+
+          WebOutStringFormatNL("\"SMU\":\"" & SMFr.SMFCode & "\",");
           WebOutStringFormatNL("\"Nosaukums\":\"" & SMFr.SMFName & "\",");
           WebOutStringFormatNL("\"Likvidets\":\"" & SMFr.StatusFlag & "\",");
           WebOutStringFormatNL("\"MacibuGads\":\"" & semstr & "\",");
-          WebOutStringFormatNL("\"Titan\":\"" & titanflag & "\",");
-          WebOutStringFormatNL("\"Enudiena\":\"" & enudienaflag & "\"");
+          WebOutStringFormatNL("\"Titan\":\"" & SMFr.TitanFlag & "\",");
+          WebOutStringFormatNL("\"Enudiena\":\"" & SMFr.EnuDienaFlag & "\"");
           WebOutStringFormatNL("}");
         end;
       end;
@@ -1294,11 +1296,34 @@ begin
   return;
 end;
 
+function Integer GetTeacherConfirmation(record CUVc CUr)
+begin
+  Integer res;
+  record JALTeacherAccVc JTr;
+  Boolean TrHs;
+
+  TrHs = true;
+  JTr.SMFCode = CUr.Code;
+  while (LoopBackKey("SMFCode",JTr,1,TrHs)) begin
+    if (JTr.SMFCode!=CUr.Code) then begin
+      TrHs = false;
+    end else begin
+      if (JTr.RecType==3) then begin
+        res = JTr.StatusFlag;
+        TrHs = false;
+      end;
+    end;
+  end;
+
+  GetTeacherConfirmation = res;
+  return;
+end;
+
 global webpublic procedure WebGetSkhInfo()
 begin
   record SMFVc SMFr;
   row SMFVc SMFrw;
-  integer i,mtrw,cnt;
+  integer i,mtrw,cnt,confirmteach;
   string 50 code,status,type;
   record CUVc CUr;
   record ObjVc OBr;
@@ -1356,10 +1381,11 @@ begin
          if (CUr.AgeFlag==0) then begin
           CUr.ConfirmPar = 1;     
         end;
+        confirmteach = GetTeacherConfirmation(CUr);
         WebOutStringFormatNL("\"verified\": {" );
         WebOutStringFormatNL("\"personal\":" & CUr.ConfirmSKL  &  ",");
         WebOutStringFormatNL("\"parents\":" & CUr.ConfirmPar & ",");
-        WebOutStringFormatNL("\"teacher\":" & CUr.ConfirmTeach );
+        WebOutStringFormatNL("\"teacher\":" & confirmteach );
         WebOutStringFormatNL("}" );
         WebOutStringFormatNL("}");
     end;
@@ -1749,4 +1775,55 @@ begin
     end;
   end;  
 return;
+end;
+
+function Boolean SMUHasTeacher(record SMFVc SMFr,string teachercode)
+begin
+  Boolean res;
+  row SMFVc SMFrw;
+  Integer i,rwcnt;
+
+  rwcnt = MatRowCnt(SMFr);
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(SMFr,i,SMFrw);
+    if (SMFrw.Code==teachercode) then begin
+      res = true;
+    end;
+  end;
+
+  
+  SMUHasTeacher = res;
+  return;
+end;
+
+webpublic
+global updating 
+procedure WebChangeTitanStatus()
+begin
+  record CUVc CUr;
+  Integer type,stat;
+  record SMFVc SMFr,oldSMFr;
+  record MentorVc MTr;
+  record TeacherVc TCr;
+  
+  CUr.Code = CurrentCust;
+  if (ReadFirstMain(CUr,1,true)) then begin
+    type = GetJAlCustType(CUr,SMFr,TCr,MTr);
+    if (type==1) then begin
+      SMFr.SMFCode = WebGetArg("smu");
+      if (ReadFirstMain(SMFr,1,true)) then begin
+        if (SMUHasTeacher(SMFr,TCr.TeacherCode)) then begin
+          RecordCopy(oldSMFr,SMFr);
+          stat = StringToInt(WebGetArg("stat"));
+          switch (WebGetArg("type")) begin
+            case "1": SMFr.EnuDienaFlag = stat;
+            case "2": SMFr.TitanFlag = stat;
+          end;
+          RecordUpdate(oldSMFr,SMFr,true);
+        end;
+      end;
+    end;
+  end;
+
+  return;
 end;

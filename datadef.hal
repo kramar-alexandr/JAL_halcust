@@ -253,6 +253,8 @@ begin
   RecordField(Education,M4Str,255,0);
   RecordField(EducationType,M4Set,3001,0);
   RecordField(ApprovalStatus,M4Int,0,0);//0-none,1-sent to teacher,2-sent to jal,3-approved
+  RecordField(TitanFlag,M4Int,0,0);
+  RecordField(EnuDienaFlag,M4Int,0,0);
   ArrayBegin(Math,-,1);
   ArrayField(Type,M4Set,1005,0);
   ArrayField(Code,M4Code,10,0);

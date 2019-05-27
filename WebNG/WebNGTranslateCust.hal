@@ -31,9 +31,10 @@ begin
       WebOutString("jal_str['PriceLowerThanCost']  = '" & ToolWebNGTranslateText2(70044) & "';");
       WebOutString("jal_str['SMUName']             = '" & ToolWebNGTranslateText2(70045) & "';");
       WebOutString("jal_str['SMUDate']             = '" & ToolWebNGTranslateText2(70046) & "';");
-      WebOutString("jal_str['ApprovalMsg1']         = '" & ToolWebNGTranslateText2(70047) & "';");
-      WebOutString("jal_str['ApprovalMsg2']         = '" & ToolWebNGTranslateText2(70048) & "';");
-      WebOutString("jal_str['ApprovalMsg3']         = '" & ToolWebNGTranslateText2(70049) & "';");
+      WebOutString("jal_str['ApprovalMsg1']        = '" & ToolWebNGTranslateText2(70047) & "';");
+      WebOutString("jal_str['ApprovalMsg2']        = '" & ToolWebNGTranslateText2(70048) & "';");
+      WebOutString("jal_str['ApprovalMsg3']        = '" & ToolWebNGTranslateText2(70049) & "';");
+      WebOutString("jal_str['TeacherDeclinded']    = '" & ToolWebNGTranslateText2(70065) & "';");
 
     case 1://teacher profile
       WebOutString("jal_str['prev']                = '" & ToolWebNGTranslateText2(70000) & "';");//IEPRIEK·îJÅ

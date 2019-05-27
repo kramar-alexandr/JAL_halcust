@@ -951,8 +951,8 @@ begin
   //HalPushButton(-250,v,-150,v+20,"OpenJALEventTranslationDsm","Atv•rt tulkojumu");
   ButtonFrame(h3+50,v=20,150,7,"Dal´ba");
   RadioButton(h3+50,v,0,0,"Cits",StatusFlag);
-  RadioButton(h3+50,v+=16,1,0,"”nu diena",StatusFlag);
-  RadioButton(h3+50,v+=16,2,0,"TITAN",StatusFlag);
+  //RadioButton(h3+50,v+=16,1,0,"”nu diena",StatusFlag);
+  //RadioButton(h3+50,v+=16,2,0,"TITAN",StatusFlag);
   RadioButton(h3+50,v+=16,3,0,"Cits Baz‚rs ziema",StatusFlag);
   RadioButton(h3+50,v+=16,4,0,"Cits Baz‚rs re®ionos",StatusFlag);
   RadioButton(h3+50,v+=16,5,0,"Cits Baz‚rs pavasar´",StatusFlag);
