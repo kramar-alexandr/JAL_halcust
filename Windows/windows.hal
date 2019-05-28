@@ -1491,7 +1491,7 @@ begin
   RlCol(535,535,"E-pasts",ContacteMail,false);
   //  RlCol(-1,-1,"",Invalid,true);
 //CUST-BEGIN
-  Tile(tilenr,240,false,tilenr,DelAddr0); tilenr = tilenr + 1;
+  Tile(tilenr,240,false,tilenr,SchoolCode); tilenr = tilenr + 1;
   EditField(h,v=6,100,"Skola",Normal,SchoolCode,false,0);
   EditField(h,v=v+vs,100,"Skolot‚ja",Normal,TeacherCode,false,0);
   EditField(h,v=v+vs,50,"Klase",Normal,ClassNum,false,0);
