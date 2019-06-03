@@ -33,6 +33,9 @@ begin
   RecordField(Lang,M4Str,20,0);
   RecordField(Approved,M4Mark,0,0);
   RecordField(District,M4Str,100,0);
+  RecordField(PrimaryCount,M4Long,0,0);
+  RecordField(SecondaryCount,M4Long,0,0);
+  RecordField(TeacherCount,M4Long,0,0);
   //p�c skolas koda
   MainKeyBegin(SchoolCode,0);
   KeySegment(SchoolCode);
@@ -617,7 +620,7 @@ begin
 
   //koment�ra lauka garuma izmainas abiem ierakstiem
   RecordAddBegin(WebNGTranslateVc,"jal_translate");
-  ChangeField(FileName,M4Set,505,0);
+  ChangeField(FileName,M4Set,10505,0);
   SubsetKeyBegin2(EventLangCode);
   AppendFieldToKeyName(Code);
   KeySegment(LangCode);
@@ -767,8 +770,8 @@ begin
   ArrayBegin(Math,-,1);
   ArrayField(Field,M4Long,0,0);
   ArrayField(Comment,M4Str,60,0);
-  ArrayField(Req,M4Set,506,0);
-  ArrayField(Show,M4Set,507,0);
+  ArrayField(Req,M4Set,10506,0);
+  ArrayField(Show,M4Set,10507,0);
   EndArray;
   MainKeyBegin(SerNr,0);
   KeySegment(SerNr);
@@ -797,9 +800,10 @@ begin
   RecordField(SerNr,M4Long,0,0);
   RecordField(Comment,M4Str,60,0);
   RecordField(Text,M4Str,100,0);
-  RecordField(Type,M4Set,508,0);
+  RecordField(Type,M4Set,10508,0);
   RecordField(SelectBox,M4Long,0,0);
   RecordField(Math,M4Matrix,0,0);
+  RecordField(Req,M4Int,0,0);
   ArrayBegin(Math,-,1);
   ArrayField(LangCode,M4Code,10,0);
   ArrayField(Comment,M4Str,100,0);
@@ -824,7 +828,7 @@ begin
   RecordBegin(JALEventEntryVc,-,"");
   RecordField(SerNr,M4Long,0,0);
   RecordField(TransDate,M4Date,0,0);
-  RecordField(CustType,M4Set,503,0);
+  RecordField(CustType,M4Set,10503,0);
   RecordField(CustCode,M4Code,30,0);
   RecordField(AddCode,M4Code,30,0);
   RecordField(StatusFlag,M4Int,0,0);

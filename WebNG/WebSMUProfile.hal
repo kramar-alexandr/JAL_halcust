@@ -6,6 +6,7 @@ external procedure SendJALEmail(vector string,string,string);
 external procedure OutPutJALWebTexts(Integer);
 external function string 255 StrReplace(string,string,string);
 external updating procedure FillNewSMUData(var record SMFVc,record CUVc);
+external updating procedure GenMailForSMU(string,string,string,string,var record SMFVc,boolean,record CUVc,string);
 
 procedure ShowSMUEditField(string label,string name,string descr)
 begin
@@ -784,7 +785,8 @@ begin
   record RLinkVc RLr;
   area a;
   Boolean updatef;
-  
+  record ReportMailBlock RMbl;
+   
 
   CUr.Code = CurrentCust;
   if (ReadFirstMain(CUr,1,true)) then begin
@@ -814,7 +816,10 @@ begin
         goto lend;
       end;
       RecordStore(SMFr,true);
-    
+      if (updatef==false) then begin
+        BlockLoad(RMbl);
+        GenMailForSMU("",USetStr(32344) & " - " & SMFr.SMFName,USetStr(32520),RMbl.SMUMail,SMFr,true,CUr,""); 
+      end;
       i = 0;
       root = "FinData/materials/";
       RemoveSMUItems(SMFr.SMFCode);//Too harsh?

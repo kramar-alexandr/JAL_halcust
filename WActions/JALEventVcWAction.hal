@@ -73,6 +73,11 @@ BEGIN
   JFr.SerNr = JErw.Field;
   if readfirstmain(JFr,1,true) then begin
     JErw.Comment = JFr.Comment;
+    if (JFr.Req==1) then begin//messed up logic because in the StrSet req. means 0
+      JErw.Req = 0;
+    end else begin
+      JErw.Req = 1;
+    end;
     MatRowPut(JEr,rownr,JErw);
   end;
 

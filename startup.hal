@@ -327,8 +327,10 @@ begin
 	SString(32508,"JA Latvia lap‚ re®istr•ts Jðsu konsult•ts SMU");
 	SString(32509,"Skol•ns, kuram esat Junior Achievement Latvia nor‚d´ts k‚ vec‚ks/aizbildnis, vairs nepiedal‚s Skol•nu m‚c´bu uzÀ•muma (SMU)");
 	
+  SString(32520,"SMU re®istr‚cija JA Latvia lap‚");
+
 //Re®ionu stringset
-  SetBegin(501);
+  SetBegin(10501);
   SetText(0,"R´ga");
   SetText(1,"Vidzeme");
   SetText(2,"Latgale");
@@ -336,7 +338,7 @@ begin
   SetText(4,"Kurzeme");
   EndSet;
 
-  SetBegin(502);
+  SetBegin(10502);
   SetText(0,"Latvieäu");
   SetText(1,"Krievu");
   SetText(2,"LK");
@@ -344,19 +346,19 @@ begin
   SetText(4,"Baltkrievu");
   EndSet;
 
-  SetBegin(503);
+  SetBegin(10503);
   SetText(0,"SMU");
   SetText(1,"Skolot‚js");
   SetText(2,"Mentors");
   SetText(3,"Cits");
   EndSet;
 
-  SetBegin(506);
+  SetBegin(10506);
   SetText(0,"J‚");
   SetText(1,"N•");
   EndSet;
 
-  SetBegin(505);
+  SetBegin(10505);
   SetText(-1,"Nezin‚ms");
   SetText(0,"Elements");
   SetText(1,"Saturs");
@@ -366,13 +368,13 @@ begin
   SetText(5,"Pas‚kums");
   EndSet;
 
-  SetBegin(507);
+  SetBegin(10507);
   SetText(0,"Visur");
   SetText(1,"Nere®istr•tiem");
   SetText(2,"Re®istr•tiem");
   EndSet;
 
-  SetBegin(508);
+  SetBegin(10508);
   SetText(0,"Parasts lauks");
   SetText(1,"Izv•lne");
   SetText(2,"Augäupl‚de");

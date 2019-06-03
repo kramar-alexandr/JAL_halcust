@@ -58,7 +58,7 @@ begin
   WindowBegin("Skola",SchoolDClass,CGview,-);
   SetWRect(64,80,619,380);
   UseView(SchoolVc);
-  v = 10; vs = 22; h = 100; h2 = 290;
+  v = 10; vs = 22; h = 120; h2 = 310;
   CheckBox(h-5,v,0,"Apstiprin‚ta",Approved);
   EditField(h,v+=vs+10, 55,"Skolas kods",Normal,SchoolCode,false,0);
   EditField(h2,v,-30,"Skolas nosaukums",Normal,SchoolName,false,0);
@@ -68,8 +68,11 @@ begin
   EditField(h,v+=vs,80,"Telefons",Normal,Telephone,false,0);
   EditField(h2,v,-30,"E-pasts",Normal,Email,false,0);
   EditField(h,v+=vs,80,"Skol•nu skaits",Normal,PupilCount,false,0);
-  EditField(h2,v,-30,"Plðsma",Normal,Lang,false,JALLangSClass);
+  EditField(h2,v,80,"Skolot‚ju skaits",Normal,TeacherCount,false,0);
+  EditField(h,v+=vs,80,"Skol•ni pamatskol‚",Normal,PrimaryCount,false,0);
+  EditField(h2,v,80,"Skol•ni vidusskol‚",Normal,SecondaryCount,false,0);
   EditField(h,v+=vs,120,"Novads",Normal,District,false,JALDistrictSClass);
+  EditField(h2,v,-30,"Plðsma",Normal,Lang,false,JALLangSClass);
   TextField(h-2,v+=vs,-28,-30,Comment,0);
   if (GuiType==kGuiCocoa) then begin
     StaticText(h-66,v=v+12,"Koment‚rs",false);
@@ -949,7 +952,7 @@ begin
   CheckBox(h-5,v+=vs,0,"Tikai re®istr•tiem lietot‚jiem",RegFlag);
   HalPushButton(-300,v,-200,v+20,"NewJALEventTranslationDsm","Jauns tulkojums");
   //HalPushButton(-250,v,-150,v+20,"OpenJALEventTranslationDsm","Atv•rt tulkojumu");
-  ButtonFrame(h3+50,v=20,150,7,"Dal´ba");
+  ButtonFrame(h3+50,v=20,150,5,"Dal´ba");
   RadioButton(h3+50,v,0,0,"Cits",StatusFlag);
   //RadioButton(h3+50,v+=16,1,0,"”nu diena",StatusFlag);
   //RadioButton(h3+50,v+=16,2,0,"TITAN",StatusFlag);
@@ -957,7 +960,7 @@ begin
   RadioButton(h3+50,v+=16,4,0,"Cits Baz‚rs re®ionos",StatusFlag);
   RadioButton(h3+50,v+=16,5,0,"Cits Baz‚rs pavasar´",StatusFlag);
   RadioButton(h3+50,v+=16,6,0,"Jauno uzÀ•m•ju dienas",StatusFlag);
-  RecordList2(10,v+=40,-30,v+=100,"WebNGTranslateVc");
+  RecordList2(10,v+=80,-30,v+=130,"WebNGTranslateVc");
   RlColKey(4,4,"Valoda",LangCode,false,EventLangCode);
   RlColKey(90,90,"Izmain´ts",LastChanged,false,EventLastChanged);
   RlCol(180,180,"K‚rtoäana",Sorting,false);
@@ -968,7 +971,7 @@ begin
   MatCol(1,32,"Lauks",0,Field,false,JALEventFieldSClass);
   MatCol(1,100,"Koment‚rs",0,Comment,false,0);
   MatCol(1,-100,"Oblig‚ts",0,Req,false,SetSClass);
-  MatCol(1,-50,"R‚d´t",0,Show,false,SetSClass);
+  //MatCol(1,-50,"R‚d´t",0,Show,false,SetSClass);
   EndMatrix;
   HalPushButton(h=10,-35,h+150,-5,"JALCourseEventParticipantsDsm","Dal´bnieku saraksts");
 
@@ -1003,11 +1006,12 @@ begin
   EditField(h,v=6,90,"S•r. nr.",Normal,SerNr,false,0);
   EditField(h,v+=vs,-20,"Koment‚rs",Normal,Comment,false,0);
   EditField(h,v+=vs,-20,"Teksts",Normal,Text,false,0);
-  vm = v+40;
+  vm = v;
   EditField(h,v+=vs,120,"Tips",Normal,Type,false,SetSClass);
   EditField(h2,v,120,"Izv•lne",Normal,SelectBox,false,JALEventSelectBoxSClass);
+  CheckBox(h,v+=vs,0,"Oblig‚ts",Req);
   
-  MatrixBegin(4,v+=vm,-21,0,-,20);
+  MatrixBegin(4,v+=vm,-21,-10,-,20);
   MatCol(1,32,"Valoda",0,LangCode,false,WebNGLanguageSClass);
   MatCol(1,100,"Teksts",0,Comment,false,0);
   EndMatrix;
