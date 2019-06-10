@@ -375,10 +375,11 @@ begin
   EndSet;
 
   SetBegin(10508);
-  SetText(0,"Parasts lauks");
-  SetText(1,"Izv•lne");
-  SetText(2,"Augäupl‚de");
-  SetText(3,"E-pasts");
+  SetText(0,"Br´vs teksts");
+  SetText(1,"Izv•lnes varianti");
+  SetText(2,"Izv•les rðtiÀa");
+  SetText(3,"Radiopoga");
+  SetText(4,"Dal´bnieki");
   EndSet;
 
   SetBegin(1005);

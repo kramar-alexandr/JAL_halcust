@@ -404,8 +404,8 @@ begin
         WebOutString("}");
       end;
       for (i=0;i<3;i=i+1) begin
-        c = GetFieldValueByName(FCr,"contact" & i,-1);
-        s = GetFieldValueByName(FCr,"salary" & i,-1);
+        c = GetFieldValueByName(FCr,"contact" & (i+1),-1);
+        s = GetFieldValueByName(FCr,"salary" & (i+1),-1);
         if (nonblank(c)) then begin
           WebOutString(",");
           WebOutString("{");
