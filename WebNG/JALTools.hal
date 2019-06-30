@@ -146,7 +146,7 @@ begin
   RepSpec.f2 = vVals["smucode"];
   RepSpec.f4 = vVals["link"];
   RepSpec.f5 = vVals["TeacherCode"];
-logtext(0,"SendJALEmail " & textcode & ":" & email);
+  RepSpec.searchstr = vVals["eventcomment"];
   LTxtr.Code = textcode;
   if (ReadFirstMain(LTxtr,1,true)) then begin
     queued.StoreJALEmail(LTxtr,RepSpec,email);
@@ -188,6 +188,8 @@ begin
         MatRowGet(TCr,0,TCrw);
         res = TCrw.SchoolName;
       end;
+    case "eventname":
+      res = RepSpec.searchstr;
   end;
 
   JALLTxtVcReplaceToken = res;
