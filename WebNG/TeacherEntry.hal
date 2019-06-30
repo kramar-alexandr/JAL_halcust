@@ -639,6 +639,9 @@ begin
           WebOutStringFormatNL("\"Datums\":\"" & JTr.TransDate & "\",");
           WebOutStringFormatNL("\"Klase\":\"" & CUr.ClassNum & CUr.ClassChar & "\",");
           WebOutStringFormatNL("\"Skolens\":\"" & CUr.Name & "\",");
+          WebOutStringFormatNL("\"Kods\":\"" & CUr.Code & "\",");
+          WebOutStringFormatNL("\"Enudiena\":\"" & CUr.EnuDienaFlag & "\",");
+          WebOutStringFormatNL("\"Titan\":\"" & CUr.TitanFlag & "\",");
           ReadRecordLink(CUr,1,SMFr,RLr);
           GetSMUSemester(SMFr,semstr,sd,ed);
           enudienaflag = GetEventHist(SMFr,sd,ed,1,partype);
@@ -647,9 +650,9 @@ begin
           WebOutStringFormatNL("\"SMU\":\"" & SMFr.SMFCode & "\",");
           WebOutStringFormatNL("\"Nosaukums\":\"" & SMFr.SMFName & "\",");
           WebOutStringFormatNL("\"Likvidets\":\"" & SMFr.StatusFlag & "\",");
-          WebOutStringFormatNL("\"MacibuGads\":\"" & semstr & "\",");
-          WebOutStringFormatNL("\"Titan\":\"" & SMFr.TitanFlag & "\",");
-          WebOutStringFormatNL("\"Enudiena\":\"" & SMFr.EnuDienaFlag & "\"");
+          WebOutStringFormatNL("\"MacibuGads\":\"" & semstr & "\"");
+//          WebOutStringFormatNL("\"Titan\":\"" & SMFr.TitanFlag & "\",");
+//          WebOutStringFormatNL("\"Enudiena\":\"" & SMFr.EnuDienaFlag & "\"");
           WebOutStringFormatNL("}");
         end;
       end;
@@ -1800,7 +1803,7 @@ webpublic
 global updating 
 procedure WebChangeTitanStatus()
 begin
-  record CUVc CUr;
+  record CUVc CUr,oldCUr,sCUr;
   Integer type,stat;
   record SMFVc SMFr,oldSMFr;
   record MentorVc MTr;
@@ -1810,16 +1813,16 @@ begin
   if (ReadFirstMain(CUr,1,true)) then begin
     type = GetJAlCustType(CUr,SMFr,TCr,MTr);
     if (type==1) then begin
-      SMFr.SMFCode = WebGetArg("smu");
-      if (ReadFirstMain(SMFr,1,true)) then begin
-        if (SMUHasTeacher(SMFr,TCr.TeacherCode)) then begin
-          RecordCopy(oldSMFr,SMFr);
+      sCUr.Code = WebGetArg("cu");
+      if (ReadFirstMain(sCUr,1,true)) then begin
+        if (sCUr.TeacherCode==TCr.TeacherCode) then begin
+          RecordCopy(oldCUr,sCUr);
           stat = StringToInt(WebGetArg("stat"));
           switch (WebGetArg("type")) begin
-            case "1": SMFr.EnuDienaFlag = stat;
-            case "2": SMFr.TitanFlag = stat;
+            case "1": sCUr.EnuDienaFlag = stat;
+            case "2": sCUr.TitanFlag = stat;
           end;
-          RecordUpdate(oldSMFr,SMFr,true);
+          RecordUpdate(oldCUr,sCUr,true);
         end;
       end;
     end;

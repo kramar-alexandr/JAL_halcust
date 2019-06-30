@@ -1510,6 +1510,8 @@ begin
   EditField(h+80,v=v,50,"",Normal,ClassChar,false,0);
   EditField(h,v=v+vs,100,"Alga",Normal,Salary,false,0);
   EditField(h,v=v+vs,100,"Amats",Normal,JobDesc,false,0);
+  CheckBox(h,v+=vs,0,"Piedal´jies ”nu dien‚",EnuDienaFlag);
+  CheckBox(h,v+=vs,0,"Piedal´jies TITAN",TitanFlag);
   if (CurrentUser=="ADM2") then begin
     EditField(h,v=v+vs,100,"Parole",Normal,Password,false,0);
   end;

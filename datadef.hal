@@ -950,6 +950,8 @@ begin
   RecordField(SchoolCode,M4Code,4,0);
   RecordField(TeacherCode,M4Code,20,0);
   RecordField(Salary,M4Val,0,0);
+  RecordField(TitanFlag,M4Int,0,0);
+  RecordField(EnuDienaFlag,M4Int,0,0);
   EndRecordAdd;
 
   BlockBegin(JALPartnerBlock,-,"");
