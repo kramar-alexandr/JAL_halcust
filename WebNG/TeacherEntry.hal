@@ -10,6 +10,7 @@ external function string 255 ToolWebNGTranslateText2(longint);
 external procedure GetFinData(record SMFVc);
 external procedure GetEmpList(record SMFVc);
 external function string 255 StrReplace(string,string,string);
+forward procedure GetTeacherSMUApplications(string,var Integer,Boolean);
 
 global
 function string 50 GetEntryPersonName(record JALTeacherAccVc JTr)
@@ -539,7 +540,7 @@ procedure WebgetTeacherInfo()
 begin
   record SMFVc SMFr;
   row SMFVc SMFrw;
-  Integer i,mtrw,cnt,totcnt,totsmu;
+  Integer i,mtrw,cnt,totcnt,totsmu,application_cnt;
   string 50 code,status,type,semstr;
   Boolean TrHs,testf;
   record RLinkVc RLr;
@@ -663,10 +664,12 @@ begin
         totsmu = totsmu + 1;
       end;
     end;
+    GetTeacherSMUApplications(code,application_cnt,false);
 
   end;
   WebOutStringFormatNL("],");  
   WebOutStringFormatNL("\"totcnt\":" & totcnt);
+  WebOutStringFormatNL(",\"application_cnt\":" & application_cnt);
   WebOutStringFormatNL(",\"totsmu\":" & totsmu);
   WebOutString("}");
   
@@ -1607,46 +1610,101 @@ begin
   return;
 end;
 
+global
+procedure GetTeacherSMUApplications(string code,var Integer cnt,Boolean printf)
+begin
+  record SMFVc SMFr;
+  record JALEventEntryVc JEr;
+  Boolean TrHs;
+  record JALEventVc JLEr;
+  
+  while (LoopKey("MCode:" & code,SMFr,1,true)) begin
+    RecordClear(JEr);
+    ResetLoop(JEr);
+    JEr.AddCode = SMFr.SMFCode;
+    TrHs = true;
+    while (LoopKey("AddCode",JEr,1,TrHs)) begin
+      if (JEr.AddCode!=SMFr.SMFCode) then begin
+        TrHs = false;
+      end else begin
+    logtext(0,"JEr " & JEr.StatusFlag);
+        if (JEr.StatusFlag==1) then begin
+          JLEr.SerNr = JEr.EventNr;
+          Readfirstmain(JLEr,1,true);
+          if (JLEr.EndDate>=CurrentDate) then begin
+            cnt = cnt + 1;
+            if (printf) then begin
+              if(cnt>1)then begin
+                weboutstring(",");
+              end;
+              WebOutStringFormatNL("{");
+              WebOutStringFormatNL("\"serNr\":\"" & JEr.SerNr & "\",");
+              WebOutStringFormatNL("\"smu\":\""  & JEr.AddCode & "\",");
+              WebOutStringFormatNL("\"name\":\""  & JEr.SMFName & "\",");
+              WebOutStringFormatNL("\"event\":\"" & JEr.EventNr & "\",");
+              WebOutStringFormatNL("\"satus\":\"" & JEr.StatusFlag & "\",");
+              WebOutStringFormatNL("\"filled\":\"" & JEr.OkFlag & "\"");
+              WebOutStringFormatNL("}");  
+            end;
+          end;
+        end;             
+      end;
+    end;
+  end;
+
+  return;
+end;
 
 global webpublic procedure WebGetEventsPieteikum()
 begin
   record JALEventEntryVc JEr;
   record JALEventVc JLEr;
   record CUVc CUr;
-  integer cnt;
+  integer cnt,type;
   Boolean TrHs;
+  record SMFVc SMFr;
+  record TeacherVc Teacher;
+  record MentorVc MTr;
 
   cnt = 0;
   CUr.Code = CurrentCust;
   if(ReadFirstMain(CUr,1,true) and nonblank(CurrentCust)) then begin 
     JEr.CustCode = CurrentCust;
     TrHs = true;
-    WebOutStringFormatNL("[");
-    while (LoopKey("CustCode",JEr,1,TrHs)) begin
-      if(JEr.CustCode!=CurrentCust) then begin
-        TrHs = false;
-      end else begin
-        JLEr.SerNr = JEr.EventNr;
-        Readfirstmain(JLEr,1,true);
-        if (JLEr.EndDate>=CurrentDate and JEr.StatusFlag!=2) then begin
-          cnt = cnt + 1;
-          if(cnt>1)then begin
-            weboutstring(",");
+    type = GetJALCustType(CUr,SMFr,Teacher,MTr);
+    WebOutString("{""teacher"":""" & Teacher.TeacherCode & """,");
+    WebOutString("""submittedevents"":[");
+    switch (type) begin
+      case 0:
+        while (LoopKey("CustCode",JEr,1,TrHs)) begin
+          if(JEr.CustCode!=CurrentCust) then begin
+            TrHs = false;
+          end else begin
+            JLEr.SerNr = JEr.EventNr;
+            Readfirstmain(JLEr,1,true);
+            if (JLEr.EndDate>=CurrentDate and JEr.StatusFlag!=2) then begin
+              cnt = cnt + 1;
+              if(cnt>1)then begin
+                weboutstring(",");
+              end;
+              WebOutStringFormatNL("{");
+              WebOutStringFormatNL("\"serNr\":\"" & JEr.SerNr & "\",");
+              WebOutStringFormatNL("\"dataStart\":\"" & DateToString(JLEr.StartDate,"MM.DD.YYYY") & "\",");
+              WebOutStringFormatNL("\"dataEnd\":\"" & DateToString(JLEr.EndDate,"MM.DD.YYYY") & "\",");
+              WebOutStringFormatNL("\"smu\":\""  & JEr.AddCode & "\",");
+              WebOutStringFormatNL("\"name\":\""  & JEr.SMFName & "\",");
+              WebOutStringFormatNL("\"event\":\"" & JEr.EventNr & "\",");
+              WebOutStringFormatNL("\"satus\":\"" & JEr.StatusFlag & "\",");
+              WebOutStringFormatNL("\"filled\":\"" & JEr.OkFlag & "\"");
+              WebOutStringFormatNL("}"); 
+            end;    
           end;
-          WebOutStringFormatNL("{");
-          WebOutStringFormatNL("\"serNr\":\"" & JEr.SerNr & "\",");
-          WebOutStringFormatNL("\"dataStart\":\"" & DateToString(JLEr.StartDate,"MM.DD.YYYY") & "\",");
-          WebOutStringFormatNL("\"dataEnd\":\"" & DateToString(JLEr.EndDate,"MM.DD.YYYY") & "\",");
-          WebOutStringFormatNL("\"smu\":\""  & JEr.CustCode & "\",");
-          WebOutStringFormatNL("\"teacher\":\""  & JEr.AddCode & "\",");
-          WebOutStringFormatNL("\"event\":\"" & JEr.EventNr & "\",");
-          WebOutStringFormatNL("\"satus\":\"" & JEr.StatusFlag & "\",");
-          WebOutStringFormatNL("\"filled\":\"" & JEr.OkFlag & "\"");
-          WebOutStringFormatNL("}"); 
-        end;    
-      end;
+        end;
+      case 1:
+        GetTeacherSMUApplications(Teacher.TeacherCode,cnt,true);
+        //get teacher status
     end;
-    WebOutStringFormatNL("]");
+    WebOutStringFormatNL("]}");
   end else begin  
     WebOutStringFormatNL("You might be registered");
   end;

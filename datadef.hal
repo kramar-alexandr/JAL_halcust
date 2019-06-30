@@ -876,6 +876,10 @@ begin
   KeySegment(CustType);
   KeySegment(AddCode);
   KeySegment(SerNr);
+
+  KeyBegin(AddCode);
+  KeySegment(AddCode);
+  KeySegment(SerNr);
   EndRecord;
 
   RecordBegin(WebTemplateVc,-,"");
