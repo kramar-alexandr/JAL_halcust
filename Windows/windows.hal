@@ -337,6 +337,11 @@ begin
 
   EndWindow;
 
+  WindowBegin("Atskaite par pieteikumiem",EventParticipants2RClass,CGRcW,RcType);
+  SetWRect(80,80,500,250);
+  EditFieldTL(h=150,v=6,150,"Kurss",M4Long,Normal,100,long1,false,JALEventSClass);
+  EndWindow;
+
   WindowBegin("Atskaite par skolot‚jiem",TeacherRClass,CGRcW,RcType);
   SetWRect(80,80,500,180);
   EditFieldTL(150,v=6,150,"Skolas kods",M4Str,Normal,100,f1,false,SchoolSClass);
@@ -967,13 +972,14 @@ begin
   RlColKey(270,270,"Koment‚rs",Comment,false,EventComment);
 
 
-  MatrixBegin(10,v+=20,-30,-40,-,20);
+  MatrixBegin(10,v+=20,-30,-40,-,100);
   MatCol(1,32,"Lauks",0,Field,false,JALEventFieldSClass);
   MatCol(1,100,"Koment‚rs",0,Comment,false,0);
   MatCol(1,-100,"Oblig‚ts",0,Req,false,SetSClass);
   //MatCol(1,-50,"R‚d´t",0,Show,false,SetSClass);
   EndMatrix;
-  HalPushButton(h=10,-35,h+150,-5,"JALCourseEventParticipantsDsm","Dal´bnieku saraksts");
+  HalPushButton(h=10,-35,h+130,-5,"JALCourseEventParticipantsDsm","Dal´bnieku saraksts");
+  HalPushButton(150,-35,270,-5,"JALEventParticipants2Dsm","Pieteikumi");
 
   EndWindow;
 
@@ -1072,7 +1078,9 @@ begin
   EditField(h,v=6,90,"S•r. nr.",Normal,SerNr,false,0);
   EditField(h2,v,90,"Datums",Normal,TransDate,false,PasteCurDate);
   EditField(h,v+=vs,90,"Tips",Normal,CustType,false,SetSClass);
-  EditField(h2,v,90,"Kods",Normal,AddCode,false,0);
+  EditField(h,v+=vs,90,"Kods",Normal,AddCode,false,0);
+  EditField(h2,v,90,"Nosaukums",Normal,SMFName,false,0);
+  
   EditField(h,v+=vs,90,"Klients",Normal,CustCode,false,CUDClass);
   EditField(h,v+=vs,90,"Pas‚kums",Normal,EventNr,false,0);
   EditField(h,v+=vs,90,"Skolot‚js",Normal,TeacherCode,false,0);

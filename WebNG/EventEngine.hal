@@ -14,6 +14,7 @@ external function string 255 toolwebngtranslatetext(integer);
 external procedure ShowRedirectHtml(string,boolean);
 external procedure ExtractObj(string,var Integer,var string);
 external function string 255 CreateJson(string);
+external function string 255 ToolWebNGTranslateText2(Longint);
 
 
 procedure SetContentTypeForExtension(string ext)
@@ -160,7 +161,7 @@ begin
 return;
 end;
 
-procedure ShowEventContent(record JALEventVc JEr,string path)
+procedure ShowEventContent(record JALEventVc JEr)
 begin
   record WebNGTranslateVc WTr;
   boolean testf;
@@ -187,6 +188,7 @@ begin
     end else begin
       testf = true;
     end;
+/*    
     if testf  then begin
       if EventHasNextStep(JEr,step) then begin
         WebOutStringFormatNL("<a href='/" & FormatSimpleLink(path,true) & "/" & step & "'>" & ToolWebNGTranslateText(26200) & "</a>");
@@ -196,6 +198,7 @@ begin
     end else begin
       WebOutStringFormatNL("<a href='/login'>" & ToolWebNGTranslateText(26201) & "</a>");
     end;
+*/
     WebOutStringFormatNL("</div>");   
   end else begin
     WebOutStringFormatNL(ToolWebNGTranslateText(26202));
@@ -226,7 +229,7 @@ begin
 return;
 end;
 
-procedure ShowSimpleSelectBox(integer rw,record JALEventFieldVc JFr,row JALEventVc JErw,string value)
+procedure ShowSelectBox(integer rw,record JALEventFieldVc JFr,row JALEventVc JErw,string value)
 begin
   record JALEventSelectBoxVc JSr;
   row JALEventSelectBoxVc JSrw;
@@ -250,30 +253,29 @@ begin
   end;
 
   WebOutStringFormatNL("<div class='event_reg_line'>");
+  WebOutStringFormatNL("<div class='event_reg_label'>");
+  WebOutStringFormatNL(GetFieldLabel(JFr));
+  if JErw.Req == 0 then begin
+    WebOutStringFormatNL("*");
+  end;
+  WebOutStringFormatNL("</div>");
   WebOutStringFormatNL("<div class='event_reg_field'>");
   //WebOutStringFormatNL("<input type='text' class='event_reg' value='" & value & "' name='event_reg_field_" & rw & "' >");
-  WebOutStringFormatNL("<select type='text' class='event_reg' name='event_reg_field_" & rw & "' >");
-  WebOutStringFormatNL("<option value=''>" & ToolWebNGTranslateText(26203) & "</div>");
+  WebOutStringFormatNL("<select class='event_reg' name='event_reg_field_" & rw & "' >");
+  WebOutStringFormatNL("<option value=''>" & ToolWebNGTranslateText(26203) & "</option>");
   pos = 0;
   ExtractObj(field,pos,res);
   while (nonblank(res)) begin
     if value == res then begin
-      WebOutStringFormatNL("<option selected value='" & res & "'>" & res & "</div>");
+      WebOutStringFormatNL("<option selected value='" & res & "'>" & res & "</option>");
     end else begin
-      WebOutStringFormatNL("<option value='" & res & "'>" & res & "</div>");
+      WebOutStringFormatNL("<option value='" & res & "'>" & res & "</option>");
     end;
 
     ExtractObj(field,pos,res);
   end;  
   
   WebOutStringFormatNL("</select>");
-  WebOutStringFormatNL("</div>");
-  WebOutStringFormatNL("<div class='event_reg_label'>");
-  WebOutStringFormatNL(GetFieldLabel(JFr));
-  if JErw.Req == 0 then begin
-    WebOutStringFormatNL("*");
-  end;
-
   WebOutStringFormatNL("</div>");
   WebOutStringFormatNL("</div>");
 
@@ -288,20 +290,148 @@ begin
 
 
   WebOutStringFormatNL("<div class='event_reg_line'>");
-  WebOutStringFormatNL("<div class='event_reg_field'>");
-  WebOutStringFormatNL("<input type='text' class='event_reg' value='" & value & "' name='event_reg_field_" & rw & "' >");
-  WebOutStringFormatNL("</div>");
   WebOutStringFormatNL("<div class='event_reg_label'>");
   WebOutString(GetFieldLabel(JFr));
   if JErw.Req == 0 then begin
     WebOutStringFormatNL("*");
   end;
   WebOutStringFormatNL("</div>");
+  WebOutStringFormatNL("<div class='event_reg_field'>");
+  WebOutStringFormatNL("<input type='text' class='event_reg' value='" & value & "' name='event_reg_field_" & rw & "' >");
+  WebOutStringFormatNL("</div>");
   WebOutStringFormatNL("</div>");
 
 
 return;
 end;
+
+procedure ShowCheckbox(integer rw,record JALEventFieldVc JFr,row JALEventVc JErw,string value)
+begin
+  string 255 chd,tstr;
+
+  if (value=="on") then begin
+    chd = "CHECKED";
+  end;
+
+  tstr = GetFieldLabel(JFr);
+  WebOutStringFormatNL("<div class='event_reg_line'>");
+  WebOutStringFormatNL("<div class='event_reg_field'>");
+  WebOutStringFormatNL("<input type='checkbox' class='event_reg' " & chd & " name='event_reg_field_" & rw & "' >" & tstr);
+  WebOutStringFormatNL("</div>");
+/*
+  WebOutStringFormatNL("<div class='event_reg_label'>");
+  if JErw.Req == 0 then begin
+    WebOutStringFormatNL("*");
+  end;
+  WebOutStringFormatNL("</div>");
+*/
+  WebOutStringFormatNL("</div>");
+
+
+return;
+end;
+
+procedure GetSMFEmpList(string smfcode,var array string emplist)
+begin
+  Integer i;
+  record SMFVc SMFr;
+  record RLinkVc RLr;
+  record CUVc CUr;
+
+  SMFr.SMFCode = smfcode;
+  if (ReadFirstMain(SMFr,1,true)) then begin
+    i = 1;
+    while (ReadRecordLink(SMFr,i,CUr,RLr)) begin
+      emplist[emplist.length] = CUr.Name;
+      i = i + 1;
+    end;
+  end;
+
+  return;
+end;
+
+procedure ShowParticipants(integer rw,record JALEventFieldVc JFr,row JALEventVc JErw,string value)
+begin
+  Integer i;
+  array string 255 emplist;
+  record SMFVc SMFr;
+  record TeacherVc TCr;
+  record MentorVc MTr;
+  Integer type;
+  record CUVc CUr;
+  
+  CUr.Code = CurrentCust;
+  type =  GetJAlCustType(CUr,SMFr,TCr,MTr);
+  if (type==0) then begin
+    WebOutStringFormatNL("<div class='event_reg_line'>");
+    WebOutStringFormatNL("<div class='event_reg_label'>");
+    WebOutString(GetFieldLabel(JFr));
+    if JErw.Req == 0 then begin
+      WebOutStringFormatNL("*");
+    end;
+    WebOutStringFormatNL("</div>");
+    GetSMFEmplist(SMFr.SMFCode,emplist);
+    for (i=0;i<emplist.length;i=i+1) begin
+//      if (WebGetArg("emp_" & i)=="on") then begin
+        WebOutStringFormatNL("<div class='event_reg_field'>");
+        WebOutStringFormatNL("<input type='checkbox' class='event_reg' name='emp_" & i & "' >" & emplist[i]);
+        WebOutStringFormatNL("</div>");
+//      end;
+    end;
+    WebOutStringFormatNL("</div>");
+  end;
+
+return;
+end;
+
+
+procedure ShowRadioButton(integer rw,record JALEventFieldVc JFr,row JALEventVc JErw,string value)
+begin
+  string 255 field,opt;
+  record JALEventSelectBoxVc JSr;
+  row JALEventSelectBoxVc JSrw;
+  Integer i,rwcnt;
+  Longint pos;
+  string 20 lang;
+
+  lang = CurrentWebLang;
+
+  JSr.SerNr = JFr.SelectBox;
+  if readfirstmain(JSr,1,true) then begin
+    field = JSr.Text;
+    rwcnt = MatRowCnt(JSr);
+    for (i = 0; i < rwcnt;i = i + 1) begin
+      MatRowGet(JSr,i,JSrw);
+      if JSrw.LangCode == lang then begin
+        field = JSrw.Comment;
+        i = rwcnt;
+      end;
+    end;
+  end;
+
+
+  WebOutStringFormatNL("<div class='event_reg_line'>");
+  WebOutStringFormatNL("<div class='event_reg_label'>");
+  WebOutString(GetFieldLabel(JFr));
+  if JErw.Req == 0 then begin
+    WebOutStringFormatNL("*");
+  end;
+  WebOutStringFormatNL("</div>");
+  i = 0;
+  while (GetNextSubstring(field,pos,",",opt)) begin
+    if value == opt then begin
+      WebOutStringFormatNL("<div class='event_reg_field'><input type='radio' selected value='" & opt & "' name='event_reg_field_" & rw & "'>" & opt & "</div>");
+    end else begin
+      WebOutStringFormatNL("<div class='event_reg_field'><input type='radio' value='" & opt & "' name='event_reg_field_" & rw & "'>" & opt & "</div>");
+    end;
+    i = i + 1;
+  end;  
+  WebOutStringFormatNL("</div>");
+
+
+return;
+end;
+
 
 function string 255 getEntryValue(record JALEventEntryVc JEEr,longint field)
 begin
@@ -324,20 +454,22 @@ begin
 return;
 end;
 
-procedure ShowSimpleUploadForm(integer rw,record JALEventFieldVc JFr,row JALEventVc JErw)
+procedure ShowUploadForm(integer rw,record JALEventFieldVc JFr,row JALEventVc JErw)
 begin
 
   WebOutStringFormatNL("<div class='event_reg_line'>");
-  WebOutStringFormatNL("<div class='event_reg_field'>");
-  WebOutStringFormatNL("<iframe src='/WebJALShowUploadForm.hal?path=/WebJALShowUploadForm.hal'></iframe>");
-  WebOutStringFormatNL("</div>");
   WebOutStringFormatNL("<div class='event_reg_label'>");
   WebOutString(GetFieldLabel(JFr));
   if JErw.Req == 0 then begin
     WebOutStringFormatNL("*");
   end;
   WebOutStringFormatNL("</div>");
+  WebOutStringFormatNL("<div class='event_reg_field file_upload_wrap'>");
+  WebOutString("<input type='file' name='upload_form' id='upload_f" & rw & "' multiple>");
+  //WebOutStringFormatNL("<iframe src='/WebJALShowUploadForm.hal?path=/WebJALShowUploadForm.hal'></iframe>");
   WebOutStringFormatNL("</div>");
+  WebOutStringFormatNL("</div>");
+  //WebOutString("<script>var upl = new FileUpload($('.file_upload_wrap'),$('#upload_f" & rw & "').get(0),'jal',id,func);</script>")
 
 return;
 end;
@@ -373,9 +505,11 @@ begin
 
           switch JFr.Type begin
             case 0: ShowSimpleField(i,JFr,JErw,value);
-            case 1: ShowSimpleSelectBox(i,JFr,JErw,value);
-            case 3: ShowSimpleField(i,JFr,JErw,value);
-            case 2: ShowSimpleUploadForm(i,JFr,JErw);
+            case 1: ShowSelectBox(i,JFr,JErw,value);
+            case 2: ShowCheckbox(i,JFr,JErw,value);
+            case 3: ShowRadioButton(i,JFr,JErw,value);
+            case 4: ShowParticipants(i,JFr,JErw,value);
+            case 5: ShowUploadForm(i,JFr,JErw);
           end;
         end;
       end;
@@ -400,10 +534,11 @@ begin
   uplf = false;
   
   if FindMatchingTranslation(JEr.SerNr,WTr,JEr.DefLangCode) and JEr.ActiveFlag == 1 and JEr.ClosedFlag == 0  then begin
-    WebOutStringFormatNL("<div class='header'>" & WTr.Comment & "</div>");
+  //  WebOutStringFormatNL("<div class='header'>" & WTr.Comment & "</div>");
+    
+    ShowEventContent(JEr);
 
-
-    WebOutStringFormatNL("<form method='POST' action='/WebJALEventReg.hal'>");
+    WebOutStringFormatNL("<form id='event_reg' method='POST' action='/WebJALEventReg.hal'>");
     WebOutStringFormatNL("<input type='hidden' name='path' value='" & WebGetArg("path") & "'>");
     WebOutStringFormatNL("<input type='hidden' name='event' value='" & JEr.SerNr & "'>");
     
@@ -423,10 +558,8 @@ begin
     foundf = FindFilledEntry(CUr,JEEr,type,JEr.SerNr);
     
     
-    switch node begin
-      case "reg": ShowRegistrationFields(JEr,uplf,foundf,JEEr);
-    end;
-
+    ShowRegistrationFields(JEr,uplf,foundf,JEEr);
+  
     //WebOutStringFormatNL("<div class='submit_line'><input type='button' onclick='location.href=""" & FormatSimpleLink(removelastnode("/" & path),true) & """' class='spbutton first' value='" & ToolWebNGTranslateText(26206) & "'><input type='submit' class='spbutton' value='" & ToolWebNGTranslateText(26207) & "'></div>");
     WebOutStringFormatNL("<div class='submit_line'><input type='submit' class='spbutton' value='" & ToolWebNGTranslateText(26207) & "'></div>");
 
@@ -485,16 +618,12 @@ begin
     JEr.SerNr = StringToLongInt(node);
     if readfirstmain(JEr,1,true) then begin
       node = removenextnode(mpath);
-      if blank(node) then begin
-        ShowEventContent(JEr,rpath);
-      end else begin
-        if (JEr.RegFlag == 1 and nonblank(CurrentCust)) or (JEr.RegFlag == 0) then begin
-          ShowEventSubPage(JEr,node,rpath);
-        end;
+      if (JEr.RegFlag == 1 and nonblank(CurrentCust)) or (JEr.RegFlag == 0) then begin
+        ShowEventSubPage(JEr,node,rpath);
       end;
     end;
   end else begin
-    ShowEventList(rpath);
+    //Show error message
   end;
 
   WebOutStringFormatNL("</div>"); 
@@ -516,55 +645,113 @@ begin
 return;
 end;
 
-updating procedure FillEntryRows(var record JALEventEntryVc JEEr,record JALEventVc JEr,var boolean err,var boolean uplf,var boolean reqf)
+procedure AddEntryRow(var record JALEventEntryVc JEEr,string field,string comment,string value)
+begin
+  row JALEventEntryVc JEErw;
+  
+  ClearRow(JEEr,JEErw,1);
+  JEErw.Field = field;
+  JEErw.Comment = comment;
+  JEErw.Value = value;
+  MatRowPut(JEEr,MatRowCnt(JEEr),JEErw);
+
+  return;
+end;
+
+updating procedure FillEntryRows(var record JALEventEntryVc JEEr,record JALEventVc JEr,var boolean err,var boolean uplf,var boolean reqf,var string errfield)
 begin
   row JALEventEntryVc JEErw;
   row JALEventVc JErw;
-  integer i,rwcnt;
+  integer i,rwcnt,j;
   record JALEventFieldVc JFr;
   record CUVc CUr;
-  string 255 fname;
+  string 255 fname,field;
+  array string 255 emplist;
+  record SMFVc SMFr;
+  record TeacherVc TCr;
+  record MentorVc MTr;
+  Integer type;
+  Boolean blankf,partf;
   
+  err = 0;
   rwcnt = MatRowCnt(JEr);
   for (i = 0; i < rwcnt;i = i + 1) begin
     MatRowGet(JEr,i,JErw);
+    blankf = false;
     if (JErw.Show == 0) or (JErw.Show == 1 and JEEr.CustType == 3) or (JErw.Show == 2 and JEEr.CustType <> 3) then begin  
       JFr.SerNr = JErw.Field;
-      if readfirstmain(JFr,1,true) then begin
-        if JFr.Type <> 2 then begin
-          if JFr.Type == 3 then begin
-            CUr.eMail = WebGetArg("event_reg_field_" & i);
-            if nonblank(CUr.eMail) and readfirstkey("eMail",CUr,1,true)==false then begin
-              JEErw.Field = JErw.Field;
-              JEErw.Comment = JErw.Comment;
-              JEErw.Value = WebGetArg("event_reg_field_" & i);
-              MatRowPut(JEEr,MatRowCnt(JEEr),JEErw);            
+      if (ReadFirstMain(JFr,1,true)) then begin
+        switch (JFr.Type) begin
+          case 0: goto LAddSimpleRow;
+          case 1: goto LAddSimpleRow;
+          case 3:
+LAddSimpleRow:;
+            if (nonblank(WebGetArg("event_reg_field_" & i))) then begin
+              AddEntryRow(JEEr,JErw.Field,JErw.Comment,WebGetArg("event_reg_field_" & i));
             end else begin
-              err = true;
-              if nonblank(WebGetArg("event_reg_field_" & i)) then begin
-                putSessionString("err_email","true");
+              blankf = true;
+              field = "event_reg_field_" & i;
+            end;
+          case 2://checkbox
+            if (WebGetArg("event_reg_field_" & i)=="on") then begin
+              AddEntryRow(JEEr,JErw.Field,JErw.Comment,USetStr(20175));
+            end else begin
+              AddEntryRow(JEEr,JErw.Field,JErw.Comment,USetStr(20176));
+            end;
+
+          case 4://participants
+            CUr.Code = CurrentCust;
+            type = GetJAlCustType(CUr,SMFr,TCr,MTr);
+            if (type==0) then begin
+              partf = false;
+              GetSMFEmplist(SMFr.SMFCode,emplist);
+              for (j=0;j<emplist.length;j=j+1) begin
+                if (WebGetArg("emp_" & j)=="on") then begin
+                  AddEntryRow(JEEr,JErw.Field,JErw.Comment,emplist[j]);
+                  partf = true;
+                end;
+              end;
+              if (!partf) then begin
+                blankf = true;
+                field = "emp_0";
               end;
             end;
-          end else begin
-            ClearRow(JEEr,JEErw,1);
-            JEErw.Field = JErw.Field;
-            JEErw.Comment = JErw.Comment;
-            JEErw.Value = WebGetArg("event_reg_field_" & i);
-            MatRowPut(JEEr,MatRowCnt(JEEr),JEErw);
-            if JErw.Req == 0 and blank(JEErw.Value) then begin
-              err = true;
-            end;
+          case 5://upload
+            uplf = true;
+        end;
+        if (JErw.Req==0) then begin
+          if (blankf) then begin
+            err = 2;
+            errfield = field;
+            i = rwcnt;
           end;
-          PutSessionString("event_reg_field_" & i,WebGetArg("event_reg_field_" & i));
-        end else begin
-          reqf = JErw.Req==0;
-          uplf = true;
         end;
       end;
     end;
   end;
 
 return;
+end;
+
+global webpublic
+updating procedure WebJALEventValidate()
+begin
+  record JALEventVc JEr;
+  record JALEventEntryVc JEEr;
+  string 255 errfield;
+  Boolean uplf,reqf;
+  Boolean err;
+
+  JEr.SerNr = StringToLongInt(WebGetArg("event"));
+  err = 1;
+  if readfirstmain(JEr,1,true) then begin
+    err = 0;
+    FillEntryRows(JEEr,JEr,err,uplf,reqf,errfield);
+  end;
+
+  WebOutString("<res err='" & err & "' err_msg='" & ToolWebNGTranslateText2(100000) & "' errfield='" & errfield & "'></res>");
+
+  return;
 end;
 
 global webpublic
@@ -578,8 +765,7 @@ begin
   boolean err,testf,foundf,nextf;
   record JALEventEntryVc oldJEER,JEEr;
   record JALEventVc JEr;
-  string 255 path;
-  string 255 fname;
+  string 255 path,fname,errfield,id;
   boolean uplf,reqf;
 
   err = false;
@@ -611,6 +797,7 @@ begin
           type =  GetJAlCustType(CUr,SMFr,TCr,MTr);
           switch type begin
             case 0:JEEr.AddCode = SMFr.SMFCode;
+                   JEEr.SMFName = SMFr.SMFName;
             case 1:JEEr.AddCode = TCr.TeacherCode;
             case 2:JEEr.AddCode = MTr.MentorCode;
           end;
@@ -622,14 +809,7 @@ begin
       //fill registration fields
       uplf = false;
       reqf = true;
-      FillEntryRows(JEEr,JEr,err,uplf,reqf);
-      if err == false then begin
-        if uplf and !foundf then begin
-          if reqf == true and (blank(getSessionString("event_upload_file")) or FileExists("webcust/content/" & getSessionString("event_upload_file"))==false) and !foundf then begin
-            err = true;
-          end;
-        end;
-      end;
+      FillEntryRows(JEEr,JEr,err,uplf,reqf,errfield);
 
       if err == false then begin
         PutSessionString("msg",ToolWebNGTranslateText(26208));
@@ -641,16 +821,7 @@ begin
           JEEr.EventNr = JEr.SerNr;
           if recordStore(JEEr,true) then begin
             nextf = true;
-          end;
-        end;
-        if uplf then begin
-          fname = "webcust/content/" & GetSessionString("event_upload_file");
-
-          if fileExists(fname) then begin
-            RecordLinkFile(fname,0,JEEr,CurrentCompany);
-            PutSessionString("event_upload_file","");
-            PutSessionString("event_upload_realfile","");
-            Delete_File(fname);
+            id = JEEr.SerNr;
           end;
         end;
       end else begin
@@ -659,190 +830,8 @@ begin
     end;
   end;
 
-  if nextf then begin
-    path = removelastnode(WebGetArg("path"));
-    ShowRedirectHTML(FormatSimpleLink(path,true),false);  
-  end else begin
-    PutSessionString("editf","true");
-    ShowRedirectHTML(FormatSimpleLink(WebGetArg("path"),true),false);
-  end;
+  WebOutString("<res id='" & id & "' err='" & err & "' err='" & ToolWebNGTranslateText2(100000) & "' errfield='" & errfield & "'></res>");
 
-
-
-return;
-end;
-
-global webpublic
-procedure WebJALShowUploadForm()
-begin
-  string 100 ast;
-  integer i;
-  string 2 tstr;
-  integer pos;
-  string 15 res;
-
-  res = "";
-  Randomize;
-  ast = "0F3481ADE786F29523AAADECCBB123456FF987C2A3B4D6DD7EE8F922F33E5"; // 61 characters
-  for (i=0;i<12;i=i+1) begin
-    pos = Random(0,60);
-    tstr = Mid(ast,pos,1);
-    res = res & tstr;    
-  end;
-
-  WebOutStringFormatNL("<html><head><link rel='stylesheet' type='text/css' href='/upld_form.css'></head><body>");
-
-  if getSessionString("event_upload_file") == "" or FileExists("webcust/content/" & getSessionString("event_upload_file"))==false then begin
-    PutSessionString("event_upload_file","")
-    PutSessionString("event_upload_ses",res);  
-    WebOutStringFormatNL("<form method='POST' action='http://jal.lv:8081/upload.php?v=" & res & "' enctype='multipart/form-data'>");
-    WebOutStringFormatNL("<div><input type=""file"" name=""userfile"" size=""40""></div>");
-    //WebOutStringFormatNL("<input type='hidden' name='s' value='" & res & "'>");
-    WebOutStringFormatNL("<div class=""uploadline2""><input id=""changesbutton"" type=""submit"" value=""" & ToolWebNGTranslateText(25547) & """>");
-    WebOutSTringFormatNL("</form>");
-    PutSessionString("event_upload_path",WebGetArg("path"));
-  end else begin
-    if nonblank(getSessionString("event_upload_realfile")) then begin
-      WebOutStringFormatNL("<div class=''>" & getSessionString("event_upload_realfile") & "</div>");
-    end else begin
-      WebOutStringFormatNL("<div class=''>" & getSessionString("event_upload_file") & "</div>");
-    end;
-  end;
-  WebOutStringFormatNL("</body></html>");
-  
-return;
-end;
-
-global webpublic
-procedure WebJALEventUploadFunc()
-begin
-  string 100 path;
-  Area FileArea,img,FADone;
-  string 255 filename;
-  integer enter;
-  longint lcnt,pos,spos,epos,pepos;
-  string 255 tstr,namestr;
-  boolean getnamef;
-  integer namepos,nameepos,i;
-  record CUVc CUr;
-  record WebNGStructVc WSr;
-  string 255 link;
-  record SMFVc SMFr;
-  record RLinkVc RLr;
-  record JALFileVc JFr;
-  record JALClassBlock JCbl;
-  boolean savef;
-
-
-  path = "webcust/content/";
-
-  namepos = 0;
-  nameepos = 0;
-  savef = true;
-  enter = 0;
-  pos = 0;
-  epos = -1;
-  spos = 0;
-
-  if nonblank(GetSessionString("event_upload_ses")) then begin
-    putSessionString("event_upload_ses","");
-    WebGetPostData(FileArea);
-    while pos < GetAreaLength(FileArea)+1 begin
-      
-      tstr = GetStringFromArea(FileArea,pos,1); 
-        
-      pos = pos + 1;
-      if tstr == chr(13) then begin
-        enter = enter + 1;
-        pepos = epos;
-        epos = pos - 1;
-
-        if enter == 1 then begin
-          namepos = pos + 1;
-        end;
-        if enter == 2 then begin
-          nameepos = pos - 1;
-        end;
-        if enter == 4 then begin
-          spos = pos+1;
-        end;
-      end;
-    end;
-
-
-      
-    namestr = GetStringFromArea(FileArea,namepos,nameepos-namepos);
-    for (i = 0; i < len(namestr); i = i + 1) begin
-      if mid(namestr,i,9) == "filename=" then begin
-        filename = mid(namestr,i+10,len(namestr) - (i + 11));
-      end;
-    end;
-    if filename <> "" then begin
-      LogText(0,"Picture is being uploaded");
-      CreateFile(path & filename);
-      CloseFile;
-      GetAreaFromArea(FileArea,spos,pepos-spos,FADone);
-      WRITEAREATOFILE(FADone,path & filename,0);
-      PutSessionString("event_upload_file",filename);
-      NewTimedTask("deletefile" & filename & "_" & currentTime,"Delete uploaded file","RemoveUploadedFile",filename,currentDate,AddMinutes(CurrentTime,20),"","");
-    end;
-  end;
-  
-  link = GetSessionString("event_upload_path");
-  PutSessionString("event_upload_path","");
-  ShowRedirectHtml(FormatSimpleLink(link,true),false);
-
-
-return;
-end;
-
-global 
-procedure RemoveUploadedFile(string fname)
-begin
-  string 255 filename;
-
-  filename = "webcust/content/" & fname;
-
-  if (FileExists(filename)) then begin
-    Delete_File(filename);
-  end;
-
-
-return;
-end;
-
-
-global webpublic
-procedure WebRecordLinkFiles()
-begin
-  record JALClassBlock JCbl;
-  boolean err;
-  boolean res;
-  string 255 uplf,path,frfolder,nm,tofolder,filename,rn;
-
-  BlockLoad(JCbl);
-
-  uplf = JCbl.UploadDir;
-
-  path = "webcust/content/";
-  frfolder = uplf;
-  filename = WebGetArg("cn");
-  rn = WebGetArg("rn");
-  nm = uplf & filename;
-
-  if nonblank(GetSessionString("event_upload_ses")) then begin
-    if (FileExists(nm)) then begin
-      tofolder = path;
-      err = MoveFile(filename,frfolder,tofolder);
-      delete_File(nm);
-      
-      PutSessionString("event_upload_file",filename);
-      PutSessionString("event_upload_realfile",rn);
-      NewTimedTask("deletefile" & filename & "_" & currentTime,"Delete uploaded file","RemoveUploadedFile",filename,currentDate,AddMinutes(CurrentTime,20),"","");
-    end;
-  end;
-
-  ShowRedirectHtml(FormatSimpleLink("/WebJALShowUploadForm.hal",true),false);
 
 return;
 end;
@@ -1429,3 +1418,19 @@ JsonCreator1(object,value,2);
 return;
 end;
 
+global
+updating procedure FinishJALEventUpload(string sess,string filename,string id,string tag)
+begin
+  record JALEventEntryVc JEEr;
+
+  JEEr.SerNr = StringToLongInt(id);
+  if (ReadFirstMain(JEEr,1,true)) then begin
+    if (FileExists("tmp/" & tag & "/" & sess)) then begin
+      RenameFile("tmp/" & tag & "/" & sess,"tmp/" & tag & "/" & filename);
+      RecordLinkFile("tmp/" & tag & "/" & filename,0,JEEr,CurrentCompany);
+      Delete_File("tmp/" & tag & "/" & filename);
+  end;
+  end;
+
+  return;
+end;

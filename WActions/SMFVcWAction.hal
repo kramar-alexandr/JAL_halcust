@@ -374,6 +374,24 @@ begin
   return;
 end;
 
+global
+procedure JALEventParticipants2Dsm()
+begin
+  Integer wn;
+  record RcVc RepSpec;
+  record JALEventVc JEr;
+
+  wn = CurWindow;
+  GetWindowRecord(wn,JEr);
+  RecordNew(RepSpec);
+  ReportDefaults(RepSpec,"EventParticipants2RClass");
+  RepSpec.repname = "EventParticipants2Rn";
+  RepSpec.long1 = JEr.SerNr;
+  RepSpec.Media = mtScreen;    
+  RunReport(RepSpec,0);
+  return;
+end;
+
 global 
 procedure CreateSubMenuDsm()
 begin

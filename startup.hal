@@ -89,6 +89,8 @@ begin
   Report("SMU Naudas plðsma (nav izstr‚d‚ta)", SMFCashFlowRClass,SMFCashFlowRn,0,modJAL);
   Report("SMU PeºÀa un Zaud•jumi (nav izstr‚d‚ta)", SMFpzRClass,SMFpzRn,0,modJAL);
   Report("Dal´bnieku saraksts", EventParticipantsRClass,EventParticipantsRn,0,modJAL);
+  Report("Dal´bnieku pieteikumi", EventParticipants2RClass,EventParticipants2Rn,0,modJAL);
+  
   Report("Jaunumu saÀ•m•ji",JALNewsListRClass,JALNewsListRn,0,modJAL);
   Report("P‚rskats par neesoäiem failiem",ListLostAttachmentsRClass,ListLostAttachmentsRn,0,modJAL);
   Report("Studentu anom‚lijas",StudentAnomaliesRClass,StudentAnomaliesRn,0,modJAL);
@@ -380,6 +382,7 @@ begin
   SetText(2,"Izv•les rðtiÀa");
   SetText(3,"Radiopoga");
   SetText(4,"Dal´bnieki");
+  SetText(5,"Fails");
   EndSet;
 
   SetBegin(1005);

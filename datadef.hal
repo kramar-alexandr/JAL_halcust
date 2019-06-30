@@ -798,15 +798,15 @@ begin
 
   RecordBegin(JALEventFieldVc,-,"");
   RecordField(SerNr,M4Long,0,0);
-  RecordField(Comment,M4Str,60,0);
-  RecordField(Text,M4Str,100,0);
+  RecordField(Comment,M4Str,255,0);
+  RecordField(Text,M4Str,255,0);
   RecordField(Type,M4Set,10508,0);
   RecordField(SelectBox,M4Long,0,0);
   RecordField(Math,M4Matrix,0,0);
   RecordField(Req,M4Int,0,0);
   ArrayBegin(Math,-,1);
   ArrayField(LangCode,M4Code,10,0);
-  ArrayField(Comment,M4Str,100,0);
+  ArrayField(Comment,M4Str,255,0);
   EndArray;
   MainKeyBegin(SerNr,0);
   KeySegment(SerNr);
@@ -836,6 +836,7 @@ begin
   RecordField(Math,M4Matrix,0,0);
   RecordField(OkFlag,M4Int,0,0);
   RecordField(TeacherCode,M4Code,20,TeacherVc);
+  RecordField(SMFName,M4Str,255,0);
   ArrayBegin(Math,-,1);
   ArrayField(Field,M4Long,0,0);
   ArrayField(Comment,M4Str,60,0);
@@ -849,7 +850,11 @@ begin
   KeySegment(StatusFlag);
   KeySegment(TransDate);
   KeySegment(SerNr);
-  
+
+  KeyBegin(EventNr);
+  KeySegment(EventNr);
+  KeySegment(SerNr);
+
   KeyBegin(CustEvent);
   KeySegment(CustCode);
   KeySegment(EventNr);

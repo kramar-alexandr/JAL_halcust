@@ -1,0 +1,100 @@
+
+global
+function boolean ShowSpecialWebElementInternal(record WebNGElementVc WEr)
+begin
+  boolean res;
+
+  res = true;
+  switch (WEr.Type) begin
+    otherwise
+      res = false;
+  end;
+  ShowSpecialWebElementInternal = res;
+  return;
+end;
+
+global
+function Boolean ShowInternalWebApp(Integer lasttype,record WebNGStructVc WSr,string mpath)
+begin
+  Boolean res;
+
+  res = true;
+  switch (lasttype) begin
+  otherwise
+    res = false;
+  end;
+
+  ShowInternalWebApp = res;
+  return;
+end;
+
+global
+function Boolean InternalNodeIsApplication(Integer nodetype)
+begin
+  Boolean res;
+  
+  /*
+  if (nodetype==kStructTypeASPApp or
+      nodetype==15 or
+      nodetype==kStructTypeSubscriptionsApp or
+      nodetype==kStructTypeMigrationRegApp or
+      nodetype==kStructTypeDownloadProdApp or
+      nodetype==kStructTypeMyServerApp or
+      nodetype==kStructTypeAvailableApps or
+      nodetype==kStructTypeStandardIDApp or
+      nodetype==kStructTypePartnerSupportApp or 
+      nodetype==kStructTypeStdIDRegistrationApp or 
+      nodetype==kStructTypeStdIDResetPasswordApp or
+      nodetype==kStructTypeVideoTagApp or
+      nodetype==kStructTypeWatchpointApp
+      ) then begin
+      res = true;
+   end;
+  */
+  InternalNodeIsApplication = res;
+  return;
+end;
+
+global
+function string 255 CheckInternalStrings(Longint strno)
+begin
+  string 255 res;
+
+  switch (strno) begin
+    //register std id
+    case 100000: res = "Field is mandatory";
+  end;
+
+  CheckInternalStrings = res;
+  return;
+end;
+
+
+global
+updating function Boolean InternalUpdatingActions(string action)
+begin
+  Boolean res;
+
+  switch (action) begin
+  end;
+
+  InternalUpdatingActions = res;
+  return;
+end;
+
+global
+function Boolean DoOuterWebActions(string action)
+begin
+  string 255 app,naction;
+  Boolean res;
+
+  //split
+  //naction = action;
+  //app = removenextlistitem(naction,".");
+
+  switch (app) begin
+  end;
+
+  DoOuterWebActions = res;
+  return;
+end;

@@ -1,4 +1,6 @@
 
+SetLangMode(LangLatvian,"LAT",0);
+
 function integer getSMFPartCount(record SMFVc SMFr)
 begin
   record CUVc CUr;
@@ -110,20 +112,16 @@ begin
 
         if testf then begin
           if JEEr.CustType == 0 then begin
-            arSMF[ssize] = JEEr;
-            ssize = ssize + 1;
+            arSMF[arSMF.length] = JEEr;
           end;
           if JEEr.CustType == 1 then begin
-            arTC[tsize] = JEEr;
-            tsize = tsize + 1;
+            arTC[arTC.length] = JEEr;
           end;
           if JEEr.CustType == 2 then begin
-            arMT[msize] = JEEr;
-            msize = msize + 1;
+            arMT[arMT.length] = JEEr;
           end;
           if JEEr.CustType == 3 then begin
-            arOT[osize] = JEEr;
-            osize = osize + 1;
+            arOT[arOT.length] = JEEr;
           end;
         end;
       end;
@@ -131,7 +129,7 @@ begin
 
     if (RepSpec.ArtMode == 1 ) then begin
 
-      if ssize > 0 then begin
+      if arSMF.length > 0 then begin
         StartFormat(15);
         p = st;
         OutString(p,0,UsetStr(32260),false);p = p +c ;
@@ -157,7 +155,7 @@ begin
         Gray_divider(0,1);
         endformat;
         
-        for (i = 0; i < ssize; i = i + 1) begin
+        for (i = 0; i < arSMF.length; i = i + 1) begin
           p = st;
           JEEr = arSMF[i];
 
@@ -186,7 +184,7 @@ begin
         endformat;
       end;
 
-      if tsize > 0 then begin
+      if arTC.length > 0 then begin
 
         StartFormat(15);
         p = st;
@@ -206,7 +204,7 @@ begin
         Gray_divider(0,1);
         endformat;
 
-        for (i = 0; i < tsize; i = i + 1) begin
+        for (i = 0; i < arTC.length; i = i + 1) begin
           p = st;
           JEEr = arTC[i];
           TCr.TeacherCode = JEEr.AddCode;
@@ -234,7 +232,7 @@ begin
         endformat;
       end;
 
-      if msize > 0 then begin
+      if arMT.length > 0 then begin
 
         StartFormat(15);
         p = st;
@@ -253,7 +251,7 @@ begin
         Gray_divider(0,1);
         endformat;
 
-        for (i = 0; i < msize; i = i + 1) begin
+        for (i = 0; i < arMT.length; i = i + 1) begin
           p = st;
           JEEr = arMT[i];
           MTr.MentorCode = JEEr.AddCode;
@@ -281,7 +279,7 @@ begin
       end;
 
 
-      if osize > 0 then begin
+      if arOT.length > 0 then begin
         StartFormat(15);
         p = st;
         JEEr = arOT[0];
@@ -296,7 +294,7 @@ begin
         endformat;
 
 
-        for (i = 0; i < osize; i = i + 1) begin
+        for (i = 0; i < arOT.length; i = i + 1) begin
           p = st;
           //CUr = arOT[i];
           JEEr = arOT[i];
@@ -310,7 +308,7 @@ begin
       end;
     end else begin
       c = 100;
-      if ssize > 0 then begin
+      if arSMF.length > 0 then begin
         StartFormat(15);
         p = st;
         OutString(p,0,"",false);p = p +c ;
@@ -332,7 +330,7 @@ begin
         Gray_divider(0,1);
         endformat;
         
-        for (i = 0; i < ssize; i = i + 1) begin
+        for (i = 0; i < arSMF.length; i = i + 1) begin
           p = st;
           JEEr = arSMF[i];
 
@@ -359,7 +357,7 @@ begin
         endformat;
       end;
 
-      if tsize > 0 then begin
+      if arTC.length > 0 then begin
 
         StartFormat(15);
         p = st;
@@ -380,7 +378,7 @@ begin
         Gray_divider(0,1);
         endformat;
 
-        for (i = 0; i < tsize; i = i + 1) begin
+        for (i = 0; i < arTC.length; i = i + 1) begin
           p = st;
           JEEr = arTC[i];
           TCr.TeacherCode = JEEr.AddCode;
@@ -409,7 +407,7 @@ begin
         endformat;
       end;
 
-      if msize > 0 then begin
+      if arMT.length > 0 then begin
 
         StartFormat(15);
         p = st;
@@ -430,7 +428,7 @@ begin
         Gray_divider(0,1);
         endformat;
 
-        for (i = 0; i < msize; i = i + 1) begin
+        for (i = 0; i < arMT.length; i = i + 1) begin
           p = st;
           JEEr = arMT[i];
           MTr.MentorCode = JEEr.AddCode;
@@ -460,7 +458,7 @@ begin
       end;
 
 
-      if osize > 0 then begin
+      if arOT.length > 0 then begin
       
         StartFormat(15);
         p = st;
@@ -479,7 +477,7 @@ begin
         endformat;
 
 
-        for (i = 0; i < osize; i = i + 1) begin
+        for (i = 0; i < arOT.length; i = i + 1) begin
           p = st;
           //CUr = arOT[i];
           JEEr = arOT[i];
@@ -498,10 +496,209 @@ begin
     
     Gray_Divider(0,1);
     StartFormat(15);
-    OutString(st,0,USetStr(16724) & ": " & (ssize + msize + osize + tsize),false);
+    OutString(st,0,USetStr(16724) & ": " & (arSMF.length + arTC.length + arMT.length + arOT.length),false);
     EndFormat;
   
   end;  
   EndJob
+  return;
+end;
+
+function Boolean FindEmpContact(record SMFVc SMFr,string name,var record CUVc rCUr)
+begin
+  Boolean res;
+  record CUVc CUr;
+  record RLinkVc RLr;
+  Integer i;
+
+  i = 1;
+  while (ReadRecordLink(SMFr,i,CUr,RLr)) begin
+    if (CUr.Name==name) then begin
+      res = true;
+      RecordCopy(rCUr,CUr);
+      goto LOut;
+    end;
+    i = i + 1;
+  end;
+
+LOut:;
+  FindEmpContact = res;
+  return;
+end;
+
+
+procedure PrepareEmptyRow(array string arrCols,var vector string vVals)
+begin
+  Integer i;
+
+  for (i=0;i<arrCols.length;i=i+1) begin
+    vVals[arrCols[i]] = "";
+  end;
+  
+  return;
+end;
+
+procedure GetApplicatioValues(record SMFVc SMFr,record JALEventEntryVc JEEr,var array record CUVc emplist,var vector string vVals,array string arrCols,Longint partfield)
+begin
+  row JALEventEntryVc JEErw;
+  Integer i,rwcnt;
+  record CUVc CUr;
+
+  ClearVector(vVals);
+  PrepareEmptyRow(arrCols,vVals);
+
+  rwcnt = MatRowCnt(JEEr);
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(JEEr,i,JEErw);
+    if (JEErw.Field==partfield) then begin
+      if (FindEmpContact(SMFr,JEErw.Value,CUr)) then begin
+        emplist[emplist.length] = CUr;
+      end;
+    end else begin
+      vVals[JEErw.Field] = JEErw.Value;
+    end;
+  end;
+
+  return;
+end;
+
+procedure GetApplicationColumns(record JALEventVc JEr,var array string arrCols,var array string arrColNames,var Longint partfield)
+begin
+  row JALEventVc JErw;
+  Integer i,rwcnt;
+  record JALEventFieldVc JFr;
+
+  rwcnt = MatRowCnt(JEr);
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(JEr,i,JErw);
+    JFr.SerNr = JErw.Field;
+    if (ReadFirstMain(JFr,1,true)) then begin
+      if (JFr.Type==4) then begin//participants
+        partfield = JFr.SerNr;
+      end else begin
+        if (JFr.Type!=5) then begin//upload
+          arrCols[arrCols.length] = JFr.SerNr;
+          arrColNames[arrColNames.length] = JFr.Comment;
+        end;
+      end;
+    end;
+
+  end;  
+
+  return;
+end;
+
+
+procedure PrintColumnHeaders(array string arrColNames)
+begin
+  Integer i;
+  
+  StartFormat(15);
+  OutString(0,0,"S•r. Nr.",false);
+  OutString(50,0,"Skola",false);
+  OutString(60,0,"Izgl´t´bas pak‚pe",false);
+  OutString(65,0,"Darb´bas nozare",false);
+  OutString(70,0,"Klase",false);
+  OutString(80,0,"Nosaukums",false);
+  OutString(90,0,"Dal´bnieku skaits",false);
+  for (i=0;i<5;i=i+1) begin
+    OutString(110+i,0,"Dal´bnieka " & (i+1) & " v‚rds",false);
+  end;
+  for (i=0;i<5;i=i+1) begin
+    OutString(110+i,0,"Dal´bnieka " & (i+1) & " e-pasts",false);
+  end;
+  OutString(200,0,"Skolot‚ja v‚rds",false);
+  OutString(210,0,"Skolot‚ja e-pasts",false);
+
+  for (i=0;i<arrColNames.length;i=i+1) begin
+    OutString(210,0,arrColNames[i],false);
+  end;
+
+  EndFormat;
+  StartFormat(1);
+  Gray_divider(0,1);
+  EndFormat;
+  
+  return;
+end;
+
+global
+procedure EventParticipants2Rn(record RcVc RepSpec)
+begin
+  record JALEventEntryVc JEEr;
+  record JALEventVc JEr;
+  record SMFVc SMFr;
+  record TeacherVc Teacher;
+  row SMFVc SMFrw;
+  array record CUVc emplist;
+  record CUVc CUr,TeacherCUr;
+  array string 255 arrCols,arrColNames;
+  vector string 255 vVals;
+  Boolean TrHs;
+  Longint partfield;
+  Integer i;
+  
+  StartReportJob(USetStr(16800));
+
+  EndHeader;
+  JEr.SerNr = RepSpec.long1;
+  if (ReadFirstMain(JEr,1,true)) then begin
+    GetApplicationColumns(JEr,arrCols,arrColNames,partfield);
+    PrintColumnHeaders(arrColNames);
+    TrHs = true;
+    JEEr.EventNr = JEr.SerNr;
+    while (LoopKey("EventNr",JEEr,1,TrHs)) begin
+      if (JEEr.EventNr!=JEr.SerNr) then begin
+        TrHs = false;
+      end else begin
+        SMFr.SMFCode = JEEr.AddCode;
+        if (ReadFirstMain(SMFr,1,true)) then begin
+          MatRowGet(SMFr,0,SMFrw);
+
+          GetApplicatioValues(SMFr,JEEr,emplist,vVals,arrCols,partfield);
+          StartFormat(15);
+          OutString(0,0,JEEr.SerNr,false);
+          OutString(50,0,SMFr.SchoolName,false);
+          OutString(60,0,StringFromSet(3001,SMFr.EducationType),false);
+          OutString(65,0,SMFr.ProdSpec,false);
+          OutString(70,0,SMFr.ClassNum & " " & SMFr.ClassChar,false);
+          OutString(80,0,SMFr.SMFName,false);
+          OutString(90,0,emplist.length,false);
+          for (i=0;i<5;i=i+1) begin
+            if (i<emplist.length) then begin
+              CUr = emplist[i];
+              OutString(110+i,0,CUr.Name,false);            
+            end else begin
+              OutString(110+i,0,"",false);
+            end;
+          end;
+          for (i=0;i<5;i=i+1) begin
+            if (i<emplist.length) then begin
+              CUr = emplist[i];
+              OutString(110+i,0,CUr.eMail,false);            
+            end else begin
+              OutString(110+i,0,"",false);
+            end;
+          end;
+          Teacher.TeacherCode = SMFrw.Code;
+          if (ReadFirstMain(Teacher,1,true)) then begin
+            TeacherCUr.Code = Teacher.CustCode;
+            ReadFirstMain(TeacherCUr,1,true);
+          end;
+          OutString(200,0,TeacherCUr.Name,false);
+          OutString(210,0,TeacherCUr.eMail,false);
+
+          for (i=0;i<arrCols.length;i=i+1) begin
+            OutString(210,0,vVals[arrCols[i]],false);
+          end;
+          
+          EndFormat;
+        end;
+      end;
+    end;
+  end;
+
+  EndJob;
+
   return;
 end;
