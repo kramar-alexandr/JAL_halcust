@@ -813,6 +813,7 @@ function integer GetJAlCustType(record CUVc CUr,var record SMFVc SMFr,var record
 begin
   integer res;
   record JALClassBlock JCbl;
+  record RLinkVc RLr;
 
   res = -1;
   SMFr.CustCode = CUr.Code;
@@ -823,6 +824,7 @@ begin
   BlockLoad(JCbl);
   if (SetInSet(JCbl.Schoolar,CUr.Classification)) then begin
     res = 0;
+    ReadRecordLink(CUr,1,SMFr,RLr);
     goto LGetCustType;
   end; 
  
@@ -1171,6 +1173,7 @@ begin
           GetEventHist(SMFr,sd,ed,6,judiena);
           
           WebOutStringFormatNL("\"approvalstatus\":\"" & SMFr.ApprovalStatus & "\",");
+          WebOutStringFormatNL("\"oldapprovalstatus\":\"" & SMFr.OldApprovalStatus & "\",");
           WebOutStringFormatNL("\"cbziema\":\"" & cbziema & "\",");
           WebOutStringFormatNL("\"cbreg\":\"" & cbreg & "\",");
           WebOutStringFormatNL("\"cbpav\":\"" & cbpav & "\",");
@@ -1231,6 +1234,11 @@ begin
             RecordCopy(oldSMFr,SMFr);
             SMFr.ApprovalStatus = StringToInt(newstat);
             RecordUpdate(oldSMFr,SMFr,true);
+            if (SMFr.ApprovalStatus==6) then begin//reset the status to 0 so that students can edit it. We store old status in SMFr.OldApprovalStatus field
+              RecordCopy(oldSMFr,SMFr);
+              SMFr.ApprovalStatus = 0;
+              RecordUpdate(oldSMFr,SMFr,true);
+            end;
           end;
         end;
       end;

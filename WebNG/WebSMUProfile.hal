@@ -215,7 +215,7 @@ begin
   WebOutString("<div class=""profile smu_basic_info smu-border"">");
   WebOutString("<div class=""smu_top""><div class=""back_button_wrap""><a class=""spbutton profile_back"" href=""/profilePupil"">" & ToolWebNGTranslateText2(80022) & "</a></div><div class=""profile_header"">" & ToolWebNGTranslateText2(80023) & "</div></div>");
   ShowSMUEditField(ToolWebNGTranslateText2(80010),"smu_name",ToolWebNGTranslateText2(80011));
-  ShowSMUTextArea(ToolWebNGTranslateText2(80012),"smu_descr",ToolWebNGTranslateText2(80013),"");
+  ShowSMUTextArea(ToolWebNGTranslateText2(80012),"smu_descr",ToolWebNGTranslateText2(80013)," maxlength='300'");
   ShowSMUIndustries(ToolWebNGTranslateText2(80014),"smu_items",ToolWebNGTranslateText2(80015));
   ShowSMUEditField(ToolWebNGTranslateText2(80016),"smu_period",ToolWebNGTranslateText2(80017));
   ShowSMUEducation(ToolWebNGTranslateText2(80018),"smu_education",ToolWebNGTranslateText2(80019));
@@ -365,7 +365,7 @@ begin
   row FCSMUVc FCrw;
   record EventTurnoverVc ETr;
   row EventTurnoverVc ETrw;
-  Integer rwcnt,i,j,k;
+  Integer rwcnt,i,j,k,cnt;
   Boolean TrHs,foundf;
   string 255 c,s;
   vector Boolean vItems;
@@ -386,6 +386,7 @@ begin
         WebOutString(",");
       end;
       j = j + 1;
+      cnt = 0;
       vItems[FCr.ItemName] = false;
       vItemName[FCr.ItemName] = FCr.ItemName;
       WebOutString("{""ItemName"":""" & FCr.ItemName & """,");
@@ -394,9 +395,10 @@ begin
       rwcnt = MatRowCnt(FCr);
       for (i=0;i<rwcnt;i=i+1) begin
         MatRowGet(FCr,i,FCrw);
-        if (i>0) then begin
+        if (cnt>0) then begin
           WebOutString(",");
         end;
+        cnt = cnt + 1;
         WebOutString("{");
         WebOutString("""type"":""0"",");
         WebOutString("""ProdName"":""" & FCrw.ProdName & """,");
@@ -407,7 +409,10 @@ begin
         c = GetFieldValueByName(FCr,"contact" & (i+1),-1);
         s = GetFieldValueByName(FCr,"salary" & (i+1),-1);
         if (nonblank(c)) then begin
-          WebOutString(",");
+          if (cnt>0) then begin
+            WebOutString(",");
+          end;
+          cnt = cnt + 1;
           WebOutString("{");
           WebOutString("""type"":""1"",");
           WebOutString("""code"":""" & c & """,");
@@ -596,6 +601,7 @@ begin
       WebOutString("""ActDateStart"":""" & DateToString(SMFr.ActDateStart,"YYYY-MM-DD") & """,");
       WebOutString("""ActDateEnd"":""" & DateToString(SMFr.ActDateEnd,"YYYY-MM-DD") & """,");
       WebOutString("""ApprovalStatus"":""" & SMFr.ApprovalStatus & """,");
+      WebOutString("""OldApprovalStatus"":""" & SMFr.OldApprovalStatus & """,");
       WebOutString("""Text"":""");
       for (i=0;i<SizeTextCnt(SMFr);i=i+200) begin
         tstr = StringFromText(SMFr,i,200);
@@ -767,6 +773,21 @@ begin
   return;
 end;
 
+procedure GetSMUEmpList(record SMFVc SMFr,var array string emplist)
+begin
+  record CUVc CUr;
+  record RLinkVc RLr;
+  Integer i;
+  
+  i = 1;
+  while (ReadRecordLink(SMFr,i,CUr,RLr)) begin
+   emplist[emplist.length] = CUr.Code;
+    i = i + 1;
+  end;
+
+  return;
+end;
+
 global webpublic
 updating procedure WebSaveSMUDataFromEditing()
 begin
@@ -786,6 +807,7 @@ begin
   area a;
   Boolean updatef;
   record ReportMailBlock RMbl;
+  array string 255 emplist;
    
 
   CUr.Code = CurrentCust;
@@ -870,6 +892,11 @@ l33:;
         i = i + 1;
       end;
       if (JSONGet(js,"Approve")=="1") then begin
+        GetSMUEmpList(SMFr,emplist);
+        if (emplist.length<2 or emplist.length>5) then begin
+          errtype = 3;
+          goto lend;
+        end;
         //CreateUniqueTeachApp(0,SMFr.SMFCode,CUr.TeacherCode);
         if (ReadFirstMain(SMFr,1,true)) then begin
           RecordCopy(oldSMFr,SMFr);

@@ -45,6 +45,7 @@ begin
   EditField(h,v+=vs,220,"Vad´t‚js",Normal,Manager,false,0);
 	EditField(h,v+=vs,220,"Dal´bnieki",Normal,Member,false,0);
 	EditField(h,v+=vs,220,"M•rúauditorija",Normal,TargetAud,false,0);
+	EditField(h,v+=vs,220,"Nozare",Normal,ProdSpec,false,0);
   EditField(h,v+=vs,220,"E-pasts",Normal,Email,false,0);
   EditField(h,v+=vs,50,"Skol•na lietot. kods",Normal,CustCode,false,0);
   EditField(h2,v, 90,"Re®ions",Normal,Region,false,JALRegionSClass);
@@ -55,12 +56,13 @@ begin
   //EditField(h,v+=vs,50,"Serveris",Normal,ServerCode,false,0);
   //EditField(h2,v+=vs,90,"Komp‚nija",Normal,CompNr,false,0);
 	
-  ButtonFrame(h,v=(vm+=(v+40)),110,6,"Statuss");
+  ButtonFrame(h,v=(vm+=(v+40)),120,7,"Statuss");
   RadioButton(h,v,0,0,"Neapstiprin‚ta",ApprovalStatus);
   RadioButton(h,v+=16,1,0,"Iesniegts",ApprovalStatus);
   RadioButton(h,v+=16,2,0,"Nosðt´ts JAL",ApprovalStatus);
   RadioButton(h,v+=16,3,0,"JAL Apstiprin‚ts",ApprovalStatus);
   RadioButton(h,v+=16,4,0,"JAL Noraid´ts",ApprovalStatus);
+  RadioButton(h,v+=16,6,0,"Skolot‚ja Noraid´ts",ApprovalStatus);
   RadioButton(h,v+=16,5,0,"Likvid•ta",ApprovalStatus);
   ButtonFrame(h2,v=vm,90,3,"Tips");
   RadioButton(h2,v,0,0,"Raìoäana",TypeFlag);
@@ -93,10 +95,11 @@ begin
   EditField(h4,v,-40,"V‚rds, Uzv‚rds",Normal,TeacherName,false,0);*/
   EditField(h3,v+=vs, 30,"Skolas kods",Normal,SchoolCode,false,SchoolSClass);
   EditField(h4,v,-40,"Nosaukums",Normal,SchoolName,false,0);
+	EditField(h3,v+=vs,220,"Izgl´t´bas pak‚pe",Normal,EducationType,false,SetSClass);
   
   //EditField(h2,v,-30,"Klients",ViewOnly,CustCode,false,0);
   
-  MatrixBegin(h3,v+=40,-55,v+=50,-,20);
+  MatrixBegin(h3,v+=40,-55,v+=70,-,20);
   MatCol(1,25,"Tips",0,Type,false,SetSClass);
   MatCol(1,90,"Kods",0,Code,false,0);
   MatCol(1,190,"V‚rds",0,Name,false,0);
@@ -109,8 +112,7 @@ begin
 */
   //Tile(2,400,true,"",-);
 	TextField(h3,v+=20,-40,80,Text,0);
-  CheckBox(h3,v+=100,0,"TITAN",TitanFlag);
-  CheckBox(h3,v+=vs,0,"”nu diena",EnuDienaFlag);
+  HalPushButton(h3,v+=100,h3+100,v+20,"SMFEmpListShowDsm","Dal´bnieki");
   /*CHN::not needed anymore based on Ebersteins
   wn = CurWindow;
   if GetWindowString(wn,"SMFCode") <> "" then begin

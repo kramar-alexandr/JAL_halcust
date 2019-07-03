@@ -35,6 +35,12 @@ begin
       WebOutString("jal_str['ApprovalMsg2']        = '" & ToolWebNGTranslateText2(70048) & "';");
       WebOutString("jal_str['ApprovalMsg3']        = '" & ToolWebNGTranslateText2(70049) & "';");
       WebOutString("jal_str['TeacherDeclinded']    = '" & ToolWebNGTranslateText2(70065) & "';");
+      WebOutString("jal_str['EmpCnt']              = '" & ToolWebNGTranslateText2(70066) & "';");
+      WebOutString("jal_str['ApprovalMsg4']        = '" & ToolWebNGTranslateText2(70067) & "';");
+      WebOutString("jal_str['ApprovalMsg5']        = '" & ToolWebNGTranslateText2(70068) & "';");
+      WebOutString("jal_str['ApprovalMsg6']        = '" & ToolWebNGTranslateText2(70067) & "';");
+      WebOutString("jal_str['FillAllFields']       = '" & ToolWebNGTranslateText2(70069) & "';");
+      
 
     case 1://teacher profile
       WebOutString("jal_str['prev']                = '" & ToolWebNGTranslateText2(70000) & "';");//IEPRIEK·îJÅ
@@ -64,6 +70,7 @@ begin
       WebOutString("jal_str['AppType']             = '" & ToolWebNGTranslateText2(70023) & "';");//Skolïns
       WebOutString("jal_str['Msg_ApproveSMU']  = '" & ToolWebNGTranslateText2(70025) & "';");//Apstiprinot SMU ‰¥ darb¥ba nav labojama
       WebOutString("jal_str['Msg_DeclineSMU']  = '" & ToolWebNGTranslateText2(70026) & "';");//Noraidot SMU ‰¥ darb¥ba nav labojama
+      WebOutString("jal_str['NoSMU']  = '" & ToolWebNGTranslateText2(70027) & "';");
   
   end;
   WebOutString("</script>");

@@ -1,0 +1,38 @@
+SetLangMode(LangLatvian,"LAT",0);
+
+global
+procedure SMFEmpListRn(record RcVc RepSpec)
+begin
+  record SMFVc SMFr;
+  Integer i;
+  record RLinkVc RLr;
+  record CUVc CUr;
+  
+  StartReportJob("SMU Dal´bnieki");
+
+  EndHeader;
+
+  StartFormat(15);
+  OutString(0,0,"V‚rds,Uzv‚rds",false);;
+  OutString(100,0,"Klase",false);
+  EndFormat;
+  StartFormat(1);
+  Gray_Divider(0,1);
+  EndFormat;
+  
+  SMFr.SMFCode = RepSpec.f1;
+  if (ReadFirstMain(SMFr,1,true)) then begin
+    i = 1;
+    while (ReadRecordLink(SMFr,i,CUr,RLr)) begin
+      StartFormat(15);
+      OutStringID(0,"DblCUVc",CUr.Name,false,CUr.Code);
+      OutString(100,0,CUr.ClassNum & " " & CUr.ClassChar,false);
+      EndFormat;
+      i = i + 1;
+    end;
+  end;
+
+  EndJob;
+
+  return;
+end;

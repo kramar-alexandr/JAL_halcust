@@ -15,6 +15,7 @@ external procedure ExtractObj(string,var Integer,var string);
 external procedure SendJALEmail(vector string,string,string);
 external updating procedure CreateTeachApp(Integer,string, string);
 external updating procedure CreateUniqueTeachApp(Integer,string, string);
+external function string 255 ToolWebNGTranslateText2(Longint);
 
 function string 255 GenerateRandomHash()
 begin
@@ -46,8 +47,8 @@ begin
   record SMFVc SMFr;
   record RLinkVc RLr;
   boolean res;
-  integer i,pos;
-	string 255 text,headertext,name,member; 
+  integer i,pos,err;
+	string 255 text,headertext,name,member,errmsg; 
 	record JALClassblock JALClassbl;
 	vector string 255 vVals;
 	 
@@ -55,45 +56,50 @@ begin
   CUr.Code = WebGetArg("emp");
   
   if ReadFirstMain(CUr,1,true) begin
-    if ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CurrentCust,SMFr) begin
-      if SMFr.SMFCode == WebGetArg("smu") then begin
-        RecordRemove(RLr);
-        //RecordCopy(oldCUr,CUr);
-        //CUr.blockedFlag = 1;
-        //if recordupdate(oldCUr,CUr,true)==0 then begin end;
-		pos = 0;
-		name = "";
-		member = "";
-		ExtractObj(SMFr.Member,pos,name);
-		while(nonblank(name)) begin
-			If(name!= CUr.Name) then begin
-				member = member & name & ",";
-			end;
-			ExtractObj(SMFr.Member,pos,name);
-		end;
-		SMFr.Member = Left(member,len(member) - 1);
-		RecordStore(SMFr,true);
-        res = true;
-        i = 1;
-        while ReadRecordLink(SMFr,i,tCUr,RLr) and res begin
-          if tCUr.Code == CUr.Code then begin
-            RecordRemove(RLr);
-            res = false;
-          end;
-          i = i + 1;
+    if (CurrentCust!=CUr.Code) then begin
+      if ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CurrentCust,SMFr) begin
+        if SMFr.SMFCode == WebGetArg("smu") then begin
+          RecordRemove(RLr);
+          //RecordCopy(oldCUr,CUr);
+          //CUr.blockedFlag = 1;
+          //if recordupdate(oldCUr,CUr,true)==0 then begin end;
+      pos = 0;
+      name = "";
+      member = "";
+      ExtractObj(SMFr.Member,pos,name);
+      while(nonblank(name)) begin
+        If(name!= CUr.Name) then begin
+          member = member & name & ",";
         end;
-						
-        vVals["smucode"] = SMFr.SMFCode;
-        vVals["custcode"] = CUr.Code;
-        SendJALEmail(vVals,JALCLassbl.EmployeeRemoveText,CUr.eMail);
-        if(SMFr.AgeFlag!=0) then begin
-            SendJALEmail(vVals,JALCLassbl.EmployeeRemoveText2,CUr.ParenteMail);
+        ExtractObj(SMFr.Member,pos,name);
+      end;
+      SMFr.Member = Left(member,len(member) - 1);
+      RecordStore(SMFr,true);
+          res = true;
+          i = 1;
+          while ReadRecordLink(SMFr,i,tCUr,RLr) and res begin
+            if tCUr.Code == CUr.Code then begin
+              RecordRemove(RLr);
+              res = false;
+            end;
+            i = i + 1;
+          end;
+              
+          vVals["smucode"] = SMFr.SMFCode;
+          vVals["custcode"] = CUr.Code;
+          SendJALEmail(vVals,JALCLassbl.EmployeeRemoveText,CUr.eMail);
+          if(SMFr.AgeFlag!=0) then begin
+              SendJALEmail(vVals,JALCLassbl.EmployeeRemoveText2,CUr.ParenteMail);
+          end;
         end;
       end;
+    end else begin
+      err = 1;
+      errmsg = ToolWebNGTranslateText2(88001);
     end;
   end;
   
-  ShowRedirectHTML(FormatSimpleLink(WebGetArg("tpath"),true),false);
+  WebOutString("<res err='" & err & "' errmsg='" & errmsg & "'></res>");
 
   return;
 end;

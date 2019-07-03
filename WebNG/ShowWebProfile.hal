@@ -909,9 +909,9 @@ begin
   /*Using this a the central place for teacher web strings in javascript*/
   OutPutJALWebTexts(1);
   WebOutStringFormatNL("<table id=""profiletable"">");
-  WebOutStringFormatNL("<tr><td id=""first"">V‚rds, Uzv‚rds:<td/><td>" & TCr.TeacherName & "</td></tr>");
+  WebOutStringFormatNL("<tr><td id=""first"">" & ToolWebNGTranslateText(20030) & ":<td/><td>" & TCr.TeacherName & "</td></tr>");
   //WebOutStringFormatNL("<tr><td id=""first"">" & ToolWebNGTranslateText(20031) & ":<td/><td>" & CUr.VATNr & "</td></tr>");
-  WebOutStringFormatNL("<tr><td id=""first"">" & ToolWebNGTranslateText(20036) & ":<td/><td>" & Schoolr.SchoolName & " (" & aprsch & ")</td></tr>");
+  WebOutStringFormatNL("<tr><td id=""first"">" & ToolWebNGTranslateText(20036) & ":<td/><td>" & Schoolr.SchoolName & "</td></tr>");
   WebOutStringFormatNL("<tr><td id=""first"">" & ToolWebNGTranslateText(20032) & ":<td/><td>" & CUr.Phone & "</td></tr>");
   WebOutStringFormatNL("<tr><td id=""first"">" & ToolWebNGTranslateText(20033) & ":<td/><td>" & CUr.eMail & "</td></tr>");
   for (i = 0 ; i  < rwcnt; i = i + 1) begin

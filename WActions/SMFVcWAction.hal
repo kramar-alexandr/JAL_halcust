@@ -534,3 +534,21 @@ BEGIN
   SMFDClassConfirmTeachButtonAction = res;
   RETURN;
 END;
+
+global
+procedure SMFEmpListShowDsm()
+begin
+  record SMFVc SMFr;
+  record RcVc RepSpec;
+
+  GetWindowRecord(CurWindow,SMFr);
+  
+  RecordNew(RepSpec);
+  ReportDefaults(RepSpec,"SMFEmpListRClass");
+  RepSpec.repname = "SMFEmpListRn";
+  RepSpec.f1 = SMFr.SMFCode; 
+  RepSpec.Media = mtScreen;
+  RunReport(RepSpec,0);
+
+  return;
+end;

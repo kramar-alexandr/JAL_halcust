@@ -62,7 +62,7 @@ begin
 
   switch (strno) begin
     //register std id
-    case 100000: res = "Field is mandatory";
+    case 88000: res = "Lauks ir obligats";
   end;
 
   CheckInternalStrings = res;

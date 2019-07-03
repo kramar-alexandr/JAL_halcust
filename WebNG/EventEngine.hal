@@ -749,7 +749,7 @@ begin
     FillEntryRows(JEEr,JEr,err,uplf,reqf,errfield);
   end;
 
-  WebOutString("<res err='" & err & "' err_msg='" & ToolWebNGTranslateText2(100000) & "' errfield='" & errfield & "'></res>");
+  WebOutString("<res err='" & err & "' err_msg='" & ToolWebNGTranslateText2(88000) & "' errfield='" & errfield & "'></res>");
 
   return;
 end;
@@ -830,7 +830,7 @@ begin
     end;
   end;
 
-  WebOutString("<res id='" & id & "' err='" & err & "' err='" & ToolWebNGTranslateText2(100000) & "' errfield='" & errfield & "'></res>");
+  WebOutString("<res id='" & id & "' err='" & err & "' err='" & ToolWebNGTranslateText2(88000) & "' errfield='" & errfield & "'></res>");
 
 
 return;

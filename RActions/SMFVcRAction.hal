@@ -151,6 +151,10 @@ begin
     case 3: SMFr.StatusName=USetStr(32114);
   end;
 
+  if (SMFr.ApprovalStatus!=SMF2r.ApprovalStatus) then begin
+    SMFr.OldApprovalStatus = SMF2r.ApprovalStatus;
+  end;
+
   
 LSMFVcRecordCheck:;
   SMFVcRecordCheck = res;

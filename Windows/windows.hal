@@ -342,6 +342,11 @@ begin
   EditFieldTL(h=150,v=6,150,"Kurss",M4Long,Normal,100,long1,false,JALEventSClass);
   EndWindow;
 
+  WindowBegin("SMU Dal´bnieki",SMFEmpListRClass,CGRcW,RcType);
+  SetWRect(80,80,500,250);
+  EditFieldTL(h=150,v=6,150,"SMU",M4Code,Normal,100,f1,false,0);
+  EndWindow;
+
   WindowBegin("Atskaite par skolot‚jiem",TeacherRClass,CGRcW,RcType);
   SetWRect(80,80,500,180);
   EditFieldTL(150,v=6,150,"Skolas kods",M4Str,Normal,100,f1,false,SchoolSClass);

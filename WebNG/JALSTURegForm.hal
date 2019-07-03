@@ -520,33 +520,31 @@ begin
   record MailSettingsBlock MSr;
   BlockLoad(MSr);
 
-    RecordNew(Mailr);
-    Mailr.Header = head;
-	
-    
-    ClearRow(Mailr,Mailrw,0);
-    Mailrw.RowTyp = 1;
-    if testf then begin
-		LineTextPut(Mailr,0,txt);
-			LineTextPut(Mailr,0,longtext);
-      Mailrw.AddrCode = MSr.Postmaster;
-	  end else begin
-			LineTextPut(Mailr,0,txt);
-			LineTextPut(Mailr,0,longtext);
-			LineTextPut(Mailr,4,"http://jal.lv/WebJALApprovebyc3a.hal?c=" & CUr.Code);
-			Mailrw.AddrCode = MSr.Postmaster;
-	  end;
-    MatRowPut(Mailr,0,Mailrw);
-    ClearRow(Mailr,Mailrw,1);
-    Mailrw.RowTyp = kMailRowTypeTo;
-    Mailrw.AddrCode = conf;
-    MatRowPut(Mailr,1,Mailrw);
-    Mailr.SendFlag = 1;
-    if recordStore(Mailr,true) then begin
-			RecordAction_raEMailQue(Mailr,false);
-	end;
+  RecordNew(Mailr);
+  Mailr.SerNr = NextSerNr("MailVc",CurrentDate,-1,false,"");
+  Mailr.Header = head;
+  ClearRow(Mailr,Mailrw,0);
+  Mailrw.RowTyp = kMailRowTypeFrom;
+  Mailrw.AddrCode = MSr.Postmaster;
+  MatRowPut(Mailr,0,Mailrw);
+  if testf then begin
+    LineTextPut(Mailr,0,txt);
+    LineTextPut(Mailr,0,longtext);
+  end else begin
+    LineTextPut(Mailr,0,txt);
+    LineTextPut(Mailr,0,longtext);
+    LineTextPut(Mailr,4,"http://jal.lv/WebJALApprovebyc3a.hal?c=" & CUr.Code);
+  end;
+  ClearRow(Mailr,Mailrw,1);
+  Mailrw.RowTyp = kMailRowTypeTo;
+  Mailrw.AddrCode = conf;
+  MatRowPut(Mailr,1,Mailrw);
+  Mailr.SendFlag = 1;
+  if (RecordInsert(Mailr,true)) then begin
+//    RecordAction_raEMailQue(Mailr,false); not sure if this is needed. RecordInsert should do everything that is needed
+  end;
 
-return;
+  return;
 end;
 
 global

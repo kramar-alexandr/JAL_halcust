@@ -293,25 +293,30 @@ begin
   Boolean TrHs,checkf;
   record WebNGTranslateVc WTr;
   string 255 daystr,datestr,extra;
-  Date ed;
+  Date ed,sd;
   
   WebOutString("<a class='date_a'><div id='date'>");
   TrHs = true;
-  JEr.StartDate = AddYear(CurrentDate,-1);
-  while (LoopKey("StartDate",JEr,1,TrHs)) begin
-    if (JEr.RegFlag==0 and JEr.ActiveFlag==1) then begin
-      if (FindMatchingTranslation(JEr.SerNr,WTr,JEr.DefLangCode)) then begin
-        daystr = StringFromSet(392,GetDateID(JEr.StartDate));//<a href='" & link & "'></a>//no link for now
-        datestr = DateToString(JEr.StartDate,"MM.DD");
-        if (left(datestr,1)=="0") then begin 
-          datestr = right(datestr,len(datestr)-1);
+  sd = AddDay(CurrentDate,-5);
+  JEr.StartDate = AddYear(CurrentDate,5);
+  while (LoopBackKey("StartDate",JEr,1,TrHs)) begin
+    if (JEr.StartDate<sd) then begin
+      TrHs = false;
+    end else begin
+      if (JEr.RegFlag==0 and JEr.ActiveFlag==1) then begin
+        if (FindMatchingTranslation(JEr.SerNr,WTr,JEr.DefLangCode)) then begin
+          daystr = StringFromSet(392,GetDateID(JEr.StartDate));//<a href='" & link & "'></a>//no link for now
+          datestr = DateToString(JEr.StartDate,"DD.MM");
+          if (left(datestr,1)=="0") then begin 
+            datestr = right(datestr,len(datestr)-1);
+          end;
+          if (!checkf and JEr.StartDate>=CUrrentDate) then begin
+            checkf = true;
+            extra = " first_event";
+          end;
+          WebOutString("<div class='date" & extra & "'><div class='day'><h1>" & daystr & "</h1><h2>" & datestr & "</h2></div><div class='time_'><h1>" & left(JEr.StartTime,5) & "</h1><p>" & WTr.Comment & "</p></div></div>");
+          extra = "";
         end;
-        if (!checkf and JEr.StartDate>=CUrrentDate) then begin
-          checkf = true;
-          extra = " first_event";
-        end;
-        WebOutString("<div class='date" & extra & "'><div class='day'><h1>" & daystr & "</h1><h2>" & datestr & "</h2></div><div class='time_'><h1>" & left(JEr.StartTime,5) & "</h1><p>" & WTr.Comment & "</p></div></div>");
-        extra = "";
       end;
     end;
   end;
