@@ -21,6 +21,20 @@ begin
   return;
 end;
 
+procedure ShowSMUEditField_Date(string label1,string label2,string label3,string name1,string name2,string descr)
+begin
+
+  WebOutString("<div class=""field_row smu_period"">");
+  WebOutString("<div class=""field_col""><div class=""field_label"">" & label1 & "</div><div class='date_wrap'><div class=""field_label"">" & label2 & "</div><div class=""field_wrap""><input class=""" & name1 & """ type=""text"" name=""" & name1 & """></div></div>");
+  WebOutString("<div class='date_wrap'><div class=""field_label"">" & label3 & "</div><div class=""field_wrap""><input class=""" & name2 & """ type=""text"" name=""" & name2 & """></div></div></div>");
+  
+  WebOutString("<div class=""field_descr"">" & descr & "</div>");
+  WebOutString("<div class=""clear""></div>");
+  WebOutString("</div>");
+
+  return;
+end;
+
 
 procedure ShowSMUTextArea(string label,string name,string descr,string extra)
 begin
@@ -217,7 +231,7 @@ begin
   ShowSMUEditField(ToolWebNGTranslateText2(80010),"smu_name",ToolWebNGTranslateText2(80011));
   ShowSMUTextArea(ToolWebNGTranslateText2(80012),"smu_descr",ToolWebNGTranslateText2(80013)," maxlength='300'");
   ShowSMUIndustries(ToolWebNGTranslateText2(80014),"smu_items",ToolWebNGTranslateText2(80015));
-  ShowSMUEditField(ToolWebNGTranslateText2(80016),"smu_period",ToolWebNGTranslateText2(80017));
+  ShowSMUEditField_Date(ToolWebNGTranslateText2(80016),"Sakums","Beigas","smu_period_start","smu_period_end",ToolWebNGTranslateText2(80017));
   ShowSMUEducation(ToolWebNGTranslateText2(80018),"smu_education",ToolWebNGTranslateText2(80019));
   ShowSMUTextArea(ToolWebNGTranslateText2(80020),"smu_targetaud",ToolWebNGTranslateText2(80021)," maxlength='300'");
   WebOutString("</div>");
@@ -241,10 +255,13 @@ begin
   return;
 end;
 
-procedure ShowEmpSection()
+global
+procedure ShowEmpSection(Boolean framef)
 begin
 
-  WebOutString("        <div class=""profile table-emps smu-border""><div class='emp_content'>");
+  if (framef) then begin
+    WebOutString("        <div class=""profile table-emps smu-border""><div class='emp_content'>");
+  end;
   WebOutString("            <table id=""emplist-table"">");
   WebOutString("                <thead>");
   WebOutString("                <tr>");
@@ -274,8 +291,15 @@ begin
   WebOutString("</select>");
   WebOutString("<div class='newEmp_button_submit'><a class='spbutton'>" & ToolWebNGTranslateText2(80028) & "</a></div>");
   
-  WebOutString("</div></div><div class='field_descr'>" & ToolWebNGTranslateText2(80029) & "</div><div class='field_descr'>" & ToolWebNGTranslateText2(80030) & "</div><div class='clear'></div>");
-  WebOutString("        </div>");  
+  WebOutString("</div></div>");
+  if (framef) then begin
+    WebOutString("<div class='field_descr'>" & ToolWebNGTranslateText2(80029) & "</div><div class='field_descr'>" & ToolWebNGTranslateText2(80030) & "</div>");
+  end;
+  
+  WebOutString("<div class='clear'></div>");
+  if (framef) then begin
+    WebOutString("        </div>");  
+  end;
 
   return;
 end;
@@ -287,7 +311,7 @@ begin
 
   OutPutJALWebTexts(0);
   ShowSMUBasicSection;
-  ShowEmpSection;
+  ShowEmpSection(true);
   ShowFinancialTable("findata_table",true);
   ShowEventTable("finplan_table",true);;
   
@@ -531,6 +555,7 @@ begin
   return;
 end;
 
+global
 procedure GetSchoolEmpList(string school,string smfcode)
 begin
   Record CUVc CUr;

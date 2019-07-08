@@ -292,7 +292,7 @@ begin
   record JALEventVc JEr;
   Boolean TrHs,checkf;
   record WebNGTranslateVc WTr;
-  string 255 daystr,datestr,extra;
+  string 255 daystr,datestr,datestr2,extra;
   Date ed,sd;
   
   WebOutString("<a class='date_a'><div id='date'>");
@@ -309,6 +309,13 @@ begin
           datestr = DateToString(JEr.StartDate,"DD.MM");
           if (left(datestr,1)=="0") then begin 
             datestr = right(datestr,len(datestr)-1);
+          end;
+          if (JEr.StartDate!=JEr.EndDate) then begin
+            datestr2 = DateToString(JEr.EndDate,"DD.MM");
+            if (left(datestr2,1)=="0") then begin 
+              datestr2 = right(datestr2,len(datestr)-1);
+            end;
+            datestr = datestr & "<br><span class='event_date_divider'>-</span><br>" & datestr2;
           end;
           if (!checkf and JEr.StartDate>=CUrrentDate) then begin
             checkf = true;

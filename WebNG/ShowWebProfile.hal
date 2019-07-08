@@ -9,6 +9,7 @@ external procedure ShowDocumentList(string,integer,string);
 external procedure ExtractObj(string,var Integer,var string);
 external procedure OutPutJALWebTexts(Integer);
 external function string 255 ToolWebNGTranslateText2(longint);
+external procedure ShowEmpSection(Boolean);
 
 SetLangMode(LangLatvian,"LAT",0);
 
@@ -580,7 +581,7 @@ begin
   integer i;
   record JALClassBlock JCbl;
   record SchoolVc SCr;
-
+/*
   BlockLoad(JCbl);
 
   if nonblank(CurrentCust) then begin
@@ -593,17 +594,6 @@ begin
           WebOutStringFormatNL("<form method=""POST"" action=""/WebSaveCompEmp2.hal"">");
           WebOutStringFormatNL("<input type=""hidden"" name=""smu"" value=""" & SMFr.SMFCode & """>");
           WebOutStringFormatNL("<input type=""hidden"" name=""cust"" value=""" & CUr.Code & """>");
-          /*
-          WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path")& """>");
-          WebOutStringFormatNL("<div class=""addinput""><input type=""text"" name=""name"" value=""" & GetSessionString("ename") & """></div>");
-          WebOutStringFormatNL("<div class=""addlabel"">" & ToolWebNGTranslateText(20030) & "</div>");
-          WebOutStringFormatNL("<div class=""addinput""><input type=""text"" name=""email"" value=""" & GetSessionString("eemail") & """></div>");
-          WebOutStringFormatNL("<div class=""addlabel"">" & ToolWebNGTranslateText(20033) & "</div>");
-          WebOutStringFormatNL("<div class=""addinput""><input type=""password"" name=""passw1""></div>");
-          WebOutStringFormatNL("<div class=""addlabel"">" & ToolWebNGTranslateText(23010) & "</div>");
-          WebOutStringFormatNL("<div class=""addinput""><input type=""password"" name=""passw2""></div>");
-          WebOutStringFormatNL("<div class=""addlabel"">" & ToolWebNGTranslateText(23011) & "</div>");
-          */
           WebOutString("<select name='nemp'>");
           ShowSchoolEmpList(SMFr.SchoolCode);
           WebOutString("</select>");
@@ -648,6 +638,11 @@ begin
   end else begin
     ShowFailPage;
   end;
+*/
+
+ShowEmpSection(false);
+ 
+
 return;
 end;
 
