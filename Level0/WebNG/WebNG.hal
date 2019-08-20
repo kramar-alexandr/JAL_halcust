@@ -443,7 +443,6 @@ begin
   end else begin
     justloggedout = false;
   end;
-
   while (len(mpath)>0) begin
     cnt = cnt+1;
     if (rootrequested==false) then begin
@@ -494,6 +493,7 @@ begin
   end;
   
 LHandlePath:;
+
   if (lasttype>=0) then begin
     if (WSr.LogAccess!=0) then begin
       LogWebNGStructAccess(WSr.SerNr);

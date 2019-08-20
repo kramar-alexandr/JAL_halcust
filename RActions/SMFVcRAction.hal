@@ -144,11 +144,14 @@ begin
     case 2: SMFr.TypeName=USetStr(32133);
   end;  
   
-  switch (SMFr.StatusFlag) begin
+  switch (SMFr.ApprovalStatus) begin
     case 0: SMFr.StatusName=USetStr(32111);
     case 1: SMFr.StatusName=USetStr(32112);
     case 2: SMFr.StatusName=USetStr(32113);
     case 3: SMFr.StatusName=USetStr(32114);
+    case 4: SMFr.StatusName=USetStr(32115);
+    case 5: SMFr.StatusName=USetStr(32116);
+    case 6: SMFr.StatusName=USetStr(32117);
   end;
 
   if (SMFr.ApprovalStatus!=SMF2r.ApprovalStatus) then begin

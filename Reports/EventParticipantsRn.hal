@@ -538,11 +538,14 @@ begin
   return;
 end;
 
-procedure GetApplicatioValues(record SMFVc SMFr,record JALEventEntryVc JEEr,var array record CUVc emplist,var vector string vVals,array string arrCols,Longint partfield)
+procedure GetApplicationValues(record SMFVc SMFr,record JALEventEntryVc JEEr,var array record CUVc emplist,var vector string vVals,array string arrCols,Longint partfield,string simplefields)
 begin
   row JALEventEntryVc JEErw;
-  Integer i,rwcnt;
+  Integer i,rwcnt,j,s;
   record CUVc CUr;
+  record NotePadVc Noter;
+  record RLinkVc RLr;
+  string 255 tstr;
 
   ClearVector(vVals);
   PrepareEmptyRow(arrCols,vVals);
@@ -555,14 +558,32 @@ begin
         emplist[emplist.length] = CUr;
       end;
     end else begin
-      vVals[JEErw.Field] = JEErw.Value;
+      if (SetInSet(JEErw.Field,simplefields)) then begin
+        j = 1;
+        while (ReadRecordLink(JEEr,j,Noter,RLr)) begin
+          if (StringToLongInt(Noter.Classification)==i) then begin
+            tstr = "";
+            s = 0;
+            while (s<SizeTextCnt(Noter)) begin
+              tstr = tstr & StringFromText(Noter,s,255);
+              s = s + 255;
+            end;
+            vVals[JEErw.Field] = tstr;
+            goto LNext;
+          end;
+          j = j + 1;
+        end;
+      end else begin
+        vVals[JEErw.Field] = JEErw.Value;
+      end;
     end;
+LNext:;
   end;
 
   return;
 end;
 
-procedure GetApplicationColumns(record JALEventVc JEr,var array string arrCols,var array string arrColNames,var Longint partfield)
+procedure GetApplicationColumns(record JALEventVc JEr,var array string arrCols,var array string arrColNames,var Longint partfield,var string simplefields)
 begin
   row JALEventVc JErw;
   Integer i,rwcnt;
@@ -580,6 +601,12 @@ begin
           arrCols[arrCols.length] = JFr.SerNr;
           arrColNames[arrColNames.length] = JFr.Comment;
         end;
+      end;
+      if (JFr.Type==0) then begin
+        if (nonblank(simplefields)) then begin
+          simplefields = simplefields & ",";
+        end;
+        simplefields = simplefields & JErw.Field;
       end;
     end;
 
@@ -637,13 +664,14 @@ begin
   Boolean TrHs;
   Longint partfield;
   Integer i;
+  string 255 simplefields;//list of fields that are simple text fields. We are storing them as notes so that we can achieve 500 symbols
   
   StartReportJob(USetStr(16800));
 
   EndHeader;
   JEr.SerNr = RepSpec.long1;
   if (ReadFirstMain(JEr,1,true)) then begin
-    GetApplicationColumns(JEr,arrCols,arrColNames,partfield);
+    GetApplicationColumns(JEr,arrCols,arrColNames,partfield,simplefields);
     PrintColumnHeaders(arrColNames);
     TrHs = true;
     JEEr.EventNr = JEr.SerNr;
@@ -655,7 +683,7 @@ begin
         if (ReadFirstMain(SMFr,1,true)) then begin
           MatRowGet(SMFr,0,SMFrw);
 
-          GetApplicatioValues(SMFr,JEEr,emplist,vVals,arrCols,partfield);
+          GetApplicationValues(SMFr,JEEr,emplist,vVals,arrCols,partfield,simplefields);
           StartFormat(15);
           OutString(0,0,JEEr.SerNr,false);
           OutString(50,0,SMFr.SchoolName,false);

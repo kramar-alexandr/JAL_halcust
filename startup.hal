@@ -49,6 +49,7 @@ begin
 	Setting("Darbinieku amati",JALJobPositionTClass,modJAL);
 	Setting("Nozares",JALIndustryTClass,modJAL);
 	Setting("Semestri",JALSemesterTClass,modJAL);
+	Setting("Skolot‚ji ar pieredzi",ExpTeacherLClass,modJAL);
 
 //  Maintenance("Pievienot m‚c?bu firmu",AddSMFMnVClass,AddSMFMn,modJAL);
   Maintenance("Dz•st datus",ClearDBVClass,ClearDBMn,modJAL);
@@ -100,6 +101,8 @@ begin
 //  WebNG modulis
   Setting("Blogu koment‚ri",WebNGBlogCommentLClass,modWebShopNG);
 
+  Document("SMU",SMFFormRClass,SMFForm,SMFFClass,modJAL);
+
 
 /* LV strings: */
 
@@ -110,9 +113,12 @@ begin
   SString(32015,"SK5");
 
   SString(32111,"Neapstiprin‚ta");
-  SString(32112,"Akt´va");
-  SString(32113,"Neakt´va");
-  SString(32114,"Likvid•ta");
+  SString(32112,"Iesniegts");
+  SString(32113,"Nosðt´ts JAL");
+  SString(32114,"JAL Apstiprin‚ts");
+  SString(32115,"JAL Noraid´ts");
+  SString(32116,"Likvid•ta");
+  SString(32117,"Skolot‚ja Noraid´ts");
 
   SString(32121,"R´ga");
   SString(32122,"Vidzeme");
@@ -329,7 +335,8 @@ begin
 	SString(32508,"JA Latvia lap‚ re®istr•ts Jðsu konsult•ts SMU");
 	SString(32509,"Skol•ns, kuram esat Junior Achievement Latvia nor‚d´ts k‚ vec‚ks/aizbildnis, vairs nepiedal‚s Skol•nu m‚c´bu uzÀ•muma (SMU)");
 	
-  SString(32520,"SMU re®istr‚cija JA Latvia lap‚");
+  SString(32520,"Re®istr•ts jauns SMU ");
+  SString(3000000,"Neizdev‚s lejupl‚d•t dokumentu.");
 
 //Re®ionu stringset
   SetBegin(10501);

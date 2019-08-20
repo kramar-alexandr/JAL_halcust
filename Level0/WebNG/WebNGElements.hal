@@ -50,6 +50,7 @@ external procedure ShowJALPartnerList();
 external procedure ShowJALMentorList();
 external procedure ShowJALEventList();
 external procedure ShowBannerNewsList(string);
+external procedure OutPutJALWebTexts(Integer);
 //CUST-END
 
 procedure GetMenuActiveClass(record WebNGMenuVc WMr,var string actclass,var string class)
@@ -236,6 +237,10 @@ begin
     ShowJALEventList; res = true;
   case "ShowBannerNewsList":
     ShowBannerNewsList(WEr.WebMenu); res = true;
+  case "ShowWebTexts":
+    OutPutJALWebTexts(0);
+    OutPutJALWebTexts(1);
+
 //CUST-END
   end;
   ShowHALFunction = res;

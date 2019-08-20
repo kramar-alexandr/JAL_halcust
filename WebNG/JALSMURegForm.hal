@@ -815,10 +815,13 @@ begin
 	array string 20 schools;
 	boolean TrHs,studentf;
 	string 255 name;
-	integer i,cnt,count;
+	integer i,cnt,count,rwcnt;
+  record ExpTeacherVc ETr;
+  row ExpTeacherVc ETrw;
 	
   region = webGetArg("reg");
 	TrHs = true;
+/*
 	SCr.Region = region;
 	i=0;
 	while(LoopKey("Region",SCr,1,TrHs)) begin
@@ -873,8 +876,25 @@ begin
 			end;	 
 		end;	
 		ResetLoop(TRr);
-
 	end;
+*/
+	WebOutStringFormatNL("[");
+  ETr.Region = region;
+  if (ReadFirstMain(ETr,1,true)) then begin
+    rwcnt = MatRowCnt(ETr);
+    for (i=0;i<rwcnt;i=i+1) begin
+      MatRowGet(ETr,i,ETrw);
+      if(i>0) then begin WebOutStringFormatNL(","); end;
+      CUr.Code = TRr.CustCode;
+      ReadFirstMain(CUr,1,true);
+      name = CreateJson(ETrw.School);
+      WebOutStringFormatNL("{");
+      WebOutStringFormatNL("\"nameTeacher\":\"" & ETrw.Teacher & "\",");
+      WebOutStringFormatNL("\"schoolName\":\"" & name & "\",");
+      WebOutStringFormatNL("\"email\":\"" & ETrw.eMail & "\"");
+      WebOutStringFormatNL("}");
+    end;
+  end;
 	WebOutStringFormatNL("]");
 return;
 end;	

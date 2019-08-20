@@ -1,1 +1,32 @@
-globalprocedure OnApplicationStartupComplete()begin  inner.OnApplicationStartupComplete;  //NewPeriodicTask("Make zip archive","SMU_ZipArchive","SMU_ZipArchive","",5);  NewPeriodicTask("SaveAttachments","Saglabat epastus","SaveAttachmentsMn","",60,"");  return;end;
+
+
+global
+updating procedure OnApplicationStartupComplete()
+begin
+  Integer i;
+  record SMFVc SMFr;
+  string 255 filename;
+
+  inner.OnApplicationStartupComplete;
+
+  //NewPeriodicTask("Make zip archive","SMU_ZipArchive","SMU_ZipArchive","",5);
+  //NewPeriodicTask("SaveAttachments","Saglabat epastus","SaveAttachmentsMn","",60,"");
+
+  //this is a genius attempt to fight the issue when images in forms are not appearing with the first printing of document
+  if (ServerMode) then begin
+    if (ReadFirstKey("SMFCode",SMFr,1,false)) then begin
+      filename = "SMU.pdf";
+      for (i=0;i<3;i=i+1) begin
+        SetDocumentFilename(filename);
+        SetMedia(mtPdf);
+        PrintDocument(SMFr,"SMFForm",false);
+        SetDocumentFilename("");
+        if (FileExists(filename)) then begin
+          Delete_File(filename);
+        end;
+      end;
+    end;
+  end;  
+
+  return;
+end;

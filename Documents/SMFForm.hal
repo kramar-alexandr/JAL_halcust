@@ -1,0 +1,130 @@
+external inner function Boolean Getformcode(Integer,Integer,string,string,string,LongInt,LongInt,string,string,Integer,string,var string);
+external inner function Integer NumberofDocumentPages(string,Integer);
+external inner procedure CommonDocumentFields(record RcVc);
+external inner procedure PrintCredManHeader(record CredManVc);
+
+procedure PrintSMF(record SMFVc SMFr)
+begin
+  record CUVc CUr;
+  Integer i;
+  record RLinkVc RLr;
+  record SchoolVc SCr;
+  row SMFVc SMFrw;
+
+  OutFormField("F_SMFCODE",SMFr.SMFCode);
+  OutFormField("F_SMFNAME",SMFr.SMFName);
+  OutFormField("F_PRODNAME",SMFr.ProdSpec);//Product Name
+  OutFormField("F_STARTDATE",SMFr.ActDateStart);//Start-date
+  OutFormField("F_ENDDATE",SMFr.ActDateEnd);//enddate
+  OutFormField("F_CURDATE",CurrentDate);
+  MatRowGet(SMFr,0,SMFrw);
+  OutFormField("F_TEACHERNAME",SMFrw.Name);
+
+  SCr.SchoolCode = SMFr.SchoolCode;
+  if (ReadFirstMain(SCr,1,true)) then begin
+    OutFormField("F_SCHOOLNAME",SCr.SchoolName);
+    OutFormField("F_SCHOOLADDR",SCr.Address);
+    OutFormField("F_PRINCIPLE",SCr.Director);
+  end;  
+
+  for (i=0;i<LineTextCnt(SMFr);i=i+1) begin
+    OUTFORMFIELD("F_TEXT",LineTextGet(SMFr,i));    
+    EndFormRow;    
+  end;
+
+
+  i = 1;
+  while (ReadRecordLink(SMFr,i,CUr,RLr)) begin
+    if (i>4) then begin
+      goto lout;
+    end;
+    OutFormField("F_STUDENTCLASS",CUr.ClassNum & CUr.ClassChar);
+    OutFormField("F_STUDENTNAME",CUr.Name);
+    //EndFormRow;
+    i = i + 1;
+  end;
+lout:;
+
+  return;
+end;
+
+global
+procedure DoSMFForm(record RcVc RepSpec,record SMFVc SMFr)
+BEGIN
+  record DocVc Docr;
+  record FormDefVc FDr;
+  row FormDefVc FDrw;
+  Integer i,rwcnt;
+  string 255 tstr;
+  Boolean printf,langf;
+  Integer intdocnr;
+  string 30 formcode,langcode;
+    
+  FDr.repname = RepSpec.repname;
+  FDr.shortname = RepSpec.shortname;
+  if (ReadFirstMain(FDr,1,true)==false) then begin
+    MessageBox(1624, " " & USetStr(1623));
+    goto LDoCredManScheduleForm;
+  end;
+  rwcnt = MatRowCnt(FDr);
+  for (i=rwcnt-1;i>=0;i=i-1) begin
+    MatRowGet(FDr,i,FDrw);
+    if (FDrw.LangCode==langcode) then begin
+      i = -1;
+      langf = true;
+    end;
+  end;
+  if (langf==false) then begin langcode = ""; end;
+
+  intdocnr = 1;
+  printf = true;
+  while (printf) begin  
+    formcode = "";
+    for (i=rwcnt-1;i>=0;i=i-1) begin
+      MatRowGet(FDr,i,FDrw);
+      if (Getformcode(i,FDrw.intdocnr,FDrw.FPCode,FDrw.UserGroup,FDrw.LangCode,FDrw.SerNr,-1,FDrw.PrintGroupCode,langcode,intdocnr,"",formcode)) then
+      begin
+        goto LBREAK;
+      end;
+    end;
+LBREAK:;
+    if (nonblank(formcode)) then begin  
+      if (OpenForm(formcode)) then begin
+        CommonDocumentFields(RepSpec);
+        NumberofDocumentPages(formcode,5);
+        Docr.Code = formcode;
+        if (ReadFirstMain(Docr,1,true)) then begin
+        end;
+//rest of fields go here
+        PrintSMF(SMFr);
+
+        CloseForm;        
+      end else begin
+        printf = false;
+        MessageBox(1546,formcode);
+      end;
+    end else begin
+      printf = false;
+      if (intdocnr==1) then begin
+        MessageBox(1624, " " & USetStr(1623));
+      end;
+    end;
+    intdocnr = intdocnr + 1;
+  end;
+LDoCredManScheduleForm:;  
+  RETURN;  
+END;     
+ 
+
+global
+procedure SMFForm(record RcVc RepSpec)
+BEGIN
+  record SMFVc SMFr;
+  Boolean tmpf;
+  
+  SMFr.SMFCode = RepSpec.f1;
+  if (ReadFirstMain(SMFr,1,true)) then begin
+    tmpf = PrintDocument(SMFr,"SMFForm",false);    
+  end;
+  RETURN;
+END;

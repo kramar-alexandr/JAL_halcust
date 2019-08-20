@@ -36,10 +36,15 @@ begin
       WebOutString("jal_str['ApprovalMsg3']        = '" & ToolWebNGTranslateText2(70049) & "';");
       WebOutString("jal_str['TeacherDeclinded']    = '" & ToolWebNGTranslateText2(70065) & "';");
       WebOutString("jal_str['EmpCnt']              = '" & ToolWebNGTranslateText2(70066) & "';");
-      WebOutString("jal_str['ApprovalMsg4']        = '" & ToolWebNGTranslateText2(70067) & "';");
+      WebOutString("jal_str['ApprovalMsg4']        = '" & ToolWebNGTranslateText2(70071) & "';");
       WebOutString("jal_str['ApprovalMsg5']        = '" & ToolWebNGTranslateText2(70068) & "';");
       WebOutString("jal_str['ApprovalMsg6']        = '" & ToolWebNGTranslateText2(70067) & "';");
       WebOutString("jal_str['FillAllFields']       = '" & ToolWebNGTranslateText2(70069) & "';");
+      WebOutString("jal_str['SMUDate2']            = '" & ToolWebNGTranslateText2(70070) & "';");
+      WebOutString("jal_str['Remove']              = '" & ToolWebNGTranslateText2(70072) & "';");
+      WebOutString("jal_str['TooManyEmployees']    = '" & ToolWebNGTranslateText2(70073) & "';");
+      WebOutString("jal_str['AllFieldFilled']      = '" & ToolWebNGTranslateText2(70074) & "';");
+      WebOutString("jal_str['ItemWithSampleData']  = '" & ToolWebNGTranslateText2(70075) & "';");
       
 
     case 1://teacher profile

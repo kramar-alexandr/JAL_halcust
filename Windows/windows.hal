@@ -925,7 +925,7 @@ begin
   UseView(JALEventVc);
   RecordList(4,17,-21,-39);
   RlColKey(4,2,"S•r.Nr.",SerNr,false,SerNr);
-  RlColKey(100,100,"Datums",StartDate,False,StartDate);
+  RlColKey(100,100,"S‚k. datums",StartDate,False,StartDate);
   RlCol(200,200,"Koment‚rs",Comment,False);
   SearchField("Mekl•t");
   EndWindow;
@@ -1311,6 +1311,34 @@ begin
   MatCol(1,480,"Ien‚kumi",0,Income,false,0);
   MatCol(1,580,"Izdevumi",0,Costs,false,0);
   MatCol(1,680,"PeºÀa",0,Profit,false,0);
+  EndMatrix;
+  EndWindow;
+
+  WindowBegin("SMU",SMFFormRClass,CGRcW,RcType);
+  SetWRect(20,80,400,220);
+  vs=20;
+  EditFieldTL(h=160,v=6,120,"SMU",M4Code,Normal,30,f1,false,SMFSClass);
+  EndWindow;
+
+  WindowBegin("Skolot‚ji ar pieredzi",ExpTeacherLClass,CGmlist,-);
+  SpawnClass(ExpTeacherDClass);
+  SetWRect(64,80,560,350);
+  Sizeable(-1,-1,0,0);
+  UseView(ExpTeacherVc);
+  RecordList(4,17,-21,-39);
+  RlColKey(4,2,"Re®ions",Region,false,Region);
+  SearchField("Mekl•t");
+  EndWindow;
+
+  WindowBegin("Skolot‚ji ar pieredzi",ExpTeacherDClass,CGview,-);
+  SetWRect(64,80,560,350);
+  UseView(ExpTeacherVc);
+  v = 10; vs = 22; h = 100; h2 = 300;
+  EditField(h,v=6,90,"Re®ions",Normal,Region,false,JALRegionSClass);
+  MatrixBegin(4,v+=40,-21,-10,-,100);
+  MatCol(1,32,"Skolot‚js",0,Teacher,false,0);
+  MatCol(1,120,"Skola",0,School,false,0);
+  MatCol(1,-150,"E-pasts",0,eMail,false,0);
   EndMatrix;
   EndWindow;
 
@@ -1927,4 +1955,5 @@ begin
   
 
 end;
+
 

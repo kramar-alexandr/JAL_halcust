@@ -39,6 +39,61 @@ begin
 return;
 end;
 
+updating procedure RemoveEmpApplication(string smfcode,string custcode)
+begin  
+  record JALTeacherAccVc JTr;
+  Boolean TrHs;
+  Integer res;
+
+  TrHs = true;
+  JTr.SMFCode = smfcode;
+  JTr.StatusFlag = 0;
+  while (LoopKey("SMFStatus",JTr,2,TrHs)) begin
+    if (JTr.SMFCode!=smfcode or JTr.StatusFlag!=0) then begin
+      TrHs = false;
+    end else begin
+      if (JTr.RecCode==custcode) then begin
+        RecordRemove(JTr);
+        goto LRemoveEmpApplication;
+      end;
+    end;
+  end;
+
+LRemoveEmpApplication:;
+  return;
+end;
+
+global webpublic
+updating procedure WebDeleteEmpApplication()
+begin
+  record CUVc CUr,oldCUr,tCUr;
+  record SMFVc SMFr;
+  record RLinkVc RLr;
+  boolean res;
+  integer i,pos,err;
+	string 255 text,headertext,name,member,errmsg; 
+	record JALClassblock JALClassbl;
+	vector string 255 vVals;
+	 
+	BlockLoad(JALClassbl);
+  CUr.Code = WebGetArg("emp");
+  
+  if ReadFirstMain(CUr,1,true) begin
+    if (CurrentCust!=CUr.Code) then begin
+      if ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CurrentCust,SMFr) begin
+        if SMFr.SMFCode == WebGetArg("smu") then begin
+          RemoveEmpApplication(SMFr.SMFCode,CUr.Code);
+        end;
+      end;
+    end else begin
+      err = 1;
+      errmsg = ToolWebNGTranslateText2(88001);
+    end;
+  end;
+  WebOutString("<res err='" & err & "' errmsg='" & errmsg & "'></res>");
+
+  return;
+end;
 
 global webpublic
 updating procedure WebDeleteEmp()
@@ -58,23 +113,23 @@ begin
   if ReadFirstMain(CUr,1,true) begin
     if (CurrentCust!=CUr.Code) then begin
       if ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CurrentCust,SMFr) begin
-        if SMFr.SMFCode == WebGetArg("smu") then begin
+        if (SMFr.SMFCode == WebGetArg("smu") and CUr.Code!=SMFr.CustCode) then begin
           RecordRemove(RLr);
           //RecordCopy(oldCUr,CUr);
           //CUr.blockedFlag = 1;
           //if recordupdate(oldCUr,CUr,true)==0 then begin end;
-      pos = 0;
-      name = "";
-      member = "";
-      ExtractObj(SMFr.Member,pos,name);
-      while(nonblank(name)) begin
-        If(name!= CUr.Name) then begin
-          member = member & name & ",";
-        end;
-        ExtractObj(SMFr.Member,pos,name);
-      end;
-      SMFr.Member = Left(member,len(member) - 1);
-      RecordStore(SMFr,true);
+          pos = 0;
+          name = "";
+          member = "";
+          ExtractObj(SMFr.Member,pos,name);
+          while(nonblank(name)) begin
+            If(name!= CUr.Name) then begin
+              member = member & name & ",";
+            end;
+            ExtractObj(SMFr.Member,pos,name);
+          end;
+          SMFr.Member = Left(member,len(member) - 1);
+          RecordStore(SMFr,true);
           res = true;
           i = 1;
           while ReadRecordLink(SMFr,i,tCUr,RLr) and res begin
@@ -473,6 +528,36 @@ begin
   return;
 end;
 
+function Integer SMFEmpApplications(record SMFVc SMFr)
+begin
+  record JALTeacherAccVc JTr;
+  Boolean TrHs;
+  Integer res;
+  record CUVc CUr;
+  record RLinkVc RLr;
+  Integer i;
+
+  TrHs = true;
+  JTr.SMFCode = SMFr.SMFCode;
+  JTr.StatusFlag = 0;
+  while (LoopKey("SMFStatus",JTr,2,TrHs)) begin
+    if (JTr.SMFCode!=SMFr.SMFCode or JTr.StatusFlag!=0) then begin
+      TrHs = false;
+    end else begin
+      res = res + 1;
+    end;
+  end;
+
+  i = 1;
+  while (ReadRecordLink(SMFr,i,CUr,RLr)) begin
+    res = res + 1;
+    i = i + 1;
+  end;
+
+  SMFEmpApplications = res;
+  return;
+end;
+
 global webpublic 
 updating procedure WebSaveCompEmp2()
 begin
@@ -482,7 +567,7 @@ begin
   record RLinkVc RLr,RL2r;
   record CUVc CUr,tCUr,oldCUr;
   record SMFVc SMFr,oldSMFr,tSMFr;
-  Integer i;
+  Integer i,err;
 	string 255 text,headertext;
 	boolean res;
 	vector string 255 vVals;
@@ -500,15 +585,19 @@ begin
         if (ReadRecordLink(tCUr,1,tSMFr,RLr) or FindSMURecord(tCUr.Code,tSMFr)) then begin
           //skip
         end else begin
-          if (FindActiveApplication(2,tCUr.Code,JTr)==false) then begin
-            CreateTeachApp(2,SMFr.SMFCode,tCUr.Code);
-            RecordCopy(oldCUr,tCUr);
-            tCUr.JobDesc = WebGetArg("nemp_pos");
-            RecordUpdate(oldCUr,tCUr,true);
+          if (SMFEmpApplications(SMFr)>4) then begin
+            err = 1;
+          end else begin
+            if (FindActiveApplication(2,tCUr.Code,JTr)==false) then begin
+              CreateTeachApp(2,SMFr.SMFCode,tCUr.Code);
+              RecordCopy(oldCUr,tCUr);
+              tCUr.JobDesc = WebGetArg("nemp_pos");
+              RecordUpdate(oldCUr,tCUr,true);
+            end;
+            vVals["custcode"] = tCUr.Code;
+            vVals["smucode"] = SMFr.SMFCode;
+            SendJALEmail(vVals,JALCLassbl.EmployeeAddText,tCUr.eMail);
           end;
-          vVals["custcode"] = tCUr.Code;
-          vVals["smucode"] = SMFr.SMFCode;
-          SendJALEmail(vVals,JALCLassbl.EmployeeAddText,tCUr.eMail);
           /*
           CreateRecordLink(SMFr,CurrentCompany,tCUr,CurrentCompany);
           CreateRecordLink(tCUr,CurrentCompany,SMFr,CurrentCompany);
@@ -528,20 +617,9 @@ begin
           */
         end;
       end;
-      /*
-      text = USetStr(32501)  & SMFr.SMFName & USetStr(32502) ;
-      headertext = USetStr(32483);
-      GenMailForEmp(text,headertext,tCUr.eMail,SMFr,false,tCUr,""); //���������� ����������
-      //text = USetStr(32490);
-      //GenMailForSMU(text,headertext,CUr.eMail,SMFr,true,CUr,"");  //���������� ���������� 
-      //if(SMFr.AgeFlag!=0) then begin
-        //text=USetStr(32489);
-        //GenMailForParents(text,headertext,SMFr.ParenteMail,SMFr,false,tCUr,"");//���������� ����������
-      //end;
-      */
     end;
 	end;	
-  ShowRedirectHTML(FormatSimpleLink("/pupil-corrections",true),false);
+  WebOutString("<res err='" & err & "'></res>");
   
   return;
 end;
@@ -918,5 +996,41 @@ begin
     end;
   end;
     
+  return;
+end;
+
+
+global webpublic
+updating procedure WebDownloadSMUDoc()
+begin
+  record CUVc CUr,tCUr;
+  record SMFVc SMFr,oldSMFr;
+  record RLinkVc RLr;
+  record JALClassBlock JALClassbl;
+  record TeacherVc TCr;
+  string 255 filename;
+  Boolean foundf;
+
+  CUr.Code = CurrentCust;
+  if ReadFirstMain(CUr,1,true) then begin
+    if (ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr)) then begin
+      filename = "SMU.pdf";
+      SetDocumentFilename(filename);
+      SetMedia(mtPdf);
+      PrintDocument(SMFr,"SMFForm",false);
+      SetDocumentFilename("");
+      if (FileExists(filename)) then begin
+        WebSetContentType("application/pdf");
+        WebSetContentDisposition("attachment; filename=" & filename);//or inline?
+        WebOutFile(filename);
+        Delete_File(filename);
+        foundf = true;
+      end;
+    end;
+  end;
+  if (!foundf) then begin
+    WebOutString(USetStr(3000000));
+  end;
+
   return;
 end;

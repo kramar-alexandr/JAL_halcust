@@ -525,8 +525,9 @@ begin
   firstline = true;
   foundf = true;
   WCSr.Code = mstyle;
+  maxcnt = 1000;
   if (ReadFirstMain(WCSr,1,true)) then begin
-    maxcnt = 10000;
+    maxcnt = 1000;
     cnt = 0;
     if (fulllistf==false) then begin
       maxcnt = WCSr.ElementCount;
@@ -535,6 +536,7 @@ begin
       end;
     end;
 
+/*
 //cust-begin
     page = StringToLongInt(WebGetArg("p"));
     if page < 0 then begin
@@ -547,7 +549,7 @@ begin
       end;
     end;
 //cust-end     
-
+*/
     switch (WCSr.SortingFlag) begin
       case 1: // Random
         acnt = 0;
@@ -659,7 +661,7 @@ begin
         end;
 
         sStart = (page * maxcnt)-maxcnt;
-        maxcnt = (maxcnt * page);
+        //maxcnt = (maxcnt * page);
         RecordClear(WCr);
         ResetLoop(WCr);
         WCr.ContentStyle = WCSr.Code;
@@ -1375,6 +1377,8 @@ begin
 //CUST-BEGIN
     case 102:
       ShowJALCalendarList(WEr);
+    case 103:
+      ShowContentList(WEr.HALFunc,"","",true,false);
 //CUST-END
     otherwise
       WebOutStringFormat("not implemented yet");

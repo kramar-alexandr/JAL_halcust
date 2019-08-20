@@ -1338,7 +1338,7 @@ begin
   string 10 CourseCode;
   string 100 outdate1;
 
-  outdate1 = datetostring(specdate, "DD.MM");
+  outdate1 = datetostring(specdate, "DD.MM.YYYY");
 
   res = false;
   foundf = true;

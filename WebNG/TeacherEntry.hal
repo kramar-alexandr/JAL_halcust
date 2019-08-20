@@ -1391,6 +1391,8 @@ begin
           WebOutStringFormatNL("\"ApprovalStatus\":\"" & SMFr.ApprovalStatus & "\",");
           WebOutStringFormatNL("\"smu\":\"" & SMFr.SMFName & "\",");
           WebOutStringFormatNL("\"regDate\":\"" & SMFr.TransDate & "\",");
+          WebOutStringFormatNL("\"perfrom\":\"" & SMFr.ActDateStart & "\",");
+          WebOutStringFormatNL("\"perto\":\"" & SMFr.ActDateEnd & "\",");
           WebOutStringFormatNL("\"class\":\"" & SMFr.ClassNum & SMFr.ClassChar & "\",");
           WebOutStringFormatNL("\"liquidated\":\"" & SMFr.StatusFlag & "\",");
           if(nonblank(SMFr.Manager) or !smuf) then begin
@@ -1433,54 +1435,93 @@ begin
   return;
 end;
 
+procedure OutputSingleEvent(record JALEventVc JEr,Boolean applyf,var Integer cnt)
+begin
+  string 255 tstr;
+  Integer i;
+  record WebNGTranslateVc WTr;
+
+  cnt = cnt + 1;
+  if (cnt>1)then begin
+    weboutstring(",");
+  end;
+  FindEventTranslation(JEr,WTr);
+  tstr = WTr.Comment;
+  if (blank(tstr)) then begin
+    tstr = JEr.Comment;
+  end;
+  WebOutStringFormatNL("{");
+  WebOutStringFormatNL("\"serNr\":\"" & JEr.SerNr & "\",");
+  WebOutStringFormatNL("\"dataStart\":\"" &  DateToString(JEr.StartDate,"DD.MM.YYYY") & "\",");
+  WebOutStringFormatNL("\"dataEnd\":\"" & DateToString(JEr.EndDate,"DD.MM.YYYY") & "\",");
+  WebOutStringFormatNL("\"regStart\":\"" &  DateToString(JEr.RegFrom,"DD.MM.YYYY") & "\",");
+  WebOutStringFormatNL("\"regEnd\":\"" & DateToString(JEr.RegUntil,"DD.MM.YYYY") & "\",");
+  WebOutStringFormatNL("\"nameEvent\":\"" & tstr & "\",");
+  WebOutStringFormatNL("\"allowApply\":\"" & applyf & "\",");
+  WebOutStringFormatNL("\"description\":\"");
+  for (i=0;i<SizeTextCnt(WTr);i=i+200) begin
+    tstr = StringFromText(WTr,i,200);
+    WebOutString(StrReplace(tstr,chr(13),"</br>"));
+  end;
+  WebOutString("\"");
+  WebOutStringFormatNL("}"); 
+
+  return;
+end;
+
 global webpublic procedure WebGetEvents()
 begin
   record JALEventVc JEr;
+  record JALEventEntryVc JEEr;
   record CUVc CUr;
   integer cnt;
-  Longint i;
-  Boolean applyf,calf;
-  record WebNGTranslateVc WTr;
+  Longint i,type;
+  Boolean applyf,calf,TrHs;
   string 255 tstr;
+  record SMFVc SMFr;
+  record TeacherVc Teacher;
+  record MentorVc MTr;
 
   calf = WebGetArg("calf")=="1";
   cnt = 0;
   CUr.Code = CurrentCust;
   if(ReadFirstMain(CUr,1,true) and nonblank(CurrentCust)) then begin 
+    type = GetJALCustType(CUr,SMFr,Teacher,MTr);
     JEr.SerNr = "";
     WebOutStringFormatNL("[");
-    while (LoopMain(JEr,1,true)) begin
-      if (JEr.EndDate > CurrentDate and JEr.ActiveFlag==1) then begin
-        applyf = false;
-        if (DateInRange(CurrentDate,JEr.RegFrom,JEr.RegUntil)) then begin
-          applyf = true;
+    if (calf) then begin
+      while (LoopMain(JEr,1,true)) begin
+        if (JEr.EndDate > CurrentDate and JEr.ActiveFlag==1 and JEr.ClosedFlag==0) then begin
+          applyf = false;
+          if (DateInRange(CurrentDate,JEr.RegFrom,JEr.RegUntil)) then begin
+            applyf = true;
+          end;
+          if (MatRowCnt(JEr)==0) then begin
+            applyf = false;
+          end;
+          if (type==0 and SMFr.ApprovalStatus!=3) then begin
+            applyf = false;
+          end;
+          if (calf or applyf) then begin
+            OutputSingleEvent(JEr,applyf,cnt);
+          end;    
         end;
-        if (calf or applyf) then begin
-          cnt = cnt + 1;
-          if (cnt>1)then begin
-            weboutstring(",");
+      end;
+    end else begin
+      TrHs = true;
+      JEEr.AddCode = SMFr.SMFCode;
+      while (LoopKey("AddCode",JEEr,1,TrHs)) begin
+        if(JEEr.AddCode!=SMFr.SMFCode) then begin
+          TrHs = false;
+        end else begin
+          if (JEEr.CustType==0) then begin
+            JEr.SerNr = JEEr.EventNr;
+            Readfirstmain(JEr,1,true);
+            if (JEr.EndDate>=CurrentDate and JEEr.StatusFlag!=2) then begin
+              OutputSingleEvent(JEr,applyf,cnt);
+            end;
           end;
-          FindEventTranslation(JEr,WTr);
-          tstr = WTr.Comment;
-          if (blank(tstr)) then begin
-            tstr = JEr.Comment;
-          end;
-          WebOutStringFormatNL("{");
-          WebOutStringFormatNL("\"serNr\":\"" & JEr.SerNr & "\",");
-          WebOutStringFormatNL("\"dataStart\":\"" &  DateToString(JEr.StartDate,"MM.DD.YYYY") & "\",");
-          WebOutStringFormatNL("\"dataEnd\":\"" & DateToString(JEr.EndDate,"MM.DD.YYYY") & "\",");
-          WebOutStringFormatNL("\"regStart\":\"" &  DateToString(JEr.RegFrom,"MM.DD.YYYY") & "\",");
-          WebOutStringFormatNL("\"regEnd\":\"" & DateToString(JEr.RegUntil,"MM.DD.YYYY") & "\",");
-          WebOutStringFormatNL("\"nameEvent\":\"" & tstr & "\",");
-          WebOutStringFormatNL("\"allowApply\":\"" & applyf & "\",");
-          WebOutStringFormatNL("\"description\":\"");
-          for (i=0;i<SizeTextCnt(WTr);i=i+200) begin
-            tstr = StringFromText(WTr,i,200);
-            WebOutString(StrReplace(tstr,chr(13),"</br>"));
-          end;
-          WebOutString("\"");
-          WebOutStringFormatNL("}"); 
-        end;    
+        end;
       end;
     end;
     WebOutStringFormatNL("]");
@@ -1736,28 +1777,31 @@ begin
     WebOutString("""submittedevents"":[");
     switch (type) begin
       case 0:
-        while (LoopKey("CustCode",JEr,1,TrHs)) begin
-          if(JEr.CustCode!=CurrentCust) then begin
+        JEr.AddCode = SMFr.SMFCode;
+        while (LoopKey("AddCode",JEr,1,TrHs)) begin
+          if(JEr.AddCode!=SMFr.SMFCode) then begin
             TrHs = false;
           end else begin
-            JLEr.SerNr = JEr.EventNr;
-            Readfirstmain(JLEr,1,true);
-            if (JLEr.EndDate>=CurrentDate and JEr.StatusFlag!=2) then begin
-              cnt = cnt + 1;
-              if(cnt>1)then begin
-                weboutstring(",");
-              end;
-              WebOutStringFormatNL("{");
-              WebOutStringFormatNL("\"serNr\":\"" & JEr.SerNr & "\",");
-              WebOutStringFormatNL("\"dataStart\":\"" & DateToString(JLEr.StartDate,"MM.DD.YYYY") & "\",");
-              WebOutStringFormatNL("\"dataEnd\":\"" & DateToString(JLEr.EndDate,"MM.DD.YYYY") & "\",");
-              WebOutStringFormatNL("\"smu\":\""  & JEr.AddCode & "\",");
-              WebOutStringFormatNL("\"name\":\""  & JEr.SMFName & "\",");
-              WebOutStringFormatNL("\"event\":\"" & JEr.EventNr & "\",");
-              WebOutStringFormatNL("\"satus\":\"" & JEr.StatusFlag & "\",");
-              WebOutStringFormatNL("\"filled\":\"" & JEr.OkFlag & "\"");
-              WebOutStringFormatNL("}"); 
-            end;    
+            if (JEr.CustType==0) then begin
+              JLEr.SerNr = JEr.EventNr;
+              Readfirstmain(JLEr,1,true);
+              if (JLEr.EndDate>=CurrentDate and JEr.StatusFlag!=2) then begin
+                cnt = cnt + 1;
+                if(cnt>1)then begin
+                  weboutstring(",");
+                end;
+                WebOutStringFormatNL("{");
+                WebOutStringFormatNL("\"serNr\":\"" & JEr.SerNr & "\",");
+                WebOutStringFormatNL("\"dataStart\":\"" & DateToString(JLEr.StartDate,"MM.DD.YYYY") & "\",");
+                WebOutStringFormatNL("\"dataEnd\":\"" & DateToString(JLEr.EndDate,"MM.DD.YYYY") & "\",");
+                WebOutStringFormatNL("\"smu\":\""  & JEr.AddCode & "\",");
+                WebOutStringFormatNL("\"name\":\""  & JEr.SMFName & "\",");
+                WebOutStringFormatNL("\"event\":\"" & JEr.EventNr & "\",");
+                WebOutStringFormatNL("\"satus\":\"" & JEr.StatusFlag & "\",");
+                WebOutStringFormatNL("\"filled\":\"" & JEr.OkFlag & "\"");
+                WebOutStringFormatNL("}"); 
+              end;    
+            end;
           end;
         end;
       case 1:

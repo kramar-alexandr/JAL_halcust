@@ -249,15 +249,19 @@ begin
   record CClassVc CClassr;
   record CUVc CUr;
   Integer i,rwcnt,cnt;
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
   
   BlockLoad(JALClassb);
   
   while (LoopKey("Classification:" & JALClassb.Mentor,CUr,1,true)) begin
-    cnt = cnt + 1;
-    WebOutString("<div>");
-    WebOutString("<img src='/WebShowPartnerImage.hal?id=" & CUr.UUID & "&code=" & CUr.Code & "'><h2>" & CUr.Name & "</h2>");
-    
-    WebOutString("</div>");
+    if (ReadRecordLink(CUr,1,Attachr,RLr)) then begin
+      cnt = cnt + 1;
+      WebOutString("<div class='single-flex'>");
+      WebOutString("<img src='/WebShowPartnerImage.hal?id=" & CUr.UUID & "&code=" & CUr.Code & "'><h2>" & CUr.Name & "</h2>");
+      
+      WebOutString("</div>");
+    end;
   end;
 
   return;
@@ -297,33 +301,28 @@ begin
   
   WebOutString("<a class='date_a'><div id='date'>");
   TrHs = true;
-  sd = AddDay(CurrentDate,-5);
-  JEr.StartDate = AddYear(CurrentDate,5);
-  while (LoopBackKey("StartDate",JEr,1,TrHs)) begin
-    if (JEr.StartDate<sd) then begin
-      TrHs = false;
-    end else begin
-      if (JEr.RegFlag==0 and JEr.ActiveFlag==1) then begin
-        if (FindMatchingTranslation(JEr.SerNr,WTr,JEr.DefLangCode)) then begin
-          daystr = StringFromSet(392,GetDateID(JEr.StartDate));//<a href='" & link & "'></a>//no link for now
-          datestr = DateToString(JEr.StartDate,"DD.MM");
-          if (left(datestr,1)=="0") then begin 
-            datestr = right(datestr,len(datestr)-1);
-          end;
-          if (JEr.StartDate!=JEr.EndDate) then begin
-            datestr2 = DateToString(JEr.EndDate,"DD.MM");
-            if (left(datestr2,1)=="0") then begin 
-              datestr2 = right(datestr2,len(datestr)-1);
-            end;
-            datestr = datestr & "<br><span class='event_date_divider'>-</span><br>" & datestr2;
-          end;
-          if (!checkf and JEr.StartDate>=CUrrentDate) then begin
-            checkf = true;
-            extra = " first_event";
-          end;
-          WebOutString("<div class='date" & extra & "'><div class='day'><h1>" & daystr & "</h1><h2>" & datestr & "</h2></div><div class='time_'><h1>" & left(JEr.StartTime,5) & "</h1><p>" & WTr.Comment & "</p></div></div>");
-          extra = "";
+  JEr.StartDate = AddYear(CurrentDate,-1);
+  while (LoopKey("StartDate",JEr,1,TrHs)) begin
+    if (JEr.RegFlag==0 and JEr.ActiveFlag==1) then begin
+      if (FindMatchingTranslation(JEr.SerNr,WTr,JEr.DefLangCode)) then begin
+        daystr = StringFromSet(392,GetDateID(JEr.StartDate));//<a href='" & link & "'></a>//no link for now
+        datestr = DateToString(JEr.StartDate,"DD.MM");
+        if (left(datestr,1)=="0") then begin 
+          datestr = right(datestr,len(datestr)-1);
         end;
+        if (JEr.StartDate!=JEr.EndDate) then begin
+          datestr2 = DateToString(JEr.EndDate,"DD.MM");
+          if (left(datestr2,1)=="0") then begin 
+            datestr2 = right(datestr2,len(datestr2)-1);
+          end;
+          datestr = datestr & "<br><span class='event_date_divider'>-</span><br>" & datestr2;
+        end;
+        if (!checkf and JEr.StartDate>=CUrrentDate) then begin
+          checkf = true;
+          extra = " first_event";
+        end;
+        WebOutString("<div class='date" & extra & "'><div class='day'><h1>" & daystr & "</h1><h2>" & datestr & "</h2></div><div class='time_'><h1>" & left(JEr.StartTime,5) & "</h1><p>" & WTr.Comment & "</p></div></div>");
+        extra = "";
       end;
     end;
   end;

@@ -782,6 +782,10 @@ begin
   KeySegment(StartDate);
   KeySegment(SerNr);
   
+  KeyBegin(TransDate);
+  KeySegment(TransDate);
+  KeySegment(SerNr);
+  
   KeyBegin(StartDate);
   KeySegment(StartDate);
   KeySegment(SerNr);
@@ -1010,6 +1014,18 @@ begin
   RecordAddBegin(WebTextVc,"WebTextJAL");
   ChangeField(Comment,M4Str,255,0);
   EndRecordAdd;
+
+  RecordBegin(ExpTeacherVc,-,"");
+  RecordField(Region,M4Str,255,0);
+  RecordField(Math,M4Matrix,0,0);
+  ArrayBegin(Math,-,1);
+  ArrayField(Teacher,M4Str,255,0);
+  ArrayField(School,M4Str,255,0);
+  ArrayField(eMail,M4Str,255,0);
+  EndArray;
+  MainKeyBegin(Region,0);
+  KeySegment(Region);
+  EndRecord;
 
   return;
 end;

@@ -234,7 +234,8 @@ procedure ShowSelectBox(integer rw,record JALEventFieldVc JFr,row JALEventVc JEr
 begin
   record JALEventSelectBoxVc JSr;
   row JALEventSelectBoxVc JSrw;
-  integer i,rwcnt,pos;
+  integer i,rwcnt;
+  Longint pos;
   string 255 field,res;
   string 20 lang;
 
@@ -265,15 +266,12 @@ begin
   WebOutStringFormatNL("<select class='event_reg' name='event_reg_field_" & rw & "' >");
   WebOutStringFormatNL("<option value=''>" & ToolWebNGTranslateText(26203) & "</option>");
   pos = 0;
-  ExtractObj(field,pos,res);
-  while (nonblank(res)) begin
+  while (GetNextSubstring(field,pos,",",res)) begin
     if value == res then begin
       WebOutStringFormatNL("<option selected value='" & res & "'>" & res & "</option>");
     end else begin
       WebOutStringFormatNL("<option value='" & res & "'>" & res & "</option>");
     end;
-
-    ExtractObj(field,pos,res);
   end;  
   
   WebOutStringFormatNL("</select>");
@@ -466,7 +464,7 @@ begin
   end;
   WebOutStringFormatNL("</div>");
   WebOutStringFormatNL("<div class='event_reg_field file_upload_wrap'>");
-  WebOutString("<input type='file' name='upload_form' id='upload_f" & rw & "' multiple>");
+  WebOutString("<input type='file' name='event_reg_field_" & rw & "' id='upload_f" & rw & "' multiple>");
   //WebOutStringFormatNL("<iframe src='/WebJALShowUploadForm.hal?path=/WebJALShowUploadForm.hal'></iframe>");
   WebOutStringFormatNL("</div>");
   WebOutStringFormatNL("</div>");
@@ -659,20 +657,21 @@ begin
   return;
 end;
 
-updating procedure FillEntryRows(var record JALEventEntryVc JEEr,record JALEventVc JEr,var boolean err,var boolean uplf,var boolean reqf,var string errfield,var string errfieldlabel)
+updating procedure FillEntryRows(var record JALEventEntryVc JEEr,record JALEventVc JEr,var Integer err,var boolean uplf,var boolean reqf,var string errfield,var string errfieldlabel,var vector string vVals)
 begin
   row JALEventEntryVc JEErw;
   row JALEventVc JErw;
   integer i,rwcnt,j;
   record JALEventFieldVc JFr;
   record CUVc CUr;
-  string 255 fname,field;
+  string 255 fname,field,tstr;
   array string 255 emplist;
   record SMFVc SMFr;
   record TeacherVc TCr;
   record MentorVc MTr;
-  Integer type;
+  Integer type,addemps;
   Boolean blankf,partf;
+  record NotePadVc Noter;
   
   err = 0;
   rwcnt = MatRowCnt(JEr);
@@ -683,7 +682,22 @@ begin
       JFr.SerNr = JErw.Field;
       if (ReadFirstMain(JFr,1,true)) then begin
         switch (JFr.Type) begin
-          case 0: goto LAddSimpleRow;
+          case 0:
+            if (nonblank(WebGetArg("event_reg_field_" & i))) then begin
+              SetTextField(Noter,"");
+              tstr = "";
+              j = 0;
+              WebGetText("event_reg_field_" & i,Noter);
+              while (j<SizeTextCnt(Noter)) begin
+                tstr = tstr & StringFromText(Noter,j,255);
+                j=j+255;
+              end;
+              AddEntryRow(JEEr,JErw.Field,JErw.Comment,tstr);
+              vVals[i] = tstr;
+            end else begin
+              blankf = true;
+              field = "event_reg_field_" & i;
+            end;
           case 1: goto LAddSimpleRow;
           case 3:
 LAddSimpleRow:;
@@ -701,6 +715,7 @@ LAddSimpleRow:;
             end;
 
           case 4://participants
+            addemps = 0;
             CUr.Code = CurrentCust;
             type = GetJAlCustType(CUr,SMFr,TCr,MTr);
             if (type==0) then begin
@@ -708,6 +723,7 @@ LAddSimpleRow:;
               GetSMFEmplist(SMFr.SMFCode,emplist);
               for (j=0;j<emplist.length;j=j+1) begin
                 if (WebGetArg("emp_" & j)=="on") then begin
+                  addemps = addemps + 1;
                   AddEntryRow(JEEr,JErw.Field,JErw.Comment,emplist[j]);
                   partf = true;
                 end;
@@ -715,10 +731,20 @@ LAddSimpleRow:;
               if (!partf) then begin
                 blankf = true;
                 field = "emp_0";
+              end else begin
+                if (addemps<StringToInt(JFr.SelectBox)) then begin
+                  err = 3;
+                  errfield = "emp_0";
+                  errfieldlabel = JFr.SelectBox;
+                  i = rwcnt;
+                end;
               end;
             end;
           case 5://upload
-            uplf = true;
+            if (blank(WebGetArg("event_reg_field_" & i))) then begin
+              blankf = true;
+              field = "event_reg_field_" & i;
+            end;
         end;
         if (JErw.Req==0) then begin
           if (blankf) then begin
@@ -742,16 +768,17 @@ begin
   record JALEventEntryVc JEEr;
   string 255 errfield,errfieldlabel;
   Boolean uplf,reqf;
-  Boolean err;
+  Integer err;
+  vector string 255 vVals;
 
   JEr.SerNr = StringToLongInt(WebGetArg("event"));
   err = 1;
   if readfirstmain(JEr,1,true) then begin
     err = 0;
-    FillEntryRows(JEEr,JEr,err,uplf,reqf,errfield,errfieldlabel);
+    FillEntryRows(JEEr,JEr,err,uplf,reqf,errfield,errfieldlabel,vVals);
   end;
 
-  WebOutString("<res err='" & err & "' err_msg='" & StrReplace(ToolWebNGTranslateText2(88000),"{lauks}",errfieldlabel) & "' errfield='" & errfield & "'></res>");
+  WebOutString("<res err='" & err & "' err_msg='" & StrReplace(ToolWebNGTranslateText2(88000+err),"{lauks}",errfieldlabel) & "' errfield='" & errfield & "'></res>");
 
   return;
 end;
@@ -763,14 +790,18 @@ begin
   record SMFVc SMFr;
   record TeacherVc TCr;
   record MentorVc MTr;
-  integer type;
-  boolean err,testf,foundf,nextf;
+  integer type,err;
+  boolean testf,foundf,nextf;
   record JALEventEntryVc oldJEER,JEEr;
   record JALEventVc JEr;
   string 255 path,fname,errfield,id,errfieldlabel;
   boolean uplf,reqf;
+  vector string 255 vVals;
+  array string 255 tagarr;
+  record NotePadVc Noter;
+  Integer i;
 
-  err = false;
+  err = 0;
   nextf = false;
   
   JEr.SerNr = StringToLongInt(WebGetArg("event"));
@@ -811,9 +842,9 @@ begin
       //fill registration fields
       uplf = false;
       reqf = true;
-      FillEntryRows(JEEr,JEr,err,uplf,reqf,errfield,errfieldlabel);
+      FillEntryRows(JEEr,JEr,err,uplf,reqf,errfield,errfieldlabel,vVals);
 
-      if err == false then begin
+      if err == 0 then begin
         PutSessionString("msg",ToolWebNGTranslateText(26208));
         if foundf then begin
           if recordUpdate(oldJEEr,JEEr,true)==0 then begin
@@ -824,6 +855,17 @@ begin
           if recordStore(JEEr,true) then begin
             nextf = true;
             id = JEEr.SerNr;
+            GetVectorTags(vVals,tagarr);
+            for (i=0;i<tagarr.length;i=i+1) begin
+              RecordNew(Noter);
+              RecordClear(Noter);
+              SetTextField(Noter,vVals[tagarr[i]]);
+              Noter.SerNr = NextSerNr("NotepadVc",CurrentDate,-1,false,"");
+              Noter.Classification = tagarr[i];
+              if (RecordStore(Noter,false)) then begin
+                CreateRecordLink(JEEr,CurrentCompany,Noter,CurrentCompany);  
+              end;
+            end;
           end;
         end;
       end else begin
@@ -977,6 +1019,27 @@ begin
 	end;
 return;
 end;
+
+function string 255 GetUserTag()
+begin
+  string 255 res;
+  record SMFVc SMFr;
+  record TeacherVc TCr;
+  record MentorVc MTr;
+  Integer type;
+  record CUVc CUr;
+
+  CUr.Code = CurrentCust;
+  type = GetJAlCustType(CUr,SMFr,TCr,MTr);
+  switch (type) begin
+    case 0: res = "SKOLENI";
+    case 1: res = "SKOLOTAJI";
+  end;
+
+  GetUserTag = res;
+  return;
+end;
+
 global procedure GetConfs(longint SerNr, var vector boolean used)
 begin
 record  MailVc Mailr;
@@ -984,7 +1047,7 @@ record  MailVc Mailr;
 	integer notenr;
 	record Attach2Vc JFr;
 	record ConfVc Confr,Conf2r;
-	string 255 userkey,docNr,name,tstr;
+	string 255 userkey,docNr,name,tstr,tag;
 	integer cnt,cnt1,cnt2;
 	boolean testf;
 	
@@ -993,6 +1056,7 @@ record  MailVc Mailr;
     used[Conf2r.SerNr] = true;
     cnt2 = 0;
     testf = true;
+    tag = GetUserTag;
     While(LoopKey("MotherConf",Conf2r,1,testf)) begin
       if(Conf2r.MotherConf != SerNr) then begin 
         testf = false; 
@@ -1014,7 +1078,7 @@ record  MailVc Mailr;
           goto Endofob;
         end;
         cnt = 0;
-        While(LoopKey(userkey,Mailr,1,true)) begin
+        While(LoopKey(userkey & "|" & tag,Mailr,1,true)) begin
           if(cnt>0) then begin WebOutStringFormatNL(","); end;
           cnt = cnt + 1;
           name = CreateJson(Mailr.Header);
