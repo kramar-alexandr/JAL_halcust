@@ -1490,21 +1490,28 @@ begin
     JEr.SerNr = "";
     WebOutStringFormatNL("[");
     if (calf) then begin
-      while (LoopMain(JEr,1,true)) begin
-        if (JEr.EndDate > CurrentDate and JEr.ActiveFlag==1 and JEr.ClosedFlag==0) then begin
-          applyf = false;
-          if (DateInRange(CurrentDate,JEr.RegFrom,JEr.RegUntil)) then begin
-            applyf = true;
-          end;
-          if (MatRowCnt(JEr)==0) then begin
+      TrHs = true;
+      JEr.ActiveFlag = 1;
+      JEr.StartDate = AddDay(CurrentDate,-5);
+      while (LoopKey("Active",JEr,2,TrHs)) begin
+        if (JEr.ActiveFlag!=1) then begin
+          TrHs = false;
+        end else begin
+          if (JEr.EndDate > CurrentDate and JEr.ClosedFlag==0) then begin
             applyf = false;
+            if (DateInRange(CurrentDate,JEr.RegFrom,JEr.RegUntil)) then begin
+              applyf = true;
+            end;
+            if (MatRowCnt(JEr)==0) then begin
+              applyf = false;
+            end;
+            if (type==0 and SMFr.ApprovalStatus!=3) then begin
+              applyf = false;
+            end;
+            if (calf or applyf) then begin
+              OutputSingleEvent(JEr,applyf,cnt);
+            end;    
           end;
-          if (type==0 and SMFr.ApprovalStatus!=3) then begin
-            applyf = false;
-          end;
-          if (calf or applyf) then begin
-            OutputSingleEvent(JEr,applyf,cnt);
-          end;    
         end;
       end;
     end else begin

@@ -14,9 +14,10 @@ begin
 
   //this is a genius attempt to fight the issue when images in forms are not appearing with the first printing of document
   if (ServerMode) then begin
+    SMFr.SMFCode = "R";
     if (ReadFirstKey("SMFCode",SMFr,1,false)) then begin
       filename = "SMU.pdf";
-      for (i=0;i<3;i=i+1) begin
+      for (i=0;i<8;i=i+1) begin
         SetDocumentFilename(filename);
         SetMedia(mtPdf);
         PrintDocument(SMFr,"SMFForm",false);

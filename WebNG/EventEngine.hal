@@ -1135,12 +1135,21 @@ begin
 	string 255 userkey,docNr,name,tstr;
 	integer cnt,cnt1,cnt2;
 	vector boolean used;
+  record SMFVc SMFr;
+  record TeacherVc TCr;
+  record MentorVc MTr;
+  Integer type;
+  record CUVc CUr;
+
 	
 	Confr.SerNr = 6;
+  CUr.Code = CurrentCust;
+  type = GetJAlCustType(CUr,SMFr,TCr,MTr);
   WebOutStringFormatNL("[");
 	if (ReadFirstMain(Confr,1,true)) then begin
     used[Confr.SerNr] = true;
     WebOutStringFormatNL("{");
+    WebOutString("\"custtype\":" & type & ",");
     tstr = Confr.Comment;
     if (blank(tstr)) then begin
       tstr = Confr.AddrName;
