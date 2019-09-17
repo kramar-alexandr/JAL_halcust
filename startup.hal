@@ -50,6 +50,7 @@ begin
 	Setting("Nozares",JALIndustryTClass,modJAL);
 	Setting("Semestri",JALSemesterTClass,modJAL);
 	Setting("Skolot‚ji ar pieredzi",ExpTeacherLClass,modJAL);
+	Setting("Standarta Teksti",LTxtLClass,modJAL);
 
 //  Maintenance("Pievienot m‚c?bu firmu",AddSMFMnVClass,AddSMFMn,modJAL);
   Maintenance("Dz•st datus",ClearDBVClass,ClearDBMn,modJAL);
@@ -228,10 +229,10 @@ begin
   SString(32344,"Ir piere®istr•ts jauns SMU");
   SString(32345," ir piere®istr•jis jaunu SMU ar ");
   SString(32346," dal´bniekiem");
-  SString(32347,"Jğs esat veiksm´gi piere®istr•jies m‚jas lap‚ http://www.jal.lv");
+  SString(32347,"Jğs esat veiksm´gi piere®istr•jies m‚jas lap‚ http://jalatvia.lv");
   SString(32348,"Re®istr‚cija bija veiksm´ga");
   SString(32352,"Tavs SMU ir apstiprin‚ts!");
-  SString(32353,"Jums ir izveidota komp‚nija HansaWorld sist•m‚. " & chr(13) & "Inform‚cija par to, k‚ lejupiel‚d•t programmu un uzst‚d´t to pieejama tav‚ jal.lv profil‚" & chr(13) & "jal.lv");
+  SString(32353,"Jums ir izveidota komp‚nija HansaWorld sist•m‚. " & chr(13) & "Inform‚cija par to, k‚ lejupiel‚d•t programmu un uzst‚d´t to pieejama tav‚ jalatvia.lv profil‚" & chr(13) & "jalatvia.lv");
   SString(32354,"SaÀemti jauni faili no ");
   SString(32355,"Skolot‚js ir apstiprin‚jis dokumentu. á´s v•stules pielikum‚ ir SMU ieraksts, kur‚ redz•siet visus dokumentus.");
   SString(32356,"Ir saÀemts e-pasts ar nosğt´tiem failiem");
@@ -243,9 +244,9 @@ begin
   SString(32371,"Jğs esat apstiprin‚ts k‚ JAL dal´bskolas """);
   SString(32372,""" skolot‚js.");
   SString(32373,"Jğsu SMU servera paraksts: ");
-  SString(32374,"Instrukcijas, par to k‚ lejupiel‚d•t HansaWorld programmu un uzst‚d´t to, atrodamas ien‚kot jal.lv profil‚.");
+  SString(32374,"Instrukcijas, par to k‚ lejupiel‚d•t HansaWorld programmu un uzst‚d´t to, atrodamas ien‚kot jalatvia.lv profil‚.");
   SString(32375,"");
-  SString(32376,"jal.lv");
+  SString(32376,"jalatvia.lv");
 
   SString(32380,"Jğsu SMU ir apstiprin‚ts, varat piesl•gties SMU serverim.");
   SString(32381,"Pieejamie paraksti:");
@@ -253,7 +254,7 @@ begin
   SString(32383,"Pieteikäan‚s kursiem");
   SString(32384,"Jğs esat veiksm´gi pieteicies kursam - ");
   
-  SString(1955,"Jğsu jal.lv lietot‚ja parole ir:");//standarta teksts pielabots
+  SString(1955,"Jğsu jalatvia.lv lietot‚ja parole ir:");//standarta teksts pielabots
 
   SString(32350,"‚‹•®´úºÀäğì‰”ş±µ¹¿áíë");
   SString(32351,"acegiklnsuzACEGIKLNSUZ");

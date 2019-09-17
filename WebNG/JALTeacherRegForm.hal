@@ -272,7 +272,7 @@ begin
       //LineTextPut(Mailr,1,USetStr(10018) & " " & CUr.eMail);
       //LineTextPut(Mailr,2,USetStr(10029) & ": " & tstr);
       //LineTextPut(Mailr,3,USetStr(32472));
-      //LineTextPut(Mailr,4,"http://jal.lv/WebJALApprovebyc3a.hal?c=" & CUr.Code & "&a=" & CUr.Comment);
+      //LineTextPut(Mailr,4,"http://jalatvia.lv/WebJALApprovebyc3a.hal?c=" & CUr.Code & "&a=" & CUr.Comment);
       Mailrw.AddrCode = MSr.Postmaster;
 	  end;
     MatRowPut(Mailr,0,Mailrw);
@@ -432,7 +432,9 @@ begin
       //TCr.Email = email;
       //TCr.Telephone = phone;
       TCr.OtherJob = WebGetArg("extrajob");
-      TCr.Subject = ToolWebNGTranslateText(StringToLongInt(WebGetArg("subject")));
+      if (StringToLongInt(WebGetArg("subject"))>0) then begin
+        TCr.Subject = ToolWebNGTranslateText(StringToLongInt(WebGetArg("subject")));
+      end;
       if recordStore(TCr,false) then begin 
         /*
         GenMailForTeacher(text,USetStr(32342) & " : " & name,RMbl.TeacherMail,TCr,true,CUr,""); 

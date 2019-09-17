@@ -51,6 +51,7 @@ external procedure ShowJALMentorList();
 external procedure ShowJALEventList();
 external procedure ShowBannerNewsList(string);
 external procedure OutPutJALWebTexts(Integer);
+external procedure ShowSchoolMap(record WebNGElementVc);
 //CUST-END
 
 procedure GetMenuActiveClass(record WebNGMenuVc WMr,var string actclass,var string class)
@@ -240,6 +241,8 @@ begin
   case "ShowWebTexts":
     OutPutJALWebTexts(0);
     OutPutJALWebTexts(1);
+  case "ShowSchoolMap":
+    ShowSchoolMap(WEr);
 
 //CUST-END
   end;

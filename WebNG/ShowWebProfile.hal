@@ -552,18 +552,18 @@ begin
       if (!ReadRecordLink(CUr,1,SMFr,RLr) or !FindSMURecord(CUr.Code,SMFr)) then begin
 				if (SMFr.ReadyFlag==0) then begin
 					if (ReadRecordLink(CUr,1,SCr,RLr)) begin					
-						if (CUr.SchoolCode==school) then begin					
+						//if (CUr.SchoolCode==school) then begin					
 							WebOutString("<option value='" & CUr.Code & "'>" & CUr.Name & "</div>");
-						end;
+						//end;
 					end;
 				end;
 			end else begin
         if (ReadRecordLink(CUr,1,SCr,RLr)) then begin
-          if (SCr.SchoolCode==school) then begin
+          //if (SCr.SchoolCode==school) then begin
 						if (!ReadRecordLink(CUr,1,SMFr,RLr)) then begin
 							WebOutString("<option value='" & CUr.Code & "'>" & CUr.Name & "</div>");
 						end;
-					end;
+					//end;
 				end;
 			end;	
     end;

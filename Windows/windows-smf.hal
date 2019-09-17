@@ -116,7 +116,7 @@ begin
   /*CHN::not needed anymore based on Ebersteins
   wn = CurWindow;
   if GetWindowString(wn,"SMFCode") <> "" then begin
-    WebPage(20,v+vm,-20,-20,"http://jal.lv/WebShowDocuments.hal?code=" & GetWindowString(wn,"SMFCode") & "&user=" & CurrentUser,"DocPage");
+    WebPage(20,v+vm,-20,-20,"http://jalatvia.lv/WebShowDocuments.hal?code=" & GetWindowString(wn,"SMFCode") & "&user=" & CurrentUser,"DocPage");
     //WebPage(20,v+vm,-20,-20,"http://localhost:8191/WebShowDocuments.hal?code=" & GetWindowString(wn,"SMFCode") & "&user=" & CurrentUser,"DocPage");
   end;
   */

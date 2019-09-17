@@ -218,17 +218,20 @@ begin
   record SchoolVc SCr;
   row SMFVc SMFrw;
   Integer year;
-  string 255 code;
+  string 255 code,tstr;
+  Longint pos;
 
   RecordNew(SMFr);
-  ClearRow(SMFr,SMFrw,1);
-  SMFrw.Type = 0;
-  SMFrw.Code = CUr.TeacherCode;
-  TCr.TeacherCode = SMFrw.Code;
-  if (ReadFirstMain(TCr,1,true)) then begin
-    SMFrw.Name = TCr.TeacherName;
+  while (GetNextSubstring(CUr.TeacherCode,pos,",",tstr)) begin
+    ClearRow(SMFr,SMFrw,1);
+    SMFrw.Type = 0;
+    SMFrw.Code = tstr;
+    TCr.TeacherCode = SMFrw.Code;
+    if (ReadFirstMain(TCr,1,true)) then begin
+      SMFrw.Name = TCr.TeacherName;
+    end;
+    MatRowPut(SMFr,MatRowCnt(SMFr),SMFrw);
   end;
-  MatRowPut(SMFr,0,SMFrw);
 
   SMFr.CustCode = CUr.Code;
   SMFr.SchoolCode = CUr.SchoolCode;
@@ -973,7 +976,8 @@ begin
   vector string 255 vVals;
   record JALClassBlock JALClassbl;
   record TeacherVc TCr;
-
+  string 255 tstr;
+  Longint pos;
 
   CUr.Code = CurrentCust;
   if ReadFirstMain(CUr,1,true) then begin
@@ -982,15 +986,17 @@ begin
       SMFr.ReadyFlag = 1;
       RecordUpdate(oldSMFr,SMFr,true);
       CreateTeachApp(0,SMFr.SMFCode,CUr.TeacherCode);
-      TCr.TeacherCode = CUr.TeacherCode;
-      if (ReadFirstMain(TCr,1,true)) then begin
-        tCUr.Code = TCr.CustCode;
-        if (ReadFirstMain(tCUr,1,true)) then begin
-          BlockLoad(JALClassbl);
-          vVals["custcode"] = CUr.Code;
-          vVals["smucode"] = SMFr.SMFCode;
-          vVals["link"] = "http://jal.lv/pieteikumi";
-          SendJALEmail(vVals,JALCLassbl.TeacherRequestText2,tCUr.eMail);        
+      while (GetNextSubstring(CUr.TeacherCode,pos,",",tstr)) begin
+        TCr.TeacherCode = tstr;
+        if (ReadFirstMain(TCr,1,true)) then begin
+          tCUr.Code = TCr.CustCode;
+          if (ReadFirstMain(tCUr,1,true)) then begin
+            BlockLoad(JALClassbl);
+            vVals["custcode"] = CUr.Code;
+            vVals["smucode"] = SMFr.SMFCode;
+            vVals["link"] = "http://jalatvia.lv/pieteikumi";
+            SendJALEmail(vVals,JALCLassbl.TeacherRequestText2,tCUr.eMail);        
+          end;
         end;
       end;
     end;

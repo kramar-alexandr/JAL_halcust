@@ -323,12 +323,12 @@ begin
   
   //WebOutString( seit ir balsosana
   //WebOutString( ieteikt draugiem
-  WebOutString("<div id=""blog-head-item-right""> <a target=""_blank"" href=""http://www.facebook.com/share.php?u=" & "http://www.jal.lv" & FormatSimpleLink(WebGetArg("path"),true) & """><img src=""/images/facebook2.png""></a></div>");
+  WebOutString("<div id=""blog-head-item-right""> <a target=""_blank"" href=""http://www.facebook.com/share.php?u=" & "http://jalatvia.lv" & FormatSimpleLink(WebGetArg("path"),true) & """><img src=""/images/facebook2.png""></a></div>");
   WebOutString("<div id=""blog-head-item-right"">");
-  WebOutString("<a target=""_blank""  href=""http://twitter.com/home?status=" & ToolWebNGTranslateText(20135) & " http://www.jal.lv" & FormatSimpleLink(WebGetArg("path"),true) & """><img src=""/images/twitter2.png""></a></div>");  
+  WebOutString("<a target=""_blank""  href=""http://twitter.com/home?status=" & ToolWebNGTranslateText(20135) & " http://jalatvia.lv" & FormatSimpleLink(WebGetArg("path"),true) & """><img src=""/images/twitter2.png""></a></div>");  
   WebOutString("<div id=""blog-head-item-right"">");
   WebOutString("<a target=""_blank"" href=""http://www.draugiem.lv/say/ext/add.php?title=" & FormatSimpleLink(WebGetArg("path"),true));
-  WebOutString("&link=" & "http://www.jal.lv" & FormatSimpleLink(WebGetArg("path"),true) & "&titlePrefix=smu.lv""><img src=""/images/draugiem.png""></a></div></div>");
+  WebOutString("&link=" & "http://jalatvia.lv" & FormatSimpleLink(WebGetArg("path"),true) & "&titlePrefix=smu.lv""><img src=""/images/draugiem.png""></a></div></div>");
 
 return;
 end;
@@ -450,7 +450,7 @@ begin
   SMFr.SMFCode = WebGetArg("c");
   if readfirstmain(SMFr,1,true) then begin
     if nonblank(SMFr.CompNr) and nonblank(SMFr.ServerCode) then begin
-      WebOutStringFormatNL("<div class='frame_wrap'><iframe src='http://jal.lv:" & GetServerPort(SMFr) & "/WebShowCompInfo.hal?comp=" & SMFr.CompNr & "&c=" & SMFr.SMFCode & "'></iframe></div>");
+      WebOutStringFormatNL("<div class='frame_wrap'><iframe src='http://jalatvia.lv:" & GetServerPort(SMFr) & "/WebShowCompInfo.hal?comp=" & SMFr.CompNr & "&c=" & SMFr.SMFCode & "'></iframe></div>");
     end;
   end;
   return;

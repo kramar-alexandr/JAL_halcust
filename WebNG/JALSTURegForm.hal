@@ -533,7 +533,7 @@ begin
   end else begin
     LineTextPut(Mailr,0,txt);
     LineTextPut(Mailr,0,longtext);
-    LineTextPut(Mailr,4,"http://jal.lv/WebJALApprovebyc3a.hal?c=" & CUr.Code);
+    LineTextPut(Mailr,4,"http://jalatvia.lv/WebJALApprovebyc3a.hal?c=" & CUr.Code);
   end;
   ClearRow(Mailr,Mailrw,1);
   Mailrw.RowTyp = kMailRowTypeTo;
@@ -569,7 +569,7 @@ begin
       Mailrw.AddrCode = MSr.Postmaster;
 	  end else begin
 			LineTextPut(Mailr,0,txt);
-			LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveParents.hal?c=" & SMFr.SMFCode & "&a=" & CUr.Comment);
+			LineTextPut(Mailr,4,"http://jalatvia.lv/WebJALApproveParents.hal?c=" & SMFr.SMFCode & "&a=" & CUr.Comment);
 			Mailrw.AddrCode = MSr.Postmaster;
 	  end;
     MatRowPut(Mailr,0,Mailrw);
@@ -607,7 +607,7 @@ begin
       Mailrw.AddrCode = MSr.Postmaster;
 	  end else begin
 			LineTextPut(Mailr,0,txt);
-			LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveEmployer.hal?smu=" & SMFr.SMFCode & "&emp=" & CUr.Code);
+			LineTextPut(Mailr,4,"http://jalatvia.lv/WebJALApproveEmployer.hal?smu=" & SMFr.SMFCode & "&emp=" & CUr.Code);
 			Mailrw.AddrCode = MSr.Postmaster;
 	  end;
     MatRowPut(Mailr,0,Mailrw);
@@ -870,6 +870,8 @@ begin
   string 255 text,headertext;
   vector string 255 vVals;
   record JALClassblock JALClassbl;
+  Longint pos;
+  string 255 tstr;
 
 
   CUr.Code = WebGetArg("c");
@@ -879,15 +881,17 @@ begin
         RecordCopy(oldCUr,CUr);
         CUr.AllowLogin = 1;  
         if (RecordUpdate(oldCUr,CUr,true)==0) then begin
-          TCr.TeacherCode = CUr.TeacherCode;
-          if (ReadFirstMain(TCr,1,true)) then begin
-            tCUr.Code = TCr.CustCode;
-            if (ReadFirstMain(tCur,1,true)) then begin
-              CreateTeachApp(3,CUr.Code,TCr.TeacherCode);
-              BlockLoad(JALClassbl);
-              vVals["custcode"] = CUr.Code;
-              vVals["link"] = "http://jal.lv/pieteikumi";
-              SendJALEmail(vVals,JALCLassbl.TeacherRequestText,tCUr.eMail);
+          while (GetNextSubstring(CUr.TeacherCode,pos,",",tstr)) begin
+            TCr.TeacherCode = tstr;
+            if (ReadFirstMain(TCr,1,true)) then begin
+              tCUr.Code = TCr.CustCode;
+              if (ReadFirstMain(tCur,1,true)) then begin
+                CreateTeachApp(3,CUr.Code,TCr.TeacherCode);
+                BlockLoad(JALClassbl);
+                vVals["custcode"] = CUr.Code;
+                vVals["link"] = "http://jalatvia.lv/pieteikumi";
+                SendJALEmail(vVals,JALCLassbl.TeacherRequestText,tCUr.eMail);
+              end;
             end;
           end;
         end else begin

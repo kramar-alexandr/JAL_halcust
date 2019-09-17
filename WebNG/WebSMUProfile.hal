@@ -902,6 +902,7 @@ begin
   array string 255 emplist;
   record JALJobPositionBlock JPb;
   row JALJobPositionBlock JPbrw;
+  Longint pos;
    
 
   CUr.Code = CurrentCust;
@@ -1005,15 +1006,17 @@ l33:;
           RecordCopy(oldSMFr,SMFr);
           SMFr.ApprovalStatus = 1;
           if (RecordUpdate(oldSMFr,SMFr,true)==0) then begin
-            TCr.TeacherCode = CUr.TeacherCode;
-            if (ReadFirstMain(TCr,1,true)) then begin
-              tCUr.Code = TCr.CustCode;
-              if (ReadFirstMain(tCUr,1,true)) then begin
-                BlockLoad(JALClassbl);
-                vVals["custcode"] = CUr.Code;
-                vVals["smucode"] = SMFr.SMFCode;
-                vVals["link"] = "http://jal.lv/teacher-smu";
-                SendJALEmail(vVals,JALCLassbl.TeacherRequestText2,tCUr.eMail);        
+            while (GetNextSubstring(CUr.TeacherCode,pos,",",tstr)) begin
+              TCr.TeacherCode = tstr;
+              if (ReadFirstMain(TCr,1,true)) then begin
+                tCUr.Code = TCr.CustCode;
+                if (ReadFirstMain(tCUr,1,true)) then begin
+                  BlockLoad(JALClassbl);
+                  vVals["custcode"] = CUr.Code;
+                  vVals["smucode"] = SMFr.SMFCode;
+                  vVals["link"] = "http://jalatvia.lv/teacher-smu";
+                  SendJALEmail(vVals,JALCLassbl.TeacherRequestText2,tCUr.eMail);        
+                end;
               end;
             end;
           end;

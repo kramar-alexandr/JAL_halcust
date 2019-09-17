@@ -11,6 +11,7 @@ SourceFile("halcust\\WActions", 3);
 SourceFile("halcust\\Windows", 3);
 SourceFile("halcust\\WebNG",0);
 SourceFile("halcust\\Level0", 0);
+SourceFile("halcust\\Level0/Documents", 0);
 SourceFile("halcust\\Level0/WebNG", 0);
 SourceFile("halcust\\Level0/RActions", 0);
 
@@ -36,6 +37,7 @@ begin
   RecordField(PrimaryCount,M4Long,0,0);
   RecordField(SecondaryCount,M4Long,0,0);
   RecordField(TeacherCount,M4Long,0,0);
+  RecordField(Coordinates,M4Str,255,0);
   //p�c skolas koda
   MainKeyBegin(SchoolCode,0);
   KeySegment(SchoolCode);
@@ -725,7 +727,7 @@ begin
   RecordField(SMFCode,M4Code,20,0);
   RecordField(CustCode,M4Code,20,0);
   RecordField(RecType,M4Set,1005,0);//also for employees
-  RecordField(RecCode,M4Code,10,0);
+  RecordField(RecCode,M4UStr,50,0);
   RecordField(StatusFlag,M4Int,0,0);
   MainKeyBegin(SerNr,0);
   KeySegment(SerNr);
@@ -751,6 +753,13 @@ begin
   KeySegment(TransDate);
   KeySegment(TransTime);
   KeySegment(SerNr);
+  SubsetKeyBegin2(RecType2);
+  AppendListFieldToKeyName(RecCode);
+  KeySegment(StatusFlag);
+  KeySegment(RecType);
+  KeySegment(TransDate);
+  KeySegment(TransTime);
+  KeySegment(SerNr);
   EndRecord;
 
   RecordBegin(JALEventVc,-,"");
@@ -768,6 +777,7 @@ begin
   RecordField(RegFrom,M4Date,0,0);
   RecordField(RegUntil,M4Date,0,0);
   RecordField(StartTime,M4Time,0,0);
+  RecordField(Link,M4Str,255,0);
   ArrayBegin(Math,-,1);
   ArrayField(Field,M4Long,0,0);
   ArrayField(Comment,M4Str,60,0);
@@ -840,7 +850,7 @@ begin
   RecordField(EventNr,M4Long,0,0);
   RecordField(Math,M4Matrix,0,0);
   RecordField(OkFlag,M4Int,0,0);
-  RecordField(TeacherCode,M4Code,20,TeacherVc);
+  RecordField(TeacherCode,M4UStr,20,TeacherVc);
   RecordField(SMFName,M4Str,255,0);
   ArrayBegin(Math,-,1);
   ArrayField(Field,M4Long,0,0);
@@ -957,7 +967,7 @@ begin
   RecordField(ConfirmPar,M4Mark,0,0);
   RecordField(ConfirmTeach,M4Mark,0,0);
   RecordField(SchoolCode,M4Code,4,0);
-  RecordField(TeacherCode,M4Code,20,0);
+  RecordField(TeacherCode,M4UStr,50,0);
   RecordField(Salary,M4Val,0,0);
   RecordField(TitanFlag,M4Int,0,0);
   RecordField(EnuDienaFlag,M4Int,0,0);

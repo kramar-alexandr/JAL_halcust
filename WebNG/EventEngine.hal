@@ -1020,13 +1020,12 @@ begin
 return;
 end;
 
-function string 255 GetUserTag()
+function string 255 GetUserTag(var Integer type)
 begin
   string 255 res;
   record SMFVc SMFr;
   record TeacherVc TCr;
   record MentorVc MTr;
-  Integer type;
   record CUVc CUr;
 
   CUr.Code = CurrentCust;
@@ -1040,6 +1039,36 @@ begin
   return;
 end;
 
+function Boolean UserHasAccessToConf(Integer type,record ConfVc Confr)
+begin
+  record JALClassBlock JCbl;
+  row ConfVc Confrw;
+  Integer i,rwcnt;
+  Boolean res;
+  
+  BlockLoad(JCbl);
+  rwcnt = MatRowCnt(Confr);
+  if (rwcnt==0) then begin
+    res = true;
+    goto LUserHasAccessToConf;
+  end;
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(Confr,i,Confrw);
+    if (type==0 and Confrw.Group==JCbl.Schoolar) then begin
+      res = true;
+      goto LUserHasAccessToConf;
+    end;
+    if (type==1 and Confrw.Group==JCbl.Teacher) then begin
+      res = true;
+      goto LUserHasAccessToConf;
+    end;
+  end;
+
+LUserHasAccessToConf:;
+  UserHasAccessToConf = res;
+  return;
+end;
+
 global procedure GetConfs(longint SerNr, var vector boolean used)
 begin
 record  MailVc Mailr;
@@ -1050,59 +1079,72 @@ record  MailVc Mailr;
 	string 255 userkey,docNr,name,tstr,tag;
 	integer cnt,cnt1,cnt2;
 	boolean testf;
+  Integer type;
+  record NotePadVc Noter;
 	
+  tag = GetUserTag(type);
   Conf2r.MotherConf = SerNr;
   if(ReadFirstKey("MotherConf",Conf2r,1,true)) then begin
     used[Conf2r.SerNr] = true;
     cnt2 = 0;
     testf = true;
-    tag = GetUserTag;
-    While(LoopKey("MotherConf",Conf2r,1,testf)) begin
-      if(Conf2r.MotherConf != SerNr) then begin 
-        testf = false; 
-      end else begin
-        if(cnt2>0) then begin WebOutStringFormatNL(","); end;
-        tstr = Conf2r.Comment;
-        if (blank(tstr)) then begin
-          tstr = Conf2r.AddrName;
-        end;
-        
-        cnt2 = cnt2 + 1;
-        WebOutStringFormatNL("{");
-        WebOutStringFormatNL("\"nameConf\":" & "\"" & tstr & "\",");
-        userkey="UserTime:" & Conf2r.SerNr;
-        WebOutStringFormatNL("\"docs\":[");
-        Confr.MotherConf = Conf2r.SerNr;
-        if(ReadFirstKey("MotherConf",Confr,1,true)) then begin
-          GetConfs(Conf2r.SerNr,used);
-          goto Endofob;
-        end;
-        cnt = 0;
-        While(LoopKey(userkey & "|" & tag,Mailr,1,true)) begin
-          if(cnt>0) then begin WebOutStringFormatNL(","); end;
-          cnt = cnt + 1;
-          name = CreateJson(Mailr.Header);
-          if(ReadRecordLink(Mailr,0,JFr,RLr)) then begin	if(JFr.SerNr==-1) then begin docNr = ""; end else begin docNr= JFr.SerNr;  end;
-            WebOutStringFormatNL("{\"nameDoc\":\"" & name &"\",\"serNr\":\"" & docNr & "\"}");
-          end else begin
-            if(LineTextCnt(Mailr)==0) then begin
-              WebOutStringFormatNL("{\"nameDoc\":\"" & name &"\",\"link\":\"");WebOutStringFormatNL("\"}");
-            end else begin	
-              WebOutStringFormatNL("{\"nameDoc\":\"" & name &"\",\"link\":\"");WebOutText( Mailr,true,"");WebOutStringFormatNL("\"}");
+    if (nonblank(tag)) then begin
+      Conf2r.Sortorder = "";
+      While(LoopKey("SubConfSortorder:" & SerNr,Conf2r,1,true)) begin
+        if (UserHasAccessToConf(type,Conf2r)) then begin
+          if(cnt2>0) then begin WebOutStringFormatNL(","); end;
+          tstr = Conf2r.Comment;
+          if (blank(tstr)) then begin
+            tstr = Conf2r.AddrName;
+          end;
+          
+          cnt2 = cnt2 + 1;
+          WebOutStringFormatNL("{");
+          WebOutStringFormatNL("\"nameConf\":" & "\"" & tstr & "\",");
+          WebOutStringFormatNL("\"description\":\"");
+          if (ReadRecordLink(Conf2r,1,Noter,RLr)) then begin
+            WebOutText(Noter,true,"");            
+          end;
+          WebOutStringFormatNL("\",");
+          userkey="UserSortorder:" & Conf2r.SerNr;
+          WebOutStringFormatNL("\"docs\":[");
+          Confr.MotherConf = Conf2r.SerNr;
+          if(ReadFirstKey("MotherConf",Confr,1,true)) then begin
+            GetConfs(Conf2r.SerNr,used);
+            goto Endofob;
+          end;
+          cnt = 0;
+          While(LoopKey(userkey & "|" & tag,Mailr,1,true)) begin
+            if(cnt>0) then begin WebOutStringFormatNL(","); end;
+            cnt = cnt + 1;
+            name = CreateJson(Mailr.Header);
+            if(ReadRecordLink(Mailr,0,JFr,RLr)) then begin	
+              if(JFr.SerNr==-1) then begin 
+                docNr = ""; 
+              end else begin 
+                docNr= JFr.SerNr;  
+              end;
+              WebOutStringFormatNL("{\"nameDoc\":\"" & name &"\",\"serNr\":\"" & docNr & "\"}");
+            end else begin
+              if(LineTextCnt(Mailr)==0) then begin
+                WebOutStringFormatNL("{\"nameDoc\":\"" & name &"\",\"link\":\"");WebOutStringFormatNL("\"}");
+              end else begin	
+                WebOutStringFormatNL("{\"nameDoc\":\"" & name &"\",\"link\":\"");WebOutText( Mailr,true,"");WebOutStringFormatNL("\"}");
+              end;	
             end;	
-          end;	
+          end;
+          WebOutStringFormatNL("]");
+          WebOutStringFormatNL("}");
+          ResetLoop(Mailr);
+          Endofob:;
         end;
-        WebOutStringFormatNL("]");
-        WebOutStringFormatNL("}");
-        ResetLoop(Mailr);
-        Endofob:;
       end;
     end;
     WebOutStringFormatNL("]");
   end else begin	
-    userkey="UserTime:" & Conf2r.SerNr;
+    userkey="UserSortorder:" & Conf2r.SerNr;
     cnt = 0;
-    While(LoopKey(userkey,Mailr,1,true)) begin
+    While(LoopKey(userkey & "|" & tag,Mailr,1,true)) begin
       if(cnt>0) then begin WebOutStringFormatNL(","); end;
       cnt = cnt + 1;
 

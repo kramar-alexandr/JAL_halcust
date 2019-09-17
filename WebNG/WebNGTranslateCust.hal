@@ -21,6 +21,7 @@ begin
   WebOutString("jal_str['Reg_FillIn']         = '" & ToolWebNGTranslateText2(70062) & "';");
   WebOutString("jal_str['Reg_Class']          = '" & ToolWebNGTranslateText2(70063) & "';");
   WebOutString("jal_str['Reg_Phone']          = '" & ToolWebNGTranslateText2(70064) & "';");
+  WebOutString("jal_str['search']             = '" & ToolWebNGTranslateText2(70076) & "';");
  
   switch (type) begin
     case 0://smu profile

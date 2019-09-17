@@ -498,7 +498,7 @@ begin
       Mailrw.AddrCode = MSr.Postmaster;
 	  end else begin
 			LineTextPut(Mailr,0,txt);
-			LineTextPut(Mailr,4,"http://jal.lv/WebJALApproveTeacher.hal?c=" & SMFr.SMFCode & "&a=" & CUr.Comment & ", ludzam to izskatit un apstiprinat vai noraidit.");
+			LineTextPut(Mailr,4,"http://jalatvia.lv/WebJALApproveTeacher.hal?c=" & SMFr.SMFCode & "&a=" & CUr.Comment & ", ludzam to izskatit un apstiprinat vai noraidit.");
       Mailrw.AddrCode = MSr.Postmaster;
 	  end;
     MatRowPut(Mailr,0,Mailrw);
@@ -598,13 +598,13 @@ begin
 //  CreateRecordLink(SMFr,CurrentCompany,CUr,CurrentCompany);
 //  CreateRecordLink(CUr,CurrentCompany,SMFr,CurrentCompany);
   vVals["custcode"] = CUr.Code;
-  vVals["link"] = "http://jal.lv/WebJALApprovebyc3a.hal?c=" & CUr.Code & "&a=" & CUr.Comment;
+  vVals["link"] = "http://jalatvia.lv/WebJALApprovebyc3a.hal?c=" & CUr.Code & "&a=" & CUr.Comment;
   SendJALEmail(vVals,JALCLassbl.StudentRegText,CUr.eMail);
 
   
   if(CUr.AgeFlag!=0) then begin
     vVals["custcode"] = CUr.Code;
-    vVals["link"] = "http://jal.lv/WebJALApproveParents.hal?c=" & CUr.Code & "&a=" & CUr.Comment;
+    vVals["link"] = "http://jalatvia.lv/WebJALApproveParents.hal?c=" & CUr.Code & "&a=" & CUr.Comment;
     SendJALEmail(vVals,JALCLassbl.StudentParentText,CUr.ParenteMail);
   end;
 

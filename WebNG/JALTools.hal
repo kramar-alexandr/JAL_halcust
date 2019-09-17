@@ -4,6 +4,7 @@ external procedure SetContentTypeForExtension(string);
 external function boolean FindMatchingTranslation(string,var record WebNGTranslateVc,string);
 external function string 255 FormatSimpleLink(string,boolean);
 external function string 255 GetLinkToStruct(LongInt,boolean);
+external function string 255 ToolWebNGTranslateText2(Longint);
 
 global
 procedure ShowLastNewsPicture(string style)
@@ -13,6 +14,10 @@ begin
   record Attach2Vc Attachr;
   record RLinkVc RLr;
   record WebNGTranslateVc WTr;
+  row WebNGTranslateVc WTrw;
+  record WebNGContentStyleVc WCSr;
+  string 255 link;
+  Integer i,rwcnt;
 
   WCr.ContentStyle = style;
   WCr.SpecDate = AddYear(CurrentDate,1);
@@ -27,8 +32,23 @@ begin
     end;
     if (testf) then begin
       if (ReadRecordLink(WCr,1,Attachr,RLr)) begin
-        foundf = false;
-        WebOutString("<style>#banner{background-image:url(/WebShowContentImage.hal?s=" & WCr.SerNr & ") !important;box-shadow: inset 0 0 0 1000px rgba(0,0,0,0.65)}</style>");      
+        WCSr.Code = WCr.ContentStyle;
+        if (ReadFirstMain(WCSr,1,true)) then begin
+          foundf = false;
+          link = FormatSimpleLink(GetLinkToStruct(WCSr.HandlerAppNode,true) & WCr.SerNr,true);
+          WebOutString("<h2>" & WTr.Comment & "</h2>");
+        	WebOutString("<p>");
+          rwcnt = MatRowCnt(WTr);
+          for (i=0;i<rwcnt;i=i+1) begin
+            MatRowGet(WTr,i,WTrw);
+            WebOutString(WTrw.OverviewText);
+          end;
+          
+          WebOutString("</p>");
+          WebOutString("<div id='top-bt'><a href='" & link & "'><button id='main-button-on-top'>" & ToolWebNGTranslateText2(70300) & "</button></a></div>");
+
+          WebOutString("<style>#banner{background-image:url(/WebShowContentImage.hal?s=" & WCr.SerNr & ") !important;box-shadow: inset 0 0 0 1000px rgba(0,0,0,0.65)}</style>");      
+        end;
       end;
     end;
   end;
@@ -99,9 +119,10 @@ begin
     pos = 0;
     while (pos<l) begin
       tstr = GetStringFromArea(a,pos,255);
-      AddToText(tstr,LTxt2r); 
+      AddToText(tstr,emqrp); 
       pos = pos+255;
     end;
+/*
     cscnt = LineTextCnt(LTxt2r);
     if (cscnt>0) then begin
       for (i=0;i<cscnt;i=i+1) begin
@@ -109,6 +130,7 @@ begin
         LineTextPut(emqrp,LineTextCnt(emqrp),tstr);
       end;  
     end;
+*/
   end;
   emqrp.SerNr = NextSerNr("EMailQueVc",CurrentDate,-1,false,"");
   emqrp.OrgSerNr = -1;
@@ -321,8 +343,14 @@ begin
           checkf = true;
           extra = " first_event";
         end;
+        if (nonblank(JEr.Link)) then begin
+          WebOutString("<a href='" & JEr.Link & "' target='blank'>");
+        end;
         WebOutString("<div class='date" & extra & "'><div class='day'><h1>" & daystr & "</h1><h2>" & datestr & "</h2></div><div class='time_'><h1>" & left(JEr.StartTime,5) & "</h1><p>" & WTr.Comment & "</p></div></div>");
         extra = "";
+        if (nonblank(JEr.Link)) then begin
+          WebOutString("</a>");
+        end;
       end;
     end;
   end;
@@ -340,7 +368,7 @@ begin
   record RLinkVc RLr;
   record WebNGTranslateVc WTr;
   record WebNGContentStyleVc WCSr;
-  Integer cnt;
+  Integer cnt,opac;
   string 255 link;
 
   WCSr.Code = style;
@@ -359,15 +387,115 @@ begin
     if (testf) then begin
       if (ReadRecordLink(WCr,1,Attachr,RLr)) begin
         cnt = cnt + 1;
-        if (cnt>2) then begin
+        if (cnt>3) then begin
           foundf = false;
         end;
         link =  FormatSimpleLink(GetLinkToStruct(WCSr.HandlerAppNode,true) & WCr.SerNr,true);
-
-        WebOutString("<div class='slide' style='background-image:url(/WebShowContentImage.hal?s=" & WCr.SerNr & ") !important;box-shadow: inset 0 0 0 1000px rgba(0,0,0,0.65); opacity: 0; z-index: 1;'>");      
+        opac = 0;
+        if (cnt==1) then begin
+          opac = 1;
+        end;
+        WebOutString("<div class='slide' style='background-image:url(/WebShowContentImage.hal?s=" & WCr.SerNr & ") !important;box-shadow: inset 0 0 0 1000px rgba(0,0,0,0.65); opacity: " & opac & "; z-index: 1;'>");      
 				WebOutString("<h2><a href='" & link & "'>" & WTr.Comment & "</a></h2>");
         WebOutString("</div>");
       end;
+    end;
+  end;
+
+  return;
+end;
+
+global
+procedure ShowSchoolMap(record WebNGElementVc WEr)
+begin
+  record SchoolVc SCr;
+  string 255 lc;
+  array string 255 aschool,acoords;
+  Integer i;
+  vector string 255 vschool;
+  Longint pos;
+  string 255 tstr,tstr2;
+
+  WebOutString("<ul>");
+  while (LoopKey("SchoolName",SCr,1,true)) begin
+    if (SCr.Approved==1) then begin
+      if (lc!=left(SCr.SchoolName,1)) then begin
+        lc = left(SCr.SchoolName,1);
+        WebOutString("<li><b>" & lc & "</b></li>");
+      end;
+      WebOutString("<li>" & SCr.SchoolName & "</li>");
+      if (nonblank(SCr.Coordinates)) then begin
+        acoords[acoords.length] = SCr.Coordinates;
+      end else begin
+        vschool[SCr.SchoolCode] = SCr.Address;
+      end;
+    end;
+  end;  
+  WebOutString("</ul>");
+
+  WebOutString("<script>");
+  WebOutString("    var geocoder;");
+  WebOutString("    var map;");
+  //WebOutString("    var address = "new york city";");
+  WebOutString("    function initMap() {");
+  WebOutString("      var map = new google.maps.Map(document.getElementById('map'), {");
+  WebOutString("        zoom: 7,");
+  WebOutString("        center: {lat: 56.9721573, lng: 24.0175745}");
+  WebOutString("      });");
+  WebOutString("      geocoder = new google.maps.Geocoder();");
+  GetVectorTags(vschool,aschool);
+  for (i=0;i<aschool.length;i=i+1) begin
+    WebOutString("      codeAddress(geocoder, map,'" & vschool[aschool[i]] & "','" & aschool[i] & "');");
+  end;
+  for (i=0;i<acoords.length;i=i+1) begin
+    WebOutString("          var marker = new google.maps.Marker({");
+    WebOutString("            map: map,");
+    pos = -1;
+    GetNextSubstring(acoords[i],pos,",",tstr);
+    GetNextSubstring(acoords[i],pos,",",tstr2);
+    tstr = "lat:" & tstr & ",lng:" & tstr2;
+    WebOutString("            position: {" & tstr & "}");
+    WebOutString("          });");
+  end;
+  WebOutString("    }");
+
+  WebOutString("    function codeAddress(geocoder, map, address,school) {");
+  WebOutString("      geocoder.geocode({'address': address}, function(results, status) {");
+  WebOutString("        if (status === 'OK') {");
+  WebOutString("          $.get('/WebUpdateSchoolCoords.hal?sc=' + school + '&coords=' + results[0].geometry.location);");
+  //WebOutString("          map.setCenter(results[0].geometry.location);");
+  WebOutString("          var marker = new google.maps.Marker({");
+  WebOutString("            map: map,");
+  WebOutString("            position: results[0].geometry.location");
+  WebOutString("          });");
+  WebOutString("        } else {");
+  WebOutString("        }");
+  WebOutString("      });");
+  WebOutString("    }");
+
+  WebOutString("</script>");
+
+  WebOutString("<script async defer src='https://maps.googleapis.com/maps/api/js?key=" & WEr.ContentDivClass & "&callback=initMap'></script>");
+
+  return;
+end;
+
+
+global webpublic
+updating procedure WebUpdateSchoolCoords()
+begin
+  record SchoolVc SCr,oldSCr;
+  string 255 coords;
+   
+  SCr.SchoolCode = WebGetArg("sc");
+  coords = UrlDecode(WebGetArg("coords"));
+  coords = left(coords,len(coords)-1);
+  coords = right(coords,len(coords)-1);
+  if (ReadFirstMain(SCr,1,true)) then begin
+    if (blank(SCr.Coordinates) and nonblank(coords)) then begin
+      RecordCopy(oldSCr,SCr);
+      SCr.Coordinates = coords;
+      RecordUpdate(oldSCr,SCr,true);
     end;
   end;
 

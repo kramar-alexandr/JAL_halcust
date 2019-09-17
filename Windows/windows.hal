@@ -73,6 +73,7 @@ begin
   EditField(h2,v,80,"Skol•ni vidusskol‚",Normal,SecondaryCount,false,0);
   EditField(h,v+=vs,120,"Novads",Normal,District,false,JALDistrictSClass);
   EditField(h2,v,-30,"Plðsma",Normal,Lang,false,JALLangSClass);
+  EditField(h,v+=vs,120,"Koordin‚tas",Normal,Coordinates,false,0);
   TextField(h-2,v+=vs,-28,-30,Comment,0);
   if (GuiType==kGuiCocoa) then begin
     StaticText(h-66,v=v+12,"Koment‚rs",false);
@@ -462,9 +463,6 @@ begin
   TileButton(tilenr,"Citi"); tilenr = tilenr + 1;  
   tilenr = 1;
   Tile(tilenr,250,false,"1",STDTextTerm); tilenr = tilenr + 1;  
-//  EditField(h2,v=v+vs,100,"Paroles atjaunoäanas virsraksts",Normal,RecoveryHead,false,LTxtSClass);
-//  EditField(h2,v=v+vs,100,"Paroles atjaunoäanas s‚kuma teksts",Normal,RecoveryStartTxt,false,LTxtSClass);
-//  EditField(h2,v=v+vs,100,"Paroles atjaunoäanas beigu teksts",Normal,RecoveryEndTxt,false,LTxtSClass);
   EditField(h,v=6,100,"Likvid•ta SMU teksts",Normal,STDTextTerm,false,LTxtSClass);
   EditField(h,v=v+vs,100,"Neakt´va SMU teksts",Normal,STDTextDis,false,LTxtSClass);
   EditField(h,v=v+vs,100,"Atjaunotas SMU teksts",Normal,STDTextEn,false,LTxtSClass);
@@ -480,7 +478,10 @@ begin
   EditField(h,v=v+vs,100,"NoÀemts darbinieks vec‚kam",Normal,EmployeeRemoveText2,false,LTxtSClass);
   EditField(h,v=v+vs,100,"Skolot‚ja re®istr•äan‚s",Normal,TeacherRegText,false,LTxtSClass);
   EditField(h,v=v+vs,100,"Skolot‚ja apstiprin‚äana",Normal,TeacherApproveText,false,LTxtSClass);
-  EditField(h,v=v+vs,100,"Paroles maiÀa",Normal,PasswordChangeText,false,LTxtSClass);
+//  EditField(h,v=v+vs,100,"Paroles maiÀa",Normal,PasswordChangeText,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"Paroles atjaunoäanas virsraksts",Normal,RecoveryHead,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"Paroles atjaunoäanas s‚kuma teksts",Normal,RecoveryStartTxt,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"Paroles atjaunoäanas beigu teksts",Normal,RecoveryEndTxt,false,LTxtSClass);
 
   Tile(tilenr,350,false,"2",Template); tilenr = tilenr + 1;  
   EditField(h,v=6,100,"áablona lapa komp‚nij‚m",Normal,Template,false,WebNGPageSClass);
@@ -959,6 +960,8 @@ begin
   EditField(h2,v,90,"Nokl. valoda",Normal,DefLangCode,false,WebNGLanguageSClass);
   EditField(h,v+=vs,90,"Re®istr•äan‚s no",Normal,RegFrom,false,PasteCurDate);
   EditField(h2,v,90,"Re®istr•äan‚s l´dz",Normal,RegUntil,false,PasteCurDate);
+  EditField(h,v+=vs,290,"Saite",Normal,Link,false,0);
+  
   CheckBox(h-5,v+=vs,0,"Tikai re®istr•tiem lietot‚jiem",RegFlag);
   HalPushButton(-300,v,-200,v+20,"NewJALEventTranslationDsm","Jauns tulkojums");
   //HalPushButton(-250,v,-150,v+20,"OpenJALEventTranslationDsm","Atv•rt tulkojumu");
@@ -970,7 +973,7 @@ begin
   RadioButton(h3+50,v+=16,4,0,"Cits Baz‚rs re®ionos",StatusFlag);
   RadioButton(h3+50,v+=16,5,0,"Cits Baz‚rs pavasar´",StatusFlag);
   RadioButton(h3+50,v+=16,6,0,"Jauno uzÀ•m•ju dienas",StatusFlag);
-  RecordList2(10,v+=80,-30,v+=130,"WebNGTranslateVc");
+  RecordList2(10,v+=100,-30,v+=130,"WebNGTranslateVc");
   RlColKey(4,4,"Valoda",LangCode,false,EventLangCode);
   RlColKey(90,90,"Izmain´ts",LastChanged,false,EventLastChanged);
   RlCol(180,180,"K‚rtoäana",Sorting,false);
@@ -1538,7 +1541,7 @@ begin
 //CUST-BEGIN
   Tile(tilenr,240,false,tilenr,SchoolCode); tilenr = tilenr + 1;
   EditField(h,v=6,100,"Skola",Normal,SchoolCode,false,0);
-  EditField(h,v=v+vs,100,"Skolot‚ja",Normal,TeacherCode,false,0);
+  EditField(h,v=v+vs,100,"Skolot‚ji",Normal,TeacherCode,false,TeacherSClass);
   EditField(h,v=v+vs,50,"Klase",Normal,ClassNum,false,0);
   EditField(h+80,v=v,50,"",Normal,ClassChar,false,0);
   EditField(h,v=v+vs,100,"Alga",Normal,Salary,false,0);

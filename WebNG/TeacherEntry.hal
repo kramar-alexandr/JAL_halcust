@@ -626,9 +626,8 @@ begin
     cnt = 0;
     JTR.RecType = 3;
     JTR.StatusFlag = 1;
-    JTR.RecCode = code;//this is a big security issue
-    while (LoopKey("RecType",JTr,3,TrHs)) begin
-      if (JTr.RecCode!=code or JTr.RecType!=3 or JTr.StatusFlag!=1) then begin
+    while (LoopKey("RecType2:" & code,JTr,2,TrHs)) begin
+      if (JTr.RecType!=3 or JTr.StatusFlag!=1) then begin
         TrHs = false;
       end else begin
         CUr.Code = JTr.SMFCode;
@@ -827,6 +826,9 @@ begin
     goto LGetCustType;
   end; 
   BlockLoad(JCbl);
+  if (blank(CUr.Classification)) then begin
+    ReadFirstMain(CUr,1,true);
+  end;
   if (SetInSet(JCbl.Schoolar,CUr.Classification)) then begin
     res = 0;
     ReadRecordLink(CUr,1,SMFr,RLr);
@@ -1266,11 +1268,18 @@ begin
   record TeacherVc TCr;
   record SchoolVc SCr;
   row SMFVc SMFrw;
+  string 255 tstr;
+  Longint pos;
   
-  TCr.TeacherCode = CUr.TeacherCode;
-  if (ReadFirstMain(TCr,1,true)) then begin
-    SMFrw.Name = TCr.TeacherName;
-    MatRowPut(SMFr,0,SMFrw);
+  while (GetNextSubstring(CUr.TeacherCode,pos,",",tstr)) begin
+    ClearRow(SMFr,SMFrw,1);
+    SMFrw.Type = 0;
+    SMFrw.Code = tstr;
+    TCr.TeacherCode = SMFrw.Code;
+    if (ReadFirstMain(TCr,1,true)) then begin
+      SMFrw.Name = TCr.TeacherName;
+    end;
+    MatRowPut(SMFr,MatRowCnt(SMFr),SMFrw);
   end;
   
   SCr.SchoolCode = CUr.SchoolCode;
@@ -1598,7 +1607,8 @@ begin
   record SMFVc SMFr;
   row SMFVc SMFrw;
   record CUVc CUr;
-  string 50 code;
+  string 50 code,tstr;
+  Longint pos;
 
   SMFr.SMFCode = WebGetArg("code");
   if(ReadFirstMAin(SMFr,1,true)) then begin 
@@ -1612,7 +1622,8 @@ begin
         MatRowGet(SMFr,0,SMFrw);
         JEr.AddCode = SMFrw.Code;
         JEr.CustCode = CurrentCust;
-        JEr.TeacherCode = CUr.TeacherCode;
+        GetNextSubString(CUr.TeacherCode,pos,",",tstr);
+        JEr.TeacherCode = tstr;
         JEr.StatusFlag = 0;
         JEr.OkFlag = 0;
         RecordStore(JEr,true);
@@ -1984,7 +1995,7 @@ begin
     if (type==1) then begin
       sCUr.Code = WebGetArg("cu");
       if (ReadFirstMain(sCUr,1,true)) then begin
-        if (sCUr.TeacherCode==TCr.TeacherCode) then begin
+        if (SetInSet(TCr.TeacherCode,sCUr.TeacherCode)) then begin
           RecordCopy(oldCUr,sCUr);
           stat = StringToInt(WebGetArg("stat"));
           switch (WebGetArg("type")) begin

@@ -1,5 +1,5 @@
 //gjs
-/*
+
 global
 function Boolean SchoolDClassAfterEditField(Integer wn,string fieldname,Integer fn, Integer rownr,Integer changed)
 begin
@@ -8,21 +8,17 @@ begin
 
   switch (fieldname) begin
 
-    case "SchoolCode": 
+    case "Address": 
       if (changed==1) then begin 
         GetWindowRecord(wn,Schoolr);
-        Schoolr.SchoolCode = Schoolr.SchoolCode;
-        if (ReadFirstMain(Schoolr,1,true)==true) then begin 
-          beep;
-          Trace(USetStr(32203),"");
-        end;
-      end;
-      
+        Schoolr.Coordinates = "";
+        PutWindowRecord(wn,Schoolr);
+      end;      
   end;
   SchoolDClassAfterEditField = res;
   return;
 end;
-*/
+
 
 
 external inner procedure StripEndingSpaces(var string);
