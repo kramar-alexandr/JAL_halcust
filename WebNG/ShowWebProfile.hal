@@ -657,8 +657,6 @@ begin
   record JALClassBlock JCbl;
   string 30 cust;
 
-  Schoolr.SchoolCode = Tchr.SchoolCode;
-  readfirstmain(Schoolr,1,true);
 
   BlockLoad(JCbl);
 
@@ -676,6 +674,8 @@ begin
     if readfirstmain(CUr,1,true) then begin
     	logtext(0,"TchChangePage3 " & CUr.Code);
       if ReadRecordLink(CUr,1,Tchr,RLr) or FindTchrRecord(cCUr.Code,Tchr) then begin
+        Schoolr.SchoolCode = Tchr.SchoolCode;
+        readfirstmain(Schoolr,1,true);
       	logtext(0,"TchChangePage4 " & Tchr.CustCode);
         if (cust == CurrentCust or  cCUr.Code == Tchr.CustCode) then begin
           WebOutStringFormatNL("<form method=""POST"" action=""/WebChangeCompTch.hal"">");

@@ -2,6 +2,9 @@ remote updating function boolean CreateNode_Remote(record WebNGMenuVc);
 remote updating function boolean DuplicateNode_Remote(record WebNGMenuVc,var record WebNGMenuVc);
 remote function string 40 GetNextCode_Menu(string);
 external inner procedure ExtractObj(string,var Integer,var string);
+remote updating procedure AddStudentToSMFRemote(string,record SMFVc);
+remote updating procedure CreateSMFSession(record SMFVc,var record SMFSessionVc);
+remote updating function Boolean CreateChildEvent(record JALEventVc,Integer,var record JALEventVc);
 
 //gjs
 global
@@ -549,6 +552,92 @@ begin
   RepSpec.f1 = SMFr.SMFCode; 
   RepSpec.Media = mtScreen;
   RunReport(RepSpec,0);
+
+  return;
+end;
+
+global
+procedure SMFDClassAddStudentDsm()
+begin
+  record RcVc RepSpec;
+  
+  OpenWindow("SMFAddStudentWClass",0,CurWindow,"","",RepSpec);
+
+  return;
+end;
+
+global
+procedure SMFAddStudentWClassCancel()
+begin
+  CloseWindow(CurWindow);
+  return;
+end;
+
+global
+updating procedure SMFAddStudentWClassSave()
+begin
+  record RcVc RepSpec;
+  record SMFVc SMFr;
+  Integer wn;
+
+  wn = CurWindow;
+  DeselectWindow(wn,true);
+  GetWindowRecord(wn,RepSpec);
+  GetWindowRecord(MotherWIndow(wn),SMFr);
+  AddStudentToSMFRemote(RepSpec.f1,SMFr);
+  CloseWindow(wn);
+  return;
+end;
+
+
+
+global
+updating procedure SMFDClassOpenSMFData()
+begin
+  record SMFVc SMFr;
+  record SMFSessionVc SSr;
+  Integer wn;
+
+  wn = CurWindow;
+  GetWindowRecord(wn,SMFr);
+  CreateSMFSession(SMFr,SSr);
+  //OpenWebBrowser("http://localhost:8192/editSMU?s=" & SSr.UUID);
+  OpenWebBrowser("http://jalatvia.lv/editSMU?s=" & SSr.UUID);
+
+  return;
+end;
+
+
+global
+updating procedure JALEventFinalSheetDsm()
+begin
+  record JALEventVc JEr,nJEr;
+  Integer wn;
+  
+  wn = CurWindow;
+  GetWindowRecord(wn,JEr);
+  if (CreateChildEvent(JEr,2,nJEr)) then begin
+    OpenWindow("JALEventDClass",0,0,"","",nJEr);
+  end else begin
+    MessageBox(3000001,"");
+  end;
+
+  return;
+end;
+
+global
+updating procedure JALEvent2LevelDsm()
+begin
+  record JALEventVc JEr,nJEr;
+  Integer wn;
+  
+  wn = CurWindow;
+  GetWindowRecord(wn,JEr);
+  if (CreateChildEvent(JEr,1,nJEr)) then begin
+    OpenWindow("JALEventDClass",0,0,"","",nJEr);
+  end else begin
+    MessageBox(3000001,"");
+  end;
 
   return;
 end;

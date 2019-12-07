@@ -12,6 +12,29 @@ external procedure GetEmpList(record SMFVc);
 external function string 255 StrReplace(string,string,string);
 forward procedure GetTeacherSMUApplications(string,var Integer,Boolean);
 external procedure GetSchoolEmpList(string,string);
+external procedure ShowWebElement(string);
+
+global
+function string 255 FormatJSONString(string tstr)
+begin
+  string 255 res;
+  
+  res = StrReplace(tstr,"\"","\\\"");
+
+  FormatJSONString = res;
+  return;
+end;
+
+global
+function string 255 UnFormatJSONString(string tstr)
+begin
+  string 255 res;
+ 
+  res = StrReplace(tstr,"\\\"","\"");
+
+  UnFormatJSONString = res;
+  return;
+end;
 
 global
 function string 50 GetEntryPersonName(record JALTeacherAccVc JTr)
@@ -536,6 +559,18 @@ begin
   return;
 end;
 
+function Integer GetEduLevel(Integer num)
+begin
+  Integer res;
+  
+  if (num<=9) then begin
+    res = 1;
+  end;
+
+  GetEduLevel = res;
+  return;
+end;
+
 global webpublic 
 procedure WebgetTeacherInfo()
 begin
@@ -626,7 +661,7 @@ begin
     cnt = 0;
     JTR.RecType = 3;
     JTR.StatusFlag = 1;
-    while (LoopKey("RecType2:" & code,JTr,2,TrHs)) begin
+    while (LoopKey("RecTypeN:" & code,JTr,2,TrHs)) begin
       if (JTr.RecType!=3 or JTr.StatusFlag!=1) then begin
         TrHs = false;
       end else begin
@@ -642,19 +677,22 @@ begin
           WebOutStringFormatNL("\"Statuss\":\"" & JTr.StatusFlag & "\",");
           WebOutStringFormatNL("\"Datums\":\"" & JTr.TransDate & "\",");
           WebOutStringFormatNL("\"Klase\":\"" & CUr.ClassNum & CUr.ClassChar & "\",");
-          WebOutStringFormatNL("\"Skolens\":\"" & CUr.Name & "\",");
+          WebOutStringFormatNL("\"Skolens\":\"" & FormatJSONString(CUr.Name) & "\",");
           WebOutStringFormatNL("\"Kods\":\"" & CUr.Code & "\",");
+          
           WebOutStringFormatNL("\"Enudiena\":\"" & CUr.EnuDienaFlag & "\",");
           WebOutStringFormatNL("\"Titan\":\"" & CUr.TitanFlag & "\",");
+          RecordClear(SMFr);
           ReadRecordLink(CUr,1,SMFr,RLr);
           GetSMUSemester(SMFr,semstr,sd,ed);
           enudienaflag = GetEventHist(SMFr,sd,ed,1,partype);
           titanflag = GetEventHist(SMFr,sd,ed,2,partype);
 
           WebOutStringFormatNL("\"SMU\":\"" & SMFr.SMFCode & "\",");
-          WebOutStringFormatNL("\"Nosaukums\":\"" & SMFr.SMFName & "\",");
+          WebOutStringFormatNL("\"Nosaukums\":\"" & FormatJSONString(SMFr.SMFName) & "\",");
           WebOutStringFormatNL("\"Likvidets\":\"" & SMFr.StatusFlag & "\",");
-          WebOutStringFormatNL("\"MacibuGads\":\"" & semstr & "\"");
+          WebOutStringFormatNL("\"MacibuGads\":\"" & semstr & "\",");
+          WebOutStringFormatNL("\"Izglitiba\":\"" & GetEduLevel(StringToInt(CUr.ClassNum)) & "\"");
 //          WebOutStringFormatNL("\"Titan\":\"" & SMFr.TitanFlag & "\",");
 //          WebOutStringFormatNL("\"Enudiena\":\"" & SMFr.EnuDienaFlag & "\"");
           WebOutStringFormatNL("}");
@@ -927,7 +965,9 @@ begin
   WebOutString("</div>");
   WebOutString("<div class='smu-button'>");
   WebOutString("<button class='spbutton show-info-btn'>" & ToolWebNGTranslateText2(70053) & "</button>");//ATV”RT PIETEIKUMU
-  WebOutString("<button class='spbutton reg-succes'>" & ToolWebNGTranslateText2(80102) & "</button>");//REþ.APLIEC±BA
+  WebOutString("<button class='spbutton reg-succes'>" & ToolWebNGTranslateText2(80102) & "<div class='reg_message'><div class='reg_icon'></div><div class='reg_text'>");
+  ShowWebElement("REGSUCCESS_TIP");
+  WebOutString("</div></div></button>");//REþ.APLIEC±BA
   WebOutString("</div>");
   WebOutString("</div>");
   WebOutString("</div>");  
@@ -1143,7 +1183,7 @@ begin
       end;
       WebOutStringFormatNL("{");
           WebOutStringFormatNL("\"regNr\":\"" & SMFr.SMFCode & "\",");
-          WebOutStringFormatNL("\"klass\":\"" & SMFr.ClassNum & "\",");
+          WebOutStringFormatNL("\"klass\":\"" & FormatJSONString(SMFr.ClassNum) & "\",");
 
           if(SMFr.TypeFlag==0) then begin
               WebOutStringFormatNL("\"companyType\":\"" & "framing" & "\",");
@@ -1158,17 +1198,19 @@ begin
               end;
             end;  
           end;
-          WebOutStringFormatNL("\"targetAudit\":\"" & SMFr.TargetAud & "\",");
+          WebOutStringFormatNL("\"targetAudit\":\"" & FormatJSONString(SMFr.TargetAud) & "\",");
           WebOutStringFormatNL("\"education\":\"" & StringFromSet(3001,SMFr.EducationType) & "\",");
           WebOutStringFormatNL("\"prodDescr\":\"");
           for (i=0;i<SizeTextCnt(SMFr);i=i+200) begin
             tstr = StringFromText(SMFr,i,200);
-            WebOutString(StrReplace(tstr,chr(13),"\\n"));
+            WebOutString(FormatJSONString(StrReplace(tstr,chr(13),"\\n")));
           end;
           WebOutString("\",");
-          WebOutStringFormatNL("\"title\":\"" & SMFr.SMFName & "\",");
-          WebOutStringFormatNL("\"leader\":\"" & SMFr.Manager & "\",");
-          WebOutStringFormatNL("\"members\":\"" & SMFr.Member & "\",");
+          WebOutStringFormatNL("\"title\":\"" & FormatJSONString(SMFr.SMFName) & "\",");
+          WebOutStringFormatNL("\"leader\":\"" & FormatJSONString(SMFr.Manager) & "\",");
+          WebOutStringFormatNL("\"members\":\"" & FormatJSONString(SMFr.Member) & "\",");
+          WebOutStringFormatNL("\"printCert\":\"" & SMFr.PrintCert & "\",");
+          
           //show fin data and employee list
           GetFinData(SMFr);
           GetEmpList(SMFr);
@@ -1315,7 +1357,7 @@ begin
         end;
         WebOutStringFormatNL("{\"empapp\":\"" & JTr.SerNr &  "\",");
         WebOutStringFormatNL("\"smucode\":\"" & SMFr.SMFCode & "\",");
-        WebOutStringFormatNL("\"smuname\":\"" & SMFr.SMFName & "\"}");
+        WebOutStringFormatNL("\"smuname\":\"" & FormatJSONString(SMFr.SMFName) & "\"}");
       end;
     end;
   end;    
@@ -1372,12 +1414,12 @@ begin
       end;
         WebOutStringFormatNL("{");
         WebOutStringFormatNL("\"code\":\"" & code & "\",");
-        WebOutStringFormatNL("\"fullName\":\"" & CUr.Name & "\",");
-        WebOutStringFormatNL("\"school\":\"" & SMFr.SchoolName & "\",");
-        WebOutStringFormatNL("\"email\":\"" & CUr.eMail & "\",");
-        WebOutStringFormatNL("\"prodInfo\":\"" & SMFr.ProdSpec & "\",");
-        WebOutStringFormatNL("\"social\":\"" & SMFr.Email & "\",");
-        WebOutStringFormatNL("\"prodType\":\"" & OBr.Comment & "\",");
+        WebOutStringFormatNL("\"fullName\":\"" & FormatJSONString(CUr.Name) & "\",");
+        WebOutStringFormatNL("\"school\":\"" & FormatJSONString(SMFr.SchoolName) & "\",");
+        WebOutStringFormatNL("\"email\":\"" & FormatJSONString(CUr.eMail) & "\",");
+        WebOutStringFormatNL("\"prodInfo\":\"" & FormatJSONString(SMFr.ProdSpec) & "\",");
+        WebOutStringFormatNL("\"social\":\"" & FormatJSONString(SMFr.Email) & "\",");
+        WebOutStringFormatNL("\"prodType\":\"" & FormatJSONString(OBr.Comment) & "\",");
         WebOutStringFormatNL("\"smuCode\":\"" & SMFr.SMFCode & "\",");
         WebOutStringFormatNL("\"hasSMU\":\"" & smuf & "\",");
         WebOutStringFormatNL("\"regDate\":\"" & SMFr.RegDate & "\",");
@@ -1386,23 +1428,23 @@ begin
         GetSchoolEmpList(SMFr.SchoolCode,SMFr.SMFCode);
 
         matrowget(SMFr,0,SMFrw);
-        WebOutStringFormatNL("\"teacher\":\"" & SMFrw.Name & "\",");
+        WebOutStringFormatNL("\"teacher\":\"" & FormatJSONString(SMFrw.Name) & "\",");
         if(CUr.AgeFlag!=0) then begin
           WebOutStringFormatNL("\"hightSchool\":" & "false" & ",");
           WebOutStringFormatNL("\"parent\": {" );
-          WebOutStringFormatNL("\"fullName\":\"" & CUr.ParentName & " " & CUr.ParentSurName &  "\",");
-          WebOutStringFormatNL("\"email\":\"" & CUr.ParenteMail & "\"");
+          WebOutStringFormatNL("\"fullName\":\"" & FormatJSONString(CUr.ParentName & " " & CUr.ParentSurName) &  "\",");
+          WebOutStringFormatNL("\"email\":\"" & FormatJSONString(CUr.ParenteMail) & "\"");
           WebOutStringFormatNL("}," );
         end else begin
           WebOutStringFormatNL("\"hightSchool\":" & "true" & ",");
         end;
         if(true) then begin
           WebOutStringFormatNL("\"ApprovalStatus\":\"" & SMFr.ApprovalStatus & "\",");
-          WebOutStringFormatNL("\"smu\":\"" & SMFr.SMFName & "\",");
+          WebOutStringFormatNL("\"smu\":\"" & FormatJSONString(SMFr.SMFName) & "\",");
           WebOutStringFormatNL("\"regDate\":\"" & SMFr.TransDate & "\",");
           WebOutStringFormatNL("\"perfrom\":\"" & SMFr.ActDateStart & "\",");
           WebOutStringFormatNL("\"perto\":\"" & SMFr.ActDateEnd & "\",");
-          WebOutStringFormatNL("\"class\":\"" & SMFr.ClassNum & SMFr.ClassChar & "\",");
+          WebOutStringFormatNL("\"class\":\"" & FormatJSONString(SMFr.ClassNum & SMFr.ClassChar) & "\",");
           WebOutStringFormatNL("\"liquidated\":\"" & SMFr.StatusFlag & "\",");
           if(nonblank(SMFr.Manager) or !smuf) then begin
             WebOutStringFormatNL("\"director\":" & "true" & ",");
@@ -1444,11 +1486,14 @@ begin
   return;
 end;
 
-procedure OutputSingleEvent(record JALEventVc JEr,Boolean applyf,var Integer cnt)
+procedure OutputSingleEvent(record JALEventVc JEr,Boolean applyf,var Integer cnt,record SMFVc SMFr)
 begin
   string 255 tstr;
   Integer i;
+  Longint sernr2;
   record WebNGTranslateVc WTr;
+  record JALEventEntryVc JEEr;
+  record JALEventVc tJEr;
 
   cnt = cnt + 1;
   if (cnt>1)then begin
@@ -1459,13 +1504,21 @@ begin
   if (blank(tstr)) then begin
     tstr = JEr.Comment;
   end;
+
+  tJEr.Mother = JEr.SerNr;
+  tJEr.Type = 1;
+  if (ReadFirstKey("TypeMother",tJEr,2,true)) then begin
+    sernr2 = tJEr.SerNr;
+  end;
+
   WebOutStringFormatNL("{");
   WebOutStringFormatNL("\"serNr\":\"" & JEr.SerNr & "\",");
+  WebOutStringFormatNL("\"serNr2\":\"" & sernr2 & "\",");
   WebOutStringFormatNL("\"dataStart\":\"" &  DateToString(JEr.StartDate,"DD.MM.YYYY") & "\",");
   WebOutStringFormatNL("\"dataEnd\":\"" & DateToString(JEr.EndDate,"DD.MM.YYYY") & "\",");
   WebOutStringFormatNL("\"regStart\":\"" &  DateToString(JEr.RegFrom,"DD.MM.YYYY") & "\",");
   WebOutStringFormatNL("\"regEnd\":\"" & DateToString(JEr.RegUntil,"DD.MM.YYYY") & "\",");
-  WebOutStringFormatNL("\"nameEvent\":\"" & tstr & "\",");
+  WebOutStringFormatNL("\"nameEvent\":\"" & FormatJSONString(tstr) & "\",");
   WebOutStringFormatNL("\"allowApply\":\"" & applyf & "\",");
   WebOutStringFormatNL("\"description\":\"");
   for (i=0;i<SizeTextCnt(WTr);i=i+200) begin
@@ -1478,14 +1531,15 @@ begin
   return;
 end;
 
-global webpublic procedure WebGetEvents()
+global webpublic 
+procedure WebGetEvents()
 begin
   record JALEventVc JEr;
   record JALEventEntryVc JEEr;
   record CUVc CUr;
   integer cnt;
   Longint i,type;
-  Boolean applyf,calf,TrHs;
+  Boolean applyf,calf,TrHs,testf;
   string 255 tstr;
   record SMFVc SMFr;
   record TeacherVc Teacher;
@@ -1498,7 +1552,7 @@ begin
     type = GetJALCustType(CUr,SMFr,Teacher,MTr);
     JEr.SerNr = "";
     WebOutStringFormatNL("[");
-    if (calf) then begin
+    //if (calf) then begin
       TrHs = true;
       JEr.ActiveFlag = 1;
       JEr.StartDate = AddDay(CurrentDate,-5);
@@ -1507,22 +1561,27 @@ begin
           TrHs = false;
         end else begin
           if (JEr.EndDate > CurrentDate and JEr.ClosedFlag==0) then begin
-            applyf = false;
-            if (DateInRange(CurrentDate,JEr.RegFrom,JEr.RegUntil)) then begin
-              applyf = true;
-            end;
-            if (MatRowCnt(JEr)==0) then begin
+            testf = true;
+            applyf = true;
+            if (DateInRange(CurrentDate,JEr.RegFrom,JEr.RegUntil)==false) then begin
               applyf = false;
+            end;
+            if (MatRowCnt(JEr)==0) then begin// and calf
+              applyf = false;
+            end;
+            if (JEr.Type!=0) then begin
+              testf = false;
             end;
             if (type==0 and SMFr.ApprovalStatus!=3) then begin
               applyf = false;
             end;
-            if (calf or applyf) then begin
-              OutputSingleEvent(JEr,applyf,cnt);
+            if (testf) then begin
+              OutputSingleEvent(JEr,applyf,cnt,SMFr);
             end;    
           end;
         end;
       end;
+/*
     end else begin
       TrHs = true;
       JEEr.AddCode = SMFr.SMFCode;
@@ -1534,12 +1593,13 @@ begin
             JEr.SerNr = JEEr.EventNr;
             Readfirstmain(JEr,1,true);
             if (JEr.EndDate>=CurrentDate and JEEr.StatusFlag!=2) then begin
-              OutputSingleEvent(JEr,applyf,cnt);
+              OutputSingleEvent(JEr,applyf,cnt,SMFr);
             end;
           end;
         end;
       end;
     end;
+*/
     WebOutStringFormatNL("]");
   end else begin  
     WebOutStringFormatNL("You might be registered");
@@ -1572,7 +1632,7 @@ if(ReadFirstMain(CUr,1,true) and nonblank(CurrentCust)) then begin
         end;
         WebOutStringFormatNL("{");
         WebOutStringFormatNL("\"code\":\"" & CUr.Code & "\",");
-        WebOutStringFormatNL("\"name\":\"" & CUr.Name & "\"");
+        WebOutStringFormatNL("\"name\":\"" & FormatJSONString(CUr.Name) & "\"");
         WebOutStringFormatNL("}");     
       end;  
       WebOutStringFormatNL("]");
@@ -1601,7 +1661,8 @@ begin
   return;
 end;
 
-global webpublic updating procedure WebCreateEventPieteikum()
+global webpublic 
+updating procedure WebCreateEventPieteikum()
 begin
   record JALEventEntryVc JEr;
   record SMFVc SMFr;
@@ -1757,7 +1818,7 @@ begin
               WebOutStringFormatNL("{");
               WebOutStringFormatNL("\"serNr\":\"" & JEr.SerNr & "\",");
               WebOutStringFormatNL("\"smu\":\""  & JEr.AddCode & "\",");
-              WebOutStringFormatNL("\"name\":\""  & JEr.SMFName & "\",");
+              WebOutStringFormatNL("\"name\":\""  & FormatJSONString(JEr.SMFName) & "\",");
               WebOutStringFormatNL("\"event\":\"" & JEr.EventNr & "\",");
               WebOutStringFormatNL("\"satus\":\"" & JEr.StatusFlag & "\",");
               WebOutStringFormatNL("\"teacherPart\":\"" & vTeacher[JLEr.SerNr] & "\",");
@@ -1776,47 +1837,51 @@ end;
 
 global webpublic procedure WebGetEventsPieteikum()
 begin
-  record JALEventEntryVc JEr;
-  record JALEventVc JLEr;
+  record JALEventEntryVc JEEr;
+  record JALEventVc JEr;
   record CUVc CUr;
   integer cnt,type;
-  Boolean TrHs;
+  Boolean TrHs,allf;
   record SMFVc SMFr;
   record TeacherVc Teacher;
   record MentorVc MTr;
+  record JALEventRequestVc JERr;
 
   cnt = 0;
   CUr.Code = CurrentCust;
+  allf = WebGetArg("all")=="1";
   if(ReadFirstMain(CUr,1,true) and nonblank(CurrentCust)) then begin 
-    JEr.CustCode = CurrentCust;
+    JEEr.CustCode = CurrentCust;
     TrHs = true;
     type = GetJALCustType(CUr,SMFr,Teacher,MTr);
     WebOutString("{""teacher"":""" & Teacher.TeacherCode & """,");
     WebOutString("""submittedevents"":[");
     switch (type) begin
       case 0:
-        JEr.AddCode = SMFr.SMFCode;
-        while (LoopKey("AddCode",JEr,1,TrHs)) begin
-          if(JEr.AddCode!=SMFr.SMFCode) then begin
+        JEEr.AddCode = SMFr.SMFCode;
+        while (LoopKey("AddCode",JEEr,1,TrHs)) begin
+          if(JEEr.AddCode!=SMFr.SMFCode) then begin
             TrHs = false;
           end else begin
-            if (JEr.CustType==0) then begin
-              JLEr.SerNr = JEr.EventNr;
-              Readfirstmain(JLEr,1,true);
-              if (JLEr.EndDate>=CurrentDate and JEr.StatusFlag!=2) then begin
+            if (JEEr.CustType==0) then begin
+              JEr.SerNr = JEEr.EventNr;
+              Readfirstmain(JEr,1,true);
+              if ((JEr.EndDate>=CurrentDate or (allf and JEEr.StatusFlag==3)) and JEEr.StatusFlag!=2 and JEr.Type==0) then begin
                 cnt = cnt + 1;
                 if(cnt>1)then begin
                   weboutstring(",");
                 end;
+
                 WebOutStringFormatNL("{");
-                WebOutStringFormatNL("\"serNr\":\"" & JEr.SerNr & "\",");
-                WebOutStringFormatNL("\"dataStart\":\"" & DateToString(JLEr.StartDate,"MM.DD.YYYY") & "\",");
-                WebOutStringFormatNL("\"dataEnd\":\"" & DateToString(JLEr.EndDate,"MM.DD.YYYY") & "\",");
-                WebOutStringFormatNL("\"smu\":\""  & JEr.AddCode & "\",");
-                WebOutStringFormatNL("\"name\":\""  & JEr.SMFName & "\",");
-                WebOutStringFormatNL("\"event\":\"" & JEr.EventNr & "\",");
-                WebOutStringFormatNL("\"satus\":\"" & JEr.StatusFlag & "\",");
-                WebOutStringFormatNL("\"filled\":\"" & JEr.OkFlag & "\"");
+                WebOutStringFormatNL("\"serNr\":\"" & JEEr.SerNr & "\",");
+                WebOutStringFormatNL("\"dataStart\":\"" & DateToString(JEr.StartDate,"MM.DD.YYYY") & "\",");
+                WebOutStringFormatNL("\"dataEnd\":\"" & DateToString(JEr.EndDate,"MM.DD.YYYY") & "\",");
+                WebOutStringFormatNL("\"smu\":\""  & JEEr.AddCode & "\",");
+                WebOutStringFormatNL("\"name\":\""  & FormatJSONString(JEEr.SMFName) & "\",");
+                WebOutStringFormatNL("\"event\":\"" & JEEr.EventNr & "\",");
+                WebOutStringFormatNL("\"eventName\":\"" & FormatJSONString(JEr.Comment) & "\",");
+                WebOutStringFormatNL("\"satus\":\"" & JEEr.StatusFlag & "\",");
+                WebOutStringFormatNL("\"filled\":\"" & JEEr.OkFlag & "\"");
                 WebOutStringFormatNL("}"); 
               end;    
             end;
@@ -1826,11 +1891,69 @@ begin
         GetTeacherSMUApplications(Teacher.TeacherCode,cnt,true);
         //get teacher status
     end;
-    WebOutStringFormatNL("]}");
+    WebOutStringFormatNL("],");
+    WebOutString("""eventrequests"":[");
+    switch (type) begin
+      case 0:
+        JERr.SMFCode = SMFr.SMFCode;
+        TrHs = true;
+        cnt = 0;
+        while (Loopkey("SMFCode",JERr,1,TrHs)) begin
+          if (JERr.SMFCode!=SMFr.SMFCode) then begin
+            TrHs = false;
+          end else begin
+            JEr.SerNr = JERr.EventNr;
+            if (ReadFirstMain(JEr,1,true)) then begin
+              cnt = cnt + 1;
+              if(cnt>1)then begin
+                weboutstring(",");
+              end;
+
+              WebOutStringFormatNL("{");
+              WebOutStringFormatNL("\"event\":\"" & JERr.EventNr & "\",");
+              WebOutStringFormatNL("\"mainevent\":\"" & JEr.Mother & "\",");
+              WebOutStringFormatNL("\"date\":\"" & DateToString(JEr.StartDate,"DD.MM") & "\",");
+              WebOutStringFormatNL("\"filled\":\"" & JERr.Status & "\"");
+              WebOutStringFormatNL("}"); 
+            end;
+          end;
+        end;
+    end;
+    WebOutStringFormatNL("]");
+    
+    WebOutString("}");
   end else begin  
     WebOutStringFormatNL("You might be registered");
   end;
   
+  return;
+end;
+
+global webpublic
+updating procedure WebDownloadEventCert()
+begin
+  record JALEventEntryVc JEEr;
+  record RcVc RepSpec;
+  string 255 filename;
+
+  JEEr.SerNr = StringToLongint(WebGetArg("app"));
+  if (ReadFirstMain(JEEr,1,true)) then begin
+    if (JEEr.CustCode==CUrrentCust) then begin
+      filename = "Apliecinajums.pdf";
+      SetDocumentFilename(filename);
+      SetMedia(mtPdf);
+      RepSpec.long1 = JEEr.SerNr;
+      PrintDocument(RepSpec,"CertificateForm",false);
+      SetDocumentFilename("");
+      if (FileExists(filename)) then begin
+        WebSetContentType("application/pdf");
+        WebSetContentDisposition("attachment; filename=" & filename);//or inline?
+        WebOutFile(filename);
+        Delete_File(filename);
+      end;
+    end;
+  end;
+
   return;
 end;
 
@@ -2040,5 +2163,52 @@ begin
       RecordStore(JEr,true);
     end;
   end;
+  return;
+end;
+
+function Integer abs(Integer l)
+begin
+  Integer res;
+
+  res = l;
+  if (res<0) then begin res = -res; end;
+  Abs = res;
+end;
+
+global webpublic
+updating procedure WebSetPrintCertStat()
+begin
+  record CUVc CUr;
+  record SMFVc SMFr,oldSMFr;
+  record TeacherVc TCr;
+  record MentorVc MTr;
+  Integer type;
+  row SMFVc SMFrw;
+  Integer i,rwcnt;
+  Boolean foundf;
+
+  CUr.Code = CurrentCust;
+  if (ReadFirstMain(CUr,1,true)) then begin
+    type = GetJAlCustType(CUr,SMFr,TCr,MTr);
+    if (type==1) then begin
+      SMFr.SMFCode = WebGetArg("smu");
+      if (ReadFirstMain(SMFr,1,true)) then begin
+        rwcnt = MatRowCnt(SMFr);
+        for (i=0;i<rwcnt;i=i+1) begin
+          MatRowGet(SMFr,i,SMFrw);
+          if (SMFrw.Code==TCr.TeacherCode) then begin
+            foundf = true;
+            i = rwcnt;
+          end;
+        end;
+        if (foundf) then begin
+          RecordCopy(oldSMFr,SMFr);
+          SMFr.PrintCert = abs(SMFr.PrintCert-1);
+          RecordUpdate(oldSMFr,SMFr,true);
+        end;
+      end;
+    end;
+  end;
+
   return;
 end;

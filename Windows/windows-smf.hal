@@ -45,7 +45,7 @@ begin
   EditField(h,v+=vs,220,"Vad´t‚js",Normal,Manager,false,0);
 	EditField(h,v+=vs,220,"Dal´bnieki",Normal,Member,false,0);
 	EditField(h,v+=vs,220,"M•rúauditorija",Normal,TargetAud,false,0);
-	EditField(h,v+=vs,220,"Nozare",Normal,ProdSpec,false,0);
+	EditField(h,v+=vs,220,"Nozare",Normal,ProdSpec,false,JALIndustrySClass);
   EditField(h,v+=vs,220,"E-pasts",Normal,Email,false,0);
   EditField(h,v+=vs,50,"Skol•na lietot. kods",Normal,CustCode,false,0);
   EditField(h2,v, 90,"Re®ions",Normal,Region,false,JALRegionSClass);
@@ -113,6 +113,7 @@ begin
   //Tile(2,400,true,"",-);
 	TextField(h3,v+=20,-40,80,Text,0);
   HalPushButton(h3,v+=100,h3+100,v+20,"SMFEmpListShowDsm","Dal´bnieki");
+  HalPushButton(h3,v+=30,h3+100,v+20,"SMFDClassOpenSMFData","Re®istr. Dati");
   /*CHN::not needed anymore based on Ebersteins
   wn = CurWindow;
   if GetWindowString(wn,"SMFCode") <> "" then begin
@@ -121,6 +122,8 @@ begin
   end;
   */
   SpecialMenu("Skat´t saraksti ar SMU",' ',1,"ShowFullMailListDsm");
+  SpecialMenu("Pievienot skol•nu",' ',1,"SMFDClassAddStudentDsm");
+
   EndWindow;
 
   WindowBegin("Ievietot m‚c´bu uzÀ•mumu",SMFSClass,CGslist,-);

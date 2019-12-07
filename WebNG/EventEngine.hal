@@ -169,7 +169,7 @@ begin
   string 10 step;
   
 
-  if FindMatchingTranslation(JEr.SerNr,WTr,JEr.DefLangCode) and JEr.ActiveFlag == 1 then begin
+  if (FindMatchingTranslation(JEr.SerNr,WTr,JEr.DefLangCode) or JEr.Type!=0) and JEr.ActiveFlag == 1 then begin
     WebOutStringFormatNL("<div class='header'>" & WTr.Comment & "</div>");
     if nonblank(GetSessionString("msg")) then begin
       WebOutStringFormatNL("<div class='msg'>" & GetSessionString("msg") & "</div>");
@@ -532,7 +532,7 @@ begin
 
   uplf = false;
   
-  if FindMatchingTranslation(JEr.SerNr,WTr,JEr.DefLangCode) and JEr.ActiveFlag == 1 and JEr.ClosedFlag == 0  then begin
+  if (FindMatchingTranslation(JEr.SerNr,WTr,JEr.DefLangCode) or JEr.Type!=0) and JEr.ActiveFlag == 1 and JEr.ClosedFlag == 0  then begin
   //  WebOutStringFormatNL("<div class='header'>" & WTr.Comment & "</div>");
     
     ShowEventContent(JEr);
@@ -584,7 +584,7 @@ begin
     if JEr.ActiveFlag <> 1 then begin
       TrHs = false;
     end else begin
-      if FindMatchingTranslation(JEr.SerNr,WTr,JEr.DefLangCode) and JEr.ClosedFlag == 0 then begin
+      if (FindMatchingTranslation(JEr.SerNr,WTr,JEr.DefLangCode) and JEr.ClosedFlag == 0) then begin
         WebOutStringFormatNL("<li>");  
         WebOutStringFormatNL("<a href='" & FormatSimpleLink(path,true) & "/" & JEr.SerNr & "'><div class='event_list_head'>" & WTr.Comment & "</div><div class='event_list_date'>" & JEr.StartDate & "</div></a>");
         WebOutStringFormatNL("</li>");
@@ -648,6 +648,7 @@ procedure AddEntryRow(var record JALEventEntryVc JEEr,string field,string commen
 begin
   row JALEventEntryVc JEErw;
   
+logtext(0,"AddEntryRow " & field & ":" & value);
   ClearRow(JEEr,JEErw,1);
   JEErw.Field = field;
   JEErw.Comment = comment;
@@ -673,8 +674,10 @@ begin
   Boolean blankf,partf;
   record NotePadVc Noter;
   
+
   err = 0;
   rwcnt = MatRowCnt(JEr);
+logtext(0,"FillEntryRows1 " & rwcnt);
   for (i = 0; i < rwcnt;i = i + 1) begin
     MatRowGet(JEr,i,JErw);
     blankf = false;
@@ -688,9 +691,10 @@ begin
               tstr = "";
               j = 0;
               WebGetText("event_reg_field_" & i,Noter);
-              while (j<SizeTextCnt(Noter)) begin
-                tstr = tstr & StringFromText(Noter,j,255);
-                j=j+255;
+              for (j=0;j<LineTextCnt2(Noter);j=j+1) begin
+                //tstr = tstr & StringFromText(Noter,j,255);
+                tstr = tstr & LineTextGet2(Noter,j);
+                //j=j+255;
               end;
               AddEntryRow(JEEr,JErw.Field,JErw.Comment,tstr);
               vVals[i] = tstr;
@@ -747,11 +751,14 @@ LAddSimpleRow:;
             end;
         end;
         if (JErw.Req==0) then begin
+logtext(0,"FillEntryRows5 " & blankf);
+
           if (blankf) then begin
             err = 2;
             errfield = field;
             errfieldlabel = GetFieldLabel(JFr);
             i = rwcnt;
+logtext(0,"FillEntryRows6 " & ":" & field & ":" & errfieldlabel);
           end;
         end;
       end;
@@ -771,12 +778,18 @@ begin
   Integer err;
   vector string 255 vVals;
 
-  JEr.SerNr = StringToLongInt(WebGetArg("event"));
-  err = 1;
-  if readfirstmain(JEr,1,true) then begin
-    err = 0;
-    FillEntryRows(JEEr,JEr,err,uplf,reqf,errfield,errfieldlabel,vVals);
+  if (blank(CurrentCust)) then begin
+    err = 4;
+  end else begin
+    JEr.SerNr = StringToLongInt(WebGetArg("event"));
+    err = 1;
+    if (readfirstmain(JEr,1,true)) then begin
+      err = 0;
+      FillEntryRows(JEEr,JEr,err,uplf,reqf,errfield,errfieldlabel,vVals);
+    end;
   end;
+
+logtext(0,"WebJALEventValidate " & err & ":" & errfield & ":" & CurrentCust & ":" & JEr.SerNr);
 
   WebOutString("<res err='" & err & "' err_msg='" & StrReplace(ToolWebNGTranslateText2(88000+err),"{lauks}",errfieldlabel) & "' errfield='" & errfield & "'></res>");
 
@@ -1089,6 +1102,8 @@ record  MailVc Mailr;
     cnt2 = 0;
     testf = true;
     if (nonblank(tag)) then begin
+      ResetLoop(Conf2r);
+      RecordClear(Conf2r);
       Conf2r.Sortorder = "";
       While(LoopKey("SubConfSortorder:" & SerNr,Conf2r,1,true)) begin
         if (UserHasAccessToConf(type,Conf2r)) then begin
@@ -1114,6 +1129,8 @@ record  MailVc Mailr;
             goto Endofob;
           end;
           cnt = 0;
+          ResetLoop(Mailr);
+          RecordClear(Mailr);
           While(LoopKey(userkey & "|" & tag,Mailr,1,true)) begin
             if(cnt>0) then begin WebOutStringFormatNL(","); end;
             cnt = cnt + 1;
@@ -1547,6 +1564,53 @@ begin
       RecordLinkFile("tmp/" & tag & "/" & filename,0,JEEr,CurrentCompany);
       Delete_File("tmp/" & tag & "/" & filename);
   end;
+  end;
+
+  return;
+end;
+
+
+global
+updating procedure CreateSingleEventRequest(record JALEventEntryVc JEEr)
+begin
+  record JALEventRequestVc JERr;
+
+  RecordNew(JERr);
+  JERr.SerNr = NextSerNr("JALEventRequestVc",CurrentDate,-1,false,"");
+  JERr.EventNr = JEEr.EventNr;
+  JERr.SMFCode = JEEr.AddCode;
+  RecordInsert(JERr,true);
+
+  return;
+end;
+
+global
+updating procedure CheckCreateEventRequests(record JALEventVc JEr)
+begin
+  record JALEventEntryVc JEEr;
+  Boolean TrHs;
+  vector Boolean vReq;
+  
+  switch (JEr.Type) begin
+    case 1://2nd level
+      //GetListOfRequests(JEr.SerNr,vReq);//we should remove requests that are not valid anymore
+      JEEr.EventNr = JEr.Mother;
+      JEEr.StatusFlag = 1;
+      TrHs = true;
+      while (LoopKey("Status",JEEr,2,TrHs)) begin
+        if (JEEr.EventNr!=JEr.Mother or JEEr.StatusFlag!=1) then begin
+          TrHs = false;
+        end else begin
+          if (vReq[JEEr.AddCode]==false) then begin
+            //create request
+            vReq[JEEr.AddCode] = true;
+            CreateSingleEventRequest(JEEr);
+          end;
+        end;
+      end;
+    case 2://questions after event
+      //check if this is 2 level application or single
+      //this is moved to jalevententryvcrecordupdateafter because this record should be created only after changing status for application
   end;
 
   return;

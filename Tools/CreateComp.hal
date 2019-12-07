@@ -1,6 +1,7 @@
 external inner procedure FindCurMailboxName(var string);
 external inner function string 255 removenextnode(var string);
 external inner procedure ExtractObj(string,var Integer,var string);
+external inner procedure SendJALEmail(vector string,string,string);
 
 global
 procedure CreateTimedTaskForClient(record SMFVc SMFr)
@@ -216,9 +217,19 @@ begin
   record RLinkVc RLr;
   record LTxtVc LTxtr;
   integer lcnt;
+  vector string 255 vVals;
   BlockLoad(MSr);
   BlockLoad(JCbl);
 
+  CUr.Code = SMFr.CustCode;
+  if readfirstmain(CUr,1,true) then begin
+    switch status begin
+      case 3: SendJALEmail(vVals,JCbl.STDTextEn,CUr.eMail);
+    end;
+  end;
+
+
+/*
   switch status begin
     case 0: LTxtr.Code = JCbl.STDTextEn;
     case 1: LTxtr.Code = JCbl.STDTextDis;
@@ -250,6 +261,10 @@ begin
     if recordStore(Mailr,true) then begin end;
 
   end;
+*/
+
+
+
   return;
 end;
 

@@ -113,6 +113,41 @@ begin
   return;
 end;
 
+global
+function Boolean JALIndustrySClassOnOpenWindow(Integer wn)
+begin
+  record JALIndustryBlock JIr;
+  row JALIndustryBlock JIrw;
+  integer i,rwc;
+
+  BlockLoad(JIr);
+  rwc = MatRowCnt(JIr);
+  for (i = 0; i < rwc; i = i + 1) begin
+    MatRowGet(JIr,i,JIrw);
+    SetListString(wn,i+1,JIrw.Industry,false);   
+  end;
+  JALIndustrySClassOnOpenWindow=false;
+  return;
+end;
+
+global
+function Boolean JALIndustrySClassOnOKWindow(Integer wn)
+begin
+  Integer mwn;
+  string 60 tstr;
+  
+  mwn = MotherWindow(wn);
+  if (SelectedListLine(wn)>=0) then begin
+      tstr = GetListString(wn,SelectedListLine(wn));
+  end else begin
+       tstr="";
+  end;        
+  CloseWindow(wn);
+  PasteString(mwn,tstr);
+  JALIndustrySClassOnOKWindow = false;
+  return;
+end;
+
 
 global
 function Boolean JALDistrictSClassOnOpenWindow(Integer wn)

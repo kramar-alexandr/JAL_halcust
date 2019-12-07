@@ -386,7 +386,6 @@ begin
     end else begin
       RecordNew(CUr);
       if (GetNextCustNr(tstr)) then begin end;
-      stopalert(tstr & ":");
       CUr.Code = tstr;
       CUr.Name = name;
       CUr.eMail = email;

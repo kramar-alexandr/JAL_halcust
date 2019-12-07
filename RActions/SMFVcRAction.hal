@@ -239,7 +239,7 @@ begin
   /*if (SMF2r.StatusFlag ==0 and SMFr.StatusFlag ==1 ) then begin
     AddComp(SMFr);
   end;*/
-
+/*
   if SMFr.StatusFlag <> SMF2r.StatusFlag then begin
     switch SMFr.StatusFlag begin
       case 1: if SMF2r.StatusFlag == 0 then begin 
@@ -259,7 +259,15 @@ begin
       case 3: SendUpdateCompStatusFile(SMFr,1);SendChangedStatusNotification(SMFr,2);
     end;
   end;
-
+*/
+  
+  
+  if (SMFr.ApprovalStatus!=SMF2r.ApprovalStatus) then begin
+    if (SMFr.ApprovalStatus==3) then begin
+      SendChangedStatusNotification(SMFr,3);
+    end;
+  end;
+  
   SMFVcRecordUpdate = res;
 return;
 end;

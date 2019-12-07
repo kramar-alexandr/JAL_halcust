@@ -1,3 +1,4 @@
+external inner updating procedure CheckCreateEventRequests(record JALEventVc);
 
 global 
 updating function longint JALEventVcRecordDefaults(var record JALEventVc JEr,record JALEventVc JE2r,LongInt stat,LongInt long4)
@@ -69,3 +70,31 @@ LJALEventVcRecordCheck:;
   return;
 end;
 
+global 
+updating function longint JALEventVcRecordSaveAfter(var record JALEventVc JEr,record JALEventVc JE2r,LongInt stat,LongInt long4)
+begin
+  LongInt res;
+  
+  res = 0;
+  if (JEr.Mother>0) then begin
+    CheckCreateEventRequests(JEr);
+  end;
+
+  JALEventVcRecordSaveAfter = res;
+  return;
+end;
+
+global 
+updating function longint JALEventVcRecordUpdateAfter(var record JALEventVc JEr,record JALEventVc JE2r,LongInt stat,LongInt long4)
+begin
+  LongInt res;
+  
+  res = 0;
+
+  if (JEr.Mother!=JE2r.Mother) then begin
+    CheckCreateEventRequests(JEr);
+  end;
+
+  JALEventVcRecordUpdateAfter = res;
+  return;
+end;

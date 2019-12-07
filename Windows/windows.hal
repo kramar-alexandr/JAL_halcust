@@ -944,7 +944,7 @@ begin
   EndWindow;
 
   WindowBegin("Pas‚kums",JALEventDClass,CGview,-);
-  SetWRect(64,80,740,560);
+  SetWRect(64,80,740,600);
   UseView(JALEventVc);
   AutoSizeWindow(false);
   v = 10; vs = 22; h = 100; h2 = 300; h3=450;
@@ -973,12 +973,19 @@ begin
   RadioButton(h3+50,v+=16,4,0,"Cits Baz‚rs re®ionos",StatusFlag);
   RadioButton(h3+50,v+=16,5,0,"Cits Baz‚rs pavasar´",StatusFlag);
   RadioButton(h3+50,v+=16,6,0,"Jauno uzÀ•m•ju dienas",StatusFlag);
-  RecordList2(10,v+=100,-30,v+=130,"WebNGTranslateVc");
+
+  ButtonFrame(h3+50,v+=50,150,4,"Tips");
+  RadioButton(h3+50,v,0,0,"Pas‚kums",Type);
+  RadioButton(h3+50,v+=16,1,0,"2. k‚rtas anketa",Type);
+  RadioButton(h3+50,v+=16,2,0,"Anketas jaut‚jumi",Type);
+  EditField(h3+120,v+18,60,"Pas‚kums",ViewOnly,Mother,false,0);
+  EndFrame;
+
+  RecordList2(10,v+=60,-30,v+=130,"WebNGTranslateVc");
   RlColKey(4,4,"Valoda",LangCode,false,EventLangCode);
   RlColKey(90,90,"Izmain´ts",LastChanged,false,EventLastChanged);
   RlCol(180,180,"K‚rtoäana",Sorting,false);
   RlColKey(270,270,"Koment‚rs",Comment,false,EventComment);
-
 
   MatrixBegin(10,v+=20,-30,-40,-,100);
   MatCol(1,32,"Lauks",0,Field,false,JALEventFieldSClass);
@@ -987,7 +994,9 @@ begin
   //MatCol(1,-50,"R‚d´t",0,Show,false,SetSClass);
   EndMatrix;
   HalPushButton(h=10,-35,h+130,-5,"JALCourseEventParticipantsDsm","Dal´bnieku saraksts");
-  HalPushButton(150,-35,270,-5,"JALEventParticipants2Dsm","Pieteikumi");
+  HalPushButton(h+=140,-35,h+130,-5,"JALEventParticipants2Dsm","Pieteikumi");
+  HalPushButton(h+=140,-35,h+130,-5,"JALEventFinalSheetDsm","Anketas jaut‚jumi");
+  HalPushButton(h+=140,-35,h+130,-5,"JALEvent2LevelDsm","2. k‚rtas anketa");
 
   EndWindow;
 
@@ -1079,6 +1088,17 @@ begin
   SearchField("Mekl•t");
   EndWindow;
 
+  WindowBegin("Pas‚kumu pieteikumi",JALEventEntrySClass,CGslist,-);
+  SpawnClass(JALEventEntryDClass);
+  SetWRect(64,80,560,350);
+  Sizeable(-1,-1,0,0);
+  UseView(JALEventEntryVc);
+  RecordList(4,17,-21,-39);
+  RlColKey(4,2,"S•r.Nr.",SerNr,false,SerNr);
+  RlCol(100,100,"Datums",TransDate,False);
+  SearchField("Mekl•t");
+  EndWindow;
+
   WindowBegin("Pas‚kuma pieteikums",JALEventEntryDClass,CGview,-);
   SetWRect(64,80,650,530);
   UseView(JALEventEntryVc);
@@ -1098,7 +1118,7 @@ begin
   RadioButton(h3,v,0,0,"Jauns",StatusFlag);
   RadioButton(h3,v+=16,1,0,"Apstiprin‚ts",StatusFlag);
   RadioButton(h3,v+=16,2,0,"Noraid´ts",StatusFlag);
-	RadioButton(h3,v+=16,3,0,"Apmekleja",StatusFlag);
+	RadioButton(h3,v+=16,3,0,"Apmekl•ja",StatusFlag);
 	RadioButton(h3,v+=16,4,0,"Apstiprin‚ts - skolot‚js",StatusFlag);
   v = vm;
 
@@ -1277,6 +1297,11 @@ begin
   EndMatrix;
   EndWindow;
 
+  WindowBegin("Ievietot nozari",JALIndustrySClass,CGother,-);
+  SetWRect(240,80,470,298);
+  StringList(9,9,206,209);
+  EndWindow;
+
   WindowBegin("Semestri",JALSemesterTClass,CGHBl,-);
   SetWRect(80,80,500,280);
   SetBlid(JALSemesterBlock);
@@ -1323,6 +1348,12 @@ begin
   EditFieldTL(h=160,v=6,120,"SMU",M4Code,Normal,30,f1,false,SMFSClass);
   EndWindow;
 
+  WindowBegin("Apliecin‚jums",CertificateFormRClass,CGRcW,RcType);
+  SetWRect(20,80,400,220);
+  vs=20;
+  EditFieldTL(h=160,v=6,120,"Pieteikums",M4Long,Normal,0,long1,false,JALEventEntrySClass);
+  EndWindow;
+
   WindowBegin("Skolot‚ji ar pieredzi",ExpTeacherLClass,CGmlist,-);
   SpawnClass(ExpTeacherDClass);
   SetWRect(64,80,560,350);
@@ -1343,6 +1374,19 @@ begin
   MatCol(1,120,"Skola",0,School,false,0);
   MatCol(1,-150,"E-pasts",0,eMail,false,0);
   EndMatrix;
+  EndWindow;
+
+
+  WindowBegin("Pievienot skol•nu",SMFAddStudentWClass,CGother,RcType);
+  SetWRect(20,80,330,110);
+  ToolBar;
+  h = -149;
+  HalPushButton(h,5,h+60,25,"SMFAddStudentWClassCancel","Atcelt");
+  h = -76;
+  HalPushButton(h,5,h+60,25,"SMFAddStudentWClassSave","Pievienot");
+  EndToolBar;
+  vs = 20; h=100;
+  EditFieldTL(h,v=6, 100,"Skol•ns",M4UStr,Normal,20,f1,false,CUSClass);
   EndWindow;
 
   return;
@@ -1959,4 +2003,33 @@ begin
 
 end;
 
+window JALEventRequestLClass:1
+  wtag("language","ENG"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  WindowBegin("Pas‚kumu piepras´jumi",JALEventRequestLClass,CGmlist,-);
+  SetWRect(20,80,660,298);
+  Sizeable(-1,-1,0,0);
+  SpawnClass(JALEventRequestDClass);
+  UseView(JALEventRequestVc);
+  RecordList(4,17,-21,-39);
+  RlColKey(4,4,"S•r. Nr.",SerNr,false,SerNr);
+  RlColKey(100,100,"Pas‚kums",EventNr,false,EventNr);
+  RlColKey(196,196,"SMU",SMFCode,false,SMFCode);
+  SearchField("Search");
+  EndWindow;
+end;
 
+window JALEventRequestDClass:1
+  wtag("language","ENG"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,v2,vs2,hm;
+  WindowBegin("Pas‚kumu piepras´jums",JALEventRequestDClass,CGview,-);
+  SetWRect(20,80,600,339);
+  UseView(JALEventRequestVc);
+  vs=20; h=120; vs2=16; hm=-100;
+  EditField(h,v=6,150,"S•r. Nr.",Normal,SerNr,false,);
+  EditField(h,v+=vs,150,"Pas‚kums",Normal,EventNr,false,0);
+  EditField(h,v+=vs,150,"SMU",Normal,SMFCode,false,0);
+  CheckBox(h,v+=vs,0,"Izveidots",Status);
+  EndWindow;
+end;

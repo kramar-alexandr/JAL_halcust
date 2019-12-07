@@ -178,6 +178,7 @@ begin
     WebOutString("<input id=""schoolarsurname" & count & """ type=""text"" required name=""schoolarsurname" & count & """ placeholder=""Uzv‚rds"">");
     WebOutString("<input id=""schoolaremail" & count & """ type=""email"" required name=""schoolaremail" & count & """ onchange=""testemail(this.value);return false;"" placeholder=""E-pasts"">");
     WebOutString("<div data-title='J‚ievada ir aktu‚lais e-pasts, kas tiek izmantots ikdien‚' class='info-sign'><img src='img/information.png'></img></div></div>");
+    WebOutString("<input id=""schoolaremail" & count & "2"" type=""email"" required name=""schoolaremail" & count & "2"" onchange=""testemail(this.value); compemails2('E-pasti nesakr´t',1,'schoolaremail" & count & "');return false;"" placeholder=""Atk‚rtojiet e-pastu"">");
   end;
   
   
@@ -275,7 +276,10 @@ begin
   WebOutStringFormatNL("<div><input id='parentname' class=""spinputa"" placeholder=""V‚rds"" type=""text"" name=""parentname""></div>");
   WebOutStringFormatNL("<div><input id='parentsurname' class=""spinputa"" placeholder=""Uzv‚rds"" type=""text"" name=""parentsurname""></div>");
   WebOutString("<div class='reg_label_head'>Vec‚ka vai aizbildÀa e-pasts</div>");
-  WebOutStringFormatNL("<div><input id='parentemail' class=""parentemail"" placeholder=""E-Pasts"" type=""email"" name=""parentemail""><div data-title='J‚ievada ir aktu‚lais e-pasts, kas tiek izmantots ikdien‚' class='info-sign'><img src='img/information.png'></img></div></div></div>");
+  WebOutStringFormatNL("<div><input id='parentemail' class=""parentemail"" placeholder=""E-Pasts"" type=""email"" name=""parentemail"" onchange=""compemails2('E-pasti nesakr´t',1,'parentemail');return false;""><div data-title='J‚ievada ir aktu‚lais e-pasts, kas tiek izmantots ikdien‚' class='info-sign'><img src='img/information.png'></img></div></div>");
+  WebOutStringFormatNL("<div><input id='parentemail2' class=""parentemail"" placeholder=""Atk‚rtojiet e-pastu"" type=""email"" name=""parentemail2"" onchange=""compemails2('E-pasti nesakr´t',1,'parentemail');return false;""></div></div>");
+  
+
   CreateResForm(1,true);
   //WebOutStringFormatNL("<!--<![endif]--><!--[if !IE]>-->  <!--<![endif]-->");schoolaremail1
   //<!--[if gt IE 7]><![IGNORE[--><![IGNORE[]]> <script type="text/javascript" src="/testfields.js"></script> <!--<![endif]-->
@@ -292,7 +296,9 @@ begin
   WebOutStringFormatNL("<![EndIf]-->");
   */
   WebOutStringFormatNL("<div id=""errormsg""><div id=""esmuname""></div><div id=""eschool""></div><div id=""eteacher""></div><div id=""ename""></div>");
-  WebOutStringFormatNL("<div id=""esurname""></div><div id=""eemail""></div><div id=""esameemail""></div><div id=""esameSMUname""><div id=""esameSMUmsg""></div></div><div id=""epassword""></div><div id=""ereg""></div><div id=""edistrict""></div><div id=""eclass""></div></div>");
+  WebOutStringFormatNL("<div id=""esurname""></div><div id=""eemail""></div><div id=""esameemail""></div><div id=""esameSMUname""><div id=""esameSMUmsg""></div></div><div id=""epassword""></div><div id=""ereg""></div><div id=""edistrict""></div><div id=""eclass""></div><div id=""ecompare""></div></div>");
+
+
   WebOutStringFormatNL("<input type=""submit"" class=""spbutton""  value=""" & toolwebngtranslatetext(21064) & """ >");
   /*
   WebOutStringFormatNL("<script>");

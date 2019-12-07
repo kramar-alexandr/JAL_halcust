@@ -1,0 +1,126 @@
+external inner function Boolean Getformcode(Integer,Integer,string,string,string,LongInt,LongInt,string,string,Integer,string,var string);
+external inner function Integer NumberofDocumentPages(string,Integer);
+external inner procedure CommonDocumentFields(record RcVc);
+external inner procedure PrintCredManHeader(record CredManVc);
+
+procedure PrintCertificate(record RcVc RepSpec)
+begin
+  record CUVc CUr;
+  Integer i,rw;
+  record RLinkVc RLr;
+  record SchoolVc SCr;
+  row SMFVc SMFrw;
+  string 255 tstr,tmp,t;
+  Longint pos,tpos,cnt,lastspace,chrcnt,rowcnt;
+  record TeacherVc TCr;
+  record JALEventVc JEr;
+  record JALEventEntryVc JEEr;
+  record SMFVc SMFr;
+
+  JEEr.SerNr = RepSpec.long1;
+  if (ReadFirstMain(JEEr,1,true)) then begin
+
+    SMFr.SMFCode = JEEr.AddCode;
+    if (ReadFirstMain(SMFr,1,true)) then begin
+      OutFormField("F_SMFCODE",SMFr.SMFCode);
+      OutFormField("F_SMFNAME",SMFr.SMFName);
+      CUr.Code = JEEr.CustCode;
+      if (ReadFirstMain(CUr,1,true)) then begin
+        OutFormField("F_STUDENTNAME",CUr.Name);
+        SCr.SchoolCode = CUr.SchoolCode;
+        if (ReadFirstMain(SCr,1,true)) then begin
+          OutFormField("F_SCHOOLNAME",SCr.SchoolName);
+        end;  
+      end;
+    end;
+
+    JEr.SerNr = JEEr.EventNr;
+    if (ReadFirstMain(JEr,1,true)) then begin
+      OutFormField("F_PARTNAME",JEr.Comment);
+      OutFormField("F_PARTDATE",Getyear(JEr.EndDate) & USetStr(16003) & " " & GetDay(JEr.EndDate) & ". " & UsetStr(3000009+GetMonth(JEr.EndDate)));
+      OutFormImage(JEr);
+    end;
+  end;
+
+  return;
+end;
+
+global
+procedure DoCertificateForm(record RcVc RepSpec,record RcVc RepSpec2)
+BEGIN
+  record DocVc Docr;
+  record FormDefVc FDr;
+  row FormDefVc FDrw;
+  Integer i,rwcnt;
+  string 255 tstr;
+  Boolean printf,langf;
+  Integer intdocnr;
+  string 30 formcode,langcode;
+    
+  FDr.repname = RepSpec.repname;
+  FDr.shortname = RepSpec.shortname;
+  if (ReadFirstMain(FDr,1,true)==false) then begin
+    MessageBox(1624, " " & USetStr(1623));
+    goto LDoCredManScheduleForm;
+  end;
+  rwcnt = MatRowCnt(FDr);
+  for (i=rwcnt-1;i>=0;i=i-1) begin
+    MatRowGet(FDr,i,FDrw);
+    if (FDrw.LangCode==langcode) then begin
+      i = -1;
+      langf = true;
+    end;
+  end;
+  if (langf==false) then begin langcode = ""; end;
+
+  intdocnr = 1;
+  printf = true;
+  while (printf) begin  
+    formcode = "";
+    for (i=rwcnt-1;i>=0;i=i-1) begin
+      MatRowGet(FDr,i,FDrw);
+      if (Getformcode(i,FDrw.intdocnr,FDrw.FPCode,FDrw.UserGroup,FDrw.LangCode,FDrw.SerNr,-1,FDrw.PrintGroupCode,langcode,intdocnr,"",formcode)) then
+      begin
+        goto LBREAK;
+      end;
+    end;
+LBREAK:;
+    if (nonblank(formcode)) then begin  
+      if (OpenForm(formcode)) then begin
+        CommonDocumentFields(RepSpec);
+        NumberofDocumentPages(formcode,5);
+        Docr.Code = formcode;
+        if (ReadFirstMain(Docr,1,true)) then begin
+        end;
+//rest of fields go here
+        PrintCertificate(RepSpec2);
+
+        CloseForm;        
+      end else begin
+        printf = false;
+        MessageBox(1546,formcode);
+      end;
+    end else begin
+      printf = false;
+      if (intdocnr==1) then begin
+        MessageBox(1624, " " & USetStr(1623));
+      end;
+    end;
+    intdocnr = intdocnr + 1;
+  end;
+LDoCredManScheduleForm:;  
+  RETURN;  
+END;     
+ 
+
+global
+procedure CertificateForm(record RcVc RepSpec)
+BEGIN
+  record RcVc RepSpec2;
+  Boolean tmpf;
+  
+  RepSpec2.long1 = RepSpec.long1;
+  tmpf = PrintDocument(RepSpec2,"CertificateForm",false);    
+  
+  RETURN;
+END;

@@ -2490,6 +2490,7 @@ if nonblank(CurrentCust) then begin
       errflags = errflags + 64;
     end;
     if errflags == 0 then begin
+      WebComr.SerNr = NextSerNr("WebNGBlogCommentVc",CurrentDate,-1,false,"");;
       WebComr.UserName = username;
       WebComr.CommentHeader = subject;
       WebComr.Email = email;

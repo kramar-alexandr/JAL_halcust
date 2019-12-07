@@ -6,10 +6,14 @@ external inner procedure PrintCredManHeader(record CredManVc);
 procedure PrintSMF(record SMFVc SMFr)
 begin
   record CUVc CUr;
-  Integer i;
+  Integer i,rw;
   record RLinkVc RLr;
   record SchoolVc SCr;
   row SMFVc SMFrw;
+  string 255 tstr,tmp,t;
+  Longint pos,tpos,cnt,lastspace,chrcnt,rowcnt;
+  record TeacherVc TCr;
+  vector Boolean vSCr;
 
   OutFormField("F_SMFCODE",SMFr.SMFCode);
   OutFormField("F_SMFNAME",SMFr.SMFName);
@@ -17,25 +21,100 @@ begin
   OutFormField("F_STARTDATE",SMFr.ActDateStart);//Start-date
   OutFormField("F_ENDDATE",SMFr.ActDateEnd);//enddate
   OutFormField("F_CURDATE",CurrentDate);
-  MatRowGet(SMFr,0,SMFrw);
-  OutFormField("F_TEACHERNAME",SMFrw.Name);
-
+  for (i=0;i<MatRowCnt(SMFr);i=i+1) begin
+    MatRowGet(SMFr,i,SMFrw);
+    TCr.TeacherCode = SMFrw.Code;
+    if (ReadFirstMain(TCr,1,true)) then begin
+      OutFormField("F_TEACHERNAME",TCr.TeacherName);
+      if (vSCr[TCr.SchoolCode]==false) then begin
+        vSCr[TCr.SchoolCode] = true;
+        SCr.SchoolCode = TCr.SchoolCode;
+        if (ReadFirstMain(SCr,1,true)) then begin
+          OutFormField("F_SCHOOLNAME",SCr.SchoolName);
+          OutFormField("F_SCHOOLADDR",SCr.Address);
+          OutFormField("F_PRINCIPLE",SCr.Director);
+        end;  
+      end;
+    end;
+  end;
+/*
   SCr.SchoolCode = SMFr.SchoolCode;
   if (ReadFirstMain(SCr,1,true)) then begin
     OutFormField("F_SCHOOLNAME",SCr.SchoolName);
     OutFormField("F_SCHOOLADDR",SCr.Address);
     OutFormField("F_PRINCIPLE",SCr.Director);
   end;  
-
-  for (i=0;i<LineTextCnt(SMFr);i=i+1) begin
-    OUTFORMFIELD("F_TEXT",LineTextGet(SMFr,i));    
-    EndFormRow;    
+*/
+  //for (i=0;i<LineTextCnt(SMFr);i=i+1) begin
+  pos = 0;
+  chrcnt = 72;
+  rowcnt = 4;
+  for (i=0;i<LineTextCnt2(SMFr);i=i+1) begin
+    tstr = tstr & LineTextGet2(SMFr,i);
   end;
-
-
+  tpos = InString(tstr,"\\n");
+  while (tpos>0) begin
+    tmp = mid(tstr,0,tpos-1);
+    while (len(tmp)>0) begin
+      t = "";
+      lastspace = chrcnt;
+      for (i=0;i<len(tmp);i=i+1) begin
+        if (mid(tmp,i,1)==" ") then begin
+          lastspace = i+1;
+        end;
+        if (chrcnt<=i) then begin
+          i = len(tmp);
+          t = mid(tmp,0,lastspace);
+        end;
+      end;
+      if (blank(t)) then begin
+        t = tmp;
+      end;
+      tmp = mid(tmp,len(t),len(tmp)-len(t));
+      rw = rw + 1;
+      if (rw>rowcnt) then begin
+        t = t & "...";
+      end;
+      OUTFORMFIELD("F_TEXT",t);    
+      EndFormRow;   
+      if (rw>rowcnt) then begin
+        goto LTextOut;
+      end;
+    end;
+    tstr = mid(tstr,tpos,len(tstr)-tpos-1);
+    tpos = InString(tstr,"\\n");
+  end;
+  tmp = tstr;
+  while (len(tmp)>0) begin
+    t = "";
+    lastspace = chrcnt;
+    for (i=0;i<len(tmp);i=i+1) begin
+      if (mid(tmp,i,1)==" ") then begin
+        lastspace = i+1;
+      end;
+      if (chrcnt<=i) then begin
+        i = len(tmp);
+        t = mid(tmp,0,lastspace);
+      end;
+    end;
+    if (blank(t)) then begin
+      t = tmp;
+    end;
+    tmp = mid(tmp,len(t),len(tmp)-len(t));
+    rw = rw + 1;
+    if (rw>rowcnt) then begin
+      t = t & "...";
+    end;
+    OUTFORMFIELD("F_TEXT",t);    
+    EndFormRow;   
+    if (rw>rowcnt) then begin
+      goto LTextOut;
+    end;
+  end;
+LTextOut:;
   i = 1;
   while (ReadRecordLink(SMFr,i,CUr,RLr)) begin
-    if (i>4) then begin
+    if (i>5) then begin
       goto lout;
     end;
     OutFormField("F_STUDENTCLASS",CUr.ClassNum & CUr.ClassChar);

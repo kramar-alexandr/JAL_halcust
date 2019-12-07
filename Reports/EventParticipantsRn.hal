@@ -549,14 +549,22 @@ begin
 
   ClearVector(vVals);
   PrepareEmptyRow(arrCols,vVals);
+  
+  ClearArray(emplist);
+
+  i = 1;
+  while (ReadRecordLink(SMFr,i,CUr,RLr)) begin
+    emplist[emplist.length] = CUr;
+    i = i + 1;
+  end;
 
   rwcnt = MatRowCnt(JEEr);
   for (i=0;i<rwcnt;i=i+1) begin
     MatRowGet(JEEr,i,JEErw);
     if (JEErw.Field==partfield) then begin
-      if (FindEmpContact(SMFr,JEErw.Value,CUr)) then begin
-        emplist[emplist.length] = CUr;
-      end;
+      //if (FindEmpContact(SMFr,JEErw.Value,CUr)) then begin
+      //  emplist[emplist.length] = CUr;
+      //end;
     end else begin
       if (SetInSet(JEErw.Field,simplefields)) then begin
         j = 1;
@@ -618,27 +626,29 @@ end;
 
 procedure PrintColumnHeaders(array string arrColNames)
 begin
-  Integer i;
+  Integer i,h;
   
+  h = 100;
   StartFormat(15);
   OutString(0,0,"S•r. Nr.",false);
-  OutString(50,0,"Skola",false);
-  OutString(60,0,"Izgl´t´bas pak‚pe",false);
-  OutString(65,0,"Darb´bas nozare",false);
-  OutString(70,0,"Klase",false);
-  OutString(80,0,"Nosaukums",false);
-  OutString(90,0,"Dal´bnieku skaits",false);
+  OutString(h,0,"Skola",false);h=h+300;
+  OutString(h,0,"Izgl´t´bas pak‚pe",false);h=h+200;
+  OutString(h,0,"Darb´bas nozare",false);h=h+1000;
+  OutString(h,0,"Klase",false);h=h+200;
+  OutString(h,0,"Nosaukums",false);h=h+200;
+  OutString(h,0,"Dal´bnieku skaits",false);h=h+200;
   for (i=0;i<5;i=i+1) begin
-    OutString(110+i,0,"Dal´bnieka " & (i+1) & " v‚rds",false);
+    OutString(h,0,"Dal´bnieka " & (i+1) & " v‚rds",false);h=h+200;
   end;
   for (i=0;i<5;i=i+1) begin
-    OutString(110+i,0,"Dal´bnieka " & (i+1) & " e-pasts",false);
+    OutString(h,0,"Dal´bnieka " & (i+1) & " e-pasts",false);h=h+250;
   end;
-  OutString(200,0,"Skolot‚ja v‚rds",false);
-  OutString(210,0,"Skolot‚ja e-pasts",false);
+  OutString(h,0,"Skolot‚ja v‚rds",false);h=h+150;
+  OutString(h,0,"Skolot‚ja e-pasts",false);h=h+250;
 
   for (i=0;i<arrColNames.length;i=i+1) begin
-    OutString(210,0,arrColNames[i],false);
+    OutString(h,0,arrColNames[i],false);h=h+1000;
+    OutString(h,0,"",false);h=h+1000;
   end;
 
   EndFormat;
@@ -647,6 +657,21 @@ begin
   EndFormat;
   
   return;
+end;
+
+function Longint len2(string tstr)
+begin
+  Longint res;
+  Longint i;
+
+  res = 0;
+  for (i=0;i<len(tstr);i=i+1) begin
+    if (asc(mid(tstr,i,1))<256) then begin
+      res = res + 1;
+    end;
+  end;
+
+  len2 = res;
 end;
 
 global
@@ -663,8 +688,8 @@ begin
   vector string 255 vVals;
   Boolean TrHs;
   Longint partfield;
-  Integer i;
-  string 255 simplefields;//list of fields that are simple text fields. We are storing them as notes so that we can achieve 500 symbols
+  Integer i,h;
+  string 255 simplefields,tstr;//list of fields that are simple text fields. We are storing them as notes so that we can achieve 500 symbols
   
   StartReportJob(USetStr(16800));
 
@@ -682,30 +707,30 @@ begin
         SMFr.SMFCode = JEEr.AddCode;
         if (ReadFirstMain(SMFr,1,true)) then begin
           MatRowGet(SMFr,0,SMFrw);
-
+          h = 100;
           GetApplicationValues(SMFr,JEEr,emplist,vVals,arrCols,partfield,simplefields);
           StartFormat(15);
           OutString(0,0,JEEr.SerNr,false);
-          OutString(50,0,SMFr.SchoolName,false);
-          OutString(60,0,StringFromSet(3001,SMFr.EducationType),false);
-          OutString(65,0,SMFr.ProdSpec,false);
-          OutString(70,0,SMFr.ClassNum & " " & SMFr.ClassChar,false);
-          OutString(80,0,SMFr.SMFName,false);
-          OutString(90,0,emplist.length,false);
+          OutString(h,0,SMFr.SchoolName,false);h=h+300;
+          OutString(h,0,StringFromSet(3001,SMFr.EducationType),false);h=h+200;
+          OutString(h,0,SMFr.ProdSpec,false);h=h+1000;
+          OutString(h,0,SMFr.ClassNum & SMFr.ClassChar,false);h=h+200;
+          OutString(h,0,SMFr.SMFName,false);h=h+200;
+          OutString(h,0,emplist.length,false);h=h+200;
           for (i=0;i<5;i=i+1) begin
             if (i<emplist.length) then begin
               CUr = emplist[i];
-              OutString(110+i,0,CUr.Name,false);            
+              OutString(h,0,CUr.Name,false); h=h+200;           
             end else begin
-              OutString(110+i,0,"",false);
+              OutString(h,0,"",false); h=h+250;
             end;
           end;
           for (i=0;i<5;i=i+1) begin
             if (i<emplist.length) then begin
               CUr = emplist[i];
-              OutString(110+i,0,CUr.eMail,false);            
+              OutString(h,0,CUr.eMail,false); h=h+250;         
             end else begin
-              OutString(110+i,0,"",false);
+              OutString(h,0,"",false);h=h+250;
             end;
           end;
           Teacher.TeacherCode = SMFrw.Code;
@@ -713,11 +738,18 @@ begin
             TeacherCUr.Code = Teacher.CustCode;
             ReadFirstMain(TeacherCUr,1,true);
           end;
-          OutString(200,0,TeacherCUr.Name,false);
-          OutString(210,0,TeacherCUr.eMail,false);
+          OutString(h,0,TeacherCUr.Name,false);h=h+150;
+          OutString(h,0,TeacherCUr.eMail,false);h=h+250;
 
           for (i=0;i<arrCols.length;i=i+1) begin
-            OutString(210,0,vVals[arrCols[i]],false);
+            if (len(vVals[arrCols[i]])>255) then begin
+              tstr = mid(vVals[arrCols[i]],0,255);
+              OutString(h,0,tstr,false);h=h+1200;
+              OutString(h,0,mid(vVals[arrCols[i]],len2(tstr)+1,255),false);h=h+1200;
+            end else begin
+              OutString(h,0,vVals[arrCols[i]],false);h=h+1200;              
+              OutString(h,0,"",false);h=h+1200;              
+            end;
           end;
           
           EndFormat;

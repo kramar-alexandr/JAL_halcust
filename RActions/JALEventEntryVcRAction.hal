@@ -1,4 +1,5 @@
 external inner procedure SendJALEmail(vector string,string,string);
+external inner updating procedure CreateSingleEventRequest(record JALEventEntryVc);
 
 global 
 updating function longint JALEventEntryVcRecordDefaults(var record JALEventEntryVc JEEr,record JALEventEntryVc JEE2r,LongInt stat,LongInt long4)
@@ -120,6 +121,64 @@ begin
 return;
 end;
 
+updating procedure CheckEventApplicationRequest(record JALEventEntryVc JEEr,Integer type,Boolean addf)
+begin
+  record JALEventEntryVc tJEEr,JEE2r;
+  record JALEventVc JEr,JE2r;
+
+  if (JEEr.CustType==0) then begin//SMF
+    JEr.SerNr = JEEr.EventNr;
+    if (ReadFirstMain(JEr,1,true)) then begin
+      if (JEr.Type==0) then begin
+        JE2r.Mother = JEr.SerNr;
+        JE2r.Type = type;
+        if (ReadFirstKey("TypeMother",JE2r,1,true)) then begin
+          tJEEr.EventNr = JE2r.SerNr;
+          tJEEr.CustType = JEEr.CustType;
+          tJEEr.AddCode = JEEr.AddCode;
+          RecordCopy(JEE2r,tJEEr);
+          if (ReadFirstKey("CustType",tJEEr,3,true)==false) then begin
+            if (addf) then begin
+              CreateSingleEventRequest(JEE2r);
+            end;
+          end else begin
+            if (!addf) then begin
+              RecordRemove(tJEEr);//really?
+            end;
+          end;  
+        end;
+      end;
+    end;
+  end;
+
+  return;
+end;
+
+updating procedure UpdateJALEventRequest(record JALEventEntryVc JEEr)
+begin
+  record JALEventVc JEr;
+  record JALEventRequestVc JERr,oldJERr;
+
+  if (JEEr.CustType==0) then begin//SMF
+    JEr.SerNr = JEEr.EventNr;
+    if (ReadFirstMain(JEr,1,true)) then begin
+      if (JEr.Type!=0) then begin
+        JERr.EventNr = JEr.SerNr;
+        JERr.SMFCode = JEEr.AddCode;
+        if (ReadFirstKey("EventSMF",JERr,1,true))then begin
+          if (JERr.Status==0) then begin
+            RecordCopy(oldJERr,JERr);
+            JERr.Status = 1;
+            RecordUpdate(oldJERr,JERr,true);
+          end;
+        end;
+      end;
+    end;
+  end;
+
+  return;
+end;
+
 global 
 updating function longint JALEventEntryVcRecordUpdateAfter(var record JALEventEntryVc JEEr,record JALEventEntryVc JEE2r,LongInt stat,LongInt long4)
 begin
@@ -132,15 +191,46 @@ begin
   if JEEr.StatusFlag <> JEE2r.StatusFlag then begin
     vVals["smucode"] = JEEr.AddCode;
     vVals["eventcomment"] = GetEventComment(JEEr.EventNr);
-    if (JEEr.StatusFlag == 1) then begin
-      SendJALEmail(vVals,JCbl.EventAccepted,GetEntryEmail(JEEr));
-    end else begin
-      if JEEr.StatusFlag == 2 then begin
+    switch (JEEr.StatusFlag) begin
+      case 1:
+        SendJALEmail(vVals,JCbl.EventAccepted,GetEntryEmail(JEEr));
+        //check and create event requests
+        CheckEventApplicationRequest(JEEr,1,true);
+      case 2:
         SendJALEmail(vVals,JCbl.EventDeclined,GetEntryEmail(JEEr));
-      end;
+        CheckEventApplicationRequest(JEEr,1,false);
+        CheckEventApplicationRequest(JEEr,2,false);
+      case 3:
+        CheckEventApplicationRequest(JEEr,2,true);
+        //check and create event request for application after event
     end;
   end;
+  UpdateJALEventRequest(JEEr);
 
   JALEventEntryVcRecordUpdateAfter = res;
+return;
+end;
+
+global 
+updating function longint JALEventEntryVcRecordSaveAfter(var record JALEventEntryVc JEEr,record JALEventEntryVc JEE2r,LongInt stat,LongInt long4)
+begin
+  longint res;
+  record JALClassBlock JCbl;
+  vector string 255 vVals;
+
+  BlockLoad(JCbl);
+  switch (JEEr.StatusFlag) begin
+    case 1:
+      CheckEventApplicationRequest(JEEr,1,true);
+    case 1:
+      CheckEventApplicationRequest(JEEr,1,false);
+      CheckEventApplicationRequest(JEEr,2,false);
+    case 3:
+      CheckEventApplicationRequest(JEEr,2,true);
+      //check and create event request for application after event
+  end;
+  UpdateJALEventRequest(JEEr);
+
+  JALEventEntryVcRecordSaveAfter = res;
 return;
 end;

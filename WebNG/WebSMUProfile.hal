@@ -8,6 +8,8 @@ external function string 255 StrReplace(string,string,string);
 external updating procedure FillNewSMUData(var record SMFVc,record CUVc);
 external updating procedure GenMailForSMU(string,string,string,string,var record SMFVc,boolean,record CUVc,string);
 external function LongInt MonthDiff(Date,Date);
+external function string 255 FormatJSONString(string);
+external function string 255 UnFormatJSONString(string);
 
 procedure ShowSMUEditField(string label,string name,string descr)
 begin
@@ -65,7 +67,9 @@ begin
   WebOutString("<div id='temp_table_wrap'><div class='table_field_wrap'>");
   WebOutString("<div class='table_field itemname'><div class='table_field_label'>" & ToolWebNGTranslateText2(80085) & "</div><input type='text'></div>");
   WebOutString("<div class='table_field itemprice'><div class='table_field_label'>" & ToolWebNGTranslateText2(80086) & "</div><input type='text'></div>");
-  WebOutString("<div class='table_field costprice'><div class='table_field_label'>" & ToolWebNGTranslateText2(80087) & "</div><input type='text' readonly></div></div>");
+  WebOutString("<div class='table_field costprice'><div class='table_field_label'>" & ToolWebNGTranslateText2(80087) & "</div><input type='text' readonly></div>");
+  WebOutString("<div class='table_field itemdelete'>" & ToolWebNGTranslateText2(80089) & "</div>");
+  WebOutString("</div>");
   
   WebOutString("            <table id=""" & id & """ cellspacing='0'>");
   WebOutString("                <thead>");
@@ -345,10 +349,10 @@ begin
             WebOutString(",");
           end;
           WebOutString("{""Code"":""" & CUr.Code & """,");
-          WebOutString("""Name"":""" & CUr.Name & """,");
+          WebOutString("""Name"":""" & FormatJSONString(CUr.Name) & """,");
           WebOutString("""type"":""1"",");
-          WebOutString("""eMail"":""" & CUr.eMail & """,");
-          WebOutString("""JobDesc"":""" & CUr.JobDesc & """}");
+          WebOutString("""eMail"":""" & FormatJSONString(CUr.eMail) & """,");
+          WebOutString("""JobDesc"":""" & FormatJSONString(CUr.JobDesc) & """}");
         end;
       end;
     end;
@@ -371,10 +375,10 @@ begin
       WebOutString(",");
     end;
     WebOutString("{""Code"":""" & CUr.Code & """,");
-    WebOutString("""Name"":""" & CUr.Name & """,");
+    WebOutString("""Name"":""" & FormatJSONString(CUr.Name) & """,");
     WebOutString("""type"":""0"",");
-    WebOutString("""eMail"":""" & CUr.eMail & """,");
-    WebOutString("""JobDesc"":""" & CUr.JobDesc & """,");
+    WebOutString("""eMail"":""" & FormatJSONString(CUr.eMail) & """,");
+    WebOutString("""JobDesc"":""" & FormatJSONString(CUr.JobDesc) & """,");
     WebOutString("""Salary"":""" & CUr.Salary & """}");
     i = i + 1;
   end;
@@ -415,7 +419,7 @@ begin
       cnt = 0;
       vItems[FCr.ItemName] = false;
       vItemName[FCr.ItemName] = FCr.ItemName;
-      WebOutString("{""ItemName"":""" & FCr.ItemName & """,");
+      WebOutString("{""ItemName"":""" & FormatJSONString(FCr.ItemName) & """,");
       WebOutString("""Price"":""" & FCr.Price & """,");
       WebOutString("""costs"":[");
       rwcnt = MatRowCnt(FCr);
@@ -427,7 +431,7 @@ begin
         cnt = cnt + 1;
         WebOutString("{");
         WebOutString("""type"":""0"",");
-        WebOutString("""ProdName"":""" & FCrw.ProdName & """,");
+        WebOutString("""ProdName"":""" & FormatJSONString(FCrw.ProdName) & """,");
         WebOutString("""UCost"":""" & FCrw.UCost & """");
         WebOutString("}");
       end;
@@ -464,7 +468,7 @@ begin
       end;
       j = j + 1;
       vItems[ETr.ItemName] = true;
-      WebOutString("{""ItemName"":""" & ETr.ItemName & """,");
+      WebOutString("{""ItemName"":""" & FormatJSONString(ETr.ItemName) & """,");
       WebOutString("""turnover"":[");
       rwcnt = MatRowCnt(ETr);
       for (i=0;i<rwcnt;i=i+1) begin
@@ -591,7 +595,7 @@ begin
                 if (cnt>0) then begin
                   WebOutString(",");
                 end;					
-                WebOutString("{""Code"":""" & CUr.Code & """,""Name"":""" & CUr.Name & """}");
+                WebOutString("{""Code"":""" & CUr.Code & """,""Name"":""" & FormatJSONString(CUr.Name) & """}");
                 cnt = cnt + 1;
               end;
 						end;
@@ -605,6 +609,16 @@ begin
   return;
 end;
 
+global
+updating procedure RemoveSMFSession(record SMFSessionVc SSr)
+begin
+  
+  if (ReadFirstMain(SSr,1,true)) then begin
+    RecordRemove(SSr);
+  end;
+
+  return;
+end;
 
 global webpublic
 procedure WebGetSMUDataForEditing()
@@ -614,34 +628,50 @@ begin
   record RLinkVc RLr;
   Longint pos,i,j;
   string 255 tstr;
+  record SMFSessionVc SSr;
+  Boolean foundf;
 
   WebOutString("{");
   CUr.Code = CurrentCust;
   if (ReadFirstMain(CUr,1,true)) then begin
     if (ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr)) then begin
-      WebOutString("""SMFCode"":""" & SMFr.SMFCode & """,");
-      WebOutString("""SMFName"":""" & SMFr.SMFName & """,");
-      WebOutString("""Owner"":""" & SMFr.CustCode & """,");
-      WebOutString("""ActCU"":""" & (CurrentCust==SMFr.CustCode) & """,");
-      WebOutString("""ProdSpec"":""" & SMFr.ProdSpec & """,");
-      WebOutString("""TargetAud"":""" & SMFr.TargetAud & """,");
-      WebOutString("""Education"":""" & SMFr.EducationType & """,");
-      WebOutString("""ActDateStart"":""" & DateToString(SMFr.ActDateStart,"YYYY-MM-DD") & """,");
-      WebOutString("""ActDateEnd"":""" & DateToString(SMFr.ActDateEnd,"YYYY-MM-DD") & """,");
-      WebOutString("""ApprovalStatus"":""" & SMFr.ApprovalStatus & """,");
-      WebOutString("""OldApprovalStatus"":""" & SMFr.OldApprovalStatus & """,");
-      WebOutString("""Text"":""");
-      for (i=0;i<SizeTextCnt(SMFr);i=i+200) begin
-        tstr = StringFromText(SMFr,i,200);
-        WebOutString(StrReplace(tstr,chr(13),"\\n"));
-      end;
-      WebOutString(""",");
-      GetSchoolEmpList(SMFr.SchoolCode,SMFr.SMFCode);
-
-      GetEmpList(SMFr);
-      GetFinData(SMFr);
-      GetFinPlan(SMFr);
+      foundf = true;
     end;
+  end;
+
+  if (!foundf) then begin
+    SSr.UUID = StringToUUID(WebGetArg("s"));
+    if (ReadFirstMain(SSr,1,true)) then begin
+      SMFr.SMFCode = SSr.SMFCode;
+      if (ReadFirstMain(SMFr,1,true)) then begin
+        foundf = true;
+      end;    
+      queued.RemoveSMFSession(SSr);
+    end;
+  end;
+  if (foundf) then begin
+    WebOutString("""SMFCode"":""" & SMFr.SMFCode & """,");
+    WebOutString("""SMFName"":""" & FormatJSONString(SMFr.SMFName) & """,");
+    WebOutString("""Owner"":""" & SMFr.CustCode & """,");
+    WebOutString("""ActCU"":""" & (CurrentCust==SMFr.CustCode) & """,");
+    WebOutString("""ProdSpec"":""" & FormatJSONString(SMFr.ProdSpec) & """,");
+    WebOutString("""TargetAud"":""" & FormatJSONString(SMFr.TargetAud) & """,");
+    WebOutString("""Education"":""" & SMFr.EducationType & """,");
+    WebOutString("""ActDateStart"":""" & DateToString(SMFr.ActDateStart,"YYYY-MM-DD") & """,");
+    WebOutString("""ActDateEnd"":""" & DateToString(SMFr.ActDateEnd,"YYYY-MM-DD") & """,");
+    WebOutString("""ApprovalStatus"":""" & SMFr.ApprovalStatus & """,");
+    WebOutString("""OldApprovalStatus"":""" & SMFr.OldApprovalStatus & """,");
+    WebOutString("""Text"":""");
+    for (i=0;i<SizeTextCnt(SMFr);i=i+200) begin
+      tstr = FormatJSONString(StringFromText(SMFr,i,200));
+      WebOutString(StrReplace(tstr,chr(13),"\\n"));
+    end;
+    WebOutString(""",");
+    GetSchoolEmpList(SMFr.SchoolCode,SMFr.SMFCode);
+
+    GetEmpList(SMFr);
+    GetFinData(SMFr);
+    GetFinPlan(SMFr);
   end;
   WebOutString("}");
 
@@ -688,7 +718,7 @@ begin
   RecordClear(FCr);
   RecordNew(FCr);
   FCr.SMUCode = smucode;
-  FCr.ItemName = itemname;
+  FCr.ItemName = UnFormatJSONString(itemname);
   return;
 end;
 
@@ -716,7 +746,7 @@ begin
   RecordClear(ETr);
   RecordNew(ETr);
   ETr.SMUCode = smucode;
-  ETr.ItemName = itemname;
+  ETr.ItemName = UnFormatJSONString(itemname);
   return;
 end;
 
@@ -921,13 +951,13 @@ begin
     WebGetRawPostData(a);
     js = ParseJSONArea(a);
     if (nonblank(JSONGet(js,"SMFName"))) then begin
-      SMFr.SMFName = JSONGet(js,"SMFName");
-      SMFr.ProdSpec = JSONGet(js,"ProdSpec");
-      SMFr.TargetAud = JSONGet(js,"TargetAud");
+      SMFr.SMFName = UnFormatJSONString(JSONGet(js,"SMFName"));
+      SMFr.ProdSpec = UnFormatJSONString(JSONGet(js,"ProdSpec"));
+      SMFr.TargetAud = UnFormatJSONString(JSONGet(js,"TargetAud"));
       SMFr.EducationType = StringToInt(JSONGet(js,"Education"));
       SMFr.ActDateStart = DateFromString(JSONGet(js,"ActDateStart"),"YYYY-MM-DD");
       SMFr.ActDateEnd = DateFromString(JSONGet(js,"ActDateEnd"),"YYYY-MM-DD");
-      tstr = RemoveEndingLineBreaks(JSONGet(js,"Text"));
+      tstr = UnFormatJSONString(RemoveEndingLineBreaks(JSONGet(js,"Text")));
       SetTextField(SMFr,tstr);
       if (ValidateSMUData(SMFr,oldSMFr,errtype,errstr)==false) then begin
         goto lend;
@@ -953,7 +983,7 @@ begin
         while (JSONNodeExists(js,root & "[" & i  & "]/costs/[" & j & "]")) begin
           ClearRow(FCr,FCrw,1);
           FCrw.UCost = StringToVal(JSONGet(js,root & "[" & i & "]/costs/[" & j & "]/UCost"),M4Val);
-          FCrw.ProdName = JSONGet(js,root & "[" & i & "]/costs/[" & j & "]/ProdName");
+          FCrw.ProdName = UnFormatJSONString(JSONGet(js,root & "[" & i & "]/costs/[" & j & "]/ProdName"));
           MatRowPut(FCr,j,FCrw);
           j = j + 1;
         end;

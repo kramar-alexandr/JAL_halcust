@@ -720,8 +720,7 @@ logtext(0, "3");
     CUr.Code = cust;
     if ReadFirstMain(CUr,1,true) then begin
       if ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(cCUr.Code,SMFr) then begin
-        if SMFr.SMFCode == comp then begin
-          if (cust == cCUr.Code or cCUr.Code == SMFr.CustCode) then begin
+          if (cust == cCUr.Code) then begin
               RecordCopy(oldCUr,CUr);
               CUr.Name = name;
               CUr.eMail = email;
@@ -751,7 +750,6 @@ logtext(0, "3");
 								GenMailForParents(text,text,SMFr.ParenteMail,SMFr,true,tCUr,tstr); //��������� ������
 							end;
           end;
-        end;
       end;
     end;
   end;

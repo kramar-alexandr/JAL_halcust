@@ -261,6 +261,7 @@ begin
   RecordField(TitanFlag,M4Int,0,0);
   RecordField(EnuDienaFlag,M4Int,0,0);
   RecordField(OldApprovalStatus,M4Int,0,0);
+  RecordField(PrintCert,M4Int,0,0);
   ArrayBegin(Math,-,1);
   ArrayField(Type,M4Set,1005,0);
   ArrayField(Code,M4Code,10,0);
@@ -753,7 +754,7 @@ begin
   KeySegment(TransDate);
   KeySegment(TransTime);
   KeySegment(SerNr);
-  SubsetKeyBegin2(RecType2);
+  SubsetKeyBegin2(RecTypeN);
   AppendListFieldToKeyName(RecCode);
   KeySegment(StatusFlag);
   KeySegment(RecType);
@@ -778,6 +779,8 @@ begin
   RecordField(RegUntil,M4Date,0,0);
   RecordField(StartTime,M4Time,0,0);
   RecordField(Link,M4Str,255,0);
+  RecordField(Type,M4Int,0,0);
+  RecordField(Mother,M4Long,0,0);
   ArrayBegin(Math,-,1);
   ArrayField(Field,M4Long,0,0);
   ArrayField(Comment,M4Str,60,0);
@@ -807,6 +810,31 @@ begin
   KeyBegin(StatusFlag);
   KeySegment(StatusFlag);
   KeySegment(StartDate);
+  KeySegment(SerNr);
+
+  KeyBegin(TypeMother);
+  KeySegment(Type);
+  KeySegment(Mother);
+  KeySegment(SerNr);
+
+  EndRecord;
+
+  RecordBegin(JALEventRequestVc,-,"");
+  RecordField(SerNr,M4Long,0,0);
+  RecordField(EventNr,M4Long,0,0);
+  RecordField(SMFCode,M4Code,20,0);
+  RecordField(Status,M4Int,0,0);
+
+  MainKeyBegin(SerNr,0);
+  KeySegment(SerNr);
+
+  KeyBegin(EventSMF);
+  KeySegment(EventNr);
+  KeySegment(SMFCode);
+  KeySegment(SerNr);
+
+  KeyBegin(SMFCode);
+  KeySegment(SMFCode);
   KeySegment(SerNr);
 
   EndRecord;
@@ -1037,5 +1065,12 @@ begin
   KeySegment(Region);
   EndRecord;
 
+  RecordBegin(SMFSessionVc,-,"");
+  NewAutosyncRegister(kSyncDirectionToClient,true);
+  RecordField(SMFCode,M4Code,20,0);
+  MainKeyBegin(MainKey,0);
+  KeySegment(UUID);
+  EndRecord;
+  
   return;
 end;
