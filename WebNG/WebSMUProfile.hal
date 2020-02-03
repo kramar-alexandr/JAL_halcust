@@ -289,17 +289,17 @@ begin
   WebOutString("<div class='newEmp_button'><a class='spbutton'>" & ToolWebNGTranslateText2(80027) & "</a></div>");
   WebOutString("<div class='newEmp_form'>");
   WebOutString("<select name='nemp' class='nemp_code'>");
-  WebOutString("<option value=''>" & ToolWebNGTranslateText2(80004) & "</div>");
+  WebOutString("<option value=''>" & ToolWebNGTranslateText2(80004) & "</option>");
   WebOutString("</select>");
   WebOutString("<select name='nemp_position' class='nemp_pos'>");
-  WebOutString("<option value=''>" & ToolWebNGTranslateText2(80080) & "</div>");
+  WebOutString("<option value=''>" & ToolWebNGTranslateText2(80080) & "</option>");
   OutputJopPositionOptions;
   WebOutString("</select>");
   WebOutString("<div class='newEmp_button_submit'><a class='spbutton'>" & ToolWebNGTranslateText2(80028) & "</a></div>");
   
-  WebOutString("</div></div>");
+  WebOutString("</div>");
   if (framef) then begin
-    WebOutString("<div class='field_descr'>" & ToolWebNGTranslateText2(80029) & "</div><div class='field_descr'>" & ToolWebNGTranslateText2(80030) & "</div>");
+    WebOutString("</div><div class='field_descr'>" & ToolWebNGTranslateText2(80029) & "</div><div class='field_descr'>" & ToolWebNGTranslateText2(80030) & "</div>");
   end;
   
   WebOutString("<div class='clear'></div>");
@@ -872,9 +872,7 @@ LValidateSMUData2:;
   return;
 end;
 
-
-
-
+global
 function string 255 RemoveEndingLineBreaks(string tstr)
 begin
   Integer i;

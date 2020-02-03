@@ -538,6 +538,20 @@ begin
   return;
 end;
 
+procedure AddInBeginning(var array record CUVc emplist,record CUVc CUr)
+begin
+  Integer i;
+  record CUVc tCUr;
+  
+  for (i=emplist.length-1;i>=0;i=i-1) begin
+    tCUr = emplist[i];
+    emplist[i+1] = tCUr;
+  end;
+  emplist[0] = CUr;
+
+  return;
+end;
+
 procedure GetApplicationValues(record SMFVc SMFr,record JALEventEntryVc JEEr,var array record CUVc emplist,var vector string vVals,array string arrCols,Longint partfield,string simplefields)
 begin
   row JALEventEntryVc JEErw;
@@ -554,7 +568,11 @@ begin
 
   i = 1;
   while (ReadRecordLink(SMFr,i,CUr,RLr)) begin
-    emplist[emplist.length] = CUr;
+    if (InString(CUr.JobDesc,"Direktors")!=0) then begin
+      AddInBeginning(emplist,CUr);
+    end else begin
+      emplist[emplist.length] = CUr;
+    end;
     i = i + 1;
   end;
 
@@ -643,14 +661,15 @@ begin
   for (i=0;i<5;i=i+1) begin
     OutString(h,0,"Dal´bnieka " & (i+1) & " e-pasts",false);h=h+250;
   end;
-  OutString(h,0,"Skolot‚ja v‚rds",false);h=h+150;
-  OutString(h,0,"Skolot‚ja e-pasts",false);h=h+250;
-
+  for (i=0;i<3;i=i+1) begin
+    OutString(h,0,"Skolot‚ja " & (i+1) & " v‚rds",false);h=h+150;
+    OutString(h,0,"Skolot‚ja " & (i+1) & " e-pasts",false);h=h+250;
+  end;
   for (i=0;i<arrColNames.length;i=i+1) begin
     OutString(h,0,arrColNames[i],false);h=h+1000;
     OutString(h,0,"",false);h=h+1000;
   end;
-
+  OutString(h,0,"Produkta apraksts",false);
   EndFormat;
   StartFormat(1);
   Gray_divider(0,1);
@@ -688,7 +707,7 @@ begin
   vector string 255 vVals;
   Boolean TrHs;
   Longint partfield;
-  Integer i,h;
+  Integer i,h,s;
   string 255 simplefields,tstr;//list of fields that are simple text fields. We are storing them as notes so that we can achieve 500 symbols
   
   StartReportJob(USetStr(16800));
@@ -706,7 +725,6 @@ begin
       end else begin
         SMFr.SMFCode = JEEr.AddCode;
         if (ReadFirstMain(SMFr,1,true)) then begin
-          MatRowGet(SMFr,0,SMFrw);
           h = 100;
           GetApplicationValues(SMFr,JEEr,emplist,vVals,arrCols,partfield,simplefields);
           StartFormat(15);
@@ -733,14 +751,17 @@ begin
               OutString(h,0,"",false);h=h+250;
             end;
           end;
-          Teacher.TeacherCode = SMFrw.Code;
-          if (ReadFirstMain(Teacher,1,true)) then begin
-            TeacherCUr.Code = Teacher.CustCode;
-            ReadFirstMain(TeacherCUr,1,true);
+          for (i=0;i<3;i=i+1) begin
+            MatRowGet(SMFr,i,SMFrw);
+            Teacher.TeacherCode = SMFrw.Code;
+            RecordClear(TeacherCUr);
+            if (ReadFirstMain(Teacher,1,true)) then begin
+              TeacherCUr.Code = Teacher.CustCode;
+              ReadFirstMain(TeacherCUr,1,true);
+            end;
+            OutString(h,0,TeacherCUr.Name,false);h=h+150;
+            OutString(h,0,TeacherCUr.eMail,false);h=h+250;
           end;
-          OutString(h,0,TeacherCUr.Name,false);h=h+150;
-          OutString(h,0,TeacherCUr.eMail,false);h=h+250;
-
           for (i=0;i<arrCols.length;i=i+1) begin
             if (len(vVals[arrCols[i]])>255) then begin
               tstr = mid(vVals[arrCols[i]],0,255);
@@ -748,10 +769,16 @@ begin
               OutString(h,0,mid(vVals[arrCols[i]],len2(tstr)+1,255),false);h=h+1200;
             end else begin
               OutString(h,0,vVals[arrCols[i]],false);h=h+1200;              
-              OutString(h,0,"",false);h=h+1200;              
+              OutString(h,0," ",false);h=h+100;              
             end;
           end;
-          
+          tstr = "";
+          s = 0;
+          while (s<SizeTextCnt(SMFr)) begin
+            tstr = tstr & StringFromText(SMFr,s,255);
+            s = s + 255;
+          end;
+          OutString(h,0,tstr,false);              
           EndFormat;
         end;
       end;

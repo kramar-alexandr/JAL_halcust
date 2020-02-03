@@ -1,3 +1,6 @@
+remote updating function Boolean FindEventText(record JALEventVc,var record JALEventTextVc);
+external inner procedure PasteFromSysList(Integer,Integer);
+
 global
 procedure NewJALEventTranslationDsm()
 begin
@@ -18,6 +21,23 @@ begin
   return;
 end;
 
+global
+updating procedure NewJALEventTextDsm()
+begin
+  Integer wn;
+  record JALEventVc JEr;
+  record JALEventTextVc JETr;
+
+  wn = CurWindow;
+  if (WindowState(wn)==Rs_Normal) then begin
+    GetWindowRecord(wn,JEr);
+    if (FindEventText(JEr,JETr)) then begin
+      OpenWindow("JALEventTextDClass",1,0,"","",JETr);
+    end;
+  end;
+
+  return;
+end;
 
 global
 function Boolean JALEventDClassUpdateWindowSubset(Integer wn,var string subsetname)
@@ -104,5 +124,32 @@ global
 procedure JALEventDClassButtonFlags(Integer wn,var Boolean duplOK,var Boolean newOK,var Boolean saveOK,var Boolean restOK)
 begin
   saveOK = true;
+  return;
+end;
+
+global
+function Boolean JALSemesterSClassOnOpenWindow(Integer wn)
+begin
+  record JALSemesterBlock JSb;
+  row JALSemesterBlock JSbrw;
+  Integer rwcnt,i;
+  
+  BlockLoad(JSb);
+  rwcnt = MatRowCnt(JSb);
+  for (i=0; i<rwcnt; i=i+1) begin
+    MatRowGet(JSb,i,JSbrw);
+    SetListString(wn,BytesInString(JSbrw.YearStr),JSbrw.YearStr,false);
+  end;
+
+  JALSemesterSClassOnOpenWindow = false;
+  return;
+end;
+
+
+global
+function Boolean JALSemesterSClassOnOKWindow(Integer wn)
+begin
+  PasteFromSysList(wn,20);
+  JALSemesterSClassOnOKWindow = false;
   return;
 end;

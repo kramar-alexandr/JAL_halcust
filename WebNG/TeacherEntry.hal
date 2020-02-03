@@ -675,10 +675,13 @@ begin
           WebOutStringFormatNL("\"Nr\":\"" & cnt & "\",");
           WebOutStringFormatNL("\"SerNr\":\"" & JTr.SerNr & "\",");
           WebOutStringFormatNL("\"Statuss\":\"" & JTr.StatusFlag & "\",");
-          WebOutStringFormatNL("\"Datums\":\"" & JTr.TransDate & "\",");
+          WebOutStringFormatNL("\"Datums\":\"" & DateToString(JTr.TransDate,"YYYY/MM/DD") & "\",");
           WebOutStringFormatNL("\"Klase\":\"" & CUr.ClassNum & CUr.ClassChar & "\",");
+          WebOutStringFormatNL("\"Klase2\":\"" & CUr.ClassNum & "\",");
           WebOutStringFormatNL("\"Skolens\":\"" & FormatJSONString(CUr.Name) & "\",");
           WebOutStringFormatNL("\"Kods\":\"" & CUr.Code & "\",");
+          WebOutStringFormatNL("\"CertFlag\":\"" & CUr.CertificateFlag & "\",");
+          WebOutStringFormatNL("\"CertPrintf\":\"" & CUr.CertificatePrint & "\",");
           
           WebOutStringFormatNL("\"Enudiena\":\"" & CUr.EnuDienaFlag & "\",");
           WebOutStringFormatNL("\"Titan\":\"" & CUr.TitanFlag & "\",");
@@ -690,6 +693,7 @@ begin
 
           WebOutStringFormatNL("\"SMU\":\"" & SMFr.SMFCode & "\",");
           WebOutStringFormatNL("\"Nosaukums\":\"" & FormatJSONString(SMFr.SMFName) & "\",");
+          WebOutStringFormatNL("\"ApprovalStatus\":\"" & SMFr.ApprovalStatus & "\",");
           WebOutStringFormatNL("\"Likvidets\":\"" & SMFr.StatusFlag & "\",");
           WebOutStringFormatNL("\"MacibuGads\":\"" & semstr & "\",");
           WebOutStringFormatNL("\"Izglitiba\":\"" & GetEduLevel(StringToInt(CUr.ClassNum)) & "\"");
@@ -1305,6 +1309,55 @@ begin
 return;
 end;
 
+global webpublic
+procedure WebGetEventBadge()
+begin
+  record CUVc CUr;
+  record SMFVc SMFr,oldSMFr;
+  record TeacherVc Teacher;
+  record MentorVc MTr;
+  Integer type;
+  record JALEventVc JEr;
+  Boolean TrHs,applyf,testf;
+  Integer cnt;
+
+  CUr.Code = CurrentCust;
+  if(ReadFirstMain(CUr,1,true) and nonblank(CurrentCust)) then begin 
+    type = GetJALCustType(CUr,SMFr,Teacher,MTr);
+    JEr.SerNr = "";
+    if (type==0 and SMFr.ApprovalStatus==3) then begin
+      TrHs = true;
+      JEr.ActiveFlag = 1;
+      JEr.StartDate = AddDay(CurrentDate,-5);
+      while (LoopKey("Active",JEr,2,TrHs)) begin
+        if (JEr.ActiveFlag!=1) then begin
+          TrHs = false;
+        end else begin
+          if (JEr.EndDate > CurrentDate and JEr.ClosedFlag==0) then begin
+            testf = true;
+            if (DateInRange(CurrentDate,JEr.RegFrom,JEr.RegUntil)==false) then begin
+              testf = false;
+            end;
+            if (MatRowCnt(JEr)==0) then begin// and calf
+              testf = false;
+            end;
+            if (JEr.Type!=0) then begin
+              testf = false;
+            end;
+            if (testf) then begin
+              cnt = cnt + 1;
+            end;    
+          end;
+        end;
+      end;
+    end;
+  end;
+
+  WebOutString("{""event_cnt"":" & cnt & "}");
+
+  return;
+end;
+
 procedure CreateFakeSMUEntry(var record SMFVc SMFr,record CUVc CUr)
 begin
   record TeacherVc TCr;
@@ -1394,11 +1447,13 @@ begin
   record SMFVc SMFr;
   row SMFVc SMFrw;
   integer i,mtrw,cnt,confirmteach;
-  string 50 code,status,type;
+  string 50 code,status,type,tstr,semstr;
   record CUVc CUr;
   record ObjVc OBr;
   boolean TrHs,testf,smuf;
   record RLinkVc RLr;
+  Date sd,ed;
+
 
   code = webgetarg("code");
 
@@ -1423,12 +1478,20 @@ begin
         WebOutStringFormatNL("\"smuCode\":\"" & SMFr.SMFCode & "\",");
         WebOutStringFormatNL("\"hasSMU\":\"" & smuf & "\",");
         WebOutStringFormatNL("\"regDate\":\"" & SMFr.RegDate & "\",");
+        WebOutString("""Text"":""");
+        for (i=0;i<SizeTextCnt(SMFr);i=i+200) begin
+          tstr = FormatJSONString(StringFromText(SMFr,i,200));
+          WebOutString(StrReplace(tstr,chr(13),"\\n"));
+        end;
+        WebOutString(""",");
         ShowEmployerRequests(CUr.Code);
         GetEmpList(SMFr);
         GetSchoolEmpList(SMFr.SchoolCode,SMFr.SMFCode);
+        GetSMUSemester(SMFr,semstr,sd,ed);
 
         matrowget(SMFr,0,SMFrw);
         WebOutStringFormatNL("\"teacher\":\"" & FormatJSONString(SMFrw.Name) & "\",");
+        WebOutStringFormatNL("\"Semester\":\"" & FormatJSONString(semstr) & "\",");
         if(CUr.AgeFlag!=0) then begin
           WebOutStringFormatNL("\"hightSchool\":" & "false" & ",");
           WebOutStringFormatNL("\"parent\": {" );
@@ -1446,6 +1509,7 @@ begin
           WebOutStringFormatNL("\"perto\":\"" & SMFr.ActDateEnd & "\",");
           WebOutStringFormatNL("\"class\":\"" & FormatJSONString(SMFr.ClassNum & SMFr.ClassChar) & "\",");
           WebOutStringFormatNL("\"liquidated\":\"" & SMFr.StatusFlag & "\",");
+          WebOutStringFormatNL("\"certificateprint\":\"" & CUr.CertificatePrint & "\",");
           if(nonblank(SMFr.Manager) or !smuf) then begin
             WebOutStringFormatNL("\"director\":" & "true" & ",");
           end else begin
@@ -1835,6 +1899,21 @@ begin
   return;
 end;
 
+procedure FindCustEntry(Longint sernr,Integer type,string code,var record JALEventEntryVc JEEr)
+begin
+  record JALEventEntryVc tJEEr;
+
+  RecordClear(JEEr);
+  tJEEr.EventNr = sernr;
+  tJEEr.CustType = 0;
+  tJEEr.AddCode = code;
+  if (ReadFirstKey("CustType",tJEEr,3,true)) then begin
+    RecordCopy(JEEr,tJEEr);
+  end;
+
+  return;
+end;
+
 global webpublic procedure WebGetEventsPieteikum()
 begin
   record JALEventEntryVc JEEr;
@@ -1846,6 +1925,9 @@ begin
   record TeacherVc Teacher;
   record MentorVc MTr;
   record JALEventRequestVc JERr;
+  record JALLiquidationBlock JLb;
+  row JALLiquidationBlock JLbrw;
+  Integer i,rwcnt;
 
   cnt = 0;
   CUr.Code = CurrentCust;
@@ -1878,6 +1960,7 @@ begin
                 WebOutStringFormatNL("\"dataEnd\":\"" & DateToString(JEr.EndDate,"MM.DD.YYYY") & "\",");
                 WebOutStringFormatNL("\"smu\":\""  & JEEr.AddCode & "\",");
                 WebOutStringFormatNL("\"name\":\""  & FormatJSONString(JEEr.SMFName) & "\",");
+                WebOutStringFormatNL("\"type\":\"" & JEr.Type & "\",");
                 WebOutStringFormatNL("\"event\":\"" & JEEr.EventNr & "\",");
                 WebOutStringFormatNL("\"eventName\":\"" & FormatJSONString(JEr.Comment) & "\",");
                 WebOutStringFormatNL("\"satus\":\"" & JEEr.StatusFlag & "\",");
@@ -1890,6 +1973,36 @@ begin
       case 1:
         GetTeacherSMUApplications(Teacher.TeacherCode,cnt,true);
         //get teacher status
+    end;
+    if (allf and type==0 and (SMFr.ApprovalStatus==3 or SMFr.ApprovalStatus==5)) then begin
+      BlockLoad(JLb);
+      rwcnt = MatRowCnt(JLb);
+      for (i=0;i<rwcnt;i=i+1) begin
+        MatRowGet(JLb,i,JLbrw);
+        if (DateInRange(CurrentDate,JLbrw.DateFrom,JLbrw.DateTo)) then begin
+          JEr.SerNr = JLbrw.EventNr;
+          if (ReadFirstMain(JEr,1,true)) then begin
+            cnt = cnt + 1;
+            if(cnt>1)then begin
+              weboutstring(",");
+            end;
+            FindCustEntry(JEr.SerNr,0,SMFr.SMFCode,JEEr);
+            WebOutStringFormatNL("{");
+            WebOutStringFormatNL("\"serNr\":\"" & JEEr.SerNr & "\",");
+            WebOutStringFormatNL("\"dataStart\":\"\",");
+            WebOutStringFormatNL("\"dataEnd\":\"\",");
+            WebOutStringFormatNL("\"smu\":\"\",");
+            WebOutStringFormatNL("\"name\":\"\",");
+            WebOutStringFormatNL("\"type\":\"" & JEr.Type & "\",");
+            WebOutStringFormatNL("\"event\":\"" & JEr.SerNr & "\",");
+            WebOutStringFormatNL("\"eventName\":\"" & FormatJSONString(ToolWebNGTranslateText2(70078)) & "\",");
+            WebOutStringFormatNL("\"satus\":\"" & JEEr.StatusFlag & "\",");
+            WebOutStringFormatNL("\"filled\":\"" & (JEEr.SerNr>0) & "\"");
+            WebOutStringFormatNL("}"); 
+            i = rwcnt;
+          end;
+        end;
+      end;
     end;
     WebOutStringFormatNL("],");
     WebOutString("""eventrequests"":[");
@@ -1911,6 +2024,7 @@ begin
 
               WebOutStringFormatNL("{");
               WebOutStringFormatNL("\"event\":\"" & JERr.EventNr & "\",");
+              WebOutStringFormatNL("\"reqtype\":\"" & JEr.Type & "\",");
               WebOutStringFormatNL("\"mainevent\":\"" & JEr.Mother & "\",");
               WebOutStringFormatNL("\"date\":\"" & DateToString(JEr.StartDate,"DD.MM") & "\",");
               WebOutStringFormatNL("\"filled\":\"" & JERr.Status & "\"");
@@ -1919,6 +2033,7 @@ begin
           end;
         end;
     end;
+  
     WebOutStringFormatNL("]");
     
     WebOutString("}");
@@ -2206,6 +2321,181 @@ begin
           SMFr.PrintCert = abs(SMFr.PrintCert-1);
           RecordUpdate(oldSMFr,SMFr,true);
         end;
+      end;
+    end;
+  end;
+
+  return;
+end;
+
+function Integer GetCertificateNumber(string tstr)
+begin
+  Integer res,i;
+  Boolean skipf;
+  string 255 tmp;
+
+  skipf = true;
+  for (i=0;i<len(tstr);i=i+1) begin
+    if (mid(tstr,i,1)!="0") then begin
+      skipf = false;
+    end;
+    if (!skipf) then begin
+      tmp = tmp & mid(tstr,i,1);
+    end;
+  end;
+  
+  res = StringToInt(tmp);
+
+  GetCertificateNumber = res;
+  return;
+end;
+
+function string 255 GetNextCertificateNr(Date td)
+begin
+  Integer number,max;
+  Date td2;
+  Boolean TrHs;
+  record CUVc CUr;
+  Longint pos;
+  string 255 tmp,res;
+  
+  td2 = td;
+  td2.month = 1;
+  td2.day = 1;
+  CUr.CertificateDate = td2;
+  CUr.CertificateFlag = 1;
+  TrHs = true;
+  while (LoopKey("CertificateDate",CUr,2,TrHs)) begin
+    if (CUr.CertificateFlag!=1 or (GetYear(CUr.CertificateDate)!=td2.year)) then begin
+      TrHs = false;
+    end else begin
+      pos = -1;
+      GetNextSubstring(CUr.CertificateNr,pos,"/",tmp);
+      GetNextSubstring(CUr.CertificateNr,pos,"/",tmp); 
+      number = GetCertificateNumber(tmp);
+      if (number>max) then begin
+        max = number;
+      end;
+    end;
+  end;
+
+  max = max + 1;
+  res = GetYear(CurrentDate) & "/" & left("00000",5-len(max)) & max;
+
+  GetNextCertificateNr = res;
+  return;
+end;
+
+global webpublic
+updating procedure WebCreateLiqCertificate()
+begin
+  record CUVc CUr,tCUr,oldCUr;
+  record TeacherVc TCr;
+  record SMFVc SMFr;
+  record MentorVc MTr;
+  Integer type;
+  Boolean res;
+
+  if (nonblank(CurrentCust)) then begin
+    tCUr.Code = CurrentCust;
+    if (ReadFirstMain(tCUr,1,true)) then begin 
+      type = GetJAlCustType(tCUr,SMFr,TCr,MTr);
+      if (type==1) then begin
+        CUr.Code = WebGetArg("student");
+        if (ReadFirstMain(CUr,1,true)) then begin
+          if (CUr.TeacherCode==TCr.TeacherCode and CUr.CertificateFlag==0) then begin
+            RecordCopy(oldCUr,CUr);
+            CUr.CertificateFlag = 1;
+            CUr.CertificateDate = CurrentDate;
+            CUr.CertificateNr = GetNextCertificateNr(CurrentDate);
+            CUr.PersonID = WebGetArg("personid");
+            if (RecordUpdate(oldCUr,CUr,true)==0) then begin
+              res = true;
+            end;
+          end;
+        end;
+      end;
+    end;
+  end;
+
+  WebOutString("<res stat='" & res & "'></res>");
+
+  return;
+end;
+
+updating procedure DoPrintLiqCertificate(record RcVc RepSpec)
+begin
+  string 255 filename;
+  
+  filename = "Sertifikats.pdf";
+  SetDocumentFilename(filename);
+  SetMedia(mtPdf);
+  PrintDocument(RepSpec,"LiqCertificateForm",false);
+  SetDocumentFilename("");
+  if (FileExists(filename)) then begin
+    WebSetContentType("application/pdf");
+    WebSetContentDisposition("attachment; filename=" & filename);//or inline?
+    WebOutFile(filename);
+    Delete_File(filename);
+  end;
+
+  return;
+end;
+
+global webpublic
+updating procedure WebPrintLiqCertificate()
+begin
+  record CUVc CUr,tCUr,oldCUr;
+  record TeacherVc TCr;
+  record SMFVc SMFr;
+  record MentorVc MTr;
+  Integer type;
+  Boolean res;
+  record RcVc RepSpec;
+
+  if (nonblank(CurrentCust)) then begin
+    tCUr.Code = CurrentCust;
+    if (ReadFirstMain(tCUr,1,true)) then begin 
+      type = GetJAlCustType(tCUr,SMFr,TCr,MTr);
+      if (type==1) then begin
+        if (WebGetArg("all")=="1") then begin
+          //print document
+          RepSpec.f2 = TCr.TeacherCode;
+          DoPrintLiqCertificate(RepSpec);
+        end else begin
+          CUr.Code = WebGetArg("student");
+          if (ReadFirstMain(CUr,1,true)) then begin
+            if (CUr.TeacherCode==TCr.TeacherCode and CUr.CertificateFlag==1) then begin
+              //print document
+              RepSpec.f1 = CUr.Code;
+              DoPrintLiqCertificate(RepSpec);
+            end;
+          end;
+        end;
+      end;
+    end;
+  end;
+  return;
+end;
+
+global webpublic
+updating procedure WebDownloadLiqCertificate()
+begin
+  record CUVc CUr,tCUr,oldCUr;
+  record TeacherVc TCr;
+  record SMFVc SMFr;
+  record MentorVc MTr;
+  Integer type;
+  Boolean res;
+  record RcVc RepSpec;
+
+  if (nonblank(CurrentCust)) then begin
+    CUr.Code = CurrentCust;
+    if (ReadFirstMain(CUr,1,true)) then begin
+      if (CUr.CertificatePrint==1) then begin
+        //print document
+        RepSpec.f1 = CUr.Code;
+        DoPrintLiqCertificate(RepSpec);
       end;
     end;
   end;

@@ -354,6 +354,20 @@ BEGIN
   SelectWindow(wn);
   RETURN;
 END;
+global
+procedure CertificateListRClassReportDefaults(Integer wn)
+BEGIN
+  record RcVc RepSpec;
+  
+  DeselectWindow(wn,false);
+  GetWindowRecord(wn,RepSpec);
+  ReportDefaults(RepSpec,"CertificateListRClass");
+  RepSpec.long1 = GetYear(CurrentDate);
+  
+  PutWindowRecord(wn,RepSpec);
+  SelectWindow(wn);
+  RETURN;
+END;
 
 
 global

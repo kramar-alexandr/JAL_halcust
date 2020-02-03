@@ -362,6 +362,14 @@ begin
   RadioButton(h2,v+=16,2,0,"Visus",flags[1]);
   EndWindow;
 
+  WindowBegin("Sertifik‚tu saraksts",CertificateListRClass,CGRcW,RcType);
+  SetWRect(80,80,500,180);
+  EditFieldTL(h=120,v=6,50,"Gads",M4Long,Normal,0,long1,false,0);
+  EditFieldTL(h,v+=vs,100,"Skola",M4Str,Normal,100,f2,false,SchoolSClass);
+  EditFieldTL(h,v+=vs,100,"Skolot‚js",M4Str,Normal,100,f3,false,TeacherSClass);
+  EndWindow;
+  
+
   WindowBegin("Atskaite par SMU",SMFRClass,CGRcW,RcType);
   SetWRect(80,80,500,210);
   EditFieldTL(h=150,v=6,150,"Skolas kods",M4Str,Normal,100,f1,false,SchoolSClass);
@@ -964,6 +972,7 @@ begin
   
   CheckBox(h-5,v+=vs,0,"Tikai re®istr•tiem lietot‚jiem",RegFlag);
   HalPushButton(-300,v,-200,v+20,"NewJALEventTranslationDsm","Jauns tulkojums");
+  HalPushButton(-300,v+=25,-200,v+20,"NewJALEventTextDsm","Izdrukas teksts");
   //HalPushButton(-250,v,-150,v+20,"OpenJALEventTranslationDsm","Atv•rt tulkojumu");
   ButtonFrame(h3+50,v=20,150,5,"Dal´ba");
   RadioButton(h3+50,v,0,0,"Cits",StatusFlag);
@@ -976,6 +985,7 @@ begin
 
   ButtonFrame(h3+50,v+=50,150,4,"Tips");
   RadioButton(h3+50,v,0,0,"Pas‚kums",Type);
+  RadioButton(h3+50,v+=16,3,0,"Likvid‚cija",Type);
   RadioButton(h3+50,v+=16,1,0,"2. k‚rtas anketa",Type);
   RadioButton(h3+50,v+=16,2,0,"Anketas jaut‚jumi",Type);
   EditField(h3+120,v+18,60,"Pas‚kums",ViewOnly,Mother,false,0);
@@ -998,6 +1008,13 @@ begin
   HalPushButton(h+=140,-35,h+130,-5,"JALEventFinalSheetDsm","Anketas jaut‚jumi");
   HalPushButton(h+=140,-35,h+130,-5,"JALEvent2LevelDsm","2. k‚rtas anketa");
 
+  EndWindow;
+
+  WindowBegin("Izdrukas teksts",JALEventTextDClass,CGview,-);
+  SetWRect(64,80,560,450);
+  UseView(JALEventTextVc);
+  v = 10; vs = 22; h = 100; h2 = 300;
+  TextField(20,v-5,-20,340,Math,0);
   EndWindow;
 
   WindowBegin("Pas‚kumu lauki",JALEventFieldLClass,CGmlist,-);
@@ -1312,6 +1329,25 @@ begin
   EndMatrix;
   EndWindow;
 
+  WindowBegin("Ievietot Semestri",JALSemesterSClass,CGOther,-);
+  SetWRect(80,80,500,280);
+  StringList(0,0,-17,-1);
+  SearchField("Search");
+  EndWindow;
+
+  WindowBegin("SMU Likvid‚cija",JALLiquidationTCLass,CGHBl,-);
+  SetWRect(80,80,500,280);
+  SetBlid(JALLiquidationBlock);
+  MatrixBegin(10,20,-30,-10,-,10);
+  MatCol(1,25,"Semestris",0,Semester,false,JALSemesterSClass);
+  MatCol(1,105,"No",0,DateFrom,false,PasteCurDate);
+  MatCol(1,185,"L´dz",0,DateTo,false,PasteCurDate);
+  MatCol(1,265,"Anketa",0,EventNr,false,JALEventSClass);
+  EndMatrix;
+  EndWindow;
+
+  
+
   WindowBegin("Pas‚kumu ien‚kumi",EventTurnoverLClass,CGmlist,-);
   SpawnClass(EventTurnoverVcDClass);
   SetWRect(64,80,860,350); 
@@ -1352,6 +1388,12 @@ begin
   SetWRect(20,80,400,220);
   vs=20;
   EditFieldTL(h=160,v=6,120,"Pieteikums",M4Long,Normal,0,long1,false,JALEventEntrySClass);
+  EndWindow;
+
+  WindowBegin("Sertifik‚ts",LiqCertificateFormRClass,CGRcW,RcType);
+  SetWRect(20,80,400,220);
+  vs=20;
+  EditFieldTL(h=160,v=6,120,"Skol•ns",M4Code,Normal,20,f1,false,CUSClass);
   EndWindow;
 
   WindowBegin("Skolot‚ji ar pieredzi",ExpTeacherLClass,CGmlist,-);
@@ -1605,7 +1647,16 @@ begin
   CheckBox(h,v=v,0,"Skol•ns",ConfirmSKL);
   CheckBox(h,v=v+16,0,"Vec‚k/aizbildnis",ConfirmPar);
   CheckBox(h,v=v+16,0,"Skolot‚js",ConfirmTeach);
+
+  ButtonFrame(h,v=v+40,300,7,"Sertifik‚cija");
+  CheckBox(h+100,v=v,0,"Sertific•ts",CertificateFlag);
+  CheckBox(h+100,v+=16,0,"Druk‚ts sertifik‚ts",CertificatePrint);
+  
+  EditField(h+100,v=v+vs,150,"Personas kods",Normal,PersonID,false,0);
+  EditField(h+100,v=v+vs,150,"Sertifik‚ta nr.",Normal,CertificateNr,false,0);
+  EditField(h+100,v=v+vs,150,"Sertifik‚ta datums",Normal,CertificateDate,false,0);
 //CUST-END
+
   Tile(tilenr,240,false,tilenr,DelAddr0); tilenr = tilenr + 1;
   v=6;
   if (HasLocalization("CAN,GBR,LVA,EST,SWE,USA")) then begin

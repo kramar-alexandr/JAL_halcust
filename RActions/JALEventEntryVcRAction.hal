@@ -179,6 +179,28 @@ begin
   return;
 end;
 
+updating procedure CheckLiquidationEntry(record JALEventEntryVc JEEr)
+begin
+  record JALEventVc JEr;
+  record SMFVc SMFr,oldSMFr;
+
+  if (JEEr.CustType==0) then begin
+    JEr.SerNr = JEEr.EventNr;
+    if (ReadFirstMain(JEr,1,true)) then begin
+      if (JEr.Type==3) then begin
+        SMFr.SMFCode = JEEr.AddCode;
+        if (ReadFirstMain(SMFr,1,true)) then begin
+          RecordCopy(oldSMFr,SMFr);
+          SMFr.ApprovalStatus = 5;
+          RecordUpdate(oldSMFr,SMFr,true);
+        end;
+      end;
+    end;
+  end;  
+
+  return;
+end;
+
 global 
 updating function longint JALEventEntryVcRecordUpdateAfter(var record JALEventEntryVc JEEr,record JALEventEntryVc JEE2r,LongInt stat,LongInt long4)
 begin
@@ -205,6 +227,7 @@ begin
         //check and create event request for application after event
     end;
   end;
+  CheckLiquidationEntry(JEEr);
   UpdateJALEventRequest(JEEr);
 
   JALEventEntryVcRecordUpdateAfter = res;
@@ -229,6 +252,7 @@ begin
       CheckEventApplicationRequest(JEEr,2,true);
       //check and create event request for application after event
   end;
+  CheckLiquidationEntry(JEEr);
   UpdateJALEventRequest(JEEr);
 
   JALEventEntryVcRecordSaveAfter = res;

@@ -52,7 +52,8 @@ begin
 	Setting("Nozares",JALIndustryTClass,modJAL);
 	Setting("Semestri",JALSemesterTClass,modJAL);
 	Setting("Skolot‚ji ar pieredzi",ExpTeacherLClass,modJAL);
-	Setting("Standarta Teksti",LTxtLClass,modJAL);
+	Setting("Standarta teksti",LTxtLClass,modJAL);
+	Setting("SMU likvid‚cija",JALLiquidationTCLass,modJAL);
 
 //  Maintenance("Pievienot m‚c?bu firmu",AddSMFMnVClass,AddSMFMn,modJAL);
   Maintenance("Dz•st datus",ClearDBVClass,ClearDBMn,modJAL);
@@ -98,6 +99,7 @@ begin
   Report("Jaunumu saÀ•m•ji",JALNewsListRClass,JALNewsListRn,0,modJAL);
   Report("P‚rskats par neesoäiem failiem",ListLostAttachmentsRClass,ListLostAttachmentsRn,0,modJAL);
   Report("Studentu anom‚lijas",StudentAnomaliesRClass,StudentAnomaliesRn,0,modJAL);
+  Report("Sertifik‚tu saraksts",CertificateListRClass,CertificateListRn,0,modJAL);
 
   Import("Skolu ievietoäana (vecs)",SchoolIn,SchoolIn,modJAL);
 
@@ -106,6 +108,7 @@ begin
 
   Document("SMU",SMFFormRClass,SMFForm,SMFFClass,modJAL);
   Document("Pas‚kuma apliecin‚jums",CertificateFormRClass,CertificateForm,CertificateFClass,modJAL);
+  Document("Sertifik‚ts",LiqCertificateFormRClass,LiqCertificateForm,LiqCertificateFClass,modJAL);
 
 
 /* LV strings: */
@@ -136,7 +139,16 @@ begin
 
   SString(32140,"Novads");
 
-  
+//CertificateListRn
+  SString(32150,"Sertifik‚tu saraksts");
+  SString(32151,"Gads");
+  SString(32152,"V‚rds, uzv‚rds");
+  SString(32153,"Personas kods");
+  SString(32154,"Sertifik‚ta Nr.");
+  SString(32155,"E-pasts");
+  SString(32156,"Skola");
+  SString(32157,"Skolot‚js");
+
 //Error messages
   SString(32202,"SMU kod‚ nor‚d´tâ skola netika atrasta. P‚rbaudiet vai datub‚z• pieejama skola ar kodu ");
   SString(32203,"Skola ar ä‚du kodu, jau ir ievad´ta.");

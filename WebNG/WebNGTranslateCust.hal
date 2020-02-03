@@ -35,10 +35,11 @@ begin
       WebOutString("jal_str['ApprovalMsg1']        = '" & ToolWebNGTranslateText2(70047) & "';");
       WebOutString("jal_str['ApprovalMsg2']        = '" & ToolWebNGTranslateText2(70048) & "';");
       WebOutString("jal_str['ApprovalMsg3']        = '" & ToolWebNGTranslateText2(70049) & "';");
+      WebOutString("jal_str['ApprovalMsg5']        = '" & ToolWebNGTranslateText2(70079) & "';");
       WebOutString("jal_str['TeacherDeclinded']    = '" & ToolWebNGTranslateText2(70065) & "';");
       WebOutString("jal_str['EmpCnt']              = '" & ToolWebNGTranslateText2(70066) & "';");
       WebOutString("jal_str['ApprovalMsg4']        = '" & ToolWebNGTranslateText2(70071) & "';");
-      WebOutString("jal_str['ApprovalMsg5']        = '" & ToolWebNGTranslateText2(70068) & "';");
+      //WebOutString("jal_str['ApprovalMsg5']        = '" & ToolWebNGTranslateText2(70068) & "';");
       WebOutString("jal_str['ApprovalMsg6']        = '" & ToolWebNGTranslateText2(70067) & "';");
       WebOutString("jal_str['FillAllFields']       = '" & ToolWebNGTranslateText2(70069) & "';");
       WebOutString("jal_str['SMUDate2']            = '" & ToolWebNGTranslateText2(70070) & "';");
@@ -46,6 +47,7 @@ begin
       WebOutString("jal_str['TooManyEmployees']    = '" & ToolWebNGTranslateText2(70073) & "';");
       WebOutString("jal_str['AllFieldFilled']      = '" & ToolWebNGTranslateText2(70074) & "';");
       WebOutString("jal_str['ItemWithSampleData']  = '" & ToolWebNGTranslateText2(70075) & "';");
+      WebOutString("jal_str['SMULikvidacijasAnekta']  = '" & ToolWebNGTranslateText2(70078) & "';");
       
 
     case 1://teacher profile
@@ -77,6 +79,13 @@ begin
       WebOutString("jal_str['Msg_ApproveSMU']  = '" & ToolWebNGTranslateText2(70025) & "';");//Apstiprinot SMU ä´ darb´ba nav labojama
       WebOutString("jal_str['Msg_DeclineSMU']  = '" & ToolWebNGTranslateText2(70026) & "';");//Noraidot SMU ä´ darb´ba nav labojama
       WebOutString("jal_str['NoSMU']  = '" & ToolWebNGTranslateText2(70027) & "';");
+      WebOutString("jal_str['RemoveSMUInfo']  = '" & ToolWebNGTranslateText2(70077) & "';");
+      WebOutString("jal_str['CertificateToolTip']  = '" & ToolWebNGTranslateText2(70080) & "';");
+      WebOutString("jal_str['Print']  = '" & ToolWebNGTranslateText2(70081) & "';");
+      WebOutString("jal_str['PersonIDError']  = '" & ToolWebNGTranslateText2(70082) & "';");
+      WebOutString("jal_str['PersonID']  = '" & ToolWebNGTranslateText2(70083) & "';");
+      WebOutString("jal_str['NameSurname']  = '" & ToolWebNGTranslateText2(70084) & "';");
+      
   
   end;
   WebOutString("</script>");

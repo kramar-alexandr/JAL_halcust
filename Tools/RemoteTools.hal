@@ -169,3 +169,22 @@ begin
   CreateChildEvent = res;
   return;
 end;
+
+
+global
+updating function Boolean FindEventText(record JALEventVc JEr,var record JALEventTextVc JETr)
+begin
+  Boolean res;
+
+  JETr.EventNr = JEr.SerNr;
+  if (ReadFirstMain(JETr,1,true)) then begin
+    res = true;
+  end else begin
+    RecordNew(JETr);
+    JETr.EventNr = JEr.SerNr;
+    res = true;
+  end;
+  
+  FindEventText = res;//no point in having it as a function really
+  return;
+end;

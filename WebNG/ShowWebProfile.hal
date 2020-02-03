@@ -10,6 +10,8 @@ external procedure ExtractObj(string,var Integer,var string);
 external procedure OutPutJALWebTexts(Integer);
 external function string 255 ToolWebNGTranslateText2(longint);
 external procedure ShowEmpSection(Boolean);
+external function string 255 UnFormatJSONString(string);
+external function string 255 RemoveEndingLineBreaks(string);
 
 SetLangMode(LangLatvian,"LAT",0);
 
@@ -572,6 +574,40 @@ begin
   return;
 end;
 
+global
+procedure ShowUpdateTextElement()
+begin
+  
+  WebOutString("<div class='smu_descr'><div class='emp_head'>" & ToolWebNGTranslateText2(25921) & "</div><div class='smu_text_wrap'><textarea class='smu_text' name='text'></textarea></div><div class='smu_update spbutton'>" & ToolWebNGTranslateText2(25201) & "</div></div>");
+
+  return;
+end;
+
+global webpublic
+updating procedure WebSetSMUDescription()
+begin
+  record CUVc CUr;
+  record SMFVc SMFr,oldSMFr;
+  record RLinkVc RLr;
+  area a;
+  string 255 tstr;
+  JSON js;
+  
+	CUr.Code = CurrentCust;
+  if ReadFirstMain(CUr,1,true) begin
+    if ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CurrentCust,SMFr) begin
+      RecordCopy(oldSMFr,SMFr);
+      WebGetRawPostData(a);
+      js = ParseJSONArea(a);
+      tstr = UnFormatJSONString(RemoveEndingLineBreaks(JSONGet(js,"Text")));
+      SetTextField(SMFr,tstr);
+      RecordUpdate(oldSMFr,SMFr,true);
+    end;
+  end;
+      
+  return;
+end;
+
 global procedure AddEmpPage()
 begin
   integer err;
@@ -661,22 +697,17 @@ begin
   BlockLoad(JCbl);
 
   cust = WebGetArg("cust");
-  logtext(0,"TchChangePage0 " & cust);
   if nonblank(cust) or nonblank(CurrentCust) then begin
     CUr.Code = cust;
     if(blank(cust))then begin
     	CUr.Code = CurrentCust;
     end;
     cCUr.Code = CurrentCust;
-    logtext(0,"TchChangePage1 " & cust);
     if readfirstmain(cCUr,1,true) then begin end;
-    logtext(0,"TchChangePage2 " & cCUr.Code);
     if readfirstmain(CUr,1,true) then begin
-    	logtext(0,"TchChangePage3 " & CUr.Code);
       if ReadRecordLink(CUr,1,Tchr,RLr) or FindTchrRecord(cCUr.Code,Tchr) then begin
         Schoolr.SchoolCode = Tchr.SchoolCode;
         readfirstmain(Schoolr,1,true);
-      	logtext(0,"TchChangePage4 " & Tchr.CustCode);
         if (cust == CurrentCust or  cCUr.Code == Tchr.CustCode) then begin
           WebOutStringFormatNL("<form method=""POST"" action=""/WebChangeCompTch.hal"">");
           WebOutStringFormatNL("<input type=""hidden"" name=""tch"" value=""" & Tchr.TeacherCode & """>");

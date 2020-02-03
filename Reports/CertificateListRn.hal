@@ -1,0 +1,76 @@
+global
+procedure CertificateListRn(record RcVc RepSpec)
+begin
+  record CUVc CUr;
+  Boolean TrHs,testf;
+  Date td;
+  Integer keylen;
+  record SchoolVc SCr;
+  record TeacherVc TCr;
+
+  StartReportJob(USetStr(32150));
+
+  EndHeader;
+
+  SetRepCol(2,40);
+  SetRepCol(3,110);
+  SetRepCol(4,170);
+  SetRepCol(5,220);
+  SetRepCol(6,310);
+  SetRepCol(7,410);
+
+  StartFormat(15);
+  OutString(0,0,USetStr(32151),false);
+  OutString(2,0,USetStr(32152),false);
+  OutString(3,0,USetStr(32153),false);
+  OutString(4,0,USetStr(32154),false);
+  OutString(5,0,USetStr(32155),false);
+  OutString(6,0,USetStr(32156),false);
+  OutString(7,0,USetStr(32157),false);
+  EndFormat;
+  StartFormat(1);
+  Gray_divider(0,1);
+  EndFormat;
+
+  keylen = 1;
+  CUr.CertificateFlag = 1;
+  if (RepSpec.long1>0) then begin
+    td.year = RepSpec.long1;
+    td.month = 1;
+    td.day = 1;
+    CUr.CertificateDate = td;
+    keylen = 2;
+  end;
+  TrHs = true;
+  while (LoopKey("CertificateDate",CUr,keylen,TrHs)) begin
+    if (CUr.CertificateFlag!=1 or (RepSpec.long1>0 and GetYear(CUr.CertificateDate)!=RepSpec.long1)) then begin
+      TrHs = false;
+    end else begin
+      testf = true;
+      if (nonblank(RepSpec.f2) and RepSpec.f2!=CUr.SchoolCode) then begin
+        testf = false;
+      end;
+      if (nonblank(RepSpec.f3) and RepSpec.f3!=CUr.TeacherCode) then begin
+        testf = false;
+      end; 
+      if (testf) then begin
+        SCr.SchoolCode = CUr.SchoolCode;
+        ReadFirstMain(SCr,1,true);
+        TCr.TeacherCode = CUr.TeacherCode;
+        ReadFirstMain(TCr,1,true);
+        StartFormat(15);
+        OutString(0,0,GetYear(CUr.CertificateDate),false);
+        OutString(2,0,CUr.Name,false);
+        OutString(3,0,CUr.PersonID,false);
+        OutString(4,0,CUr.CertificateNr,false);
+        OutString(5,0,CUr.eMail,false);
+        OutString(6,0,SCr.SchoolName,false);
+        OutString(7,0,TCr.TeacherName,false);
+        EndFormat;
+      end;
+    end;
+  end;
+  EndJob;
+
+  return;
+end;

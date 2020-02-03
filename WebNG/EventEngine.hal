@@ -865,7 +865,7 @@ begin
           end;
         end else begin
           JEEr.EventNr = JEr.SerNr;
-          if recordStore(JEEr,true) then begin
+          if recordInsert(JEEr,true) then begin
             nextf = true;
             id = JEEr.SerNr;
             GetVectorTags(vVals,tagarr);

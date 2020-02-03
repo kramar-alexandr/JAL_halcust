@@ -999,6 +999,15 @@ begin
   RecordField(Salary,M4Val,0,0);
   RecordField(TitanFlag,M4Int,0,0);
   RecordField(EnuDienaFlag,M4Int,0,0);
+  RecordField(CertificateFlag,M4Int,0,0);
+  RecordField(PersonID,M4Str,255,0);
+  RecordField(CertificateNr,M4Str,255,0);
+  RecordField(CertificateDate,M4Date,0,0);
+  RecordField(CertificatePrint,M4Int,0,0);
+  KeyBegin(CertificateDate);
+  KeySegment(CertificateFlag);
+  KeySegment(CertificateDate);
+  KeySegment(Code);
   EndRecordAdd;
 
   BlockBegin(JALPartnerBlock,-,"");
@@ -1071,6 +1080,23 @@ begin
   MainKeyBegin(MainKey,0);
   KeySegment(UUID);
   EndRecord;
+
+  RecordBegin(JALEventTextVc,-,"");
+  RecordField(EventNr,M4Long,0,0);
+  RecordField(Math,M4TextField,0,0);
+  MainKeyBegin(EventNr,0);
+  KeySegment(EventNr);
+  EndRecord;
+
+  BlockBegin(JALLiquidationBlock,-,"");
+  RecordField(Math,M4Matrix,0,0);
+  ArrayBegin(Math,-,1);
+  ArrayField(Semester,M4Str,255,0);
+  ArrayField(DateFrom,M4Date,0,0);
+  ArrayField(DateTo,M4Date,0,0);
+  ArrayField(EventNr,M4Long,0,0);
+  EndArray;
+  EndBlock;
   
   return;
 end;

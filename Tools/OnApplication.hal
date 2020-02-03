@@ -5,6 +5,7 @@ updating procedure OnApplicationStartupComplete()
 begin
   Integer i;
   record SMFVc SMFr;
+  record JALEventEntryVc JEEr;
   string 255 filename;
 
   inner.OnApplicationStartupComplete;
@@ -21,6 +22,19 @@ begin
         SetDocumentFilename(filename);
         SetMedia(mtPdf);
         PrintDocument(SMFr,"SMFForm",false);
+        SetDocumentFilename("");
+        if (FileExists(filename)) then begin
+          Delete_File(filename);
+        end;
+      end;
+    end;
+    JEEr.SerNr = -1;
+    if (ReadLastKey("SerNr",JEEr,1,false)) then begin
+      filename = "apliecinajums.pdf";
+      for (i=0;i<8;i=i+1) begin
+        SetDocumentFilename(filename);
+        SetMedia(mtPdf);
+        PrintDocument(JEEr,"CertificateForm",false);
         SetDocumentFilename("");
         if (FileExists(filename)) then begin
           Delete_File(filename);

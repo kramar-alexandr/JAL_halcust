@@ -38,6 +38,7 @@ external procedure ShowChangePasswordPage();
 external procedure ShowAfterDeletePage();
 external procedure ShowProfileCorrectionInfo();
 external procedure AddEmpPage();
+external procedure ShowUpdateTextElement();
 external procedure EmpChangePage();
 external procedure TchChangePage();// Edit ************************** BPI Ukraine - KramarAlexandr - Monday, 29 October 2018 13:41:27
 external procedure DrawPasswordRecoveryPage();
@@ -216,6 +217,8 @@ begin
     ShowProfileCorrectionInfo; res = true;
   case "AddEmpPage":
     AddEmpPage; res = true;
+  case "UpdateText":
+    ShowUpdateTextElement; res = true;
   case "EmpChangePage":
     EmpChangePage; res = true;
   case "TchChangePage":// Edit ************************** BPI Ukraine - KramarAlexandr - Monday, 29 October 2018 13:41:22

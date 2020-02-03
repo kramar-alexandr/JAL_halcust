@@ -243,7 +243,7 @@ begin
       cnt = 0;
       while (LoopKey("Classification:" & JPbrw.Classification,CUr,1,true)) begin
         cnt = cnt + 1;
-        if (cnt==6) then begin
+        if (cnt>1 and mod(cnt-1,5)==0) then begin
           WebOutString("<div class='one-flex-header'></div>");//CHN::So ugly - please forgive me
         end;
         WebOutString("<div class='one-flex'>");

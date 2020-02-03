@@ -3,51 +3,83 @@ external inner function Integer NumberofDocumentPages(string,Integer);
 external inner procedure CommonDocumentFields(record RcVc);
 external inner procedure PrintCredManHeader(record CredManVc);
 
-procedure PrintCertificate(record RcVc RepSpec)
+function string 255 GetSchoolYear(Date td)
 begin
-  record CUVc CUr;
+  string 255 res;
+  record JALLiquidationBlock JLb;
+  row JALLiquidationBlock JLbrw;
+  Integer i,rwcnt;
+
+  BlockLoad(JLb);
+  rwcnt = MatRowCnt(JLb);
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(JLb,i,JLbrw);
+    if (DateInRange(td,JLbrw.DateFrom,JLbrw.DateTo)) then begin
+      res = JLBrw.Semester;
+    end;
+  end;
+
+  GetSchoolYear = res;
+  return;
+end;
+
+procedure PrintCertificate(record CUVc CUr)
+begin
   Integer i,rw,lcnt;
-  record RLinkVc RLr;
   record SchoolVc SCr;
-  row SMFVc SMFrw;
   string 255 tstr,tmp,t;
   Longint pos,tpos,cnt,lastspace,chrcnt,rowcnt;
   record TeacherVc TCr;
-  record JALEventVc JEr;
-  record JALEventEntryVc JEEr;
-  record SMFVc SMFr;
-  record JALEventTextVc JETr;
 
-  JEEr.SerNr = RepSpec.long1;
-  if (ReadFirstMain(JEEr,1,true)) then begin
 
-    SMFr.SMFCode = JEEr.AddCode;
-    if (ReadFirstMain(SMFr,1,true)) then begin
-      OutFormField("F_SMFCODE",SMFr.SMFCode);
-      OutFormField("F_SMFNAME",SMFr.SMFName);
-      CUr.Code = JEEr.CustCode;
-      if (ReadFirstMain(CUr,1,true)) then begin
-        OutFormField("F_STUDENTNAME",CUr.Name);
-        SCr.SchoolCode = CUr.SchoolCode;
-        if (ReadFirstMain(SCr,1,true)) then begin
-          OutFormField("F_SCHOOLNAME",SCr.SchoolName);
-        end;  
-      end;
-    end;
+  OutFormField("F_CERTNR",CUr.CertificateNr);
+  OutFormField("F_CERTDATE",CUr.CertificateDate);
+  OutFormField("F_STUDENTNAME",CUr.Name);
+  OutFormField("F_STUDENTID",CUr.PersonID);
+  OutFormField("F_SCHOOLYEAR",GetSchoolYear(CUr.CertificateDate));
+  SCr.SchoolCode = CUr.SchoolCode;
+  if (ReadFirstMain(SCr,1,true)) then begin
+    OutFormField("F_SCHOOLNAME",SCr.SchoolName);
+    OutFormField("F_SCHOOLDIR",SCr.Director);
+  end;  
+  TCr.TeacherCode = CUr.TeacherCode;
+  if (ReadFirstMain(TCr,1,true)) then begin
+    OutFormField("F_TEACHERNAME",TCr.TeacherName);
+  end;
 
-    JEr.SerNr = JEEr.EventNr;
-    if (ReadFirstMain(JEr,1,true)) then begin
-      OutFormField("F_PARTNAME",JEr.Comment);
-      OutFormField("F_PARTDATE",Getyear(JEr.EndDate) & USetStr(16003) & " " & GetDay(JEr.EndDate) & ". " & UsetStr(3000009+GetMonth(JEr.EndDate)));
-      OutFormImage(JEr);
+  return;
+end;
 
-      JETr.EventNr = JEr.SerNr;
-      if (ReadFirstMain(JETr,1,true)) then begin
-        lcnt = LineTextCnt2(JETr);
-        for (i=0;i<lcnt;i=i+1) begin
-          OUTFORMFIELD("F_PARTTEXT",LineTextGet2(JETr,i));
+procedure CheckAndPrintCertificate(record RcVc RepSpec)
+begin
+  record CUVc CUr;
+  Date td2;
+  Boolean TrHs;
+ 
+  if (nonblank(RepSpec.f2)) then begin
+    //teacher
+    CUr.CertificateFlag = 1;
+    td2 = CurrentDate;
+    td2.month = 1;
+    td2.day = 1;
+    CUr.CertificateDate = td2;
+    CUr.CertificateFlag = 1;
+    TrHs = true;
+    while (LoopKey("CertificateDate",CUr,2,TrHs)) begin
+      if (CUr.CertificateFlag!=1 or (GetYear(CUr.CertificateDate)!=td2.year)) then begin
+        TrHs = false;
+      end else begin
+
+        if (CUr.TeacherCode==RepSpec.f2) then begin
+          PrintCertificate(CUr);
+          EndFormRow;
         end;
       end;
+    end;
+  end else begin
+    CUr.Code = RepSpec.f1;
+    if (ReadFirstMain(CUr,1,true)) then begin
+      PrintCertificate(CUr);
     end;
   end;
 
@@ -55,14 +87,14 @@ begin
 end;
 
 global
-procedure DoCertificateForm(record RcVc RepSpec,record RcVc RepSpec2)
+procedure DoLiqCertificateForm(record RcVc RepSpec,record RcVc RepSpec2)
 BEGIN
   record DocVc Docr;
   record FormDefVc FDr;
   row FormDefVc FDrw;
   Integer i,rwcnt;
   string 255 tstr;
-  Boolean printf,langf;
+  Boolean printf,langf,openformf;
   Integer intdocnr;
   string 30 formcode,langcode;
     
@@ -102,9 +134,8 @@ LBREAK:;
         if (ReadFirstMain(Docr,1,true)) then begin
         end;
 //rest of fields go here
-        PrintCertificate(RepSpec2);
-
-        CloseForm;        
+        CheckAndPrintCertificate(RepSpec2);
+        CloseForm; 
       end else begin
         printf = false;
         MessageBox(1546,formcode);
@@ -123,13 +154,14 @@ END;
  
 
 global
-procedure CertificateForm(record RcVc RepSpec)
+procedure LiqCertificateForm(record RcVc RepSpec)
 BEGIN
   record RcVc RepSpec2;
   Boolean tmpf;
   
-  RepSpec2.long1 = RepSpec.long1;
-  tmpf = PrintDocument(RepSpec2,"CertificateForm",false);    
+  RepSpec2.f1 = RepSpec.f1;
+  RepSpec2.f2 = RepSpec.f2;
+  tmpf = PrintDocument(RepSpec2,"LiqCertificateForm",false);    
   
   RETURN;
 END;
