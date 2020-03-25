@@ -20,6 +20,8 @@ begin
   string 255 res;
   
   res = StrReplace(tstr,"\"","\\\"");
+  res = StrReplace(res,chr(13) & chr(10),"\\n");//chr(13) & 
+  res = StrReplace(res,chr(10),"\\n");//chr(13) & 
 
   FormatJSONString = res;
   return;
@@ -1927,7 +1929,7 @@ begin
   record JALEventRequestVc JERr;
   record JALLiquidationBlock JLb;
   row JALLiquidationBlock JLbrw;
-  Integer i,rwcnt;
+  Integer i,rwcnt,parttype;
 
   cnt = 0;
   CUr.Code = CurrentCust;
@@ -2027,7 +2029,9 @@ begin
               WebOutStringFormatNL("\"reqtype\":\"" & JEr.Type & "\",");
               WebOutStringFormatNL("\"mainevent\":\"" & JEr.Mother & "\",");
               WebOutStringFormatNL("\"date\":\"" & DateToString(JEr.StartDate,"DD.MM") & "\",");
-              WebOutStringFormatNL("\"filled\":\"" & JERr.Status & "\"");
+              
+              //WebOutStringFormatNL("\"filled\":\"" & JERr.Status & "\"");
+              WebOutStringFormatNL("\"filled\":\"" & SMUParticipatedInEvent(SMFr,JERr.EventNr,parttype) & "\"");
               WebOutStringFormatNL("}"); 
             end;
           end;

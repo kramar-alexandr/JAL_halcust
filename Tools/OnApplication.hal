@@ -41,7 +41,33 @@ begin
         end;
       end;
     end;
-  end;  
+  end; 
 
+/*
+  //one time thing
+  begin
+    record EventTurnoverVc EVr,oldEVr;
+    record FCSMUVc FCr,oldFCr;
+    if (ServerMode) then begin
+      while (LoopMain(FCr,1,true)) begin
+        RecordCopy(oldFCr,FCr);
+        FCr.ItemName = left(FCr.ItemName,80);
+        if (RecordUpdate(oldFCr,FCr,true)!=0) then begin
+          FCr.ItemName = FCr.ItemName & 2;
+          RecordUpdate(oldFCr,FCr,true);
+        end;
+      end; 
+
+      while (LoopMain(EVr,1,true)) begin
+        RecordCopy(oldEVr,EVr);
+        EVr.ItemName = left(EVr.ItemName,80);
+        if (RecordUpdate(oldEVr,EVr,true)!=0) then begin
+          EVr.ItemName =EVr.ItemName & 2;
+          RecordUpdate(oldEVr,EVr,true)
+        end;
+      end; 
+    end;
+  end;
+*/
   return;
 end;

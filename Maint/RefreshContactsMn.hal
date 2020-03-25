@@ -1,0 +1,44 @@
+
+global
+updating procedure RefreshContactsMn(record RcVc RepSpec)
+begin
+  record CUVc CUr,oldCUr;
+  record SchoolVc SCr;
+
+  while (LoopMain(CUr,1,true)) begin
+    if (nonblank(CUr.SchoolCode)) then begin
+      RecordCopy(oldCUr,CUr);
+      if (RepSpec.flags[1]==1) then begin
+        SCr.SchoolCode = CUr.SchoolCode;
+        if (ReadFirstMain(SCr,1,true)) then begin
+          if (SCr.Approved==0) then begin
+            CUr.blockedFlag = 1;
+          end else begin
+            CUr.blockedFlag = 0;
+          end;
+        end;
+      end;
+      if (RepSpec.flags[2]==1) then begin
+        if (CUr.CalcClassNum>0) then begin
+          CUr.CalcClassNum = CUr.CalcClassNum + 1;
+        end else begin
+          CUr.CalcClassNum = StringToInt(CUr.ClassNum) + 1;
+        end;
+        if (CUr.CalcClassNum>=14) then begin
+          CUr.AllowLogin = 0;
+        end;
+      end;
+      if (RepSpec.flags[3]==1 and nonblank(RepSpec.f1)) then begin
+        CUr.SchoolCode = RepSpec.f1;
+      end;
+      if (RepSpec.flags[4]==1) then begin
+        if (nonblank(CUr.TeacherCode) and nonblank(RepSpec.f2)) then begin
+          CUr.TeacherCode = RepSpec.f2;
+        end;
+      end;
+      RecordUpdate(oldCUr,CUr,true);
+    end;
+  end;
+
+  return;
+end;

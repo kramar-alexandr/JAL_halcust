@@ -65,7 +65,7 @@ begin
     WebOutString("<div class='field_descr'>" & ToolWebNGTranslateText2(80088) & "</div>");
   end;
   WebOutString("<div id='temp_table_wrap'><div class='table_field_wrap'>");
-  WebOutString("<div class='table_field itemname'><div class='table_field_label'>" & ToolWebNGTranslateText2(80085) & "</div><input type='text'></div>");
+  WebOutString("<div class='table_field itemname'><div class='table_field_label'>" & ToolWebNGTranslateText2(80085) & "</div><input type='text' maxlength='80'></div>");
   WebOutString("<div class='table_field itemprice'><div class='table_field_label'>" & ToolWebNGTranslateText2(80086) & "</div><input type='text'></div>");
   WebOutString("<div class='table_field costprice'><div class='table_field_label'>" & ToolWebNGTranslateText2(80087) & "</div><input type='text' readonly></div>");
   WebOutString("<div class='table_field itemdelete'>" & ToolWebNGTranslateText2(80089) & "</div>");
@@ -718,7 +718,7 @@ begin
   RecordClear(FCr);
   RecordNew(FCr);
   FCr.SMUCode = smucode;
-  FCr.ItemName = UnFormatJSONString(itemname);
+  FCr.ItemName = left(UnFormatJSONString(itemname),80);
   return;
 end;
 
@@ -746,7 +746,7 @@ begin
   RecordClear(ETr);
   RecordNew(ETr);
   ETr.SMUCode = smucode;
-  ETr.ItemName = UnFormatJSONString(itemname);
+  ETr.ItemName = left(UnFormatJSONString(itemname),80);
   return;
 end;
 

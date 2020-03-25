@@ -1,0 +1,193 @@
+
+
+event DefineWindows
+begin
+  array string 50 procname,labelname;
+  longint curt;
+  integer cnt,pos,i;
+  boolean TrHs;
+  real fs;
+
+  real h,h2,h3,hc,v,v2,vs,vm,tilenr;
+  
+  SetLangMode(LangLatvian,"LAT",0);
+
+  WindowBegin("Finanäu apr•úinu arh´vs",ArchiveFCSMULClass,CGmlist,-);
+  SpawnClass(ArchiveFCSMUDClass);
+  SetWRect(64,80,860,350); 
+  Sizeable(-1,-1,0,0);
+  UseView(ArchiveFCSMUVc);
+  RecordList(4,17,-21,-39);
+  h = 250; v=0; vs=100; h2 = 550;
+  RlColKey(32,32,"Kods",SMUCode,false,MainKey);
+  RlCol   (120,120,"Prece",ItemName,false);
+  RlCol   (-100,-100,"Gads",Semester,false);
+  SearchField("Mekl•t");
+  EndWindow;
+  
+  WindowBegin("Finanäu apr•úinu arh´vs",ArchiveFCSMUDClass,CGview,-);
+  SetWRect(64,80,860,350);
+  Sizeable(-1,-1,0,0);
+  UseView(ArchiveFCSMUVc);
+  h = 150; v=0; vs=20; h2 = 550;
+  Editfield(h,v,100,"Gads",Normal,Semester,false,0);
+  Editfield(h,v+=vs,100,"Kods",Normal,SMUCode,false,0);
+  Editfield(h,v+=vs,100,"Prece",Normal,ItemName,false,0);
+
+  Editfield(h,v=v+vs,100,"Darbinieka 1 v‚rds,uzv‚rds",Normal,contact1,false,0);
+  Editfield(h,v=v+vs,100,"Darbinieka 2 v‚rds,uzv‚rds",Normal,contact2,false,0);
+  Editfield(h,v=v+vs,100,"Darbinieka 3 v‚rds,uzv‚rds ",Normal,contact3,false,0);
+  EditField(h,v=v+vs,100,"Darbinieka 4 v‚rds,uzv‚rds",Normal,contact4,false,0);
+  EditField(h,v=v+vs,100,"Darbinieka 1 alga",Normal,salary1,false,0);
+  Editfield(h,v=v+vs,100,"Darbinieka 2 alga",Normal,salary2,false,0);
+  EditField(h,v=v+vs,100,"Darbinieka 3 alga",Normal,salary3,false,0);
+  EditField(h,v=v+vs,100,"Darbinieka 4 alga",Normal,salary4,false,0);
+
+  MatrixBegin(10,v=v+vs+50,-30,-10,-,10);
+  MatCol(1,32,"Produkta nosaukums",0,ProdName,false,0);
+  MatCol(1,150,"1 vien. paäizm. EUR",0,UCost,false,0);
+  EndMatrix;
+  EndWindow;
+
+  WindowBegin("Pieteikumi skolot‚jiem/mentoriem arh´vs",ArchiveJALTeacherAccLClass,CGmlist,-);
+  SpawnClass(ArchiveJALTeacherAccDClass);
+  SetWRect(64,80,560,350);
+  Sizeable(-1,-1,0,0);
+  UseView(ArchiveJALTeacherAccVc);
+  RecordList(4,17,-21,-39);
+  RlColKey(4,2,"S•r.Nr.",SerNr,false,SerNr);
+  RlCol   (100,100,"SMU",SMFCode,false);
+  RlCol   (200,200,"Datums",TransDate,false);
+  RlCol   (-100,-100,"Gads",Semester,false);
+
+  SearchField("Mekl•t");
+  EndWindow;
+
+  WindowBegin("Pieteikuma arh´vs",ArchiveJALTeacherAccDClass,CGview,-);
+  SetWRect(64,80,560,230);
+  UseView(ArchiveJALTeacherAccVc);
+  v = 10; vs = 22; h = 100; h2 = 260;
+  EditField(h,v=6,90,"Gads",Normal,Semester,false,0);
+  EditField(h,v+=vs,90,"S•r. nr.",Normal,SerNr,false,0);
+  EditField(h,v+=vs,90,"SMU",Normal,SMFCode,false,SMFSClass);
+  EditField(h,v+=vs,90,"Datums",Normal,TransDate,false,PasteCurDate);
+  EditField(h2,v,90,"Laiks",Normal,TransTime,false,PasteCurTime);
+  EditField(h,v+=vs,90,"Tips",Normal,RecType,false,SetSClass);
+  EditField(h2,v,90,"Kods",Normal,RecCode,false,0);
+  ButtonFrame(h,v+=40,120,3,"Statuss");
+  RadioButton(h,v,0,0,"Izveidots",StatusFlag);
+  RadioButton(h,v+=16,1,0,"Apstiprin‚ts",StatusFlag);
+  RadioButton(h,v+=16,2,0,"Noraid´ts",StatusFlag);
+  EndWindow;
+
+  WindowBegin("Pas‚kumu pieteikumu arh´vs",ArchiveJALEventEntryLClass,CGmlist,-);
+  SpawnClass(ArchiveJALEventEntryDClass);
+  SetWRect(64,80,560,350);
+  Sizeable(-1,-1,0,0);
+  UseView(ArchiveJALEventEntryVc);
+  RecordList(4,17,-21,-39);
+  RlColKey(4,2,"S•r.Nr.",SerNr,false,SerNr);
+  RlCol   (100,100,"Datums",TransDate,False);
+  RlCol   (-100,-100,"Gads",Semester,False);
+  SearchField("Mekl•t");
+  EndWindow;
+
+  WindowBegin("Pas‚kuma pieteikuma arh´vs",ArchiveJALEventEntryDClass,CGview,-);
+  SetWRect(64,80,650,530);
+  UseView(ArchiveJALEventEntryVc);
+  v = 10; vs = 22; h = 100; h2 = 280; h3=400;
+  EditField(h,v=6,90,"Gads",Normal,Semester,false,0);
+  EditField(h,v+=vs,90,"S•r. nr.",Normal,SerNr,false,0);
+  EditField(h2,v,90,"Datums",Normal,TransDate,false,PasteCurDate);
+  EditField(h,v+=vs,90,"Tips",Normal,CustType,false,SetSClass);
+  EditField(h,v+=vs,90,"Kods",Normal,AddCode,false,0);
+  EditField(h2,v,90,"Nosaukums",Normal,SMFName,false,0);
+  
+  EditField(h,v+=vs,90,"Klients",Normal,CustCode,false,CUDClass);
+  EditField(h,v+=vs,90,"Pas‚kums",Normal,EventNr,false,0);
+  EditField(h,v+=vs,90,"Skolot‚js",Normal,TeacherCode,false,0);
+  
+  vm = v;
+  ButtonFrame(h3,v=20,150,5,"Statuss");
+  RadioButton(h3,v,0,0,"Jauns",StatusFlag);
+  RadioButton(h3,v+=16,1,0,"Apstiprin‚ts",StatusFlag);
+  RadioButton(h3,v+=16,2,0,"Noraid´ts",StatusFlag);
+	RadioButton(h3,v+=16,3,0,"Apmekl•ja",StatusFlag);
+	RadioButton(h3,v+=16,4,0,"Apstiprin‚ts - skolot‚js",StatusFlag);
+  v = vm;
+
+  MatrixBegin(4,v+=40,-21,-10,-,20);
+  MatCol(1,32,"Lauks",0,Field,false,JALEventFieldSClass);
+  MatCol(1,100,"Koment‚rs",0,Comment,false,0);
+  MatCol(1,240,"V•rt´ba",0,Value,false,SetSClass);
+  EndMatrix;
+  EndWindow;
+
+
+  WindowBegin("Pas‚kumu ien‚kumu arh´vs",ArchiveEventTurnoverLClass,CGmlist,-);
+  SpawnClass(ArchiveEventTurnoverVcDClass);
+  SetWRect(64,80,860,350); 
+  Sizeable(-1,-1,0,0);
+  UseView(ArchiveEventTurnoverVc);
+  RecordList(4,17,-21,-39);
+  h = 250; v=0; vs=100; h2 = 550;
+  RlColKey(32,32,"Kods",SMUCode,false,MainKey);
+  RlCol   (120,120,"Prece",ItemName,false);
+  RlCol   (-100,-100,"Gads",Semester,false);
+  SearchField("Mekl•t");
+  EndWindow;
+ 
+  
+  WindowBegin("Pas‚kumu ien‚kumu arh´vs",ArchiveEventTurnoverVcDClass,CGview,-);
+  SetWRect(64,80,860,350);
+  UseView(ArchiveEventTurnoverVc);
+  h = 100; v=6; vs=20; h2 = 550;
+  Editfield(h,v,100,"Gads",Normal,Semester,false,0);
+  Editfield(h,v+=vs,100,"Kods",Normal,SMUCode,false,0);
+  Editfield(h,v+=vs,100,"Prece",Normal,ItemName,false,0);
+  MatrixBegin(10,v=v+vs+50,-30,-10,-,10);
+  MatCol(1,32,"Pas‚kums",0,EventType,false,SetSClass);
+  MatCol(1,150,"1 vien. paäizm. EUR",0,UCost,false,0);
+  MatCol(1,280,"1 vien. cena",0,UPrice,false,0);
+  MatCol(1,380,"P‚rdoto vien. sk.",0,SoldUnits,false,0);
+  MatCol(1,480,"Ien‚kumi",0,Income,false,0);
+  MatCol(1,580,"Izdevumi",0,Costs,false,0);
+  MatCol(1,680,"PeºÀa",0,Profit,false,0);
+  EndMatrix;
+  EndWindow;
+
+  return;
+end;
+
+window ArchiveJALEventRequestLClass:1
+  wtag("language","ENG"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  WindowBegin("Pas‚kumu piepras´jumu arh´vs",ArchiveJALEventRequestLClass,CGmlist,-);
+  SetWRect(20,80,660,298);
+  Sizeable(-1,-1,0,0);
+  SpawnClass(ArchiveJALEventRequestDClass);
+  UseView(ArchiveJALEventRequestVc);
+  RecordList(4,17,-21,-39);
+  RlColKey(4,4,"S•r. Nr.",SerNr,false,SerNr);
+  RlCol   (100,100,"Pas‚kums",EventNr,false);
+  RlCol   (196,196,"SMU",SMFCode,false);
+  RlCol   (-100,-100,"Gads",Semester,false);
+  SearchField("Search");
+  EndWindow;
+end;
+
+window ArchiveJALEventRequestDClass:1
+  wtag("language","ENG"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,v2,vs2,hm;
+  WindowBegin("Pas‚kumu piepras´juma arh´vs",ArchiveJALEventRequestDClass,CGview,-);
+  SetWRect(20,80,600,339);
+  UseView(ArchiveJALEventRequestVc);
+  vs=20; h=120; vs2=16; hm=-100;
+  EditField(h,v=6,150,"Gads",Normal,Semester,false,);
+  EditField(h,v+=vs,150,"S•r. Nr.",Normal,SerNr,false,);
+  EditField(h,v+=vs,150,"Pas‚kums",Normal,EventNr,false,0);
+  EditField(h,v+=vs,150,"SMU",Normal,SMFCode,false,0);
+  CheckBox(h,v+=vs,0,"Izveidots",Status);
+  EndWindow;
+end;

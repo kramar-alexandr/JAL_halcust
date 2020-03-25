@@ -1,0 +1,15 @@
+global
+updating procedure RenewSchoolsMn(record RcVc RepSpec)
+begin
+  record SchoolVc SCr,oldSCr;
+  
+  if (RepSpec.flags[1]==1) then begin
+    while (LoopMain(SCr,1,true)) begin
+      RecordCopy(oldSCr,SCr);
+      SCr.Approved = 0;
+      RecordUpdate(oldSCr,SCr,true);
+    end;
+  end;
+  
+  return;
+end;

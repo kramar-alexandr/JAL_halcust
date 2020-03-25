@@ -1,0 +1,284 @@
+
+procedure CopySMFFields(record SMFVc SMFr,var record ArchiveSMFVc aSMFr)
+begin
+  Integer i,rwcnt;
+  row SMFVc SMFrw;
+  row ArchiveSMFVc aSMFrw;
+  string 255 tstr;
+
+  aSMFr.SMFCode = SMFr.SMFCode;
+  aSMFr.SMFName = SMFr.SMFName;
+  aSMFr.Manager = SMFr.Manager;
+  aSMFr.Email = SMFr.Email;
+  aSMFr.Region = SMFr.Region;
+  aSMFr.StatusFlag = SMFr.StatusFlag;
+  aSMFr.StatusName = SMFr.StatusName;
+  aSMFr.TypeName = SMFr.TypeName;
+  aSMFr.TypeFlag = SMFr.TypeFlag;
+  aSMFr.Comment = SMFr.Comment;
+  aSMFr.TeacherCode = SMFr.TeacherCode;
+  aSMFr.TeacherName = SMFr.TeacherName;
+  aSMFr.SchoolCode = SMFr.SchoolCode;
+  aSMFr.SchoolName = SMFr.SchoolName;
+  aSMFr.Approved = SMFr.Approved;
+  aSMFr.TransDate = SMFr.TransDate;
+  aSMFr.Objects = SMFr.Objects;
+  aSMFr.CompNr = SMFr.CompNr;
+  for (i=0;i<LineTextCnt2(SMFr);i=i+1) begin
+    tstr = tstr & LineTextGet2(SMFr,i);
+  end;
+  SetTextField(aSMFr,tstr);
+  aSMFr.CustCode = SMFr.CustCode;
+  aSMFr.Doc0 = SMFr.Doc0;
+  aSMFr.Doc1 = SMFr.Doc1;
+  aSMFr.Doc2 = SMFr.Doc2;
+  aSMFr.Doc3 = SMFr.Doc3;
+  aSMFr.Doc4 = SMFr.Doc4;
+  aSMFr.Doc5 = SMFr.Doc5;
+  aSMFr.Doc6 = SMFr.Doc6;
+  aSMFr.Doc7 = SMFr.Doc7;
+  aSMFr.Doc8 = SMFr.Doc8;
+  aSMFr.Doc9 = SMFr.Doc9;
+  aSMFr.ServerCode = SMFr.ServerCode;
+  aSMFr.ProdSpec = SMFr.ProdSpec;
+  aSMFr.ClassNum = SMFr.ClassNum;
+  aSMFr.ClassChar = SMFr.ClassChar;
+  aSMFr.RecType = SMFr.RecType;
+  aSMFr.ReadyFlag = SMFr.ReadyFlag;
+  
+  aSMFr.ParentName = SMFr.ParentName;
+  aSMFr.ParentSurName = SMFr.ParentSurName;
+  aSMFr.ParenteMail = SMFr.ParenteMail;
+  aSMFr.AgeFlag = SMFr.AgeFlag;
+  aSMFr.Member = SMFr.Member;
+  aSMFr.TargetAud = SMFr.TargetAud;
+  aSMFr.ConfirmSKL = SMFr.ConfirmSKL;
+  aSMFr.ConfirmPar = SMFr.ConfirmPar;
+  aSMFr.ConfirmTech = SMFr.ConfirmTech;
+  aSMFr.LiquidDate = SMFr.LiquidDate;
+  aSMFr.FirstUpd = SMFr.FirstUpd;
+  aSMFr.RegDate = SMFr.RegDate;
+  aSMFr.ActDateStart = SMFr.ActDateStart;
+  aSMFr.ActDateEnd = SMFr.ActDateEnd;
+  aSMFr.Education = SMFr.Education;
+  aSMFr.EducationType = SMFr.EducationType;
+  aSMFr.ApprovalStatus = SMFr.ApprovalStatus;
+  aSMFr.TitanFlag = SMFr.TitanFlag;
+  aSMFr.EnuDienaFlag = SMFr.EnuDienaFlag;
+  aSMFr.OldApprovalStatus = SMFr.OldApprovalStatus;
+  aSMFr.PrintCert = SMFr.PrintCert;
+
+  rwcnt = MatRowCnt(SMFr);
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(SMFr,i,SMFrw);
+    ClearRow(aSMFr,aSMFrw,1);
+    aSMFrw.Type = SMFrw.Type;
+    aSMFrw.Code = SMFrw.Code;
+    aSMFrw.Name = SMFrw.Name;
+    MatRowPut(aSMFr,i,aSMFrw);//will this actually work?? :O
+  end;
+//  ArrayField(Type,M4Set,1005,0);
+//  ArrayField(Code,M4Code,10,0);
+//  ArrayField(Name,M4Str,50,0);
+
+  return;
+end;
+
+procedure CopyJEErFields(record JALEventEntryVc JEEr,var record ArchiveJALEventEntryVc aJEEr)
+begin
+  row JALEventEntryVc JEErw;
+  row ArchiveJALEventEntryVc aJEErw;
+  Integer i,rwcnt;
+
+  aJEEr.SerNr = JEEr.SerNr;
+  aJEEr.TransDate = JEEr.TransDate;
+  aJEEr.CustType = JEEr.CustType;
+  aJEEr.CustCode = JEEr.CustCode;
+  aJEEr.AddCode = JEEr.AddCode;
+  aJEEr.StatusFlag = JEEr.StatusFlag;
+  aJEEr.EventNr = JEEr.EventNr;
+  aJEEr.OkFlag = JEEr.OkFlag;
+  aJEEr.TeacherCode = JEEr.TeacherCode;
+  aJEEr.SMFName = JEEr.SMFName;
+
+  rwcnt = MatRowCnt(JEEr);
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(JEEr,i,JEErw);
+    ClearRow(aJEEr,aJEErw,1);
+    aJEErw.Field = JEErw.Field;
+    aJEErw.Comment = JEErw.Comment;
+    aJEErw.Value = JEErw.Value;
+    MatRowPut(aJEEr,i,aJEErw);
+  end;
+
+  return;
+end;
+
+procedure CopyFCSFields(record FCSMUVc FCSr,var record ArchiveFCSMUVc aFCSr)
+begin
+  row FCSMUVc FCSrw;
+  row ArchiveFCSMUVc aFCSrw;
+  Integer i,rwcnt;
+  
+  aFCSr.SMUCode = FCSr.SMUCode;
+  aFCSr.ItemName = FCSr.ItemName;
+  aFCSr.contact1 = FCSr.contact1;
+  aFCSr.contact2 = FCSr.contact2;
+  aFCSr.contact3 = FCSr.contact3;
+  aFCSr.contact4 = FCSr.contact4;
+  aFCSr.salary1 = FCSr.salary1;
+  aFCSr.salary2 = FCSr.salary2;
+  aFCSr.salary3 = FCSr.salary3;
+  aFCSr.salary4 = FCSr.salary4;
+  aFCSr.position1 = FCSr.position1;
+  aFCSr.position2 = FCSr.position2;
+  aFCSr.position3 = FCSr.position3;
+  aFCSr.position4 = FCSr.position4;
+  aFCSr.Price = FCSr.Price;
+  aFCSr.Cost = FCSr.Cost;
+  rwcnt = MatRowCnt(FCSr);
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(FCSr,i,FCSrw);
+    ClearRow(aFCSr,aFCSrw,1);
+  
+    aFCSrw.ProdName = FCSrw.ProdName;
+    aFCSrw.UCost = aFCSrw.UCost;
+    MatRowPut(aFCSr,i,aFCSrw);
+  end;
+
+  return;
+end;
+
+procedure CopyETFields(record EventTurnoverVc ETr,var record ArchiveEventTurnoverVc aETr)
+begin
+  row EventTurnoverVc ETrw;
+  row ArchiveEventTurnoverVc aETrw;
+  Integer i,rwcnt;
+
+
+  aETr.SMUCode = ETr.SMUCode;
+  aETr.ItemName = ETr.ItemName;
+
+  rwcnt = MatRowCnt(ETr);
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(ETr,i,ETrw);
+    ClearRow(aETr,aETrw,1);
+    aETrw.EventType = ETrw.EventType;
+    aETrw.UCost = ETrw.UCost;
+    aETrw.UPrice = ETrw.UPrice;
+    aETrw.SoldUnits = ETrw.SoldUnits;
+    aETrw.Income = ETrw.Income;
+    aETrw.Costs = ETrw.Costs;
+    aETrw.Profit = ETrw.Profit;
+    MatRowPut(aETr,i,aETrw);
+  end;
+  
+  return;
+end;
+
+procedure CopyJERFields(record JALEventRequestVc JERr,var record ArchiveJALEventRequestVc aJERr)
+begin
+  
+  aJERr.SerNr = JERr.SerNr;
+  aJERr.EventNr = JERr.EventNr;
+  aJERr.SMFCode = JERr.SMFCode;
+  aJERr.Status = JERr.Status;
+ 
+  return;
+end;
+
+procedure CopyTAFields(record JALTeacherAccVc TAr,var record ArchiveJALTeacherAccVc aTAr)
+begin
+  
+  aTAr.SerNr = TAr.SerNr;
+  aTAr.TransDate = TAr.TransDate;
+  aTAr.TransTime = TAr.TransTime;
+  aTAr.SMFCode = TAr.SMFCode;
+  aTAr.CustCode = TAr.CustCode;
+  aTAr.RecType = TAr.RecType;
+  aTAr.RecCode = TAr.RecCode;
+  aTAr.StatusFlag = TAr.StatusFlag;
+
+  return;
+end;
+
+global
+updating procedure ArchiveSemesterMn(record RcVc RepSpec)
+begin
+  record SMFVc SMFr;
+  record ArchiveSMFVc aSMFr;
+  record JALEventEntryVc JEEr;
+  record ArchiveJALEventEntryVc aJEEr;
+  record FCSMUVc FCSr;
+  record ArchiveFCSMUVc aFCSr;
+  record EventTurnoverVc ETr;
+  record ArchiveEventTurnoverVc aETr;
+  record JALEventRequestVc JERr;
+  record ArchiveJALEventRequestVc aJERr;
+  record JALTeacherAccVc TAr;
+  record ArchiveJALTeacherAccVc aTAr;
+
+  if (blank(RepSpec.f1)) then begin
+    goto LArchiveSemesterMn;
+  end;
+
+  while (LoopMain(SMFr,1,true)) begin
+    CopySMFFields(SMFr,aSMFr);
+    aSMFr.Semester = RepSpec.f1;
+    if (RecordStore(aSMFr,true)) then begin
+      RecordRemove(SMFr);
+      StepBack(SMFr);
+    end;
+  end;
+
+  while (LoopMain(JEEr,1,true)) begin
+    CopyJEErFields(JEEr,aJEEr);
+    aJEEr.Semester = RepSpec.f1;
+    if (RecordStore(aJEEr,true)) then begin
+      RecordRemove(JEEr);
+      StepBack(JEEr);
+    end;
+  end;
+
+  while (LoopMain(FCSr,1,true)) begin
+    CopyFCSFields(FCSr,aFCSr);
+    aFCSr.Semester = RepSpec.f1;
+    if (RecordStore(aFCSr,true)) then begin
+      RecordRemove(FCSr);
+      StepBack(FCSr);
+    end;
+  end;
+
+  while (LoopMain(ETr,1,true)) begin
+    CopyETFields(ETr,aETr);
+    aETr.Semester = RepSpec.f1;
+    if (RecordStore(aETr,true)) then begin
+      RecordRemove(ETr);
+      StepBack(ETr);
+    end;
+  end;
+
+  while (LoopMain(JERr,1,true)) begin
+    CopyJERFields(JERr,aJERr);
+    aJERr.Semester = RepSpec.f1;
+    if (RecordStore(aJERr,true)) then begin
+      RecordRemove(JERr);
+      StepBack(JERr);
+    end;
+  end;
+
+
+  while (LoopMain(TAr,1,true)) begin
+    CopyTAFields(TAr,aTAr);
+    aTAr.Semester = RepSpec.f1;
+    if (RecordStore(aTAr,true)) then begin
+      RecordRemove(TAr);
+      StepBack(TAr);
+    end;
+  end;
+
+
+
+LArchiveSemesterMn:;
+  return;
+end;

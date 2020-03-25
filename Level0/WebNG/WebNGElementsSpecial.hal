@@ -252,7 +252,14 @@ begin
   WebOutTagClose("</form>");
   if (GetSessionString("loginfailed")=="true") then begin
     PutSessionString("loginfailed","");
-    WebOutStringFormat("<div class=""error"" style=""color:red"">" & ToolWebNGTranslateText(23020) & "</div>"); //Login failed//CUST
+//CUST-BEGIN
+    if (GetSessionString("loginerror")=="1") then begin
+      PutSessionString("loginerror","");
+      WebOutStringFormat("<div class=""error"" style=""color:red"">" & ToolWebNGTranslateText(23022) & "</div>");
+    end else begin
+      WebOutStringFormat("<div class=""error"" style=""color:red"">" & ToolWebNGTranslateText(23020) & "</div>"); //Login failed//CUST
+    end;
+//CUST-END
   end;
   WebOutTagClose("</div>");
   

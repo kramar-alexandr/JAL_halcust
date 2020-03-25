@@ -677,7 +677,6 @@ begin
 
   err = 0;
   rwcnt = MatRowCnt(JEr);
-logtext(0,"FillEntryRows1 " & rwcnt);
   for (i = 0; i < rwcnt;i = i + 1) begin
     MatRowGet(JEr,i,JErw);
     blankf = false;
@@ -697,7 +696,7 @@ logtext(0,"FillEntryRows1 " & rwcnt);
                 //j=j+255;
               end;
               AddEntryRow(JEEr,JErw.Field,JErw.Comment,tstr);
-              vVals[i] = tstr;
+              vVals[JErw.Field] = tstr;
             end else begin
               blankf = true;
               field = "event_reg_field_" & i;

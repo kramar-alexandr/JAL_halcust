@@ -2,24 +2,12 @@ event startup
 begin
   SetLangMode(LangLatvian,"LAT",0);
   
-//  Maintenance("?ener¥t kompânijas",GenComMnVClass,GenComMn,modSY);
-
-/*
-  SString(32000,"Kompânija ar kodu '");
-  SString(32001,"' jau eksist¥.");
-  SString(32002,"Kompâniju re¨istr¥? vairs nav br?vu kompâniju!");
-  SString(32011,"Direktors");
-  SString(32012,"Grâmatvedis");
-  SString(32013,"Darbinieks 1");
-  SString(32014,"Darbinieks 2");
-  SString(32015,"Darbinieks 3");
-*/
-
 //  JAL modulis
   Module("JAL","JAL",730,modJAL);
   
   Register("SMU","SMU",SMFVc,modJAL);
-  Register("SMU atskaites","SMU atskaites",ReportsVc,modJAL);    
+  Register("SMU Arh´vs","SMU Arh´vs",ArchiveSMFVc,modJAL);
+  //Register("SMU atskaites","SMU atskaites",ReportsVc,modJAL);    
   Register("Skolot‚ji","Skolot‚ji",TeacherVc,modJAL);
   Register("Skolas","Skolas",SchoolVc,modJAL);  
   Register("Mentori","Mentori",MentorVc,modJAL);
@@ -55,28 +43,24 @@ begin
 	Setting("Standarta teksti",LTxtLClass,modJAL);
 	Setting("SMU likvid‚cija",JALLiquidationTCLass,modJAL);
 
-//  Maintenance("Pievienot m‚c?bu firmu",AddSMFMnVClass,AddSMFMn,modJAL);
+//archive settings
+  Setting("Pas‚kumu pieteikumu arh´vs",ArchiveJALEventEntryLClass,modJAL);
+	Setting("Finanäu apr•úinu arh´vs",ArchiveFCSMULClass,modJAL);
+	Setting("Pas‚kumu ien‚kumu arh´vs",ArchiveEventTurnoverLClass,modJAL);
+  Setting("Pas‚kumu piepras´jumu arh´vs",ArchiveJALEventRequestLClass,modJAL);
+  Setting("Pieteikumi skolot‚jiem/mentoriem arh´vs",ArchiveJALTeacherAccLClass,modJAL);
+
+
   Maintenance("Dz•st datus",ClearDBVClass,ClearDBMn,modJAL);
   Maintenance("Dz•st trðkstoäos attachmentus",ClearDBVClass,RemoveLostAttachmentsMn,modTC);
   Maintenance("Dz•st piesaistnes",ClearSMFAttachVClass,ClearSMFAttachMn,modJAL);
-  //Maintenance("Apstiprin‚t komp‚nijas",ApproveCompVClass,ApproveCompMn,modJAL);
-  //Maintenance("P‚rveidot komp‚nijas",ChangeCompVClass,ChangeCompMn,modJAL);
-  //Maintenance("Veidot komp‚nijas",MakeCompVClass,MakeCompMn,modJAL);
-  //Maintenance("Dz•st visas skolas",DelSchoolVClass,DeleteSchoolsMn,modJAL);
-  //Maintenance("Novadi no adres•m",DistrictGuesserVClass,DistrictGuesserMn,modJAL);
-  //Maintenance("Novadu iztrðkums",MissingDistrictCntVClass,MissingDistrictCntMn,modJAL);
-  //Maintenance("Novadu izt´r´äana",ClearDistrictVClass,ClearDistrictMn,modJAL);
   Maintenance("Sðt´t jaunumus",SendNewsToEmailsVClass,SendNewsToEmailsMn,modJAL);
   Maintenance("Aizpild´t skolas",FillTeacherSchoolsVClass,FillTeacherSchoolsMn,modJAL);
-  Maintenance("P‚rveidot kontaktus",JALMarkasCUVClass,JALMarkasCUMn,modJAL);
-  //Maintenance("Saglab‚t e-pastus",SaveAttachmentsVClass,SaveAttachmentsMn,modJAL);
-  //Maintenance("P‚rvietot dokumentus",MoveFilesVClass,MoveFilesMn,modJAL);
-  //Maintenance("Aizpild´t SMU kontaktu kodus",FillCUCodesVClass,FillCUCodesMn,modJAL);
-  //Maintenance("Veidot pastkastes glob‚lajiem lietot‚jiem",GUMailboxesVClass,GUMailboxesMn,modJAL);
-  //Maintenance("Dz•st komp‚nijas - visu",DeleteCompNewVClass,DeleteCompNewMn,modJAL);
-  //Maintenance("Neakt´vi SMU",ChangeSMUVClass,ChangeSMUMn,modJAL);
-  //Maintenance("Dz•st JAL saturu",ClearJALContentVClass,ClearJALContentMn,modJAL);
-  //Maintenance("Dz•st JAL meilus",ClearJALMailBoxesVClass,ClearJALMailBoxesMn,modJAL);
+  //Maintenance("P‚rveidot kontaktus",JALMarkasCUVClass,JALMarkasCUMn,modJAL);
+  Maintenance("Atjaunot skolas",RenewSchoolsVClass,RenewSchoolsMn,modJAL);
+  Maintenance("Arhiv•t m‚c´bu gadu",ArchiveSemesterVClass,ArchiveSemesterMn,modJAL);
+  Maintenance("Atjaunot kontaktus",RefreshContactsVClass,RefreshContactsMn,modJAL);
+
 
   Maintenance("Main´t piekºuves failus",RepairAppVClass,RepairAppMn,modJAL);
   Maintenance("Veidot Komp‚nijas",ForceGenCompVClass,ForceGenCompMn,modJAL);

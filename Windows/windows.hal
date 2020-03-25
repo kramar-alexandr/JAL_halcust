@@ -232,6 +232,15 @@ begin
   SetWRect(80,80,500,150);
   EndWindow;
 
+  WindowBegin("Atjaunot skolas",RenewSchoolsVClass,CGMnt,RcType);
+  SetWRect(80,80,500,150);
+  CheckBox(h,v=6,0,"NoÀemt \"Apstiprin‚ts\" atz´mi",flags[1]);
+  EndWindow;
+
+  WindowBegin("Arhiv•t m‚c´bu gadu",ArchiveSemesterVClass,CGMnt,RcType);
+  SetWRect(80,80,500,150);
+  EditFieldTL(h=150,v=6,130,"M‚c´bu gads",M4Str,Normal,20,f1,false,JALSemesterSClass);
+  EndWindow;
 
   WindowBegin("Labot pielikumus",RepairAppVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
@@ -245,14 +254,14 @@ begin
   StaticText(80,25,"Spied OK",false);
   EndWindow;
 
- WindowBegin("Jauna SMU Aktivit‚te",SmuNewActTClass,CGSbl,SRType);
-   SetBlid(SmuNewActBlock);
-   SetWRect(20,80,570,298);
-   Sizeable(-1,-1,0,0);
-   EditField(130,10,130,"Aktivit‚tes tips",Normal,ActType,false,0);
-   EditField(130,30,130,"Teksts",Normal,ActText,false,0);
-   EditField(130,60,130,"Persona",Normal,ActPerson,false,0);
-   EndWindow;
+  WindowBegin("Jauna SMU Aktivit‚te",SmuNewActTClass,CGSbl,SRType);
+  SetBlid(SmuNewActBlock);
+  SetWRect(20,80,570,298);
+  Sizeable(-1,-1,0,0);
+  EditField(130,10,130,"Aktivit‚tes tips",Normal,ActType,false,0);
+  EditField(130,30,130,"Teksts",Normal,ActText,false,0);
+  EditField(130,60,130,"Persona",Normal,ActPerson,false,0);
+  EndWindow;
 
   WindowBegin("Komp‚nijas",CompaniesTClass,CGHbl,HBlRecType);
   SetBlid(CompaniesBlock);
@@ -618,8 +627,19 @@ begin
   WindowBegin("Run",EmptyVClass,CGMnt,RcType);
   SetWRect(64,80,860,350);
   Sizeable(-1,-1,0,0);
-
   EndWindow;
+
+	WindowBegin("Atjaunot kontaktus",RefreshContactsVClass,CGMnt,RcType);
+  SetWRect(80,80,500,150);
+  CheckBox(h=50,v=20,0,"Sl•gt / atv•rt kontaktus neapstiprin‚t‚m skol‚m",flags[1]);
+  CheckBox(h,v+=20,0,"Palielin‚t apr•úin‚to klasi par 1",flags[2]);
+  h2 = 300;
+  CheckBox(h,v+=20,0,"Main´t visiem kontaktiem skolu uz:",flags[3]);
+  EditField(h2,v,50,"",Normal,f1,false,0);
+  CheckBox(h,v+=20,0,"Main´t visiem kontaktiem skolot‚ju uz:",flags[4]);
+  EditField(h2,v,50,"",Normal,f2,false,0);
+  EndWindow;
+
 	
   WindowBegin("Mentors",MentorDClass,CGview,-);
   SetWRect(64,80,560,250);
@@ -1630,6 +1650,7 @@ begin
   EditField(h,v=v+vs,100,"Skolot‚ji",Normal,TeacherCode,false,TeacherSClass);
   EditField(h,v=v+vs,50,"Klase",Normal,ClassNum,false,0);
   EditField(h+80,v=v,50,"",Normal,ClassChar,false,0);
+  EditField(h,v=v+vs,50,"Apr•úin‚t‚ klase",Normal,CalcClassNum,false,0);
   EditField(h,v=v+vs,100,"Alga",Normal,Salary,false,0);
   EditField(h,v=v+vs,100,"Amats",Normal,JobDesc,false,0);
   CheckBox(h,v+=vs,0,"Piedal´jies ”nu dien‚",EnuDienaFlag);

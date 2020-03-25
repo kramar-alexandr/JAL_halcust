@@ -1,14 +1,13 @@
-
+/*
 event DefineWindows
 begin
+*/
 
-  real h,h2,h3,h4,hc,v,v2,vs,vm;
-  record SMFVc SMFr;
-  integer wn;
-  
-  SetLangMode(LangLatvian,"LAT",0);
+SetLangMode(LangLatvian,"LAT",0);
 
-
+window SMFLClass:1
+  wtag("language","ENG"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
 
   WindowBegin("Skol•nu m‚c´bu uzÀ•mumi",SMFLClass,CGmlist,-);
   SpawnClass(SMFDClass);
@@ -27,6 +26,15 @@ begin
   RlColKey(-100,-100,"Datums",TransDate,false,TransDate);
   SearchField("Mekl•t");
   EndWindow;
+end;
+
+window SMFDClass:1
+  wtag("language","ENG"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,h2,h3,h4,hc,v,v2,vs,vm;
+  record SMFVc SMFr;
+  integer wn;
+  
 
   WindowBegin("Skol•nu m‚c´bu uzÀ•mums",SMFDClass,CGview,-);
   DynamicWindow;
@@ -126,6 +134,11 @@ begin
 
   EndWindow;
 
+end;
+
+window SMFSClass:1
+  wtag("language","ENG"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
   WindowBegin("Ievietot m‚c´bu uzÀ•mumu",SMFSClass,CGslist,-);
   SpawnClass(SMFDClass);
   SetWRect(64,80,860,350);
@@ -140,7 +153,91 @@ begin
   RlColKey(-80,-80,"Statuss",StatusName,false,Status);
   SearchField("Mekl•t");
   EndWindow;
-
-
-return;
 end;
+
+window ArchiveSMFLClass:1
+  wtag("language","ENG"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+
+  WindowBegin("Skol•nu m‚c´bu uzÀ•mumu arh´vi",ArchiveSMFLClass,CGmlist,-);
+  SpawnClass(ArchiveSMFDClass);
+  SetWRect(64,80,890,350);
+  Sizeable(-1,-1,0,0);
+  UseView(ArchiveSMFVc);
+  RecordList(4,17,-21,-39);
+  RlColKey(4,2,"SMU kods",SMFCode,false,SMFCode);
+  RlCol   (94,94,"Nosaukums",SMFName,false);
+  RlCol   (-520,-520,"Skola",SchoolName,false);
+  RlColKey(-390,-390,"Gads",Semester,false,Semester);
+  RlCol   (-300,-300,"Statuss",StatusName,false);
+  RlCol   (-100,-100,"Datums",TransDate,false);
+  SearchField("Mekl•t");
+  EndWindow;
+end;
+
+window ArchiveSMFDClass:1
+  wtag("language","ENG"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,h2,h3,h4,hc,v,v2,vs,vm;
+  record SMFVc SMFr;
+  integer wn;
+
+  WindowBegin("Skol•nu m‚c´bu uzÀ•muma arh´vs",ArchiveSMFDClass,CGview,-);
+  DynamicWindow;
+  AutoSizeWindow(false);
+  SetWRect(64,80,960,670);
+  UseView(ArchiveSMFVc);
+  v = 6; vs = 22; h = 100; h2 = 230; h3 = 420;h4 = 560; v2 = 25; vm = 0;
+  EditField(h,v, 90,"Gads",Normal,Semester,false,0);
+  EditField(h,v+=vs, 90,"SMU kods",Normal,SMFCode,false,0);
+  CheckBox(h+120,v,0,"Pab. re®.",ReadyFlag);
+  EditField(h,v+=vs,220,"Nosaukums",Normal,SMFName,false,0);
+  EditField(h,v+=vs,220,"Vad´t‚js",Normal,Manager,false,0);
+	EditField(h,v+=vs,220,"Dal´bnieki",Normal,Member,false,0);
+	EditField(h,v+=vs,220,"M•rúauditorija",Normal,TargetAud,false,0);
+	EditField(h,v+=vs,220,"Nozare",Normal,ProdSpec,false,JALIndustrySClass);
+  EditField(h,v+=vs,220,"E-pasts",Normal,Email,false,0);
+  EditField(h,v+=vs,50,"Skol•na lietot. kods",Normal,CustCode,false,0);
+  EditField(h2,v, 90,"Re®ions",Normal,Region,false,JALRegionSClass);
+  EditField(h,v+=vs,50,"Serveris",ViewOnly,ServerCode,false,0);
+  EditField(h2,v,90,"Komp‚nija",ViewOnly,CompNr,false,0);
+  EditField(h,v+=vs,50,"S‚kuma datums",ViewOnly,ActDateStart,false,0);
+  EditField(h2,v,90,"Beigu datums",ViewOnly,ActDateEnd,false,0);
+	
+  ButtonFrame(h,v=(vm+=(v+40)),120,7,"Statuss");
+  RadioButton(h,v,0,0,"Neapstiprin‚ta",ApprovalStatus);
+  RadioButton(h,v+=16,1,0,"Iesniegts",ApprovalStatus);
+  RadioButton(h,v+=16,2,0,"Nosðt´ts JAL",ApprovalStatus);
+  RadioButton(h,v+=16,3,0,"JAL Apstiprin‚ts",ApprovalStatus);
+  RadioButton(h,v+=16,4,0,"JAL Noraid´ts",ApprovalStatus);
+  RadioButton(h,v+=16,6,0,"Skolot‚ja Noraid´ts",ApprovalStatus);
+  RadioButton(h,v+=16,5,0,"Likvid•ta",ApprovalStatus);
+  ButtonFrame(h2,v=vm,90,3,"Tips");
+  RadioButton(h2,v,0,0,"Raìoäana",TypeFlag);
+  RadioButton(h2,v+=16,1,0,"Pakalpojumi",TypeFlag);
+  RadioButton(h2,v+=16,2,0,"Abi",TypeFlag);
+
+  EditField(h3,v=6,30,"Objekti",Normal,Objects,false,ObjSClass);
+  EditField(h4,v,20,"Klase",Normal,ClassNum,false,0);
+  EditField(h4+30,v,20,"",Normal,ClassChar,false,0);
+
+  EditField(h3,v+=vs, 30,"Skolas kods",Normal,SchoolCode,false,SchoolSClass);
+  EditField(h4,v,-40,"Nosaukums",Normal,SchoolName,false,0);
+	EditField(h3,v+=vs,220,"Izgl´t´bas pak‚pe",Normal,EducationType,false,SetSClass);
+  
+  MatrixBegin(h3,v+=40,-55,v+=70,-,20);
+  MatCol(1,25,"Tips",0,Type,false,SetSClass);
+  MatCol(1,90,"Kods",0,Code,false,0);
+  MatCol(1,190,"V‚rds",0,Name,false,0);
+  EndMatrix;
+	TextField(h3,v+=20,-40,80,Text,0);
+//  HalPushButton(h3,v+=100,h3+100,v+20,"SMFEmpListShowDsm","Dal´bnieki");
+//  HalPushButton(h3,v+=30,h3+100,v+20,"SMFDClassOpenSMFData","Re®istr. Dati");
+  SpecialMenu("Skat´t saraksti ar SMU",' ',1,"ShowFullMailListDsm");
+//  SpecialMenu("Pievienot skol•nu",' ',1,"SMFDClassAddStudentDsm");
+
+  EndWindow;
+end;
+
+
+

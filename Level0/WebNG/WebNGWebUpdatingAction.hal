@@ -96,6 +96,24 @@ begin
   return;
 end;
 
+//CUST-BEGIN
+function Boolean ContactRecordBlocked(string code)
+begin
+  record CUVc CUr;
+  Boolean res;
+
+  CUr.Code = code;
+  if (ReadFirstMain(CUr,1,true)) then begin
+    if (CUr.blockedFlag==1) then begin
+      res = true;
+    end;
+  end;
+
+  ContactRecordBlocked = res;
+  return;
+end;
+//CUST-END
+
 updating procedure AfterLoginUpdating()
 begin
 	logtext(0,"GetSessionString(requesturl); " & GetSessionString("requesturl"));
@@ -109,6 +127,14 @@ begin
         PutSessionString("loginfailed","true");
         ShowRedirectHTML(FormatSimpleLink("/reg_login",true),false);
       end else begin
+//CUST-BEGIN
+        if (ContactRecordBlocked(CurrentCust)) then begin
+          WebLogout;
+          PutSessionString("loginfailed","true");
+          PutSessionString("loginerror","1");
+          goto LAfterLoginUpdating;
+        end;
+//CUST-END
         PutSessionString("loginfailed","");
         ClearMyStandardSessions;
         MoveShoppingBasket(GetWebSessionUUID,CurrentCust);
@@ -126,7 +152,9 @@ begin
       ShowRedirectHTML(FormatSimpleLink("/reg_login",true),false);
     end;
   end;
-
+//CUST-BEGIN
+LAfterLoginUpdating:;
+//CUST-END
   return;
 end;
 

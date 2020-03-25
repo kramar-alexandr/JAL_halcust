@@ -1,3 +1,4 @@
+external inner function Date DateFromString(string,string);
 
 SetLangMode(LangLatvian,"LAT",0);
 
@@ -552,7 +553,22 @@ begin
   return;
 end;
 
-procedure GetApplicationValues(record SMFVc SMFr,record JALEventEntryVc JEEr,var array record CUVc emplist,var vector string vVals,array string arrCols,Longint partfield,string simplefields)
+function Boolean IsOldList(record JALEventEntryVc JEEr)
+begin
+  Boolean res;
+  Date td;
+
+  res = true;
+  td = DateFromString("2020-03-08","YYYY-MM-DD");
+  if (JEEr.TransDate>=td) then begin
+    res = false;
+  end;
+
+  IsOldList = res;
+  return;
+end;
+
+procedure GetApplicationValues(record SMFVc SMFr,record JALEventEntryVc JEEr,var array record CUVc emplist,var vector string vVals,array string arrCols,Longint partfield,string simplefields,Longint uploadfield,var Integer totempcnt)
 begin
   row JALEventEntryVc JEErw;
   Integer i,rwcnt,j,s;
@@ -560,34 +576,48 @@ begin
   record NotePadVc Noter;
   record RLinkVc RLr;
   string 255 tstr;
+  record Attach2Vc Attachr;
+  Boolean foundf,oldf;
 
   ClearVector(vVals);
   PrepareEmptyRow(arrCols,vVals);
   
   ClearArray(emplist);
 
+  totempcnt = 0;
   i = 1;
   while (ReadRecordLink(SMFr,i,CUr,RLr)) begin
+/*
     if (InString(CUr.JobDesc,"Direktors")!=0) then begin
       AddInBeginning(emplist,CUr);
     end else begin
       emplist[emplist.length] = CUr;
     end;
+*/
     i = i + 1;
+    totempcnt = totempcnt + 1;
   end;
+
+  oldf = IsOldList(JEEr);
 
   rwcnt = MatRowCnt(JEEr);
   for (i=0;i<rwcnt;i=i+1) begin
     MatRowGet(JEEr,i,JEErw);
     if (JEErw.Field==partfield) then begin
-      //if (FindEmpContact(SMFr,JEErw.Value,CUr)) then begin
-      //  emplist[emplist.length] = CUr;
-      //end;
+      if (FindEmpContact(SMFr,JEErw.Value,CUr)) then begin
+        if (InString(CUr.JobDesc,"Direktors")!=0) then begin
+          AddInBeginning(emplist,CUr);
+        end else begin
+          emplist[emplist.length] = CUr;
+        end;
+        //emplist[emplist.length] = CUr;
+      end;
     end else begin
       if (SetInSet(JEErw.Field,simplefields)) then begin
         j = 1;
+        foundf = false;
         while (ReadRecordLink(JEEr,j,Noter,RLr)) begin
-          if (StringToLongInt(Noter.Classification)==i) then begin
+          if ((oldf and StringToLongInt(Noter.Classification)==(i+1)) or (oldf==false and StringToLongInt(Noter.Classification)==JEErw.Field)) then begin
             tstr = "";
             s = 0;
             while (s<SizeTextCnt(Noter)) begin
@@ -595,21 +625,30 @@ begin
               s = s + 255;
             end;
             vVals[JEErw.Field] = tstr;
+            foundf = true;
             goto LNext;
           end;
           j = j + 1;
+        end;
+LNext:;
+        if (!foundf or len(JEErw.Value)<200) then begin
+          vVals[JEErw.Field] = JEErw.Value;
         end;
       end else begin
         vVals[JEErw.Field] = JEErw.Value;
       end;
     end;
-LNext:;
+  end;
+  if (uploadfield>0) then begin
+    if (ReadRecordLink(JEEr,1,Attachr,RLr)) then begin          
+      vVals[uploadfield] = Attachr.FileName;
+    end;
   end;
 
   return;
 end;
 
-procedure GetApplicationColumns(record JALEventVc JEr,var array string arrCols,var array string arrColNames,var Longint partfield,var string simplefields)
+procedure GetApplicationColumns(record JALEventVc JEr,var array string arrCols,var array string arrColNames,var Longint partfield,var string simplefields,var Longint uploadfield)
 begin
   row JALEventVc JErw;
   Integer i,rwcnt;
@@ -623,16 +662,19 @@ begin
       if (JFr.Type==4) then begin//participants
         partfield = JFr.SerNr;
       end else begin
-        if (JFr.Type!=5) then begin//upload
+        //if (JFr.Type!=5) then begin//upload
           arrCols[arrCols.length] = JFr.SerNr;
           arrColNames[arrColNames.length] = JFr.Comment;
-        end;
+        //end;
       end;
       if (JFr.Type==0) then begin
         if (nonblank(simplefields)) then begin
           simplefields = simplefields & ",";
         end;
         simplefields = simplefields & JErw.Field;
+      end;
+      if (JFr.Type==5) then begin
+        uploadfield = JErw.Field;
       end;
     end;
 
@@ -706,8 +748,8 @@ begin
   array string 255 arrCols,arrColNames;
   vector string 255 vVals;
   Boolean TrHs;
-  Longint partfield;
-  Integer i,h,s;
+  Longint partfield,uploadfield;
+  Integer i,h,s,totempcnt;
   string 255 simplefields,tstr;//list of fields that are simple text fields. We are storing them as notes so that we can achieve 500 symbols
   
   StartReportJob(USetStr(16800));
@@ -715,7 +757,7 @@ begin
   EndHeader;
   JEr.SerNr = RepSpec.long1;
   if (ReadFirstMain(JEr,1,true)) then begin
-    GetApplicationColumns(JEr,arrCols,arrColNames,partfield,simplefields);
+    GetApplicationColumns(JEr,arrCols,arrColNames,partfield,simplefields,uploadfield);
     PrintColumnHeaders(arrColNames);
     TrHs = true;
     JEEr.EventNr = JEr.SerNr;
@@ -726,7 +768,7 @@ begin
         SMFr.SMFCode = JEEr.AddCode;
         if (ReadFirstMain(SMFr,1,true)) then begin
           h = 100;
-          GetApplicationValues(SMFr,JEEr,emplist,vVals,arrCols,partfield,simplefields);
+          GetApplicationValues(SMFr,JEEr,emplist,vVals,arrCols,partfield,simplefields,uploadfield,totempcnt);
           StartFormat(15);
           OutString(0,0,JEEr.SerNr,false);
           OutString(h,0,SMFr.SchoolName,false);h=h+300;
@@ -734,7 +776,7 @@ begin
           OutString(h,0,SMFr.ProdSpec,false);h=h+1000;
           OutString(h,0,SMFr.ClassNum & SMFr.ClassChar,false);h=h+200;
           OutString(h,0,SMFr.SMFName,false);h=h+200;
-          OutString(h,0,emplist.length,false);h=h+200;
+          OutString(h,0,totempcnt,false);h=h+200;
           for (i=0;i<5;i=i+1) begin
             if (i<emplist.length) then begin
               CUr = emplist[i];
