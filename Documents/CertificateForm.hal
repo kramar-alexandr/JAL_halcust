@@ -17,7 +17,9 @@ begin
   record JALEventEntryVc JEEr;
   record SMFVc SMFr;
   record JALEventTextVc JETr;
+  record CertificateTextVc RTr;
 
+  OUTFORMFIELD("F_DATUM",CurrentDate);
   JEEr.SerNr = RepSpec.long1;
   if (ReadFirstMain(JEEr,1,true)) then begin
 
@@ -28,11 +30,18 @@ begin
       CUr.Code = JEEr.CustCode;
       if (ReadFirstMain(CUr,1,true)) then begin
         OutFormField("F_STUDENTNAME",CUr.Name);
+        OutFormField("F_PERSONID",CUr.Name);
         SCr.SchoolCode = CUr.SchoolCode;
         if (ReadFirstMain(SCr,1,true)) then begin
           OutFormField("F_SCHOOLNAME",SCr.SchoolName);
-        end;  
+          OutFormField("F_PRINCIPLE",SCr.Director);
+        end; 
       end;
+      MatRowGet(SMFr,0,SMFrw); 
+      TCr.TeacherCode = SMFrw.Code;
+      if (ReadFirstMain(TCr,1,true)) then begin
+        OutFormField("F_TEACHERNAME",TCr.TeacherName);
+      end;  
     end;
 
     JEr.SerNr = JEEr.EventNr;
@@ -48,6 +57,10 @@ begin
           OUTFORMFIELD("F_PARTTEXT",LineTextGet2(JETr,i));
         end;
       end;
+    end;
+    ReadFirstMain(RTr,1,true);
+    for (i=0;i<LineTextCnt2(RTr);i=i+1) begin
+      OUTFORMFIELD("F_DESCRIPTION",LineTextGet2(RTr,i));
     end;
   end;
 

@@ -42,6 +42,7 @@ begin
 	Setting("Skolot‚ji ar pieredzi",ExpTeacherLClass,modJAL);
 	Setting("Standarta teksti",LTxtLClass,modJAL);
 	Setting("SMU likvid‚cija",JALLiquidationTCLass,modJAL);
+  Setting("Sertifik‚ta teksts",CertificateTextWClass,modJAL);
 
 //archive settings
   Setting("Pas‚kumu pieteikumu arh´vs",ArchiveJALEventEntryLClass,modJAL);

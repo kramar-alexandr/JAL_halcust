@@ -2076,7 +2076,7 @@ begin
 end;
 
 window JALEventRequestLClass:1
-  wtag("language","ENG"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
 begin
   WindowBegin("Pas‚kumu piepras´jumi",JALEventRequestLClass,CGmlist,-);
   SetWRect(20,80,660,298);
@@ -2092,7 +2092,7 @@ begin
 end;
 
 window JALEventRequestDClass:1
-  wtag("language","ENG"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
 begin
   real h,v,vs,v2,vs2,hm;
   WindowBegin("Pas‚kumu piepras´jums",JALEventRequestDClass,CGview,-);
@@ -2104,4 +2104,23 @@ begin
   EditField(h,v+=vs,150,"SMU",Normal,SMFCode,false,0);
   CheckBox(h,v+=vs,0,"Izveidots",Status);
   EndWindow;
+end;
+
+window CertificateTextWClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs;
+  
+  WindowBegin("Setifik‚ta teksts",CertificateTextWClass,CGOther,-);
+  UseView(CUVc);
+  SetWRect(20,80,450,300);
+  AutoSizeWindow(false);
+  ToolBar;
+  HalPushButton(-180,5,-80,22,"CertificateTextWClassSave","Saglab‚t");
+  EndToolBar;
+  h = 150;
+  TextField(20,v=6,-20,-20,Math2,0);
+  EndWindow;
+	
+	return;
 end;

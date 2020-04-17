@@ -153,3 +153,47 @@ begin
   JALSemesterSClassOnOKWindow = false;
   return;
 end;
+
+
+
+global
+updating procedure CertificateTextWClassSave()
+begin
+  Integer wn;
+  record CertificateTextVc RTr;
+  record CUVc CUr;
+  Longint i,pos,cnt;
+  string 255 tstr;
+  
+  wn = CurWindow;
+  SetTextField(RTr,"");
+  DeselectWindow(wn,true);
+  GetWindowRecord(wn,CUr);
+  for (i=0;i<LineTextCnt2(CUr);i=i+1) begin
+    LineTextPut2(RTr,i,LineTextGet(CUr,i));
+  end;
+  RecordStore(RTr,true);
+  CloseWindow(wn);
+
+  return;
+end;
+
+global
+function Boolean CertificateTextWClassOnOpenWindow(Integer wn)
+begin
+  record CertificateTextVc RTr;
+  record CUVc CUr;
+  Longint i;
+  string 255 tstr;
+
+  SetTextField(CUr,"");
+  ReadFirstMain(RTr,1,true);
+  for (i=0;i<LineTextCnt2(RTr);i=i+1) begin
+    LineTextPut2(CUr,i,LineTextGet(RTr,i));
+  end;
+  PutWindowRecord(wn,CUr);
+
+
+  CertificateTextWClassOnOpenWindow = false;
+  return;
+end;
