@@ -30,7 +30,7 @@ begin
   string 255 tstr,tmp,t;
   Longint pos,tpos,cnt,lastspace,chrcnt,rowcnt;
   record TeacherVc TCr;
-
+  record CertificateTextVc RTr;
 
   OutFormField("F_CERTNR",CUr.CertificateNr);
   OutFormField("F_CERTDATE",CUr.CertificateDate);
@@ -45,6 +45,11 @@ begin
   TCr.TeacherCode = CUr.TeacherCode;
   if (ReadFirstMain(TCr,1,true)) then begin
     OutFormField("F_TEACHERNAME",TCr.TeacherName);
+  end;
+
+  ReadFirstMain(RTr,1,true);
+  for (i=0;i<LineTextCnt2(RTr);i=i+1) begin
+    OUTFORMFIELD("F_CERTTEXT",LineTextGet2(RTr,i));
   end;
 
   return;
@@ -63,7 +68,6 @@ begin
     td2.month = 1;
     td2.day = 1;
     CUr.CertificateDate = td2;
-    CUr.CertificateFlag = 1;
     TrHs = true;
     while (LoopKey("CertificateDate",CUr,2,TrHs)) begin
       if (CUr.CertificateFlag!=1 or (GetYear(CUr.CertificateDate)!=td2.year)) then begin

@@ -1511,7 +1511,7 @@ begin
           WebOutStringFormatNL("\"perto\":\"" & SMFr.ActDateEnd & "\",");
           WebOutStringFormatNL("\"class\":\"" & FormatJSONString(SMFr.ClassNum & SMFr.ClassChar) & "\",");
           WebOutStringFormatNL("\"liquidated\":\"" & SMFr.StatusFlag & "\",");
-          WebOutStringFormatNL("\"certificateprint\":\"" & CUr.CertificatePrint & "\",");
+          WebOutStringFormatNL("\"CertificateFlag\":\"" & CUr.CertificateFlag & "\",");
           if(nonblank(SMFr.Manager) or !smuf) then begin
             WebOutStringFormatNL("\"director\":" & "true" & ",");
           end else begin
@@ -2496,7 +2496,7 @@ begin
   if (nonblank(CurrentCust)) then begin
     CUr.Code = CurrentCust;
     if (ReadFirstMain(CUr,1,true)) then begin
-      if (CUr.CertificatePrint==1) then begin
+      if (CUr.CertificateFlag==1) then begin
         //print document
         RepSpec.f1 = CUr.Code;
         DoPrintLiqCertificate(RepSpec);
