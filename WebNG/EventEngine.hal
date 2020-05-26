@@ -1534,8 +1534,30 @@ serNr = webGetArg("code");
     end;
   end;
 
+  return;
+end;
+
+global webpublic procedure WebDownloadDocs2()
+begin 
+record Attach2Vc Attachr;
+string 20 serNr;
+string 20 ext;
+serNr = webGetArg("code");
+
+ Attachr.UUID = StringToUUID(WebGetArg("uuid"));
+if ReadFirstKey("UUID",Attachr,1,true) then begin
+  if (Attachr.SerNr==StringToLongint(WebGetArg("code"))) then begin
+    ext = right(Attachr.FileName,4);
+    SetContentTypeForExtension(ext);
+    WebSetContentDisposition("inline; filename=" & Attachr.FileName);
+    WebOutAttachment(Attachr.SerNr);
+  end;
+end;
+
 return;
 end;
+
+
 global webpublic procedure Webjsontest()
 begin
 array string 20 object,value;

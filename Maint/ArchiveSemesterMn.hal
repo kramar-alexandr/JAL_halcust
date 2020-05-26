@@ -217,6 +217,9 @@ begin
   record ArchiveJALEventRequestVc aJERr;
   record JALTeacherAccVc TAr;
   record ArchiveJALTeacherAccVc aTAr;
+  record CUVc CUr;
+  record RLinkVc RLr;
+  Integer i;
 
   if (blank(RepSpec.f1)) then begin
     goto LArchiveSemesterMn;
@@ -225,6 +228,11 @@ begin
   while (LoopMain(SMFr,1,true)) begin
     CopySMFFields(SMFr,aSMFr);
     aSMFr.Semester = RepSpec.f1;
+    i = 1;
+    while (ReadRecordLink(SMFr,i,CUr,RLr)) begin
+      CreateRecordLink(aSMFr,CurrentCompany,CUr,CurrentCompany);
+      i = i + 1;
+    end;
     if (RecordStore(aSMFr,true)) then begin
       RecordRemove(SMFr);
       StepBack(SMFr);

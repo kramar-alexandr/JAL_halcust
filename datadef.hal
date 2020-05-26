@@ -429,6 +429,10 @@ begin
   KeySegment(TransDate);
   KeySegment(SMFCode);
   
+  KeyBegin(ActDateStart);
+  KeySegment(ActDateStart);
+  KeySegment(SMFCode);
+  
   SubsetKeyBegin2(MCode);
   StoreInBaseKey;
   AppendMatrixFieldToKeyName(Code,0);
@@ -732,6 +736,7 @@ begin
   RecordField(TeacherRequestText2,M4Code,10,LTxtVc);
   RecordField(TeacherRegText,M4Code,10,LTxtVc);
   RecordField(TeacherApproveText,M4Code,10,LTxtVc);
+  RecordField(CertFileConf,M4Str,255,0);
   EndBlock;
   
 
@@ -1106,6 +1111,7 @@ begin
   RecordField(CertificateDate,M4Date,0,0);
   RecordField(CertificatePrint,M4Int,0,0);
   RecordField(CalcClassNum,M4Long,0,0);
+  RecordField(ForceCertificate,M4Int,0,0);
   KeyBegin(CertificateDate);
   KeySegment(CertificateFlag);
   KeySegment(CertificateDate);

@@ -1,0 +1,116 @@
+procedure GetSemesterDates(string semester,var Date sd,var Date ed)
+begin
+  record JALSemesterBlock JSb;
+  row JALSemesterBlock JSbrw;
+  Integer i,rwcnt;
+
+  BlockLoad(JSb);
+  rwcnt = MatRowCnt(JSb);
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(JSb,i,JSbrw);
+    if (semester==JSBrw.YearStr) then begin
+      i = rwcnt;
+      sd = JSbrw.DateFrom;
+      ed = JSbrw.DateTo;
+    end;
+  end;
+
+  return;
+end;
+
+procedure ShowStudent(record CUVc CUr,string smfname,var Boolean firstf)
+begin
+  string 255 cls;
+  record SchoolVc SCr;
+
+  SCr.SchoolCode = CUr.SchoolCode;
+  ReadFirstMain(SCr,1,true);
+
+  cls = CUr.ClassNum & " " & CUr.ClassChar;
+  if (CUr.CalcClassNum>0) then begin
+    cls = CUr.CalcClassNum & " " & CUr.ClassChar;
+  end;
+
+  if (firstf==false) then begin
+    StartFormat(15);
+    OutString(0,0,USetStr(3000031),false);
+    OutString(2,0,USetStr(3000032),false);
+    OutString(3,0,USetStr(3000033),false);
+    OutString(4,0,USetStr(3000034),false);
+    OutString(5,0,USetStr(3000035),false);
+    EndFormat;
+    StartFormat(1);
+    Gray_divider(0,1);
+    EndFormat;
+    firstf = true;
+  end;
+  
+  StartFormat(15);
+  OutString(0,0,SCr.SchoolName,false);
+  OutString(2,0,CUr.Name,false);
+  OutString(3,0,smfname,false);
+  OutString(4,0,cls,false);
+  OutString(5,0,CUr.eMail,false);
+  EndFormat;
+
+  return;
+end;
+
+global
+procedure StudentListRn(record RcVc RepSpec)
+begin
+  Boolean TrHs;
+  record SMFVc SMFr;
+  record ArchiveSMFVc ASMFr;
+  Integer i;
+  record RLinkVc RLr;
+  Date sd,ed;
+  record CUVc CUr;
+  Boolean firstf;
+  
+  StartReportJob(UsetStr(3000030));
+
+  EndHeader;
+
+  SetRepCol(2,120);
+  SetRepCol(3,220);
+  SetRepCol(4,320);
+  SetRepCol(5,370);
+  
+
+  GetSemesterDates(RepSpec.f1,sd,ed);
+
+  TrHs = true;
+  SMFr.ActDateStart = sd;
+  while (LoopKey("ActDateStart",SMFr,1,TrHs)) begin
+    if (nonblank(sd) and SMFr.ActDateStart>ed) then begin
+      TrHs = false;
+    end else begin
+      i = 1;
+      while (ReadRecordLink(SMFr,i,CUr,RLr)) begin
+        ShowStudent(CUr,SMFr.SMFName,firstf);
+        i = i + 1;
+      end;
+    end;
+  end;
+
+  TrHs = true;
+  ASMFr.Semester = RepSpec.f1;
+  while (LoopKey("Semester",ASMFr,1,TrHs)) begin
+    if (nonblank(RepSpec.f1) and ASMFr.Semester!=RepSpec.f1) then begin
+      TrHs = false;
+    end else begin
+      i = 1;
+      while (ReadRecordLink(ASMFr,i,CUr,RLr)) begin
+        ShowStudent(CUr,ASMFr.SMFName,firstf);
+        i = i + 1;
+      end;
+    end;
+  end;
+
+
+  EndJob;
+
+
+  return;
+end;

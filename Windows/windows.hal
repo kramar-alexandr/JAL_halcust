@@ -1,10 +1,10 @@
 /*****  windows.hal  *****
- * 10/06    - KZS: Plğsmas, Reìioni
+ * 10/06    - KZS: PlÅ«smas, ReÅ¾ioni
  * 10/04/22 - GJS: SMFatskaite
  * 10/04/21 - KZS: Atskaites spec logi
  * 10/03/31 - GJS: Visu veco aizkoment?ju - s?ku jaunu ?ru. Skolas/skolot?ji/smfi
- * 09/10/29 - GJS: Komp?niju Âener?‡ana - not gonna happen -> aizkoment?ju
- * 09/10/26 - GJS: Komp?niju izveides apkalpo‡anas logs
+ * 09/10/29 - GJS: Komp?niju Â¬ener?Ã¡ana - not gonna happen -> aizkoment?ju
+ * 09/10/26 - GJS: Komp?niju izveides apkalpoÃ¡anas logs
  ***** ************* *****/
 
 //biksessadfads
@@ -38,7 +38,7 @@ begin
 
   real h,h2,h3,hc,v,v2,vs,vm,tilenr;
   
-  SetLangMode(LangLatvian,"LAT",0);
+  SetLangMode(LangLatvian,"LAT",2);
 
   WindowBegin("Skolas",SchoolLClass,CGmlist,-);
   SpawnClass(SchoolDClass);
@@ -48,37 +48,37 @@ begin
   RecordList(4,17,-21,-39);
   RlColKey(4,2,"Skolas kods",SchoolCode,false,SchoolCode);
   RlColKey(90,90,"Skolas nosaukums",SchoolName,false,SchoolName);
-  RlColKey(-250,-250,"Re®ions",Region,false,Region);
+  RlColKey(-250,-250,"ReÄ£ions",Region,false,Region);
   RlColKey(-190,-190, "Telefons",Telephone,false,Telephone);
-  RlColKey(-100,-100,"Skol•nu sk.",PupilCount,false,PupilCount);
+  RlColKey(-100,-100,"SkolÄ“nu sk.",PupilCount,false,PupilCount);
   RlCol(-30,-30,"Apst.",Approved,false);
-  SearchField("Mekl•t");
+  SearchField("MeklÄ“t");
   EndWindow;
 
   WindowBegin("Skola",SchoolDClass,CGview,-);
   SetWRect(64,80,619,380);
   UseView(SchoolVc);
   v = 10; vs = 22; h = 120; h2 = 310;
-  CheckBox(h-5,v,0,"Apstiprin‚ta",Approved);
+  CheckBox(h-5,v,0,"ApstiprinÄta",Approved);
   EditField(h,v+=vs+10, 55,"Skolas kods",Normal,SchoolCode,false,0);
   EditField(h2,v,-30,"Skolas nosaukums",Normal,SchoolName,false,0);
-  EditField(h,v+=vs,80,"Re®ions",Normal,Region,false,JALRegionSClass);
+  EditField(h,v+=vs,80,"ReÄ£ions",Normal,Region,false,JALRegionSClass);
   EditField(h2,v,-30,"Direktors",Normal,Director,false,0);
   EditField(h,v+=vs,-30,"Adrese",Normal,Address,false,0);
   EditField(h,v+=vs,80,"Telefons",Normal,Telephone,false,0);
   EditField(h2,v,-30,"E-pasts",Normal,Email,false,0);
-  EditField(h,v+=vs,80,"Skol•nu skaits",Normal,PupilCount,false,0);
-  EditField(h2,v,80,"Skolot‚ju skaits",Normal,TeacherCount,false,0);
-  EditField(h,v+=vs,80,"Skol•ni pamatskol‚",Normal,PrimaryCount,false,0);
-  EditField(h2,v,80,"Skol•ni vidusskol‚",Normal,SecondaryCount,false,0);
+  EditField(h,v+=vs,80,"SkolÄ“nu skaits",Normal,PupilCount,false,0);
+  EditField(h2,v,80,"SkolotÄju skaits",Normal,TeacherCount,false,0);
+  EditField(h,v+=vs,80,"SkolÄ“ni pamatskolÄ",Normal,PrimaryCount,false,0);
+  EditField(h2,v,80,"SkolÄ“ni vidusskolÄ",Normal,SecondaryCount,false,0);
   EditField(h,v+=vs,120,"Novads",Normal,District,false,JALDistrictSClass);
-  EditField(h2,v,-30,"Plğsma",Normal,Lang,false,JALLangSClass);
-  EditField(h,v+=vs,120,"Koordin‚tas",Normal,Coordinates,false,0);
+  EditField(h2,v,-30,"PlÅ«sma",Normal,Lang,false,JALLangSClass);
+  EditField(h,v+=vs,120,"KoordinÄtas",Normal,Coordinates,false,0);
   TextField(h-2,v+=vs,-28,-30,Comment,0);
   if (GuiType==kGuiCocoa) then begin
-    StaticText(h-66,v=v+12,"Koment‚rs",false);
+    StaticText(h-66,v=v+12,"KomentÄrs",false);
   end else begin
-    StaticText(h-58,v=v+12,"Koment‚rs",false);
+    StaticText(h-58,v=v+12,"KomentÄrs",false);
   end;  
   EndWindow;
 
@@ -90,62 +90,62 @@ begin
   RecordList(4,17,-21,-39);
   RlColKey(4,2,"Skolas kods",SchoolCode,false,SchoolCode);
   RlColKey(90,90,"Skolas nosaukums",SchoolName,false,SchoolName);
-  RlColKey(-60,-60,"Re®ions",Region,false,Region);
-  SearchField("Mekl•t");
+  RlColKey(-60,-60,"ReÄ£ions",Region,false,Region);
+  SearchField("MeklÄ“t");
   EndWindow;
 
-  WindowBegin("Skolot‚ji",TeacherLClass,CGmlist,-);
+  WindowBegin("SkolotÄji",TeacherLClass,CGmlist,-);
   SpawnClass(TeacherDClass);
   SetWRect(64,80,700,350);
   Sizeable(-1,-1,0,0);
   UseView(TeacherVc);
   RecordList(4,17,-21,-39);
   RlColKey(4,2,"Kods",TeacherCode,false,TeacherCode);
-  RlColKey(44,44,"V‚rds, Uzv‚rds",TeacherName,false,TeacherName);
+  RlColKey(44,44,"VÄrds, UzvÄrds",TeacherName,false,TeacherName);
   RlColKey(-150,-150,"Datums",TransDate,false,TransDate);
   RlCol(-50,-50,"Apst.",Approved,false);
   //RlColKey(-400,-400,"Telefons",Telephone,false,Telephone);
   //RlCol(-305,-305, "E-pasts",Email,false);
   //RlColKey(-390,-160,"Skolas nosaukums",SchoolName,false,SchoolName);
-  SearchField("Mekl•t");
+  SearchField("MeklÄ“t");
   EndWindow;
 
-  WindowBegin("Skolot‚js",TeacherDClass,CGview,-);
+  WindowBegin("SkolotÄjs",TeacherDClass,CGview,-);
   SetWRect(64,80,560,600);
   UseView(TeacherVc);
   v = 10; vs = 22; h = 100; h2 = 260;
-  EditField(h,v+=vs, 30,"Skolot‚ja kods",ViewOnly,TeacherCode,false,0);
-  EditField(h2,v,-25,"V‚rds, Uzv‚rds",Normal,TeacherName,false,0);
+  EditField(h,v+=vs, 30,"SkolotÄja kods",ViewOnly,TeacherCode,false,0);
+  EditField(h2,v,-25,"VÄrds, UzvÄrds",Normal,TeacherName,false,0);
   //EditField(h,v+=vs,90,"Telefons",Normal,Telephone,false,0);
   //EditField(h2,v,-25,"E-pasts",Normal,Email,false,0);
   //EditField(h,v+=vs, 30,"Skolas kods",Normal,SchoolCode,false,SchoolSClass);
   //EditField(h2,v,-25,"Skolas nosaukums",Normal,SchoolName,false,0);
   EditField(h,v+=vs,40,"Kontakta kods",Normal,CustCode,false,CUSClass);
-  EditField(h2,v,-25,"Priekämets",Normal,Subject,false,0);
-  EditField(h,v+=vs,40,"Glob. lietot‚js",Normal,GlobalUser,false,GlobalUserSClass);
+  EditField(h2,v,-25,"PriekÅ¡mets",Normal,Subject,false,0);
+  EditField(h,v+=vs,40,"Glob. lietotÄjs",Normal,GlobalUser,false,GlobalUserSClass);
   EditField(h2,v,-25,"Pap. darba vieta",Normal,OtherJob,false,0);
-  EditField(h2,v+=vs,-25,"L´guma nr.",Normal,ContractNr,false,0);
-  CheckBox(h-3,v+=vs,0,"Apstiprin‚ts",Approved);
+  EditField(h2,v+=vs,-25,"LÄ«guma nr.",Normal,ContractNr,false,0);
+  CheckBox(h-3,v+=vs,0,"ApstiprinÄts",Approved);
 	CheckBox(h-3,v+=vs,0,"PSK",PSKFlag);
 	CheckBox(h-3,v+=vs,0,"VSK",VSKFlag);
 	CheckBox(h-3,v+=vs,0,"PROF",PROFFlag);
-	CheckBox(h-3,v+=vs,0,"R‚d´t SMU Nolikumu lap‚",ShowAsConsultant);
+	CheckBox(h-3,v+=vs,0,"RÄdÄ«t SMU Nolikumu lapÄ",ShowAsConsultant);
   MatrixBegin(4,v+=40,-21,v+=90,-,20);
   MatCol(1,32,"Skolas kods",0,SchoolCode,false,SchoolSClass);
   MatCol(1,186,"Skolas nos.",0,SchoolName,false,0);
   EndMatrix;
   EndWindow;
 
-  WindowBegin("Ievietot skolot‚ju",TeacherSClass,CGslist,-);
+  WindowBegin("Ievietot skolotÄju",TeacherSClass,CGslist,-);
   SetWRect(64,80,379,298);
   SpawnClass(TeacherDClass);
   Sizeable(-1,-1,0,0);
   UseView(TeacherVc);
   RecordList(4,17,-21,-39);
   RlColKey(4,2,"Kods",TeacherCode,false,TeacherCode);
-  RlColKey(44,44,"V‚rds, Uzv‚rds",TeacherName,false,TeacherName);
+  RlColKey(44,44,"VÄrds, UzvÄrds",TeacherName,false,TeacherName);
   RlCol(-30,-30,"Apst.",Approved,false);
-  SearchField("Mekl•t");
+  SearchField("MeklÄ“t");
   EndWindow;
 
 
@@ -159,7 +159,7 @@ begin
   RlColKey(94,94,"Nosaukums",SMFName,false,SMFName);
   RlColKey(-130,-130,"Datums",SentDate,false,SentDate);
   RlColKey(-50,-50,"Iesniegts",SentStatuss,false,0);
-  SearchField("Mekl•t");
+  SearchField("MeklÄ“t");
   EndWindow;
 
   WindowBegin("SMU atskaite",ReportsDClass,CGview,-);
@@ -175,95 +175,95 @@ begin
   v=v+27;
   TextField(h,v+=vs,-30,100,Texta,0);
   if (GuiType==kGuiCocoa) then begin
-    StaticText(hc,v=v-2,"M‚rketinga aktivit‚tes:",false);
+    StaticText(hc,v=v-2,"MÄrketinga aktivitÄtes:",false);
   end else begin
-    StaticText(h,v=v-2,"M‚rketinga aktivit‚tes:",false);
+    StaticText(h,v=v-2,"MÄrketinga aktivitÄtes:",false);
   end;  
   TextField(h,v+=v2,-30,100,Textb,0);
   if (GuiType==kGuiCocoa) then begin
-    StaticText(hc,v=v-2,"P‚rdoäanas aktivit‚tes:",false);
+    StaticText(hc,v=v-2,"PÄrdoÅ¡anas aktivitÄtes:",false);
   end else begin
-    StaticText(h,v=v-2,"P‚rdoäanas aktivit‚tes:",false);
+    StaticText(h,v=v-2,"PÄrdoÅ¡anas aktivitÄtes:",false);
   end;  
   TextField(h,v+=v2,-30,100,Textc,0);
   if (GuiType==kGuiCocoa) then begin
-    StaticText(hc,v=v-2,"Secin‚jumi:",false);
+    StaticText(hc,v=v-2,"SecinÄjumi:",false);
   end else begin
-    StaticText(h,v=v-2,"Secin‚jumi:",false);
+    StaticText(h,v=v-2,"SecinÄjumi:",false);
   end;  
   EndWindow;
 
 
 /*
-  WindowBegin("Komp‚nijas izveide",AddSMFMnVClass,CGMnt,RcType);
+  WindowBegin("KompÄnijas izveide",AddSMFMnVClass,CGMnt,RcType);
   SetWRect(10,90,600,280);
   h=150; h2=400; v=25;
-  StaticText(10,18,"UZMAN±BU! P•c komp‚nijas pievienoäanas serveris tiks p‚rstart•ts",false);
+  StaticText(10,18,"UZMANÄªBU! PÄ“c kompÄnijas pievienoÅ¡anas serveris tiks pÄrstartÄ“ts",false);
   EditField(h,v=25,50,"Skolas kods",Normal,f3,false,0);
   EditField(h2,v=25,130,"Skolas nosaukums",Normal,f3,false,0);
-  EditField(h,v=v+20,130,"Komp‚nijas ID",Normal,f1,false,0);
-  EditField(h,v=v+20,130,"Komp‚nijas nosaukums",Normal,f2,false,0);
+  EditField(h,v=v+20,130,"KompÄnijas ID",Normal,f1,false,0);
+  EditField(h,v=v+20,130,"KompÄnijas nosaukums",Normal,f2,false,0);
   EndWindow;
 */
 /*
-  WindowBegin("şener•t",GenComMnVClass,CGMnt,RcType);
+  WindowBegin("Ä¢enerÄ“t",GenComMnVClass,CGMnt,RcType);
   SetWRect(10,90,260,130);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
 */
-  WindowBegin("Dz•st datus",ClearDBVClass,CGMnt,RcType);
+  WindowBegin("DzÄ“st datus",ClearDBVClass,CGMnt,RcType);
   SetWRect(10,90,260,130);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
 
-  WindowBegin("Dz•st pielikumus",ClearSMFAttachVClass,CGMnt,RcType);
+  WindowBegin("DzÄ“st pielikumus",ClearSMFAttachVClass,CGMnt,RcType);
   SetWRect(10,90,260,130);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
 
-  WindowBegin("Veidot komp‚nijas",ApproveCompVClass,CGMnt,RcType);
+  WindowBegin("Veidot kompÄnijas",ApproveCompVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
-  EditFieldTL(h=150,v=6,130,"UzÀ•mums",M4Str,Normal,20,f1,false,SMFSClass);
+  EditFieldTL(h=150,v=6,130,"UzÅ†Ä“mums",M4Str,Normal,20,f1,false,SMFSClass);
   StaticText(80,45,"Spied OK",false);
-  StaticText(10,70,"UZMAN±BU! P•c komp‚niju pievienoäanas serveris tiks p‚rstart•ts",false);
+  StaticText(10,70,"UZMANÄªBU! PÄ“c kompÄniju pievienoÅ¡anas serveris tiks pÄrstartÄ“ts",false);
   EndWindow;
 
-  WindowBegin("Aizpild´t skolas",FillTeacherSchoolsVClass,CGMnt,RcType);
+  WindowBegin("AizpildÄ«t skolas",FillTeacherSchoolsVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   EndWindow;
 
   WindowBegin("Atjaunot skolas",RenewSchoolsVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
-  CheckBox(h,v=6,0,"NoÀemt \"Apstiprin‚ts\" atz´mi",flags[1]);
+  CheckBox(h,v=6,0,"NoÅ†emt \"ApstiprinÄts\" atzÄ«mi",flags[1]);
   EndWindow;
 
-  WindowBegin("Arhiv•t m‚c´bu gadu",ArchiveSemesterVClass,CGMnt,RcType);
+  WindowBegin("ArhivÄ“t mÄcÄ«bu gadu",ArchiveSemesterVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
-  EditFieldTL(h=150,v=6,130,"M‚c´bu gads",M4Str,Normal,20,f1,false,JALSemesterSClass);
+  EditFieldTL(h=150,v=6,130,"MÄcÄ«bu gads",M4Str,Normal,20,f1,false,JALSemesterSClass);
   EndWindow;
 
   WindowBegin("Labot pielikumus",RepairAppVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
-  EditFieldTL(h=150,v=6,130,"UzÀ•mums",M4Str,Normal,20,f1,false,SMFSClass);
+  EditFieldTL(h=150,v=6,130,"UzÅ†Ä“mums",M4Str,Normal,20,f1,false,SMFSClass);
   StaticText(80,45,"Spied OK",false);
   EndWindow;
 
 
-  WindowBegin("P‚rvietot dokumentus",MoveFilesVClass,CGMnt,RcType);
+  WindowBegin("PÄrvietot dokumentus",MoveFilesVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
 
-  WindowBegin("Jauna SMU Aktivit‚te",SmuNewActTClass,CGSbl,SRType);
+  WindowBegin("Jauna SMU AktivitÄte",SmuNewActTClass,CGSbl,SRType);
   SetBlid(SmuNewActBlock);
   SetWRect(20,80,570,298);
   Sizeable(-1,-1,0,0);
-  EditField(130,10,130,"Aktivit‚tes tips",Normal,ActType,false,0);
+  EditField(130,10,130,"AktivitÄtes tips",Normal,ActType,false,0);
   EditField(130,30,130,"Teksts",Normal,ActText,false,0);
   EditField(130,60,130,"Persona",Normal,ActPerson,false,0);
   EndWindow;
 
-  WindowBegin("Komp‚nijas",CompaniesTClass,CGHbl,HBlRecType);
+  WindowBegin("KompÄnijas",CompaniesTClass,CGHbl,HBlRecType);
   SetBlid(CompaniesBlock);
   SetWRect(20,80,570,298);
   Sizeable(-1,-1,0,0);
@@ -273,19 +273,19 @@ begin
   MatCol(1,29,"Kods",0,CompCode,false,0);
   MatCol(1,96,"Nosaukums",0,CompName,false,0);
   Flip(1);
-  MatCol(1,200,"±sais",0,ShortName,false,0);
+  MatCol(1,200,"Äªsais",0,ShortName,false,0);
   MatCol(1,280,"TCP/IP",0,TCPIP,false,0);
   MatCol(1,400,"Ports",0,Port,false,0);
   Flip(2);
-  MatCol(1,200,"±sais",0,ShortName,false,0);
-  MatCol(1,280,"Kod•äanas atsl•ga",0,EnqKey,false,0);
+  MatCol(1,200,"Äªsais",0,ShortName,false,0);
+  MatCol(1,280,"KodÄ“Å¡anas atslÄ“ga",0,EnqKey,false,0);
   MatCol(1,400,"Statuss",0,ActiveStatus,false,SetSClass);
   Flip(3);
   MatCol(1,200,"PVN Nr.",0,PresenceCode,false,0);
-  MatCol(1,320,"Re®istr•ts",0,RegInCountry,false,SetSClass);
-  MatCol(1,430,"Apakğ. kods.",0,PINCode,false,0);
+  MatCol(1,320,"ReÄ£istrÄ“ts",0,RegInCountry,false,SetSClass);
+  MatCol(1,430,"ApakÅ«. kods.",0,PINCode,false,0);
   Flip(4);
-  MatCol(1,200,"±sais",0,ShortName,false,0);
+  MatCol(1,200,"Äªsais",0,ShortName,false,0);
   MatCol(1,280,"Veids",0,Mode,false,SetSClass);
   //Flip(5);
   //MatCol(1,200,"Hostinga serviss",0,HostingService,false,0);
@@ -299,48 +299,53 @@ begin
   v=v+ vs; VTab(-35,v,-16,v+vs,ToolFlip,3,"C");
   v=v+ vs; VTab(-35,v,-16,v+vs,ToolFlip,4,"D");
   //v=v+ vs; VTab(-35,v,-16,v+vs,ToolFlip,4,"E");
-  SpecialMenu("Ievietot komp‚nijas",' ',0,"JALAddServerCompsm");
+  SpecialMenu("Ievietot kompÄnijas",' ',0,"JALAddServerCompsm");
   EndWindow;
 
 
 //atskaites:
 
-  WindowBegin("Atskaite par skol‚m",SchoolRClass,CGRcW,RcType);
+  WindowBegin("Atskaite par skolÄm",SchoolRClass,CGRcW,RcType);
   SetWRect(80,80,500,230);
-  EditFieldTL(h=150,v=6,150,"Re®ions",M4Str,Normal,100,f1,false,JALRegionSClass);
-  ButtonFrame(h,v+=40,120,3,"K‚rtot p•c");
+  EditFieldTL(h=150,v=6,150,"ReÄ£ions",M4Str,Normal,100,f1,false,JALRegionSClass);
+  ButtonFrame(h,v+=40,120,3,"KÄrtot pÄ“c");
   RadioButton(h,v,0,0,"Skolas nosaukuma",flags[0]);
   RadioButton(h,v+=16,1,0,"Skolas koda",flags[0]);
-  RadioButton(h,v+=16,2,0,"Skol•nu skaita",flags[0]);
-  ButtonFrame(h,v+=50,130,3,"R‚d´t");
+  RadioButton(h,v+=16,2,0,"SkolÄ“nu skaita",flags[0]);
+  ButtonFrame(h,v+=50,130,3,"RÄdÄ«t");
   RadioButton(h,v,0,0,"Visus",flags[1]);
-  RadioButton(h,v+=16,1,0,"Tikai neapstiprin‚tos",flags[1]);
-  RadioButton(h,v+=16,2,0,"Tikai apstiprin‚tos",flags[1]);
+  RadioButton(h,v+=16,1,0,"Tikai neapstiprinÄtos",flags[1]);
+  RadioButton(h,v+=16,2,0,"Tikai apstiprinÄtos",flags[1]);
+  EndWindow;
+
+  WindowBegin("SkolÄ“nu saraksts",StudentListRClass,CGRcW,RcType);
+  SetWRect(80,80,500,230);
+  EditFieldTL(h=150,v=6,130,"MÄcÄ«bu gads",M4Str,Normal,20,f1,false,JALSemesterSClass);
   EndWindow;
   
   WindowBegin("Atskaite par kursiem",SMUCourseEventRClass,CGRcW,RcType);
   SetWRect(80,80,500,150);
   PeriodField(h=150,v=6,"Periods");
   EditFieldTL(h=150,v+=vs,150,"Kurss",M4Long,Normal,100,long1,false,CourseEventSClass);
-  CheckBox(h,v+=vs,0,"R‚d´t tikai SMU dal´bniekus",flags[0]);
+  CheckBox(h,v+=vs,0,"RÄdÄ«t tikai SMU dalÄ«bniekus",flags[0]);
   EndWindow;
 
   WindowBegin("Atskaite par kursiem",EventParticipantsRClass,CGRcW,RcType);
   SetWRect(80,80,500,250);
   EditFieldTL(h=150,v=6,150,"Kurss",M4Long,Normal,100,long1,false,JALEventSClass);
-  ButtonFrame(h,v+=40,130,3,"R‚d´t");
-  RadioButton(h,v,0,0,"P‚rskata",ArtMode);
-  RadioButton(h,v+=16,1,0,"Detaliz•ti",ArtMode);
+  ButtonFrame(h,v+=40,130,3,"RÄdÄ«t");
+  RadioButton(h,v,0,0,"PÄrskata",ArtMode);
+  RadioButton(h,v+=16,1,0,"DetalizÄ“ti",ArtMode);
   vm = v;
   ButtonFrame(h=50,v+=40,120,4,"Statuss");
   RadioButton(h,v,0,0,"Izveidots",flags[1]);
-  RadioButton(h,v+=16,1,0,"Apstiprin‚ts",flags[1]);
-  RadioButton(h,v+=16,2,0,"Noraid´ts",flags[1]);
+  RadioButton(h,v+=16,1,0,"ApstiprinÄts",flags[1]);
+  RadioButton(h,v+=16,2,0,"NoraidÄ«ts",flags[1]);
   RadioButton(h,v+=16,3,0,"Visi",flags[1]);
   v = vm;
   ButtonFrame(h2=230,v+=40,120,5,"Tips");
   RadioButton(h2,v,0,0,"SMU",flags[0]);
-  RadioButton(h2,v+=16,1,0,"Skolot‚js",flags[0]);
+  RadioButton(h2,v+=16,1,0,"SkolotÄjs",flags[0]);
   RadioButton(h2,v+=16,2,0,"Mentors",flags[0]);
   RadioButton(h2,v+=16,3,0,"Cits",flags[0]);
   RadioButton(h2,v+=16,4,0,"Visi",flags[0]);
@@ -352,51 +357,51 @@ begin
   EditFieldTL(h=150,v=6,150,"Kurss",M4Long,Normal,100,long1,false,JALEventSClass);
   EndWindow;
 
-  WindowBegin("SMU Dal´bnieki",SMFEmpListRClass,CGRcW,RcType);
+  WindowBegin("SMU DalÄ«bnieki",SMFEmpListRClass,CGRcW,RcType);
   SetWRect(80,80,500,250);
   EditFieldTL(h=150,v=6,150,"SMU",M4Code,Normal,100,f1,false,0);
   EndWindow;
 
-  WindowBegin("Atskaite par skolot‚jiem",TeacherRClass,CGRcW,RcType);
+  WindowBegin("Atskaite par skolotÄjiem",TeacherRClass,CGRcW,RcType);
   SetWRect(80,80,500,180);
   EditFieldTL(150,v=6,150,"Skolas kods",M4Str,Normal,100,f1,false,SchoolSClass);
-  EditFieldTL(150,v+=vs,150,"Re®ions",M4Str,Normal,100,f2,false,JALRegionSClass);
-  ButtonFrame(h=50,v+=40,120,3,"K‚rtot p•c");
-  RadioButton(h,v,0,0,"Skolot‚ja v‚rda",flags[0]);
-  RadioButton(h,v+=16,1,0,"Skolot‚ja koda",flags[0]);
+  EditFieldTL(150,v+=vs,150,"ReÄ£ions",M4Str,Normal,100,f2,false,JALRegionSClass);
+  ButtonFrame(h=50,v+=40,120,3,"KÄrtot pÄ“c");
+  RadioButton(h,v,0,0,"SkolotÄja vÄrda",flags[0]);
+  RadioButton(h,v+=16,1,0,"SkolotÄja koda",flags[0]);
   RadioButton(h,v+=16,2,0,"Skolas nosaukuma",flags[0]);
-  ButtonFrame(h2=200,v=66,130,3,"R‚d´t");
-  RadioButton(h2,v,0,0,"Tikai neapstiprin‚tos",flags[1]);
-  RadioButton(h2,v+=16,1,0,"Tikai apstiprin‚tos",flags[1]);
+  ButtonFrame(h2=200,v=66,130,3,"RÄdÄ«t");
+  RadioButton(h2,v,0,0,"Tikai neapstiprinÄtos",flags[1]);
+  RadioButton(h2,v+=16,1,0,"Tikai apstiprinÄtos",flags[1]);
   RadioButton(h2,v+=16,2,0,"Visus",flags[1]);
   EndWindow;
 
-  WindowBegin("Sertifik‚tu saraksts",CertificateListRClass,CGRcW,RcType);
+  WindowBegin("SertifikÄtu saraksts",CertificateListRClass,CGRcW,RcType);
   SetWRect(80,80,500,180);
   EditFieldTL(h=120,v=6,50,"Gads",M4Long,Normal,0,long1,false,0);
   EditFieldTL(h,v+=vs,100,"Skola",M4Str,Normal,100,f2,false,SchoolSClass);
-  EditFieldTL(h,v+=vs,100,"Skolot‚js",M4Str,Normal,100,f3,false,TeacherSClass);
+  EditFieldTL(h,v+=vs,100,"SkolotÄjs",M4Str,Normal,100,f3,false,TeacherSClass);
   EndWindow;
   
 
   WindowBegin("Atskaite par SMU",SMFRClass,CGRcW,RcType);
   SetWRect(80,80,500,210);
   EditFieldTL(h=150,v=6,150,"Skolas kods",M4Str,Normal,100,f1,false,SchoolSClass);
-  EditFieldTL(h,v+=vs,150,"Re®ions",M4Str,Normal,100,f2,false,JALRegionSClass);
-  ButtonFrame(h=50,v=66,120,4,"R‚d´t");
-  RadioButton(h,v,0,0,"Neapstiprin‚tos",flags[1]);
-  RadioButton(h,v+=16,1,0,"Akt´vos",flags[1]);
-  RadioButton(h,v+=16,2,0,"Neakt´vos",flags[1]);
+  EditFieldTL(h,v+=vs,150,"ReÄ£ions",M4Str,Normal,100,f2,false,JALRegionSClass);
+  ButtonFrame(h=50,v=66,120,4,"RÄdÄ«t");
+  RadioButton(h,v,0,0,"NeapstiprinÄtos",flags[1]);
+  RadioButton(h,v+=16,1,0,"AktÄ«vos",flags[1]);
+  RadioButton(h,v+=16,2,0,"NeaktÄ«vos",flags[1]);
   RadioButton(h,v+=16,3,0,"Visus",flags[1]);
   ButtonFrame(h=200,v=66,120,4,"Tips");
-  RadioButton(h,v,0,0,"Raìoäana",flags[2]);
+  RadioButton(h,v,0,0,"RaÅ¾oÅ¡ana",flags[2]);
   RadioButton(h,v+=16,1,0,"Pakalpojumi",flags[2]);
   RadioButton(h,v+=16,2,0,"Abi",flags[2]);
   RadioButton(h,v+=16,3,0,"Visi",flags[2]);
-  CheckBox(h=50,v+=26,1,"R‚d´t dal´bniekus",flags[5]);
+  CheckBox(h=50,v+=26,1,"RÄdÄ«t dalÄ«bniekus",flags[5]);
   EndWindow;
 
-  WindowBegin("Atskaite par SMU atskait•m",SMFreportsRClass,CGRcW,RcType);
+  WindowBegin("Atskaite par SMU atskaitÄ“m",SMFreportsRClass,CGRcW,RcType);
   SetWRect(80,80,500,120);
   PeriodField(h=100,v=6,"Periods");
   EditFieldTL(h,v+=vs,100,"SMU",M4Str,Normal,100,f1,false,SMFSClass);
@@ -404,62 +409,62 @@ begin
 
   WindowBegin("Atskaite par mentoriem",MentorRClass,CGRcW,RcType);
   SetWRect(80,80,500,180);
-  EditFieldTL(150,v+=vs,150,"Re®ions",M4Str,Normal,100,f1,false,JALRegionSClass);
+  EditFieldTL(150,v+=vs,150,"ReÄ£ions",M4Str,Normal,100,f1,false,JALRegionSClass);
   EditFieldTL(150,v+=vs,150,"Novads",M4Str,Normal,100,f2,false,JALDistrictSClass);
-  CheckBox(150,v+=vs,1,"Izlaist neapstiprin‚tos",flags[1]);
+  CheckBox(150,v+=vs,1,"Izlaist neapstiprinÄtos",flags[1]);
   EndWindow;
 
-  WindowBegin("SMU ziÀojumu iestat´jumi",ReportMailTClass,CGSbl,-);
+  WindowBegin("SMU ziÅ†ojumu iestatÄ«jumi",ReportMailTClass,CGSbl,-);
   SetWRect(80,80,560,260);
   SetBlid(ReportMailBlock);
-  StaticText(50,v=25,"ZiÀojumus par iesniegtaj‚m SMU ikm•neäa atskait•m",false);
-  StaticText(50,v=v+15,"nosğt´t uz konferenci:",false);
+  StaticText(50,v=25,"ZiÅ†ojumus par iesniegtajÄm SMU ikmÄ“neÅ¡a atskaitÄ“m",false);
+  StaticText(50,v=v+15,"nosÅ«tÄ«t uz konferenci:",false);
   EditField(180,v,150,"",Normal,Mail,false,ConfSClass);
-  StaticText(50,v=v+45,"ZiÀojumi par piere®istr•tu ",false);
+  StaticText(50,v=v+45,"ZiÅ†ojumi par piereÄ£istrÄ“tu ",false);
   EditField(180,v=v+15,150,"SMU",Normal,SMUMail,false,ConfSClass);
-  EditField(180,v=v+20,150,"Skolot‚ju",Normal,TeacherMail,false,ConfSClass);
+  EditField(180,v=v+20,150,"SkolotÄju",Normal,TeacherMail,false,ConfSClass);
   EditField(180,v=v+20,150,"Mentoru",Normal,MentorMail,false,ConfSClass);
   EditField(180,v=v+20,150,"Studentu",Normal,STUMail,false,ConfSClass);
   EndWindow;
 
-  WindowBegin("Skolu plğsmas",JALLangTClass,CGHBl,-);
+  WindowBegin("Skolu plÅ«smas",JALLangTClass,CGHBl,-);
   SetWRect(80,80,400,280);
   SetBlid(JALLangBlock);
   MatrixBegin(10,20,-30,-10,-,10);
   MatCol(1,25,"Kods",0,Code,false,0);
-  MatCol(1,100,"Plğsma",0,Lang,false,0);
+  MatCol(1,100,"PlÅ«sma",0,Lang,false,0);
   EndMatrix;
   EndWindow;
 
-  WindowBegin("Skolu plğsmas",JALLangSClass,CGother,-);
+  WindowBegin("Skolu plÅ«smas",JALLangSClass,CGother,-);
   SetWRect(240,80,470,298);
   StringList(9,9,206,209);
   EndWindow;
 
-  WindowBegin("Re®ioni",JALRegionSClass,CGother,-);
+  WindowBegin("ReÄ£ioni",JALRegionSClass,CGother,-);
   SetWRect(240,80,470,298);
   StringList(9,9,206,209);
   EndWindow;
 	
 	
-	WindowBegin("Re®ionu defin•äana",JALRegionTClass,CGHBL,-);
+	WindowBegin("ReÄ£ionu definÄ“Å¡ana",JALRegionTClass,CGHBL,-);
   SetWRect(80,80,800,280);
   SetBlid(JALRegionBlock);
   MatrixBegin(10,20,-30,-10,-,10);
-  MatCol(1,25,"Re®ions",0,Region,false,0);
-  MatCol(1,120,"Apakäre®. vai cits nos.",0,SubRegion,false,0);
+  MatCol(1,25,"ReÄ£ions",0,Region,false,0);
+  MatCol(1,120,"ApakÅ¡reÄ£. vai cits nos.",0,SubRegion,false,0);
   EndMatrix;
   EndWindow;
 	
-  WindowBegin("Priekämeti defin•äana",JALSubjectTClass,CGHBL,-);// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 9 October 2018 17:02:46
+  WindowBegin("PriekÅ¡meti definÄ“Å¡ana",JALSubjectTClass,CGHBL,-);// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 9 October 2018 17:02:46
   SetWRect(80,80,800,280);
   SetBlid(JALSubjectBlock);
   MatrixBegin(10,20,-30,-10,-,100);
-  MatCol(1,25,"Priekämeti",0,Subject,false,0);
+  MatCol(1,25,"PriekÅ¡meti",0,Subject,false,0);
   EndMatrix;
   EndWindow;
 
-  WindowBegin("Jaunumu saÀ•m•ji",NewsEmailTClass,CGHBL,-);
+  WindowBegin("Jaunumu saÅ†Ä“mÄ“ji",NewsEmailTClass,CGHBL,-);
   SetWRect(80,80,500,280);
   SetBlid(NewsEmailBlock);
   MatrixBegin(10,20,-30,-10,-,999);
@@ -468,7 +473,7 @@ begin
   EndWindow;
 
 
-  WindowBegin("Klasifik‚ciju defin•äana",JALClassTClass,CGSbl,-);
+  WindowBegin("KlasifikÄciju definÄ“Å¡ana",JALClassTClass,CGSbl,-);
   SetWRect(80,80,800,500);
   SetBlid(JALClassBlock);
   h = 250; v=0; vs=20; h2 = 550;
@@ -476,63 +481,64 @@ begin
   Tile(0,20,false,"",-);  
   tilenr = 1;
   TileButton(tilenr,"Epasti"); tilenr = tilenr + 1;  
-  TileButton(tilenr,"T´meklis"); tilenr = tilenr + 1;  
+  TileButton(tilenr,"TÄ«meklis"); tilenr = tilenr + 1;  
   TileButton(tilenr,"Citi"); tilenr = tilenr + 1;  
   tilenr = 1;
   Tile(tilenr,250,false,"1",STDTextTerm); tilenr = tilenr + 1;  
-  EditField(h,v=6,100,"Likvid•ta SMU teksts",Normal,STDTextTerm,false,LTxtSClass);
-  EditField(h,v=v+vs,100,"Neakt´va SMU teksts",Normal,STDTextDis,false,LTxtSClass);
+  EditField(h,v=6,100,"LikvidÄ“ta SMU teksts",Normal,STDTextTerm,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"NeaktÄ«va SMU teksts",Normal,STDTextDis,false,LTxtSClass);
   EditField(h,v=v+vs,100,"Atjaunotas SMU teksts",Normal,STDTextEn,false,LTxtSClass);
-  EditField(h,v=v+vs,100,"Apstiprin‚ts pas‚kumam",Normal,EventAccepted,false,LTxtSClass);
-  EditField(h,v=v+vs,100,"Noraid´ts pas‚kumam",Normal,EventDeclined,false,LTxtSClass);
-  EditField(h,v=v+vs,100,"Skol•na re®. teksts",Normal,StudentRegText,false,LTxtSClass);
-  EditField(h,v=v+vs,100,"Skol•na re®. teksts vec‚kam",Normal,StudentParentText,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"ApstiprinÄts pasÄkumam",Normal,EventAccepted,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"NoraidÄ«ts pasÄkumam",Normal,EventDeclined,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"SkolÄ“na reÄ£. teksts",Normal,StudentRegText,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"SkolÄ“na reÄ£. teksts vecÄkam",Normal,StudentParentText,false,LTxtSClass);
   EditField(h,v=v+vs,100,"Darbinieka piev. teksts",Normal,EmployeeAddText,false,LTxtSClass);
-  EditField(h,v=v+vs,100,"Darbinieka piev. teksts vec‚kam",Normal,EmployeeAddText2,false,LTxtSClass);
-  EditField(h,v=v+vs,100,"Skol•na apst. piepr. skolot‚jam",Normal,TeacherRequestText,false,LTxtSClass);
-  EditField(h,v=v+vs,100,"SMU apst. piepr. skolot‚jam",Normal,TeacherRequestText2,false,LTxtSClass);
-  EditField(h,v=v+vs,100,"NoÀemts darbinieks skol•nam",Normal,EmployeeRemoveText,false,LTxtSClass);
-  EditField(h,v=v+vs,100,"NoÀemts darbinieks vec‚kam",Normal,EmployeeRemoveText2,false,LTxtSClass);
-  EditField(h,v=v+vs,100,"Skolot‚ja re®istr•äan‚s",Normal,TeacherRegText,false,LTxtSClass);
-  EditField(h,v=v+vs,100,"Skolot‚ja apstiprin‚äana",Normal,TeacherApproveText,false,LTxtSClass);
-//  EditField(h,v=v+vs,100,"Paroles maiÀa",Normal,PasswordChangeText,false,LTxtSClass);
-  EditField(h,v=v+vs,100,"Paroles atjaunoäanas virsraksts",Normal,RecoveryHead,false,LTxtSClass);
-  EditField(h,v=v+vs,100,"Paroles atjaunoäanas s‚kuma teksts",Normal,RecoveryStartTxt,false,LTxtSClass);
-  EditField(h,v=v+vs,100,"Paroles atjaunoäanas beigu teksts",Normal,RecoveryEndTxt,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"Darbinieka piev. teksts vecÄkam",Normal,EmployeeAddText2,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"SkolÄ“na apst. piepr. skolotÄjam",Normal,TeacherRequestText,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"SMU apst. piepr. skolotÄjam",Normal,TeacherRequestText2,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"NoÅ†emts darbinieks skolÄ“nam",Normal,EmployeeRemoveText,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"NoÅ†emts darbinieks vecÄkam",Normal,EmployeeRemoveText2,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"SkolotÄja reÄ£istrÄ“Å¡anÄs",Normal,TeacherRegText,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"SkolotÄja apstiprinÄÅ¡ana",Normal,TeacherApproveText,false,LTxtSClass);
+//  EditField(h,v=v+vs,100,"Paroles maiÅ†a",Normal,PasswordChangeText,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"Paroles atjaunoÅ¡anas virsraksts",Normal,RecoveryHead,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"Paroles atjaunoÅ¡anas sÄkuma teksts",Normal,RecoveryStartTxt,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"Paroles atjaunoÅ¡anas beigu teksts",Normal,RecoveryEndTxt,false,LTxtSClass);
 
   Tile(tilenr,350,false,"2",Template); tilenr = tilenr + 1;  
-  EditField(h,v=6,100,"áablona lapa komp‚nij‚m",Normal,Template,false,WebNGPageSClass);
-  EditField(h,v=v+vs,100,"Struktğras elements",Normal,Struct,false,WebNGStructSClass);
+  EditField(h,v=6,100,"Å ablona lapa kompÄnijÄm",Normal,Template,false,WebNGPageSClass);
+  EditField(h,v=v+vs,100,"StruktÅ«ras elements",Normal,Struct,false,WebNGStructSClass);
   EditField(h,v=v+vs,100,"Profila elements",Normal,ProfileElement,false,WebNGElementSClass);
-  EditField(h,v=v+vs,100,"Profila laboäanas struktğra",Normal,ProfileCorrectionStruct,false,WebNGStructSClass);
-  EditField(h,v=v+vs,100,"Darbinieka pievienoäanas struktğra",Normal,AddEmpStruct,false,WebNGStructSClass);
-  EditField(h,v=v+vs,100,"Darbinieka laboäanas struktğra",Normal,EmpChangeStruct,false,WebNGStructSClass);
-  EditField(h,v=v+vs,100,"Struktğra p•c veiksm´gas augäupl.",Normal,UploadAfter,false,WebNGStructSClass);
-  EditField(h,v=v+vs,100,"Struktğra p•c neveiksm´gas augäupl.",Normal,UploadFail,false,WebNGStructSClass);
-  EditField(h,v=v+vs,100,"Augäupl‚des direktorija",Normal,UploadDir,false,0);
-  EditField(h,v=v+vs,100,"Lejupl‚des id",Normal,DownloadReq,false,0);
-  EditField(h,v=v+vs,100,"Lejupl‚des stat",Normal,DownloadReqStat,false,0);
+  EditField(h,v=v+vs,100,"Profila laboÅ¡anas struktÅ«ra",Normal,ProfileCorrectionStruct,false,WebNGStructSClass);
+  EditField(h,v=v+vs,100,"Darbinieka pievienoÅ¡anas struktÅ«ra",Normal,AddEmpStruct,false,WebNGStructSClass);
+  EditField(h,v=v+vs,100,"Darbinieka laboÅ¡anas struktÅ«ra",Normal,EmpChangeStruct,false,WebNGStructSClass);
+  EditField(h,v=v+vs,100,"StruktÅ«ra pÄ“c veiksmÄ«gas augÅ¡upl.",Normal,UploadAfter,false,WebNGStructSClass);
+  EditField(h,v=v+vs,100,"StruktÅ«ra pÄ“c neveiksmÄ«gas augÅ¡upl.",Normal,UploadFail,false,WebNGStructSClass);
+  EditField(h,v=v+vs,100,"AugÅ¡uplÄdes direktorija",Normal,UploadDir,false,0);
+  EditField(h,v=v+vs,100,"LejuplÄdes id",Normal,DownloadReq,false,0);
+  EditField(h,v=v+vs,100,"LejuplÄdes stat",Normal,DownloadReqStat,false,0);
+  EditField(h,v=v+vs,100,"SertifikÄtu failu konference",Normal,CertFileConf,false,ConfSClass);
 
 
   Tile(tilenr,250,false,"3",Schoolar); tilenr = tilenr + 1;  
-  Editfield(h,v=6,100,"Klienta klase skol•niem",Normal,Schoolar,false,CClassSClass);
-  Editfield(h,v=v+vs,100,"Klienta klase skolot‚jiem",Normal,Teacher,false,CClassSClass);
+  Editfield(h,v=6,100,"Klienta klase skolÄ“niem",Normal,Schoolar,false,CClassSClass);
+  Editfield(h,v=v+vs,100,"Klienta klase skolotÄjiem",Normal,Teacher,false,CClassSClass);
   Editfield(h,v=v+vs,100,"Klienta klase sentoriem",Normal,Mentor,false,CClassSClass);
-  EditField(h,v=v+vs,100,"Satura stils pas‚kumiem",Normal,CStyle,false,WebNGContentStyleSClass);
-  EditField(h,v=v+vs,100,"Satura stils apstiprin‚tiem pas‚kumiem",Normal,EventSmall,false,WebNGContentStyleSClass);
-  Editfield(h,v=v+vs,100,"Kategorija pas‚kumiem",Normal,Cat,false,WebNGContentCatSClass);
-  EditField(h,v=v+vs,100,"Skolot‚ja lietot‚ja grupa",Normal,GUTeacher,false,AccessSClass);
-  EditField(h,v=v+vs,100,"Skolot‚ja lietot‚ja sl•gt‚ grupa",Normal,GUTeacherClosed,false,AccessSClass);
-  EditField(h,v=v+vs,100,"S‚kuma konference saÀemtajiem failiem",Normal,StartConf,false,ConfSClass);
-  EditField(h,v=v+vs,100,"Konference veiksm´gi saÀemtajiem failiem",Normal,GoodConf,false,ConfSClass);
-  EditField(h,v=v+vs,100,"Konference neveiksm´gi saÀemtajiem failiem",Normal,BadConf,false,ConfSClass);
-  EditField(h,v=v+vs,100,"No pas‚kumiem re®istr•to kontaktu klasif.",Normal,EventPart,false,CClassSClass);
-  EditField(h,v=v+vs,100,"Konference paziÀojumam par nosğt´tiem failiem",Normal,AttachConf,false,ConfSClass);
-  EditField(h,v=v+vs,100,"V•rt•jums no",Normal,ScoreFrom,false,0);
-  EditField(h,v=v+vs,100,"V•rt•jums l´dz",Normal,ScoreTo,false,0);
+  EditField(h,v=v+vs,100,"Satura stils pasÄkumiem",Normal,CStyle,false,WebNGContentStyleSClass);
+  EditField(h,v=v+vs,100,"Satura stils apstiprinÄtiem pasÄkumiem",Normal,EventSmall,false,WebNGContentStyleSClass);
+  Editfield(h,v=v+vs,100,"Kategorija pasÄkumiem",Normal,Cat,false,WebNGContentCatSClass);
+  EditField(h,v=v+vs,100,"SkolotÄja lietotÄja grupa",Normal,GUTeacher,false,AccessSClass);
+  EditField(h,v=v+vs,100,"SkolotÄja lietotÄja slÄ“gtÄ grupa",Normal,GUTeacherClosed,false,AccessSClass);
+  EditField(h,v=v+vs,100,"SÄkuma konference saÅ†emtajiem failiem",Normal,StartConf,false,ConfSClass);
+  EditField(h,v=v+vs,100,"Konference veiksmÄ«gi saÅ†emtajiem failiem",Normal,GoodConf,false,ConfSClass);
+  EditField(h,v=v+vs,100,"Konference neveiksmÄ«gi saÅ†emtajiem failiem",Normal,BadConf,false,ConfSClass);
+  EditField(h,v=v+vs,100,"No pasÄkumiem reÄ£istrÄ“to kontaktu klasif.",Normal,EventPart,false,CClassSClass);
+  EditField(h,v=v+vs,100,"Konference paziÅ†ojumam par nosÅ«tÄ«tiem failiem",Normal,AttachConf,false,ConfSClass);
+  EditField(h,v=v+vs,100,"VÄ“rtÄ“jums no",Normal,ScoreFrom,false,0);
+  EditField(h,v=v+vs,100,"VÄ“rtÄ“jums lÄ«dz",Normal,ScoreTo,false,0);
   EndWindow;
 
-  WindowBegin("Finanäu apr•úini",FCSMULClass,CGmlist,-);
+  WindowBegin("FinanÅ¡u aprÄ“Ä·ini",FCSMULClass,CGmlist,-);
   SpawnClass(FCSMUDClass);
   SetWRect(64,80,860,350); 
   Sizeable(-1,-1,0,0);
@@ -541,10 +547,10 @@ begin
   h = 250; v=0; vs=100; h2 = 550;
   RlColKey(32,32,"Kods",SMUCode,false,MainKey);
   RlCol   (120,120,"Prece",ItemName,false);
-  SearchField("Mekl•t");
+  SearchField("MeklÄ“t");
   EndWindow;
   
-  WindowBegin("Finanäu apr•úini",FCSMUDClass,CGview,-);
+  WindowBegin("FinanÅ¡u aprÄ“Ä·ini",FCSMUDClass,CGview,-);
   SetWRect(64,80,860,350);
   Sizeable(-1,-1,0,0);
   UseView(FCSMUVc);
@@ -552,10 +558,10 @@ begin
   Editfield(h,v,100,"Kods",Normal,SMUCode,false,0);
   Editfield(h,v+=vs,100,"Prece",Normal,ItemName,false,0);
 
-  Editfield(h,v=v+vs,100,"Darbinieka 1 v‚rds,uzv‚rds",Normal,contact1,false,0);
-  Editfield(h,v=v+vs,100,"Darbinieka 2 v‚rds,uzv‚rds",Normal,contact2,false,0);
-  Editfield(h,v=v+vs,100,"Darbinieka 3 v‚rds,uzv‚rds ",Normal,contact3,false,0);
-  EditField(h,v=v+vs,100,"Darbinieka 4 v‚rds,uzv‚rds",Normal,contact4,false,0);
+  Editfield(h,v=v+vs,100,"Darbinieka 1 vÄrds,uzvÄrds",Normal,contact1,false,0);
+  Editfield(h,v=v+vs,100,"Darbinieka 2 vÄrds,uzvÄrds",Normal,contact2,false,0);
+  Editfield(h,v=v+vs,100,"Darbinieka 3 vÄrds,uzvÄrds ",Normal,contact3,false,0);
+  EditField(h,v=v+vs,100,"Darbinieka 4 vÄrds,uzvÄrds",Normal,contact4,false,0);
   EditField(h,v=v+vs,100,"Darbinieka 1 alga",Normal,salary1,false,0);
   Editfield(h,v=v+vs,100,"Darbinieka 2 alga",Normal,salary2,false,0);
   EditField(h,v=v+vs,100,"Darbinieka 3 alga",Normal,salary3,false,0);
@@ -563,42 +569,42 @@ begin
 
   MatrixBegin(10,v=v+vs+50,-30,-10,-,10);
   MatCol(1,32,"Produkta nosaukums",0,ProdName,false,0);
-  MatCol(1,150,"1 vien. paäizm. EUR",0,UCost,false,0);
+  MatCol(1,150,"1 vien. paÅ¡izm. EUR",0,UCost,false,0);
   EndMatrix;
   EndWindow;
 
   
-  WindowBegin("Dz•st visas skolas",DelSchoolVClass,CGMnt,RcType);
+  WindowBegin("DzÄ“st visas skolas",DelSchoolVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
 
-  WindowBegin("Novadi no adres•m",DistrictGuesserVClass,CGMnt,RcType);
+  WindowBegin("Novadi no adresÄ“m",DistrictGuesserVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
   
-  WindowBegin("Novadu iztrğkums",MissingDistrictCntVClass,CGMnt,RcType);
+  WindowBegin("Novadu iztrÅ«kums",MissingDistrictCntVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
   
-  WindowBegin("Novadu t´r´äana",ClearDistrictVClass,CGMnt,RcType);
+  WindowBegin("Novadu tÄ«rÄ«Å¡ana",ClearDistrictVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
 
-  WindowBegin("Veidot pastkastes Glob‚lajiem lietot‚jiem",GUMailboxesVClass,CGMnt,RcType);
+  WindowBegin("Veidot pastkastes GlobÄlajiem lietotÄjiem",GUMailboxesVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
   
-  WindowBegin("Veidot komp‚nijas",ForceGenCompVClass,CGMnt,RcType);
+  WindowBegin("Veidot kompÄnijas",ForceGenCompVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
   
-  WindowBegin("Piesl•gäan‚s",SetLoginFlagVClass,CGMnt,RcType);
+  WindowBegin("PieslÄ“gÅ¡anÄs",SetLoginFlagVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
@@ -609,17 +615,17 @@ begin
   Sizeable(-1,-1,0,0);
   UseView(MentorVc);
   RecordList(4,17,-21,-39);
-  RlColKey(4,2,"V‚rds, uzv‚rds",MentorName,false,MentorName);
+  RlColKey(4,2,"VÄrds, uzvÄrds",MentorName,false,MentorName);
   //RlColKey(150,150,"E-pasts",Email,false,Email);
-  RlColKey(320,320,"Komp‚nija",Company,False,Company);
+  RlColKey(320,320,"KompÄnija",Company,False,Company);
   RlColKey(500,500,"Amats",Job,False,Job);
-  //RlColKey(94,94,"Re®ions,M4Str,100,0);
+  //RlColKey(94,94,"ReÄ£ions,M4Str,100,0);
   RlColKey(650,650,"Novads",District,false,District);
   RlColKey(-35,-35,"Apst.",Approved,false,Approved);
-  SearchField("Mekl•t");
+  SearchField("MeklÄ“t");
   EndWindow;
 
-	WindowBegin("Piesl•gäan‚s",SetLoginFlagVClass,CGMnt,RcType);
+	WindowBegin("PieslÄ“gÅ¡anÄs",SetLoginFlagVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
@@ -631,12 +637,12 @@ begin
 
 	WindowBegin("Atjaunot kontaktus",RefreshContactsVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
-  CheckBox(h=50,v=20,0,"Sl•gt / atv•rt kontaktus neapstiprin‚t‚m skol‚m",flags[1]);
-  CheckBox(h,v+=20,0,"Palielin‚t apr•úin‚to klasi par 1",flags[2]);
+  CheckBox(h=50,v=20,0,"SlÄ“gt / atvÄ“rt kontaktus neapstiprinÄtÄm skolÄm",flags[1]);
+  CheckBox(h,v+=20,0,"PalielinÄt aprÄ“Ä·inÄto klasi par 1",flags[2]);
   h2 = 300;
-  CheckBox(h,v+=20,0,"Main´t visiem kontaktiem skolu uz:",flags[3]);
+  CheckBox(h,v+=20,0,"MainÄ«t visiem kontaktiem skolu uz:",flags[3]);
   EditField(h2,v,50,"",Normal,f1,false,0);
-  CheckBox(h,v+=20,0,"Main´t visiem kontaktiem skolot‚ju uz:",flags[4]);
+  CheckBox(h,v+=20,0,"MainÄ«t visiem kontaktiem skolotÄju uz:",flags[4]);
   EditField(h2,v,50,"",Normal,f2,false,0);
   EndWindow;
 
@@ -646,53 +652,53 @@ begin
   UseView(MentorVc);
   v = 10; vs = 22; h = 100; h2 = 260;
   EditField(h,v+=vs, 30,"Mentora kods",Normal,MentorCode,false,0);
-  EditField(h2,v,-25,"V‚rds, Uzv‚rds",Normal,MentorName,false,0);
+  EditField(h2,v,-25,"VÄrds, UzvÄrds",Normal,MentorName,false,0);
   //EditField(h,v+=vs,90,"Telefons",Normal,Telephone,false,0);
   //EditField(h2,v,-25,"E-pasts",Normal,Email,false,0);
-  EditField(h,v+=vs,90,"Komp‚nija",Normal,Company,false,0);
+  EditField(h,v+=vs,90,"KompÄnija",Normal,Company,false,0);
   EditField(h2,v,-25,"Amats",Normal,Job,false,0);
-  EditField(h,v+=vs,90,"Re®ions",Normal,Region,false,JALRegionSClass);
+  EditField(h,v+=vs,90,"ReÄ£ions",Normal,Region,false,JALRegionSClass);
   EditField(h2,v,90,"Novads",Normal,District,false,JALDistrictSClass);
-  CheckBox(h-3,v+=28,0,"Apstiprin‚ts",Approved);
+  CheckBox(h-3,v+=28,0,"ApstiprinÄts",Approved);
   EndWindow;
 
-  WindowBegin("T´mekºa saturs",WebNGContentLClass,CGmlist,-);
+  WindowBegin("TÄ«mekÄ¼a saturs",WebNGContentLClass,CGmlist,-);
   SetWRect(10,80,800,291);
   SpawnClass(WebNGContentDClass);
   Sizeable(-1,-1,0,0);
   UseView(WebNGContentVc);
   RecordList(4,17,-21,-39);
-  RlColKey(6,6,"S•r. Nr.",SerNr,false,SerNr);
+  RlColKey(6,6,"SÄ“r. Nr.",SerNr,false,SerNr);
   RlColKey(75,75,"Stils",ContentStyle,false,ContentStyle);
   RlColKey(185,185,"Datums",SpecDate,false,SpecDate);
   RlCol(260,260,"Kategorija",ContentCategory,false);
-  RlColKey(390,390,"Koment‚rs",Comment,false,Comment);
-  SearchField("Mekl•t");
-  SpecialMenu("Par‚d´t saturu p‚rlğkprogrmm‚",'w',1,"ShowWebNGContentInBrowserLsm");
-  SpecialMenu("Mekl•t",'F',1,"TWebNGContSearchDsm");
+  RlColKey(390,390,"KomentÄrs",Comment,false,Comment);
+  SearchField("MeklÄ“t");
+  SpecialMenu("ParÄdÄ«t saturu pÄrlÅ«kprogrmmÄ",'w',1,"ShowWebNGContentInBrowserLsm");
+  SpecialMenu("MeklÄ“t",'F',1,"TWebNGContSearchDsm");
   EndWindow;
 
-  WindowBegin("T´mekºa saturs",WebNGContentDClass,CGview,-);
+  WindowBegin("TÄ«mekÄ¼a saturs",WebNGContentDClass,CGview,-);
   UseView(WebNGContentVc);
   SetWRect(20,80,500,435);
   Sizeable(-1,-1,0,0);
   vs = 20;h = 110;h2 = 320; v = 6; h3 = -160;
-  EditField(h,v,80,"S•r. Nr.",Normal,SerNr,false,0);
+  EditField(h,v,80,"SÄ“r. Nr.",Normal,SerNr,false,0);
   EditField(h2,v,120,"Stils",Normal,ContentStyle,false,WebNGContentStyleSClass);
   EditField(h3,v,120,"Kategorija",Normal,ContentCategory,false,WebNGContentCatSClass);
   EditField(h,v+=vs,80,"Datums",Normal,SpecDate,false,PasteCurDate);
   EditField(h2,v,-40,"Virsraksts",Normal,Comment,false,0);
   EditField(h,v+=vs,80,"Valsts",Normal,Country,false,WebNGCountrySClass);
-  EditField(h2,v,40,"Noklus•t‚ valoda",Normal,DefLangCode,false,WebNGLanguageSClass);
+  EditField(h2,v,40,"NoklusÄ“tÄ valoda",Normal,DefLangCode,false,WebNGLanguageSClass);
   HalPushButton(-130,v,-30,v+20,"NewContentTranslationDsm","Jauns tulkojums");
   RecordList2(10,v+=40,-30,-39,"WebNGTranslateVc");
   RlColKey(4,4,"Valoda",LangCode,false,ContentLangCode);
-  RlColKey(90,90,"Izmain´ts",LastChanged,false,ContentLastChanged);
-  RlCol(180,180,"K‚rtoäana",Sorting,false);
-  RlColKey(270,270,"Koment‚rs",Comment,false,ContentComment);
-  SpecialMenu("Par‚d´t saturu p‚rlğkprogramm‚",'w',1,"ShowWebNGContentInBrowserDsm");
-  //SpecialMenu("Public•t att•lus",' ',1,"PublishGalleryDsm");
-  //SpecialMenu("IzÀemt att•lus no t´mekºa",' ',1,"UnPublishGalleryDsm");
+  RlColKey(90,90,"IzmainÄ«ts",LastChanged,false,ContentLastChanged);
+  RlCol(180,180,"KÄrtoÅ¡ana",Sorting,false);
+  RlColKey(270,270,"KomentÄrs",Comment,false,ContentComment);
+  SpecialMenu("ParÄdÄ«t saturu pÄrlÅ«kprogrammÄ",'w',1,"ShowWebNGContentInBrowserDsm");
+  //SpecialMenu("PublicÄ“t attÄ“lus",' ',1,"PublishGalleryDsm");
+  //SpecialMenu("IzÅ†emt attÄ“lus no tÄ«mekÄ¼a",' ',1,"UnPublishGalleryDsm");
   EndWindow;
 
   WindowBegin("Satura stils",WebNGContentStyleDClass,CGview,-);
@@ -700,64 +706,64 @@ begin
   SetWRect(20,80,500,420);
   vs = 20;h = 140;h2 =  360; v = 6;
   EditField(h,v,120,"Kods",Normal,Code,false,0);
-  EditField(h,v+=vs,-40,"Koment‚rs",Normal,Comment,false,0);
+  EditField(h,v+=vs,-40,"KomentÄrs",Normal,Comment,false,0);
   EditField(h,v+=vs,80,"Elementu skaits",Normal,ElementCount,false,0);
-  EditField(h2,v,-40,"áablona elements",Normal,ElementTemplate,false,WebNGElementSClass);
+  EditField(h2,v,-40,"Å ablona elements",Normal,ElementTemplate,false,WebNGElementSClass);
   EditField(h,v+=vs,80,"<div> ID",Normal,DivID,false,0);
   EditField(h2,v,-40,"<div> klase",Normal,DivClass,false,0);
-  EditField(h,v+=vs,80,"R‚d´t app mezglu",Normal,HandlerAppNode,false,WebNGStructSClass); //Possible names?: Hander app, Handler app node, Link handler node
+  EditField(h,v+=vs,80,"RÄdÄ«t app mezglu",Normal,HandlerAppNode,false,WebNGStructSClass); //Possible names?: Hander app, Handler app node, Link handler node
   EditField(h2,v,-40,"Galvenes klase",Normal,HeadingClass,false,0);
   EditField(h,v+=vs,80,"Kategorijas galvenes klase",Normal,CatHeaderDivClass,false,0);
   EditField(h2,v,-40,"Valsts galvenes klase",Normal,CountryHeaderDivClass,false,0);
-  ButtonFrame(h=40,vm=(v+=45),150,4,"Iestat´äana");
-  CheckBox(h,v,0,"Druk‚t datumu",PrintDate);
+  ButtonFrame(h=40,vm=(v+=45),150,4,"IestatÄ«Å¡ana");
+  CheckBox(h,v,0,"DrukÄt datumu",PrintDate);
   CheckBox(h,v+=16,0,"Neiesiet <div>",NoDiv);
-  CheckBox(h,v+=16,0,"Grupu saraksts p•c valsts",GroupByCountry);
-  CheckBox(h,v+=16,0,"Grupu saraksts p•c kategorijas",GroupByCategory);
+  CheckBox(h,v+=16,0,"Grupu saraksts pÄ“c valsts",GroupByCountry);
+  CheckBox(h,v+=16,0,"Grupu saraksts pÄ“c kategorijas",GroupByCategory);
   ButtonFrame(h=270,v=vm,150,3,"Saraksta skata teksts");
-  RadioButton(h,v,0,0,"R‚d´t visas rindas",ListViewFlag);
-  RadioButton(h,v+=16,1,0,"R‚d´t vienu nejauäu rindu",ListViewFlag);
-  RadioButton(h,v+=16,2,0,"R‚d´t galerijas",ListViewFlag);
-  RadioButton(h,v+=16,3,0,"R‚d´t pas‚kumus",ListViewFlag);
-  ButtonFrame(h,v+=45,150,2,"Tulkojuma koment‚rs");
-  RadioButton(h,v,0,0,"Nedruk‚t",CommentFlag);
-  RadioButton(h,v+=16,1,0,"R‚d´t k‚ galveni",CommentFlag);
-  ButtonFrame(h,v+=45,150,2,"K‚rtoäana");
-  RadioButton(h,v,0,0,"S‚kot ar jaun‚ko",SortingFlag);
-  RadioButton(h,v+=16,1,0,"Nejauäs",SortingFlag);
+  RadioButton(h,v,0,0,"RÄdÄ«t visas rindas",ListViewFlag);
+  RadioButton(h,v+=16,1,0,"RÄdÄ«t vienu nejauÅ¡u rindu",ListViewFlag);
+  RadioButton(h,v+=16,2,0,"RÄdÄ«t galerijas",ListViewFlag);
+  RadioButton(h,v+=16,3,0,"RÄdÄ«t pasÄkumus",ListViewFlag);
+  ButtonFrame(h,v+=45,150,2,"Tulkojuma komentÄrs");
+  RadioButton(h,v,0,0,"NedrukÄt",CommentFlag);
+  RadioButton(h,v+=16,1,0,"RÄdÄ«t kÄ galveni",CommentFlag);
+  ButtonFrame(h,v+=45,150,2,"KÄrtoÅ¡ana");
+  RadioButton(h,v,0,0,"SÄkot ar jaunÄko",SortingFlag);
+  RadioButton(h,v+=16,1,0,"NejauÅ¡s",SortingFlag);
   EndWindow;
 
-  WindowBegin("Numuru s•rijas p•c noklus•juma",SRTClass,CGSbl,SRType);
+  WindowBegin("Numuru sÄ“rijas pÄ“c noklusÄ“juma",SRTClass,CGSbl,SRType);
   SetWRect(64,80,509,333);
   SetBlid(SRBlock);
   vs = 20; h=130;
-  EditField(h,vm=(v=6),65,"Pasğt´jumi",Normal,LastOrdNr,false,0);
-  EditField(h,v+=vs,65,"Nosğt´t‚s preces",Normal,LastShipNr,false,0);
-  EditField(h,v+=vs,65,"R•úini",Normal,LastInvNr,false,0);
-  EditField(h,v+=vs,65,"Ien‚koäie r•úini",Normal,LastVINr,false,0);
-  EditField(h,v+=vs,65,"SaÀemt‚s preces",Normal,LastPurNr,false,0);
-  EditField(h,v+=vs,65,"Soda naudas r•ú.",Normal,LastIntNr,false,0);
+  EditField(h,vm=(v=6),65,"PasÅ«tÄ«jumi",Normal,LastOrdNr,false,0);
+  EditField(h,v+=vs,65,"NosÅ«tÄ«tÄs preces",Normal,LastShipNr,false,0);
+  EditField(h,v+=vs,65,"RÄ“Ä·ini",Normal,LastInvNr,false,0);
+  EditField(h,v+=vs,65,"IenÄkoÅ¡ie rÄ“Ä·ini",Normal,LastVINr,false,0);
+  EditField(h,v+=vs,65,"SaÅ†emtÄs preces",Normal,LastPurNr,false,0);
+  EditField(h,v+=vs,65,"Soda naudas rÄ“Ä·.",Normal,LastIntNr,false,0);
   EditField(h,v+=vs,65,"Kontakti",Normal,LastCustCode,false,0);
   EditField(h,v+=vs,65,"Artikuli",Normal,LastArtCode,false,0);
-    EditField(h,v+=vs,65,"Maks‚jumi",Normal,LastPayNr,false,0);  
-    EditField(h=330,v=vm,65,"Gr‚matojumi",Normal,LastTRNr,false,0);  
-  EditField(h,v+=vs,65,"Kred´ta r•úini",Normal,LastCredInvNr,false,0);
-  EditField(h,v+=vs,65,"SaÀ. kred´ta r•úini",Normal,LastCredVINr,false,0);
+    EditField(h,v+=vs,65,"MaksÄjumi",Normal,LastPayNr,false,0);  
+    EditField(h=330,v=vm,65,"GrÄmatojumi",Normal,LastTRNr,false,0);  
+  EditField(h,v+=vs,65,"KredÄ«ta rÄ“Ä·ini",Normal,LastCredInvNr,false,0);
+  EditField(h,v+=vs,65,"SaÅ†. kredÄ«ta rÄ“Ä·ini",Normal,LastCredVINr,false,0);
   EditField(h,v+=vs,65,"Maks. uzdevumi",Normal,LastOPNr,false,0);
-  EditField(h,v+=vs,65,"Pied‚v‚jumi",Normal,LastQTNr,false,0);
-  EditField(h,v+=vs,65,"L´gumu r•úini",Normal,LastCOInvNr,false,0);
-  EditField(h,v+=vs,65,"POS r•úini",Normal,LastIVCashNr,false,0);
-  EditField(h,v+=vs,65,"S/N r•úini",Normal,LastCashInvNr,false,0);
-  EditField(h,v+=vs,65,"Pasğt´jumi",Normal,LastPONr,false,0);
+  EditField(h,v+=vs,65,"PiedÄvÄjumi",Normal,LastQTNr,false,0);
+  EditField(h,v+=vs,65,"LÄ«gumu rÄ“Ä·ini",Normal,LastCOInvNr,false,0);
+  EditField(h,v+=vs,65,"POS rÄ“Ä·ini",Normal,LastIVCashNr,false,0);
+  EditField(h,v+=vs,65,"S/N rÄ“Ä·ini",Normal,LastCashInvNr,false,0);
+  EditField(h,v+=vs,65,"PasÅ«tÄ«jumi",Normal,LastPONr,false,0);
     EditField(h,v+=vs,65,"Standarta rezerv.",Normal,LastDaughterJobNr,false,0);  
-    EditField(h,v+=vs,65,"P•d•jais SKU",Normal,LastSKU,false,0);  
-  EditField(h,v+=vs,65,"Skolot‚ja kods",Normal,LastTeacherCode,false,0);
+    EditField(h,v+=vs,65,"PÄ“dÄ“jais SKU",Normal,LastSKU,false,0);  
+  EditField(h,v+=vs,65,"SkolotÄja kods",Normal,LastTeacherCode,false,0);
   EditField(h,v+=vs,65,"Skolas kods",Normal,LastSchoolCode,false,0);
 
   EndWindow;
 
 
-  WindowBegin("Koment‚rs",WebNGBlogCommentDClass,CGview,-);
+  WindowBegin("KomentÄrs",WebNGBlogCommentDClass,CGview,-);
   SetWRect(20,80,680,500);
   h = 110; h2 = 330; h3 = 450; v = 16; vs=20;
   UseView(WebNGBlogCommentVc);
@@ -767,26 +773,26 @@ begin
   EditField(h2,v ,100,"Laiks",Normal,TransTime,false,0);
   EditField(h,v+=vs ,100,"Bloga autors",Normal,MailboxName,false,0);
   EditField(h2,v ,100,"Ieraksta virsraksts",Normal,MailHeader,false,0);
-  EditField(h,v+=vs ,100,"Koment‚ra autors",Normal,UserName,false,0);
+  EditField(h,v+=vs ,100,"KomentÄra autors",Normal,UserName,false,0);
   EditField(h2,v ,100,"Klienta kods",Normal,CustCode,false,CUSClass);
   EditField(h,v+=vs ,100,"IP",Normal,IPAddress,false,0);
   EditField(h2,v ,100,"E-pasts",Normal,Email,false,0);
-  EditField(h,v+=vs ,320,"Koment‚rs",Normal,CommentHeader,false,0);
+  EditField(h,v+=vs ,320,"KomentÄrs",Normal,CommentHeader,false,0);
   ButtonFrame(h3,vm=(v=20),140,3,"Tips");
-  RadioButton(h3,v,0,0,"Koment‚rs",CommentType);
-  RadioButton(h3,v+=16,1,0,"Pozit´vs v•rt•jums",CommentType);
-  RadioButton(h3,v+=16,2,0,"Negat´vs v•rt•jums",CommentType);
+  RadioButton(h3,v,0,0,"KomentÄrs",CommentType);
+  RadioButton(h3,v+=16,1,0,"PozitÄ«vs vÄ“rtÄ“jums",CommentType);
+  RadioButton(h3,v+=16,2,0,"NegatÄ«vs vÄ“rtÄ“jums",CommentType);
   ButtonFrame(h3,vm=(v=v+48),80,3,"Statuss");
-  RadioButton(h3,v,0,0,"Apstiprin‚ts",AcceptFlag);
-  RadioButton(h3,v+=16,1,0,"Noraid´ts",AcceptFlag);
+  RadioButton(h3,v,0,0,"ApstiprinÄts",AcceptFlag);
+  RadioButton(h3,v+=16,1,0,"NoraidÄ«ts",AcceptFlag);
   RadioButton(h3,v+=16,2,0,"Nenoteikts",AcceptFlag);
   ButtonFrame(h3+=110,vm,30,2,"Teksta tips");
   RadioButton(h3,v=v-32,0,0,"Blogs",TextType);
-  RadioButton(h3,v+=16,1,0,"ZiÀa",TextType);
+  RadioButton(h3,v+=16,1,0,"ZiÅ†a",TextType);
   TextField(h,v+=46,-21,-16,Math,0);
   EndWindow;
 
-  WindowBegin("Koment‚ri un v•rt•jumi",WebNGBlogCommentLClass,CGmlist,-);
+  WindowBegin("KomentÄri un vÄ“rtÄ“jumi",WebNGBlogCommentLClass,CGmlist,-);
   SetWRect(20,80,700,350);
   Sizeable(-1,-1,0,0);
   SpawnClass(WebNGBlogCommentDClass);
@@ -798,22 +804,22 @@ begin
   RlColKey(300,300,"Ieraksta virsraksts",MailHeader,false,MailHeader);
   RlColKey(-140,-140,"Datums",TransDate,false,NegActSerNr);
   RlCol   (-60,-60,"Laiks",TransTime,false);
-  SearchField("Mekl•t");
+  SearchField("MeklÄ“t");
   EndWindow;
 
-  WindowBegin("Sğt´t jaunumus",SendNewsToEmailsVClass,CGMnt,RcType);
+  WindowBegin("SÅ«tÄ«t jaunumus",SendNewsToEmailsVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   EditFieldTL(100,10, -20,"Satura ieraksti",M4Str,Normal,50,f1,false,WebNGContentLClass);
   StaticText(100,40,"Spied OK",false);
   EndWindow;
 
-  WindowBegin("PieÀemt E-pastus",SaveAttachmentsVClass,CGMnt,RcType);
+  WindowBegin("PieÅ†emt E-pastus",SaveAttachmentsVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
    //EditFieldTL(100,10, -20,"Satura ieraksti",M4Str,Normal,50,f1,false,WebNGContentLClass);
   StaticText(100,40,"Spied OK",false);
   EndWindow;
 
-  WindowBegin("Aizpild´t kontaktu kodus",FillCUCodesVClass,CGMnt,RcType);
+  WindowBegin("AizpildÄ«t kontaktu kodus",FillCUCodesVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   StaticText(100,40,"Spiediet OK",false);
   EndWindow;
@@ -823,12 +829,12 @@ begin
   StringList(9,9,206,209);
   EndWindow;
 
-  WindowBegin("Re®ionu defin•äana",JALDistrictTClass,CGHBL,-);
+  WindowBegin("ReÄ£ionu definÄ“Å¡ana",JALDistrictTClass,CGHBL,-);
   SetWRect(80,80,600,280);
   SetBlid(JALDistrictBlock);
   MatrixBegin(10,20,-30,-10,-,200);
   MatCol(1,25,"Novads",0,District,false,0);
-  MatCol(1,120,"Re®ions",0,Region,false,JALRegionSClass);
+  MatCol(1,120,"ReÄ£ions",0,Region,false,JALRegionSClass);
   EndMatrix;
   EndWindow;
 
@@ -838,57 +844,57 @@ begin
   SetWRect(80,80,300,300);
 
   RecordList(4,17,-21,-39);
-  RlColKey(4,4,"S•r. nr.",SerNr,false,SerNr);
+  RlColKey(4,4,"SÄ“r. nr.",SerNr,false,SerNr);
   RlColKey(80,80,"SMU kods",SMFCode,false,SMFCode);
   RLCol   (180,180,"SMU nos.",SMFName,false);
-  SearchField("Mekl•t");
+  SearchField("MeklÄ“t");
   EndWindow;
 
   WindowBegin("Dokuments",JALFileDClass,CGView,-);
   v=6;h=100;h2=250;vs=20;
   UseView(JALFileVc);
   SetWRect(80,80,440,400);
-  EditField(h,v,80,"S•r. nr.",Normal,SerNr,false,0);
+  EditField(h,v,80,"SÄ“r. nr.",Normal,SerNr,false,0);
 	EditField(h,v+=vs,-40,"Dok name",Normal,Name,false,0);
   EditField(h,v+=vs,80,"SMU kods",Normal,SMFCode,false,SMFSClass);
   EditField(h,v+=vs,-40,"SMU nosaukums",Normal,SMFName,false,0);
 	EditField(h,v+=vs,-40,"Reg Date",Normal,TransDate,false,0);
-	EditField(h,v+=vs,80,"V•rt•jums",Normal,Score,false,0);
+	EditField(h,v+=vs,80,"VÄ“rtÄ“jums",Normal,Score,false,0);
   ButtonFrame(h,v+=40,100,4,"Statuss");
-  RadioButton(h,v,0,0,"Iesğt´ts",Status);
-  RadioButton(h,v+=16,1,0,"Apstiprin‚ts(skolot‚js)",Status);
-  RadioButton(h,v+=16,2,0,"Apstiprin‚ts(JAL)",Status);
-  RadioButton(h,v+=16,3,0,"Noraid´ts",Status);
-  RadioButton(h,v+=16,4,0,"Att•ls",Status);
+  RadioButton(h,v,0,0,"IesÅ«tÄ«ts",Status);
+  RadioButton(h,v+=16,1,0,"ApstiprinÄts(skolotÄjs)",Status);
+  RadioButton(h,v+=16,2,0,"ApstiprinÄts(JAL)",Status);
+  RadioButton(h,v+=16,3,0,"NoraidÄ«ts",Status);
+  RadioButton(h,v+=16,4,0,"AttÄ“ls",Status);
  
   EndWindow;
 
-  WindowBegin("Atskaite par skol‚m",JALDocsRClass,CGRcW,RcType);
+  WindowBegin("Atskaite par skolÄm",JALDocsRClass,CGRcW,RcType);
   SetWRect(80,80,500,250);
   EditFieldTL(h=150,v=6,150,"SMU",M4Str,Normal,100,f1,false,SMFSClass);
   EditFieldTL(h=150,v+=vs,150,"Skola",M4Str,Normal,100,f2,false,SchoolSClass);
-  EditFieldTL(h=150,v+=vs,150,"Skolot‚js",M4Str,Normal,100,f3,false,TeacherSClass);
+  EditFieldTL(h=150,v+=vs,150,"SkolotÄjs",M4Str,Normal,100,f3,false,TeacherSClass);
   ButtonFrame(h,v+=40,120,3,"Statuss");
-  CheckBox(h,v,0,"Iesğt´ts",flags[0]);
-  CheckBox(h,v+=16,0,"Apstiprin‚ts(skolot‚js)",flags[1]);
-  CheckBox(h,v+=16,0,"Apstiprin‚ts(JAL)",flags[2]);
-  CheckBox(h,v+=16,0,"Noraid´ts",flags[3]);
+  CheckBox(h,v,0,"IesÅ«tÄ«ts",flags[0]);
+  CheckBox(h,v+=16,0,"ApstiprinÄts(skolotÄjs)",flags[1]);
+  CheckBox(h,v+=16,0,"ApstiprinÄts(JAL)",flags[2]);
+  CheckBox(h,v+=16,0,"NoraidÄ«ts",flags[3]);
   EndWindow;
 
 
-  WindowBegin("Dz•st komp‚nijas visas",DeleteCompNewVClass,CGMnt,RcType);
+  WindowBegin("DzÄ“st kompÄnijas visas",DeleteCompNewVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   EndWindow;
 
-  WindowBegin("Dz•st JAL saturu",ClearJALContentVClass,CGMnt,RcType);
+  WindowBegin("DzÄ“st JAL saturu",ClearJALContentVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   EndWindow;
 
-  WindowBegin("Dz•st JAL e-pastus",ClearJALMailBoxesVClass,CGMnt,RcType);
+  WindowBegin("DzÄ“st JAL e-pastus",ClearJALMailBoxesVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   EndWindow;
 
-  WindowBegin("P‚rveidot visus SMU par neakt´viem",ChangeSMUVClass,CGMnt,RcType);
+  WindowBegin("PÄrveidot visus SMU par neaktÄ«viem",ChangeSMUVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   EndWindow;
 
@@ -898,8 +904,8 @@ begin
   SpawnClass(JALServerDClass);
   RecordList(4,17,-21,-39);
   RlColKey(4,2,"Kods",Code,false,Code);
-  RlCol   (90,90,"Koment‚rs",Comment,false);
-  RlCol   (200,200,"P•d•j‚ komp.",LastComp,false);
+  RlCol   (90,90,"KomentÄrs",Comment,false);
+  RlCol   (200,200,"PÄ“dÄ“jÄ komp.",LastComp,false);
 
   EndWindow;
 
@@ -907,10 +913,10 @@ begin
   SetWRect(80,80,400,280);
   UseView(JALServerVc);
   EditField(h=100,v=6,80,"Kods",Normal,Code,false,0);
-  EditField(h,v+=vs,-20,"Koment‚rs",Normal,Comment,false,0);
-  EditField(h,v+=vs,-20,"Ceºä l´dz serv.",Normal,FilePath,false,0);
-  EditField(h,v+=vs,80,"P•d•j‚ komp.",Normal,LastComp,false,0);
-  EditField(h,v+=vs,80,"Skolot‚ja grupa",Normal,TeacherAccGr,false,AccessSClass);
+  EditField(h,v+=vs,-20,"KomentÄrs",Normal,Comment,false,0);
+  EditField(h,v+=vs,-20,"CeÄ¼Å¡ lÄ«dz serv.",Normal,FilePath,false,0);
+  EditField(h,v+=vs,80,"PÄ“dÄ“jÄ komp.",Normal,LastComp,false,0);
+  EditField(h,v+=vs,80,"SkolotÄja grupa",Normal,TeacherAccGr,false,AccessSClass);
   EditField(h,v+=vs,80,"Skolnieku grupa",Normal,SMFAccGr,false,AccessSClass);
   EditField(h,v+=vs,80,"Web ports",Normal,WebPort,false,0);
   EditField(h,v+=vs,80,"Programmas ports",Normal,AppPort,false,0);
@@ -919,23 +925,23 @@ begin
   EndWindow;
 
 
-  WindowBegin("Pieteikumi skolot‚jiem/mentoriem",JALTeacherAccLClass,CGmlist,-);
+  WindowBegin("Pieteikumi skolotÄjiem/mentoriem",JALTeacherAccLClass,CGmlist,-);
   SpawnClass(JALTeacherAccDClass);
   SetWRect(64,80,560,350);
   Sizeable(-1,-1,0,0);
   UseView(JALTeacherAccVc);
   RecordList(4,17,-21,-39);
-  RlColKey(4,2,"S•r.Nr.",SerNr,false,SerNr);
+  RlColKey(4,2,"SÄ“r.Nr.",SerNr,false,SerNr);
   RlColKey(100,100,"SMU",SMFCode,False,SMFCode);
   RlCol(200,200,"Datums",TransDate,False);
-  SearchField("Mekl•t");
+  SearchField("MeklÄ“t");
   EndWindow;
 
   WindowBegin("Pieteikums",JALTeacherAccDClass,CGview,-);
   SetWRect(64,80,560,230);
   UseView(JALTeacherAccVc);
   v = 10; vs = 22; h = 100; h2 = 260;
-  EditField(h,v=6,90,"S•r. nr.",Normal,SerNr,false,0);
+  EditField(h,v=6,90,"SÄ“r. nr.",Normal,SerNr,false,0);
   EditField(h,v+=vs,90,"SMU",Normal,SMFCode,false,SMFSClass);
   EditField(h,v+=vs,90,"Datums",Normal,TransDate,false,PasteCurDate);
   EditField(h2,v,90,"Laiks",Normal,TransTime,false,PasteCurTime);
@@ -943,90 +949,90 @@ begin
   EditField(h2,v,90,"Kods",Normal,RecCode,false,0);
   ButtonFrame(h,v+=40,120,3,"Statuss");
   RadioButton(h,v,0,0,"Izveidots",StatusFlag);
-  RadioButton(h,v+=16,1,0,"Apstiprin‚ts",StatusFlag);
-  RadioButton(h,v+=16,2,0,"Noraid´ts",StatusFlag);
+  RadioButton(h,v+=16,1,0,"ApstiprinÄts",StatusFlag);
+  RadioButton(h,v+=16,2,0,"NoraidÄ«ts",StatusFlag);
   EndWindow;
 
-  WindowBegin("Pas‚kumi",JALEventLClass,CGmlist,-);
+  WindowBegin("PasÄkumi",JALEventLClass,CGmlist,-);
   SpawnClass(JALEventDClass);
   SetWRect(64,80,560,350);
   Sizeable(-1,-1,0,0);
   UseView(JALEventVc);
   RecordList(4,17,-21,-39);
-  RlColKey(4,2,"S•r.Nr.",SerNr,false,SerNr);
-  RlColKey(100,100,"S‚k. datums",StartDate,False,StartDate);
-  RlCol(200,200,"Koment‚rs",Comment,False);
-  SearchField("Mekl•t");
+  RlColKey(4,2,"SÄ“r.Nr.",SerNr,false,SerNr);
+  RlColKey(100,100,"SÄk. datums",StartDate,False,StartDate);
+  RlCol(200,200,"KomentÄrs",Comment,False);
+  SearchField("MeklÄ“t");
   EndWindow;
 
-  WindowBegin("Pas‚kumi",JALEventSClass,CGslist,-);
+  WindowBegin("PasÄkumi",JALEventSClass,CGslist,-);
   SpawnClass(JALEventDClass);
   SetWRect(64,80,560,350);
   Sizeable(-1,-1,0,0);
   UseView(JALEventVc);
   RecordList(4,17,-21,-39);
-  RlColKey(4,2,"S•r.Nr.",SerNr,false,SerNr);
+  RlColKey(4,2,"SÄ“r.Nr.",SerNr,false,SerNr);
   RlColKey(100,100,"Datums",StartDate,False,StartDate);
-  RlCol(200,200,"Koment‚rs",Comment,False);
-  SearchField("Mekl•t");
+  RlCol(200,200,"KomentÄrs",Comment,False);
+  SearchField("MeklÄ“t");
   EndWindow;
 
-  WindowBegin("Pas‚kums",JALEventDClass,CGview,-);
+  WindowBegin("PasÄkums",JALEventDClass,CGview,-);
   SetWRect(64,80,740,600);
   UseView(JALEventVc);
   AutoSizeWindow(false);
   v = 10; vs = 22; h = 100; h2 = 300; h3=450;
-  EditField(h,v=6,90,"S•r. nr.",Normal,SerNr,false,0);
+  EditField(h,v=6,90,"SÄ“r. nr.",Normal,SerNr,false,0);
   EditField(h2,v,90,"Datums",Normal,TransDate,false,PasteCurDate);
-  CheckBox(h3-30,v,0,"Akt´vs",ActiveFlag);
-  EditField(h,v+=vs,290,"Koment‚rs",Normal,Comment,false,0);
-  CheckBox(h3-30,v,0,"Sl•gts",ClosedFlag);  
+  CheckBox(h3-30,v,0,"AktÄ«vs",ActiveFlag);
+  EditField(h,v+=vs,290,"KomentÄrs",Normal,Comment,false,0);
+  CheckBox(h3-30,v,0,"SlÄ“gts",ClosedFlag);  
 	
-  EditField(h,v+=vs,90,"S‚kuma Datums",Normal,StartDate,false,PasteCurDate);
+  EditField(h,v+=vs,90,"SÄkuma Datums",Normal,StartDate,false,PasteCurDate);
   EditField(h2,v,90,"Beigu Datums",Normal,EndDate,false,PasteCurDate);
-  EditField(h,v+=vs,90,"S‚kuma laiks",Normal,StartTime,false,PasteCurTime);
+  EditField(h,v+=vs,90,"SÄkuma laiks",Normal,StartTime,false,PasteCurTime);
   EditField(h2,v,90,"Nokl. valoda",Normal,DefLangCode,false,WebNGLanguageSClass);
-  EditField(h,v+=vs,90,"Re®istr•äan‚s no",Normal,RegFrom,false,PasteCurDate);
-  EditField(h2,v,90,"Re®istr•äan‚s l´dz",Normal,RegUntil,false,PasteCurDate);
+  EditField(h,v+=vs,90,"ReÄ£istrÄ“Å¡anÄs no",Normal,RegFrom,false,PasteCurDate);
+  EditField(h2,v,90,"ReÄ£istrÄ“Å¡anÄs lÄ«dz",Normal,RegUntil,false,PasteCurDate);
   EditField(h,v+=vs,290,"Saite",Normal,Link,false,0);
   
-  CheckBox(h-5,v+=vs,0,"Tikai re®istr•tiem lietot‚jiem",RegFlag);
+  CheckBox(h-5,v+=vs,0,"Tikai reÄ£istrÄ“tiem lietotÄjiem",RegFlag);
   HalPushButton(-300,v,-200,v+20,"NewJALEventTranslationDsm","Jauns tulkojums");
   HalPushButton(-300,v+=25,-200,v+20,"NewJALEventTextDsm","Izdrukas teksts");
-  //HalPushButton(-250,v,-150,v+20,"OpenJALEventTranslationDsm","Atv•rt tulkojumu");
-  ButtonFrame(h3+50,v=20,150,5,"Dal´ba");
+  //HalPushButton(-250,v,-150,v+20,"OpenJALEventTranslationDsm","AtvÄ“rt tulkojumu");
+  ButtonFrame(h3+50,v=20,150,5,"DalÄ«ba");
   RadioButton(h3+50,v,0,0,"Cits",StatusFlag);
-  //RadioButton(h3+50,v+=16,1,0,"”nu diena",StatusFlag);
+  //RadioButton(h3+50,v+=16,1,0,"Ä’nu diena",StatusFlag);
   //RadioButton(h3+50,v+=16,2,0,"TITAN",StatusFlag);
-  RadioButton(h3+50,v+=16,3,0,"Cits Baz‚rs ziema",StatusFlag);
-  RadioButton(h3+50,v+=16,4,0,"Cits Baz‚rs re®ionos",StatusFlag);
-  RadioButton(h3+50,v+=16,5,0,"Cits Baz‚rs pavasar´",StatusFlag);
-  RadioButton(h3+50,v+=16,6,0,"Jauno uzÀ•m•ju dienas",StatusFlag);
+  RadioButton(h3+50,v+=16,3,0,"Cits BazÄrs ziema",StatusFlag);
+  RadioButton(h3+50,v+=16,4,0,"Cits BazÄrs reÄ£ionos",StatusFlag);
+  RadioButton(h3+50,v+=16,5,0,"Cits BazÄrs pavasarÄ«",StatusFlag);
+  RadioButton(h3+50,v+=16,6,0,"Jauno uzÅ†Ä“mÄ“ju dienas",StatusFlag);
 
   ButtonFrame(h3+50,v+=50,150,4,"Tips");
-  RadioButton(h3+50,v,0,0,"Pas‚kums",Type);
-  RadioButton(h3+50,v+=16,3,0,"Likvid‚cija",Type);
-  RadioButton(h3+50,v+=16,1,0,"2. k‚rtas anketa",Type);
-  RadioButton(h3+50,v+=16,2,0,"Anketas jaut‚jumi",Type);
-  EditField(h3+120,v+18,60,"Pas‚kums",ViewOnly,Mother,false,0);
+  RadioButton(h3+50,v,0,0,"PasÄkums",Type);
+  RadioButton(h3+50,v+=16,3,0,"LikvidÄcija",Type);
+  RadioButton(h3+50,v+=16,1,0,"2. kÄrtas anketa",Type);
+  RadioButton(h3+50,v+=16,2,0,"Anketas jautÄjumi",Type);
+  EditField(h3+120,v+18,60,"PasÄkums",ViewOnly,Mother,false,0);
   EndFrame;
 
   RecordList2(10,v+=60,-30,v+=130,"WebNGTranslateVc");
   RlColKey(4,4,"Valoda",LangCode,false,EventLangCode);
-  RlColKey(90,90,"Izmain´ts",LastChanged,false,EventLastChanged);
-  RlCol(180,180,"K‚rtoäana",Sorting,false);
-  RlColKey(270,270,"Koment‚rs",Comment,false,EventComment);
+  RlColKey(90,90,"IzmainÄ«ts",LastChanged,false,EventLastChanged);
+  RlCol(180,180,"KÄrtoÅ¡ana",Sorting,false);
+  RlColKey(270,270,"KomentÄrs",Comment,false,EventComment);
 
   MatrixBegin(10,v+=20,-30,-40,-,100);
   MatCol(1,32,"Lauks",0,Field,false,JALEventFieldSClass);
-  MatCol(1,100,"Koment‚rs",0,Comment,false,0);
-  MatCol(1,-100,"Oblig‚ts",0,Req,false,SetSClass);
-  //MatCol(1,-50,"R‚d´t",0,Show,false,SetSClass);
+  MatCol(1,100,"KomentÄrs",0,Comment,false,0);
+  MatCol(1,-100,"ObligÄts",0,Req,false,SetSClass);
+  //MatCol(1,-50,"RÄdÄ«t",0,Show,false,SetSClass);
   EndMatrix;
-  HalPushButton(h=10,-35,h+130,-5,"JALCourseEventParticipantsDsm","Dal´bnieku saraksts");
+  HalPushButton(h=10,-35,h+130,-5,"JALCourseEventParticipantsDsm","DalÄ«bnieku saraksts");
   HalPushButton(h+=140,-35,h+130,-5,"JALEventParticipants2Dsm","Pieteikumi");
-  HalPushButton(h+=140,-35,h+130,-5,"JALEventFinalSheetDsm","Anketas jaut‚jumi");
-  HalPushButton(h+=140,-35,h+130,-5,"JALEvent2LevelDsm","2. k‚rtas anketa");
+  HalPushButton(h+=140,-35,h+130,-5,"JALEventFinalSheetDsm","Anketas jautÄjumi");
+  HalPushButton(h+=140,-35,h+130,-5,"JALEvent2LevelDsm","2. kÄrtas anketa");
 
   EndWindow;
 
@@ -1037,39 +1043,39 @@ begin
   TextField(20,v-5,-20,340,Math,0);
   EndWindow;
 
-  WindowBegin("Pas‚kumu lauki",JALEventFieldLClass,CGmlist,-);
+  WindowBegin("PasÄkumu lauki",JALEventFieldLClass,CGmlist,-);
   SpawnClass(JALEventFieldDClass);
   SetWRect(64,80,560,350);
   Sizeable(-1,-1,0,0);
   UseView(JALEventFieldVc);
   RecordList(4,17,-21,-39);
-  RlColKey(4,2,"S•r.Nr.",SerNr,false,SerNr);
-  RlCol(200,200,"Koment‚rs",Comment,False);
-  SearchField("Mekl•t");
+  RlColKey(4,2,"SÄ“r.Nr.",SerNr,false,SerNr);
+  RlCol(200,200,"KomentÄrs",Comment,False);
+  SearchField("MeklÄ“t");
   EndWindow;
 
-  WindowBegin("Ievietot pas‚kuma lauku",JALEventFieldSClass,CGslist,-);
+  WindowBegin("Ievietot pasÄkuma lauku",JALEventFieldSClass,CGslist,-);
   SpawnClass(JALEventFieldDClass);
   SetWRect(64,80,560,350);
   Sizeable(-1,-1,0,0);
   UseView(JALEventFieldVc);
   RecordList(4,17,-21,-39);
-  RlColKey(4,2,"S•r.Nr.",SerNr,false,SerNr);
-  RlCol(200,200,"Koment‚rs",Comment,False);
-  SearchField("Mekl•t");
+  RlColKey(4,2,"SÄ“r.Nr.",SerNr,false,SerNr);
+  RlCol(200,200,"KomentÄrs",Comment,False);
+  SearchField("MeklÄ“t");
   EndWindow;
 
-  WindowBegin("Pas‚kuma  lauks",JALEventFieldDClass,CGview,-);
+  WindowBegin("PasÄkuma  lauks",JALEventFieldDClass,CGview,-);
   SetWRect(64,80,560,350);
   UseView(JALEventFieldVc);
   v = 10; vs = 22; h = 100; h2 = 300;
-  EditField(h,v=6,90,"S•r. nr.",Normal,SerNr,false,0);
-  EditField(h,v+=vs,-20,"Koment‚rs",Normal,Comment,false,0);
+  EditField(h,v=6,90,"SÄ“r. nr.",Normal,SerNr,false,0);
+  EditField(h,v+=vs,-20,"KomentÄrs",Normal,Comment,false,0);
   EditField(h,v+=vs,-20,"Teksts",Normal,Text,false,0);
   vm = v;
   EditField(h,v+=vs,120,"Tips",Normal,Type,false,SetSClass);
-  EditField(h2,v,120,"Izv•lne",Normal,SelectBox,false,JALEventSelectBoxSClass);
-  CheckBox(h,v+=vs,0,"Oblig‚ts",Req);
+  EditField(h2,v,120,"IzvÄ“lne",Normal,SelectBox,false,JALEventSelectBoxSClass);
+  CheckBox(h,v+=vs,0,"ObligÄts",Req);
   
   MatrixBegin(4,v+=vm,-21,-10,-,20);
   MatCol(1,32,"Valoda",0,LangCode,false,WebNGLanguageSClass);
@@ -1078,35 +1084,35 @@ begin
 
   EndWindow;
 
-    WindowBegin("Pas‚kumu izv•lnes",JALEventSelectBoxLClass,CGmlist,-);
+    WindowBegin("PasÄkumu izvÄ“lnes",JALEventSelectBoxLClass,CGmlist,-);
   SpawnClass(JALEventSelectBoxDClass);
   SetWRect(64,80,560,350);
   Sizeable(-1,-1,0,0);
   UseView(JALEventSelectBoxVc);
   RecordList(4,17,-21,-39);
-  RlColKey(4,2,"S•r.Nr.",SerNr,false,SerNr);
-  RlCol(200,200,"Koment‚rs",Comment,False);
-  SearchField("Mekl•t");
+  RlColKey(4,2,"SÄ“r.Nr.",SerNr,false,SerNr);
+  RlCol(200,200,"KomentÄrs",Comment,False);
+  SearchField("MeklÄ“t");
   EndWindow;
 
-  WindowBegin("Ievietot pas‚kuma izv•lni",JALEventSelectBoxSClass,CGslist,-);
+  WindowBegin("Ievietot pasÄkuma izvÄ“lni",JALEventSelectBoxSClass,CGslist,-);
   SpawnClass(JALEventSelectBoxDClass);
   SetWRect(64,80,560,350);
   Sizeable(-1,-1,0,0);
   UseView(JALEventSelectBoxVc);
   RecordList(4,17,-21,-39);
-  RlColKey(4,2,"S•r.Nr.",SerNr,false,SerNr);
-  RlCol(200,200,"Koment‚rs",Comment,False);
-  SearchField("Mekl•t");
+  RlColKey(4,2,"SÄ“r.Nr.",SerNr,false,SerNr);
+  RlCol(200,200,"KomentÄrs",Comment,False);
+  SearchField("MeklÄ“t");
   EndWindow;
 
-  WindowBegin("Pas‚kuma  izv•lne",JALEventSelectBoxDClass,CGview,-);
+  WindowBegin("PasÄkuma  izvÄ“lne",JALEventSelectBoxDClass,CGview,-);
   SetWRect(64,80,500,250);
   UseView(JALEventSelectBoxVc);
   v = 10; vs = 22; h = 100; h2 = 300;
-  EditField(h,v=6,90,"S•r. nr.",Normal,SerNr,false,0);
-  EditField(h,v+=vs,-20,"Koment‚rs",Normal,Comment,false,0);  
-  EditField(h,v+=vs,-20,"Lauka v•rt´bas",Normal,Text,false,0);  
+  EditField(h,v=6,90,"SÄ“r. nr.",Normal,SerNr,false,0);
+  EditField(h,v+=vs,-20,"KomentÄrs",Normal,Comment,false,0);  
+  EditField(h,v+=vs,-20,"Lauka vÄ“rtÄ«bas",Normal,Text,false,0);  
   MatrixBegin(4,v+=40,-21,-10,-,20);
   MatCol(1,32,"Valoda",0,LangCode,false,WebNGLanguageSClass);
   MatCol(1,100,"Teksts",0,Comment,false,0);
@@ -1114,55 +1120,55 @@ begin
 
   EndWindow;
 
-  WindowBegin("Pas‚kumu pieteikumi",JALEventEntryLClass,CGmlist,-);
+  WindowBegin("PasÄkumu pieteikumi",JALEventEntryLClass,CGmlist,-);
   SpawnClass(JALEventEntryDClass);
   SetWRect(64,80,560,350);
   Sizeable(-1,-1,0,0);
   UseView(JALEventEntryVc);
   RecordList(4,17,-21,-39);
-  RlColKey(4,2,"S•r.Nr.",SerNr,false,SerNr);
+  RlColKey(4,2,"SÄ“r.Nr.",SerNr,false,SerNr);
   RlCol(100,100,"Datums",TransDate,False);
-  SearchField("Mekl•t");
+  SearchField("MeklÄ“t");
   EndWindow;
 
-  WindowBegin("Pas‚kumu pieteikumi",JALEventEntrySClass,CGslist,-);
+  WindowBegin("PasÄkumu pieteikumi",JALEventEntrySClass,CGslist,-);
   SpawnClass(JALEventEntryDClass);
   SetWRect(64,80,560,350);
   Sizeable(-1,-1,0,0);
   UseView(JALEventEntryVc);
   RecordList(4,17,-21,-39);
-  RlColKey(4,2,"S•r.Nr.",SerNr,false,SerNr);
+  RlColKey(4,2,"SÄ“r.Nr.",SerNr,false,SerNr);
   RlCol(100,100,"Datums",TransDate,False);
-  SearchField("Mekl•t");
+  SearchField("MeklÄ“t");
   EndWindow;
 
-  WindowBegin("Pas‚kuma pieteikums",JALEventEntryDClass,CGview,-);
+  WindowBegin("PasÄkuma pieteikums",JALEventEntryDClass,CGview,-);
   SetWRect(64,80,650,530);
   UseView(JALEventEntryVc);
   v = 10; vs = 22; h = 100; h2 = 280; h3=400;
-  EditField(h,v=6,90,"S•r. nr.",Normal,SerNr,false,0);
+  EditField(h,v=6,90,"SÄ“r. nr.",Normal,SerNr,false,0);
   EditField(h2,v,90,"Datums",Normal,TransDate,false,PasteCurDate);
   EditField(h,v+=vs,90,"Tips",Normal,CustType,false,SetSClass);
   EditField(h,v+=vs,90,"Kods",Normal,AddCode,false,0);
   EditField(h2,v,90,"Nosaukums",Normal,SMFName,false,0);
   
   EditField(h,v+=vs,90,"Klients",Normal,CustCode,false,CUDClass);
-  EditField(h,v+=vs,90,"Pas‚kums",Normal,EventNr,false,0);
-  EditField(h,v+=vs,90,"Skolot‚js",Normal,TeacherCode,false,0);
+  EditField(h,v+=vs,90,"PasÄkums",Normal,EventNr,false,0);
+  EditField(h,v+=vs,90,"SkolotÄjs",Normal,TeacherCode,false,0);
   
   vm = v;
   ButtonFrame(h3,v=20,150,5,"Statuss");
   RadioButton(h3,v,0,0,"Jauns",StatusFlag);
-  RadioButton(h3,v+=16,1,0,"Apstiprin‚ts",StatusFlag);
-  RadioButton(h3,v+=16,2,0,"Noraid´ts",StatusFlag);
-	RadioButton(h3,v+=16,3,0,"Apmekl•ja",StatusFlag);
-	RadioButton(h3,v+=16,4,0,"Apstiprin‚ts - skolot‚js",StatusFlag);
+  RadioButton(h3,v+=16,1,0,"ApstiprinÄts",StatusFlag);
+  RadioButton(h3,v+=16,2,0,"NoraidÄ«ts",StatusFlag);
+	RadioButton(h3,v+=16,3,0,"ApmeklÄ“ja",StatusFlag);
+	RadioButton(h3,v+=16,4,0,"ApstiprinÄts - skolotÄjs",StatusFlag);
   v = vm;
 
   MatrixBegin(4,v+=40,-21,-10,-,20);
   MatCol(1,32,"Lauks",0,Field,false,JALEventFieldSClass);
-  MatCol(1,100,"Koment‚rs",0,Comment,false,0);
-  MatCol(1,240,"V•rt´ba",0,Value,false,SetSClass);
+  MatCol(1,100,"KomentÄrs",0,Comment,false,0);
+  MatCol(1,240,"VÄ“rtÄ«ba",0,Value,false,SetSClass);
   EndMatrix;
   EndWindow;
 
@@ -1195,8 +1201,8 @@ begin
 
   RecordList(4,v+=50,-21,-39);
   RlColKey(6,6,"Kods",Code,false,Code);
-  RlCol(150,150,"Koment‚rs",Comment,false);
-  SearchField("Mekl•t");
+  RlCol(150,150,"KomentÄrs",Comment,false);
+  SearchField("MeklÄ“t");
   EndWindow;
 
   WindowBegin("Elementu grupas",WebElementGroupLClass,CGmList,-);
@@ -1206,8 +1212,8 @@ begin
 
   RecordList(4,17,-21,-39);
   RlColKey(6,6,"Kods",Code,false,Code);
-  RlCol(150,150,"Koment‚rs",Comment,false);
-  SearchField("Mekl•t");
+  RlCol(150,150,"KomentÄrs",Comment,false);
+  SearchField("MeklÄ“t");
   EndWindow;
 
   WindowBegin("Elementu grupas",WebElementGroupSClass,CGsList,-);
@@ -1217,8 +1223,8 @@ begin
 
   RecordList(4,17,-21,-39);
   RlColKey(6,6,"Kods",Code,false,Code);
-  RlCol(150,150,"Koment‚rs",Comment,false);
-  SearchField("Mekl•t");
+  RlCol(150,150,"KomentÄrs",Comment,false);
+  SearchField("MeklÄ“t");
   EndWindow;
 
 
@@ -1227,7 +1233,7 @@ begin
   SetWRect(80,80,400,280);
   UseView(WebElementGroupVc);
   EditField(h=100,v=6,80,"Kods",Normal,Code,false,0);
-  EditField(h,v+=vs,-20,"Koment‚rs",Normal,Comment,false,0);
+  EditField(h,v+=vs,-20,"KomentÄrs",Normal,Comment,false,0);
   EndWindow;
 
   WindowBegin("Elementu veidnes",WebTemplateLClass,CGmList,-);
@@ -1236,8 +1242,8 @@ begin
   SpawnClass(WebTemplateDClass);  
   RecordList(4,17,-21,-39);
   RlColKey(6,6,"Kods",Code,false,Code);
-  RlCol(150,150,"Koment‚rs",Comment,false);
-  SearchField("Mekl•t");
+  RlCol(150,150,"KomentÄrs",Comment,false);
+  SearchField("MeklÄ“t");
   EndWindow;
 
   WindowBegin("Ievietot elementa veidni",WebTemplateSClass,CGsList,-);
@@ -1246,8 +1252,8 @@ begin
   SpawnClass(WebTemplateDClass);  
   RecordList(4,17,-21,-39);
   RlColKey(6,6,"Kods",Code,false,Code);
-  RlCol(150,150,"Koment‚rs",Comment,false);
-  SearchField("Mekl•t");
+  RlCol(150,150,"KomentÄrs",Comment,false);
+  SearchField("MeklÄ“t");
   EndWindow;
 
   
@@ -1256,7 +1262,7 @@ begin
   UseView(WebTemplateVc);
   vs = 20;
   EditField(h=100,v=6,80,"Kods",Normal,Code,false,0);
-  EditField(h,v+=vs,-20,"Koment‚rs",Normal,Comment,false,0);
+  EditField(h,v+=vs,-20,"KomentÄrs",Normal,Comment,false,0);
   EditField(h,v+=vs,-20,"Veidne",Normal,Template,false,WebNGPageSClass);
   MatrixBegin(4,v+=40,-21,-30,-,20);
   MatCol(1,32,"Kods",0,ElementCode,false,WebNGElementSClass);
@@ -1265,7 +1271,7 @@ begin
   EndMatrix;
   EndWindow;
 
-  WindowBegin("Veidot izv•lni",WebNGChildMenuDClass,CGView,-);
+  WindowBegin("Veidot izvÄ“lni",WebNGChildMenuDClass,CGView,-);
   SetWRect(20,100,500,300);
   BrowseButtons(false);
   UseView(WebNGMenuVc);
@@ -1278,7 +1284,7 @@ begin
 
   EndWindow;
 
-  WindowBegin("Kop•t izv•lni",WebNGDuplicateMenuDClass,CGView,-);
+  WindowBegin("KopÄ“t izvÄ“lni",WebNGDuplicateMenuDClass,CGView,-);
   SetWRect(20,100,500,300);
   BrowseButtons(false);
   UseView(WebNGMenuVc);
@@ -1291,17 +1297,17 @@ begin
 
   EndWindow;
 
-  WindowBegin("Atskaite par skol‚m",JALNewsListRClass,CGRcW,RcType);
+  WindowBegin("Atskaite par skolÄm",JALNewsListRClass,CGRcW,RcType);
   SetWRect(80,80,500,100);
   StaticText(80,45,"Spied OK",false);
   endWindow;
 
-  WindowBegin("Atskaite par skol‚m",ListLostAttachmentsRClass,CGRcW,RcType);
+  WindowBegin("Atskaite par skolÄm",ListLostAttachmentsRClass,CGRcW,RcType);
   SetWRect(80,80,500,100);
   StaticText(80,45,"Spied OK",false);
   endWindow;
   
-  WindowBegin("P‚rveidot kontaktus",JALMarkasCUVClass,CGMnt,RcType);
+  WindowBegin("PÄrveidot kontaktus",JALMarkasCUVClass,CGMnt,RcType);
   SetWRect(10,90,260,130);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
@@ -1314,7 +1320,7 @@ begin
   SetWRect(80,80,400,280);
   SetBlid(JALPartnerBlock);
   MatrixBegin(10,20,-30,-10,-,10);
-  MatCol(1,25,"Klasifik‚cijas",0,Classification,false,CClassSClass);
+  MatCol(1,25,"KlasifikÄcijas",0,Classification,false,CClassSClass);
   EndMatrix;
   EndWindow;
 
@@ -1344,7 +1350,7 @@ begin
   SetBlid(JALSemesterBlock);
   MatrixBegin(10,20,-30,-10,-,10);
   MatCol(1,25,"No",0,DateFrom,false,PasteCurDate);
-  MatCol(1,105,"L´dz",0,DateTo,false,PasteCurDate);
+  MatCol(1,105,"LÄ«dz",0,DateTo,false,PasteCurDate);
   MatCol(1,185,"Gads",0,YearStr,false,0);
   EndMatrix;
   EndWindow;
@@ -1355,20 +1361,20 @@ begin
   SearchField("Search");
   EndWindow;
 
-  WindowBegin("SMU Likvid‚cija",JALLiquidationTCLass,CGHBl,-);
+  WindowBegin("SMU LikvidÄcija",JALLiquidationTCLass,CGHBl,-);
   SetWRect(80,80,500,280);
   SetBlid(JALLiquidationBlock);
   MatrixBegin(10,20,-30,-10,-,10);
   MatCol(1,25,"Semestris",0,Semester,false,JALSemesterSClass);
   MatCol(1,105,"No",0,DateFrom,false,PasteCurDate);
-  MatCol(1,185,"L´dz",0,DateTo,false,PasteCurDate);
+  MatCol(1,185,"LÄ«dz",0,DateTo,false,PasteCurDate);
   MatCol(1,265,"Anketa",0,EventNr,false,JALEventSClass);
   EndMatrix;
   EndWindow;
 
   
 
-  WindowBegin("Pas‚kumu ien‚kumi",EventTurnoverLClass,CGmlist,-);
+  WindowBegin("PasÄkumu ienÄkumi",EventTurnoverLClass,CGmlist,-);
   SpawnClass(EventTurnoverVcDClass);
   SetWRect(64,80,860,350); 
   Sizeable(-1,-1,0,0);
@@ -1377,24 +1383,24 @@ begin
   h = 250; v=0; vs=100; h2 = 550;
   RlColKey(32,32,"Kods",SMUCode,false,MainKey);
   RlCol   (120,120,"Prece",ItemName,false);
-  SearchField("Mekl•t");
+  SearchField("MeklÄ“t");
   EndWindow;
  
   
-  WindowBegin("Pas‚kumu ien‚kumi",EventTurnoverVcDClass,CGview,-);
+  WindowBegin("PasÄkumu ienÄkumi",EventTurnoverVcDClass,CGview,-);
   SetWRect(64,80,860,350);
   UseView(EventTurnoverVc);
   h = 100; v=6; vs=20; h2 = 550;
   Editfield(h,v,100,"Kods",Normal,SMUCode,false,0);
   Editfield(h,v+=vs,100,"Prece",Normal,ItemName,false,0);
   MatrixBegin(10,v=v+vs+50,-30,-10,-,10);
-  MatCol(1,32,"Pas‚kums",0,EventType,false,SetSClass);
-  MatCol(1,150,"1 vien. paäizm. EUR",0,UCost,false,0);
+  MatCol(1,32,"PasÄkums",0,EventType,false,SetSClass);
+  MatCol(1,150,"1 vien. paÅ¡izm. EUR",0,UCost,false,0);
   MatCol(1,280,"1 vien. cena",0,UPrice,false,0);
-  MatCol(1,380,"P‚rdoto vien. sk.",0,SoldUnits,false,0);
-  MatCol(1,480,"Ien‚kumi",0,Income,false,0);
+  MatCol(1,380,"PÄrdoto vien. sk.",0,SoldUnits,false,0);
+  MatCol(1,480,"IenÄkumi",0,Income,false,0);
   MatCol(1,580,"Izdevumi",0,Costs,false,0);
-  MatCol(1,680,"PeºÀa",0,Profit,false,0);
+  MatCol(1,680,"PeÄ¼Å†a",0,Profit,false,0);
   EndMatrix;
   EndWindow;
 
@@ -1404,42 +1410,42 @@ begin
   EditFieldTL(h=160,v=6,120,"SMU",M4Code,Normal,30,f1,false,SMFSClass);
   EndWindow;
 
-  WindowBegin("Apliecin‚jums",CertificateFormRClass,CGRcW,RcType);
+  WindowBegin("ApliecinÄjums",CertificateFormRClass,CGRcW,RcType);
   SetWRect(20,80,400,220);
   vs=20;
   EditFieldTL(h=160,v=6,120,"Pieteikums",M4Long,Normal,0,long1,false,JALEventEntrySClass);
   EndWindow;
 
-  WindowBegin("Sertifik‚ts",LiqCertificateFormRClass,CGRcW,RcType);
+  WindowBegin("SertifikÄts",LiqCertificateFormRClass,CGRcW,RcType);
   SetWRect(20,80,400,220);
   vs=20;
-  EditFieldTL(h=160,v=6,120,"Skol•ns",M4Code,Normal,20,f1,false,CUSClass);
+  EditFieldTL(h=160,v=6,120,"SkolÄ“ns",M4Code,Normal,20,f1,false,CUSClass);
   EndWindow;
 
-  WindowBegin("Skolot‚ji ar pieredzi",ExpTeacherLClass,CGmlist,-);
+  WindowBegin("SkolotÄji ar pieredzi",ExpTeacherLClass,CGmlist,-);
   SpawnClass(ExpTeacherDClass);
   SetWRect(64,80,560,350);
   Sizeable(-1,-1,0,0);
   UseView(ExpTeacherVc);
   RecordList(4,17,-21,-39);
-  RlColKey(4,2,"Re®ions",Region,false,Region);
-  SearchField("Mekl•t");
+  RlColKey(4,2,"ReÄ£ions",Region,false,Region);
+  SearchField("MeklÄ“t");
   EndWindow;
 
-  WindowBegin("Skolot‚ji ar pieredzi",ExpTeacherDClass,CGview,-);
+  WindowBegin("SkolotÄji ar pieredzi",ExpTeacherDClass,CGview,-);
   SetWRect(64,80,560,350);
   UseView(ExpTeacherVc);
   v = 10; vs = 22; h = 100; h2 = 300;
-  EditField(h,v=6,90,"Re®ions",Normal,Region,false,JALRegionSClass);
+  EditField(h,v=6,90,"ReÄ£ions",Normal,Region,false,JALRegionSClass);
   MatrixBegin(4,v+=40,-21,-10,-,100);
-  MatCol(1,32,"Skolot‚js",0,Teacher,false,0);
+  MatCol(1,32,"SkolotÄjs",0,Teacher,false,0);
   MatCol(1,120,"Skola",0,School,false,0);
   MatCol(1,-150,"E-pasts",0,eMail,false,0);
   EndMatrix;
   EndWindow;
 
 
-  WindowBegin("Pievienot skol•nu",SMFAddStudentWClass,CGother,RcType);
+  WindowBegin("Pievienot skolÄ“nu",SMFAddStudentWClass,CGother,RcType);
   SetWRect(20,80,330,110);
   ToolBar;
   h = -149;
@@ -1448,7 +1454,7 @@ begin
   HalPushButton(h,5,h+60,25,"SMFAddStudentWClassSave","Pievienot");
   EndToolBar;
   vs = 20; h=100;
-  EditFieldTL(h,v=6, 100,"Skol•ns",M4UStr,Normal,20,f1,false,CUSClass);
+  EditFieldTL(h,v=6, 100,"SkolÄ“ns",M4UStr,Normal,20,f1,false,CUSClass);
   EndWindow;
 
   return;
@@ -1485,9 +1491,9 @@ begin
   RecordList2(10,-170,-40,-10,"WebNGMenuVc");
   RlColKey(4,4,"Code",Code,false,Code);
   RlColKey(104,104,"Comment",Comment,false,Comment);
-  SpecialMenu("Veidot apakäizv•lni",'n',1,"GenereteChildMenuDsm");
-  SpecialMenu("Aizpild´t izv•lni",'w',1,"CreateSubMenuDsm");
-  SpecialMenu("Kop•t apakäizv•lni",'t',1,"DuplicateSubMenuDsm");
+  SpecialMenu("Veidot apakÅ¡izvÄ“lni",'n',1,"GenereteChildMenuDsm");
+  SpecialMenu("AizpildÄ«t izvÄ“lni",'w',1,"CreateSubMenuDsm");
+  SpecialMenu("KopÄ“t apakÅ¡izvÄ“lni",'t',1,"DuplicateSubMenuDsm");
   EndWindow;
 end;
 
@@ -1536,7 +1542,7 @@ begin
   EditField(h,v ,   95,"Nr.",Normal,Code,false,TSerSClass);
   EditField(h1,v,50,"Klienta kategorija",Normal,CustCat,false,CCatSClass);
   EditField(h,v+=vs,95,"Kods",Normal,SearchKey,false,0);
-  EditField(h1,v,50,"Pieg‚d‚t‚ja kategorija",Normal,VECat,false,VGSClass);
+  EditField(h1,v,50,"PiegÄdÄtÄja kategorija",Normal,VECat,false,VGSClass);
   if (HasJewelleryInterface) then begin
     EditField(h,v+=vs,95,"Uzruna 1",Normal,Salutation1,false,0); 
     EditField(h1,v,50,"Sufikss",Normal,ANACode,false,0); 
@@ -1547,14 +1553,14 @@ begin
     EditField(h,v+=vs,h1-h+50,"Nosaukums",Normal,Name,false,0);
   end;
   CheckBox(h1+80,v=6,0,"K_lients",CUType);
-  CheckBox(h1+80,v+=16,0,"P_ieg‚d‚t‚js",VEType);
+  CheckBox(h1+80,v+=16,0,"P_iegÄdÄtÄjs",VEType);
   if (HasModHotel) then begin
   CheckBox(h1+80,v+=16,0,"Viesis",GuestType);
   end;
   if (HasJewelleryInterface) then begin
-    CheckBox(h1+80,v+=16,0,"Bez masu v•stul•m",NoLetterPosting);  
+    CheckBox(h1+80,v+=16,0,"Bez masu vÄ“stulÄ“m",NoLetterPosting);  
     CheckBox(h1+80,v+=16,0,"Bez masu e-pastiem",NoMailPosting);  
-    EditField(h1+120,v+=20,100,"A®ents",Normal,SalesMan,false,UserSClass);  
+    EditField(h1+120,v+=20,100,"AÄ£ents",Normal,SalesMan,false,UserSClass);  
   end;
   v=6;
   if (HasModHRM or IsEnterprise) then begin
@@ -1563,9 +1569,9 @@ begin
   if (StandardHansa==false) then begin
     CheckBox(h1+180,v,0,"Partneris",DealerType);  
   end;
-  CheckBox(h1+180,v+=16,0,"Iesp•ja",LeadType);
+  CheckBox(h1+180,v+=16,0,"IespÄ“ja",LeadType);
 //  HalPushButton(h1+170,v=10,h1+170+100,v+20,"CreditInfoCUDsm","Credit Info");
-  CheckBox(h1+280,v=6,0,"Fili‚le",BranchType);
+  CheckBox(h1+280,v=6,0,"FiliÄle",BranchType);
 
 //  HalPushButton(h1+170,v=10,h1+170+100,v+20,"CreditInfoCUDsm","");
 //  HalPushButton(h1+170,v=10,h1+170+100,v+20,"UpdCustomerAddressCUDsm","Update Address");
@@ -1574,16 +1580,16 @@ begin
 //CUST-BEGIN  
   TileButton(tilenr,"JAL"); tilenr = tilenr + 1;  
 //CUST-END
-  TileButton(tilenr,"Pieg‚de"); tilenr = tilenr + 1;  
+  TileButton(tilenr,"PiegÄde"); tilenr = tilenr + 1;  
   TileButton(tilenr,"Nosac."); tilenr = tilenr + 1;  
   TileButton(tilenr,"Cenas"); tilenr = tilenr + 1;  
-  TileButton(tilenr,"Komp‚nija"); tilenr = tilenr + 1;  
+  TileButton(tilenr,"KompÄnija"); tilenr = tilenr + 1;  
   TileButton(tilenr,"Konti"); tilenr = tilenr + 1;  
   TileButton(tilenr,"E-ieraksti"); tilenr = tilenr + 1; 
   if (StandardHansa==false) then begin
-    TileButton(tilenr,"T´m."); tilenr = tilenr + 1;  
+    TileButton(tilenr,"TÄ«m."); tilenr = tilenr + 1;  
   end;
-  TileButton(tilenr,"Koment‚rs"); tilenr = tilenr + 1;  
+  TileButton(tilenr,"KomentÄrs"); tilenr = tilenr + 1;  
   if (true) then begin//HasModHotel
     TileButton(tilenr,"Viesis"); tilenr = tilenr + 1;  
   end;
@@ -1594,7 +1600,7 @@ begin
       TileButton(tilenr,"Liet. def."); tilenr = tilenr + 1;  
     end;
   end;
-  TileButton(tilenr,"Piez´mes"); tilenr = tilenr + 1;  
+  TileButton(tilenr,"PiezÄ«mes"); tilenr = tilenr + 1;  
   if (CUr.CUType!=0 and HasCharts) then begin
     TileButton(tilenr,"BI"); tilenr = tilenr + 1;   
   end;
@@ -1603,7 +1609,7 @@ begin
   v=6;
   HalPushButton(h+120,v,h+120+100,v+20,"UpdCustomerAddressCUDsm","Atjaunot adresi");
   v=v+10;
-  StaticText(h,v+13,"R•úina adrese",false);
+  StaticText(h,v+13,"RÄ“Ä·ina adrese",false);
   label = UserDefined("CUVc","InvAddr0");
   EditField(h,v+=vs,-20,label,Normal,InvAddr0,false,0);
   label = UserDefined("CUVc","InvAddr1");
@@ -1620,17 +1626,17 @@ begin
     v = v + vs;
   end;  
   EditField(h1,v,-20,"Departaments",Normal,Department,false,0);
-  EditField(h,v+=vs,150,"T‚lrunis 1",Normal,Phone,false,0);
+  EditField(h,v+=vs,150,"TÄlrunis 1",Normal,Phone,false,0);
   EditField(h1,v,-20,"Fakss",Normal,Fax,false,0);
-  EditField(h,v+=vs,150,"T‚lrunis 2",Normal,AltPhone,false,0);
+  EditField(h,v+=vs,150,"TÄlrunis 2",Normal,AltPhone,false,0);
   EditField(h1,v,-20,"Mobilais tel.",Normal,Mobile,false,0);
-  EditField(h,v+=vs,150,"Skype v‚rds",Normal,SkypeName,false,0);
-  EditField(h1,v,-20,"SIP v‚rds",Normal,SIPCode,false,0);
+  EditField(h,v+=vs,150,"Skype vÄrds",Normal,SkypeName,false,0);
+  EditField(h1,v,-20,"SIP vÄrds",Normal,SIPCode,false,0);
   EditField(h,v+=vs,150,"E-pasts",Normal,eMail,false,0);  
-  EditField(h1,v,-20,"Paplaäin‚jums",Normal,Extension,false,0);
-  EditField(h,v+=vs,150,"Sazin‚ties ar",Normal,Person,false,ContactSClass);
+  EditField(h1,v,-20,"PaplaÅ¡inÄjums",Normal,Extension,false,0);
+  EditField(h,v+=vs,150,"SazinÄties ar",Normal,Person,false,ContactSClass);
   EditField(h1,v,-20,"Interneta lapa",Normal,wwwAddr,false,0);
-  EditField(h,v+=vs,-20,"Klasifik‚cija",Normal,Classification,false,CClassSClass);
+  EditField(h,v+=vs,-20,"KlasifikÄcija",Normal,Classification,false,CClassSClass);
   if (HasLocalization("CHN")) then begin  
     EditField(h,v+=vs,150,"QQ konta numurs",Normal,QQName,false,0);   
     EditField(h1,v,-20,"Weibo konta numurs",Normal,WeiboName,false,0);   
@@ -1638,8 +1644,8 @@ begin
   RecordList2(10,v+=40,-30,-39,"ContactRelVc");
   RlColKey(4,4,"Kods",ContactCode,false,ActCustContactCode);
   RlCol(55,55,"Amats",ContactTitle,false);
-  RlColKey(105,105,"V‚rds",ContactName,false,ActCustContactName);
-  RlCol(235,235,"T‚lr.",ContactPhone,false);
+  RlColKey(105,105,"VÄrds",ContactName,false,ActCustContactName);
+  RlCol(235,235,"TÄlr.",ContactPhone,false);
   RlCol(335,335,"Mobilais",ContactMobile,false);
   RlCol(435,435,"Profesija",JobTitle,false);
   RlCol(535,535,"E-pasts",ContacteMail,false);
@@ -1647,35 +1653,36 @@ begin
 //CUST-BEGIN
   Tile(tilenr,240,false,tilenr,SchoolCode); tilenr = tilenr + 1;
   EditField(h,v=6,100,"Skola",Normal,SchoolCode,false,0);
-  EditField(h,v=v+vs,100,"Skolot‚ji",Normal,TeacherCode,false,TeacherSClass);
+  EditField(h,v=v+vs,100,"SkolotÄji",Normal,TeacherCode,false,TeacherSClass);
   EditField(h,v=v+vs,50,"Klase",Normal,ClassNum,false,0);
   EditField(h+80,v=v,50,"",Normal,ClassChar,false,0);
-  EditField(h,v=v+vs,50,"Apr•úin‚t‚ klase",Normal,CalcClassNum,false,0);
+  EditField(h,v=v+vs,50,"AprÄ“Ä·inÄtÄ klase",Normal,CalcClassNum,false,0);
   EditField(h,v=v+vs,100,"Alga",Normal,Salary,false,0);
   EditField(h,v=v+vs,100,"Amats",Normal,JobDesc,false,0);
-  CheckBox(h,v+=vs,0,"Piedal´jies ”nu dien‚",EnuDienaFlag);
-  CheckBox(h,v+=vs,0,"Piedal´jies TITAN",TitanFlag);
+  CheckBox(h,v+=vs,0,"PiedalÄ«jies Ä’nu dienÄ",EnuDienaFlag);
+  CheckBox(h,v+=vs,0,"PiedalÄ«jies TITAN",TitanFlag);
   if (CurrentUser=="ADM2") then begin
     EditField(h,v=v+vs,100,"Parole",Normal,Password,false,0);
   end;
 
   CheckBox(h,v=v+30,0,"Zem 13 gadu vecuma",AgeFlag);
-  EditField(h,v=v+vs,150,"Vec‚ka v‚rds",Normal,ParentName,false,0);
-  EditField(h,v=v+vs,150,"Vec‚ka uzv‚rds",Normal,ParentSurName,false,0);
-  EditField(h,v=v+vs,150,"Vec‚ka e-pasts",Normal,ParenteMail,false,0);
+  EditField(h,v=v+vs,150,"VecÄka vÄrds",Normal,ParentName,false,0);
+  EditField(h,v=v+vs,150,"VecÄka uzvÄrds",Normal,ParentSurName,false,0);
+  EditField(h,v=v+vs,150,"VecÄka e-pasts",Normal,ParenteMail,false,0);
   
-  ButtonFrame(h,v=v+40,150,3,"Apstiprin‚ts");
-  CheckBox(h,v=v,0,"Skol•ns",ConfirmSKL);
-  CheckBox(h,v=v+16,0,"Vec‚k/aizbildnis",ConfirmPar);
-  CheckBox(h,v=v+16,0,"Skolot‚js",ConfirmTeach);
+  ButtonFrame(h,v=v+40,150,3,"ApstiprinÄts");
+  CheckBox(h,v=v,0,"SkolÄ“ns",ConfirmSKL);
+  CheckBox(h,v=v+16,0,"VecÄk/aizbildnis",ConfirmPar);
+  CheckBox(h,v=v+16,0,"SkolotÄjs",ConfirmTeach);
 
-  ButtonFrame(h,v=v+40,300,7,"Sertifik‚cija");
-  CheckBox(h+100,v=v,0,"Sertific•ts",CertificateFlag);
-  CheckBox(h+100,v+=16,0,"Druk‚ts sertifik‚ts",CertificatePrint);
+  CheckBox(h,v+=40,0,"ManuÄla sertifikÄcija",ForceCertificate);
+  ButtonFrame(h,v=v+40,300,7,"SertifikÄcija");
+  CheckBox(h+100,v=v,0,"SertificÄ“ts",CertificateFlag);
+  CheckBox(h+100,v+=16,0,"DrukÄts sertifikÄts",CertificatePrint);
   
   EditField(h+100,v=v+vs,150,"Personas kods",Normal,PersonID,false,0);
-  EditField(h+100,v=v+vs,150,"Sertifik‚ta nr.",Normal,CertificateNr,false,0);
-  EditField(h+100,v=v+vs,150,"Sertifik‚ta datums",Normal,CertificateDate,false,0);
+  EditField(h+100,v=v+vs,150,"SertifikÄta nr.",Normal,CertificateNr,false,0);
+  EditField(h+100,v=v+vs,150,"SertifikÄta datums",Normal,CertificateDate,false,0);
 //CUST-END
 
   Tile(tilenr,240,false,tilenr,DelAddr0); tilenr = tilenr + 1;
@@ -1684,7 +1691,7 @@ begin
   HalPushButton(h+120,v,h+120+100,v+20,"UpdDeliveryAddressCUDsm","Atjaunot adresi");
   end;
   v=v+12;
-  StaticText(h,v+13,"Pieg‚des adrese",false);
+  StaticText(h,v+13,"PiegÄdes adrese",false);
   label = UserDefined("CUVc","DelAddr0");
   EditField(h,v+=vs,-20,label,Normal,DelAddr0,false,0);
   label = UserDefined("CUVc","DelAddr1");
@@ -1700,104 +1707,104 @@ begin
     EditField(h2-159,v,203,"",ViewOnly,DelCountryName,false,0);  
     v = v + vs;
   end;    
-  EditField(h2+50,v,-20,"Pasğt. koment‚rs",Normal,OrderComment,false,0);
+  EditField(h2+50,v,-20,"PasÅ«t. komentÄrs",Normal,OrderComment,false,0);
   EditField(h,v+=vs,120,"Kravas Nr.",Normal,FreightNr,false,0);
-  EditField(h2+50,v,70,"Re®ions",Normal,Region,false,RegionSClass); 
-  EditField(h,vm=(v+=vs),120,"Klienta nosğt. nosac.",Normal,ShipDeal,false,ShipDealSClass);
-  EditField(h2+50,v,70,"Nosğt´äanas tips",Normal,VEShipDeal,false,ShipDealSClass); 
-  EditField(h,v+=vs,120,"Klienta nosğt. veids",Normal,ShipMode,false,DMSClass);
-  EditField(h2+50,v,70,"Nosğt´äanas veids",Normal,VEShipMode,false,DMSClass); 
-  EditField(h,v+=vs,120,"Maräruts",Normal,Sorting,false,DelRouteSClass);
+  EditField(h2+50,v,70,"ReÄ£ions",Normal,Region,false,RegionSClass); 
+  EditField(h,vm=(v+=vs),120,"Klienta nosÅ«t. nosac.",Normal,ShipDeal,false,ShipDealSClass);
+  EditField(h2+50,v,70,"NosÅ«tÄ«Å¡anas tips",Normal,VEShipDeal,false,ShipDealSClass); 
+  EditField(h,v+=vs,120,"Klienta nosÅ«t. veids",Normal,ShipMode,false,DMSClass);
+  EditField(h2+50,v,70,"NosÅ«tÄ«Å¡anas veids",Normal,VEShipMode,false,DMSClass); 
+  EditField(h,v+=vs,120,"MarÅ¡ruts",Normal,Sorting,false,DelRouteSClass);
 /* these fields were used for securities trading, this module doesnt exist in hansa anymore */
 /* Two of these fields are used in Russia and Ukraine */
 //  EditField(h,vm=(v+=vs),120,"Securities Acc.",Normal,SecAccount,false,0);
 //  EditField(h,v+=vs,120,"Bank Account",Normal,BankAccount,false,0);//xx
 //  EditField(h,v+=vs,120,"Account Operator",Normal,AccOperator,false,BankSClass);//xx
 //##  EditField(h,v+=vs ,70, "Com. Matrix",Normal,ComCode,false,ComSClass);
-  ButtonFrame(h5+30,v=vm,150,2,"Nosğt. dat., pamatojoties uz");
-  RadioButton(h5+30,v,0,0,"Paäreiz•jo datumu",DeliveryBasedOn);
-  RadioButton(h5+30,v+=16,1,0,"Pl‚noto nosğt. datumu",DeliveryBasedOn);  
+  ButtonFrame(h5+30,v=vm,150,2,"NosÅ«t. dat., pamatojoties uz");
+  RadioButton(h5+30,v,0,0,"PaÅ¡reizÄ“jo datumu",DeliveryBasedOn);
+  RadioButton(h5+30,v+=16,1,0,"PlÄnoto nosÅ«t. datumu",DeliveryBasedOn);  
   Tile(tilenr,190,false,tilenr,PayDeal); tilenr = tilenr + 1;
   EditField(h,v=6,35,"Klienta sam. term",Normal,PayDeal,false,PDSClass);
-  EditField(h,v+=vs,80,"Klienta kred´tlimits",Normal,CreditLimit,true,0);
-  EditField(h,v+=vs,80,"Kl. kred´tlimita dienas",Normal,CreditLimitDays,false,0);
+  EditField(h,v+=vs,80,"Klienta kredÄ«tlimits",Normal,CreditLimit,true,0);
+  EditField(h,v+=vs,80,"Kl. kredÄ«tlimita dienas",Normal,CreditLimitDays,false,0);
   EditField(h,v+=vs,80,"Klienta pieg. kods",Normal,TheirCode,false,0);  
-  EditField(h,v+=vs,80,"R•úina adres‚ts",Normal,InvoiceToCode,false,CUSClass);
+  EditField(h,v+=vs,80,"RÄ“Ä·ina adresÄts",Normal,InvoiceToCode,false,CUSClass);
 //  EditField(h,v+=vs,80,"On Account A/C",Normal,ANACode,false,0);
   EditField(h,v+=2*vs,80,"Soda %",Normal,IntRate,false,0);
   EditField(h,v+=vs,80,"Izveides datums",ViewOnly,DateCreated,false,0);
   EditField(h,v+=vs,80,"Galv. partneris",Normal,MainPartner,false,CUSClass);
   EditField(h2,v=6,35,"Pieg. sam. term.",Normal,VEPayDeal,false,PDSClass);
-  EditField(h2,v+=vs,80,"Pieg. kred´tlimits",Normal,VECreditLimit,true,0);
-  EditField(h2,v+=vs,80,"Pieg. kred´tlimita dienas",Normal,VECreditLimitDays,false,0);
+  EditField(h2,v+=vs,80,"Pieg. kredÄ«tlimits",Normal,VECreditLimit,true,0);
+  EditField(h2,v+=vs,80,"Pieg. kredÄ«tlimita dienas",Normal,VECreditLimitDays,false,0);
   EditField(h2,v+=vs,80,"Pieg. klienta kods",Normal,VECustID,false,0);  
-  EditField(h2,v+=vs,80,"R•úina adres‚ts",Normal,VEInvoiceToCode,false,VESClass);
+  EditField(h2,v+=vs,80,"RÄ“Ä·ina adresÄts",Normal,VEInvoiceToCode,false,VESClass);
   EditField(h2,v+=vs,80,"Faktorings",Normal,VEFactoring,false,VESClass);
-  EditField(h2,v+=vs,80,"Min. pasğt. summa",Normal,MinOrdSum,false,0);
+  EditField(h2,v+=vs,80,"Min. pasÅ«t. summa",Normal,MinOrdSum,false,0);
   EditField(h2,v+=vs,80,"Atsauksme",Normal,RefStr,false,0);
-  EditField(h2,v+=vs,80,"P•d•j‚s izmaiÀas",Normal,DateChanged,false,0);
-  CheckBox(h5,v=12,0,"Sl•gts",blockedFlag);
-  CheckBox(h5,v+=16,0,"Dar´jumi aptur•ti",OnHoldFlag);
-  CheckBox(h5,v+=16,0,"Atg‚din‚jumi",RemndrFlag);
-//  CheckBox(h5,v+=16,0,"Iekas•ts",ColectionFlag);
+  EditField(h2,v+=vs,80,"PÄ“dÄ“jÄs izmaiÅ†as",Normal,DateChanged,false,0);
+  CheckBox(h5,v=12,0,"SlÄ“gts",blockedFlag);
+  CheckBox(h5,v+=16,0,"DarÄ«jumi apturÄ“ti",OnHoldFlag);
+  CheckBox(h5,v+=16,0,"AtgÄdinÄjumi",RemndrFlag);
+//  CheckBox(h5,v+=16,0,"IekasÄ“ts",ColectionFlag);
   CheckBox(h5,v+=16,0,"Soda nauda",InterestFlag);
-  CheckBox(h5,v+=16,0,"Priekäapmaksas",OnAccount);
+  CheckBox(h5,v+=16,0,"PriekÅ¡apmaksas",OnAccount);
   if (StandardHansa==false) then begin
   CheckBox(h5,v+=16,0,"Bez faktoringa",NoFactoringFlag);
   CheckBox(h5,v+=16,0,"Bez papildnod.",NoTax1);
-  CheckBox(h5,v+=16,0,"Tikai apvien. r•ú.",GroupInv);
-  CheckBox(h5,v+=16,0,"Paäu r•úini",SelfBilling);
-    CheckBox(h5,v+=16,0,"Piem•rots úimiskai uzglab‚äanai",ChemicalStorageApproved);  
+  CheckBox(h5,v+=16,0,"Tikai apvien. rÄ“Ä·.",GroupInv);
+  CheckBox(h5,v+=16,0,"PaÅ¡u rÄ“Ä·ini",SelfBilling);
+    CheckBox(h5,v+=16,0,"PiemÄ“rots Ä·imiskai uzglabÄÅ¡anai",ChemicalStorageApproved);  
   CheckBox(h4,v=12,0,"EGO klients",EGOFlag);
   CheckBox(h4,v+=16,0,"EDI klients",EDIFlag);
-  CheckBox(h4,v+=16,0,"Atºaut piesl•gties",AllowLogin);
-//  CheckBox(h4,v+=16,0,"Atºaut piesl•gties FTP",FTPLogin);
-  CheckBox(h4,v+=16,0,"Tikai fisk‚lie ‹eki",FiscalFlag);
-  CheckBox(h4,v+=16,0,"Neiekº. v•st. kopsar.",NoLetterPosting);
+  CheckBox(h4,v+=16,0,"AtÄ¼aut pieslÄ“gties",AllowLogin);
+//  CheckBox(h4,v+=16,0,"AtÄ¼aut pieslÄ“gties FTP",FTPLogin);
+  CheckBox(h4,v+=16,0,"Tikai fiskÄlie Äeki",FiscalFlag);
+  CheckBox(h4,v+=16,0,"NeiekÄ¼. vÄ“st. kopsar.",NoLetterPosting);
   end else begin
-    CheckBox(h4,v=12,0,"Neiekº. v•st. kopsar.",NoLetterPosting);  
+    CheckBox(h4,v=12,0,"NeiekÄ¼. vÄ“st. kopsar.",NoLetterPosting);  
   end;
-  CheckBox(h4,v+=16,0,"Neiekº. epasta kops.",NoMailPosting);
-  CheckBox(h4,v+=16,0,"Bez vides nodokºa",NoRepa);
+  CheckBox(h4,v+=16,0,"NeiekÄ¼. epasta kops.",NoMailPosting);
+  CheckBox(h4,v+=16,0,"Bez vides nodokÄ¼a",NoRepa);
   if (HasLocalization("GBR,LTU,POL,LVA")) then begin
     CheckBox(h4,v+=16,0,"Reversais #PVN#",RvrsVAT);
   end;
   if (HasExtTax) then begin
-  CheckBox(h4,v+=16,0,"Bez re®iona nodokºa",NoTax2);
+  CheckBox(h4,v+=16,0,"Bez reÄ£iona nodokÄ¼a",NoTax2);
   end;
   Tile(tilenr,110,false,tilenr,PLCode); tilenr = tilenr + 1;
-  EditField(h,v=6,  80,"Real. valğta",Normal,CurncyCode,false,CurncyCodeSClass);
+  EditField(h,v=6,  80,"Real. valÅ«ta",Normal,CurncyCode,false,CurncyCodeSClass);
   EditField(h,v+=vs ,80, "Cenu lapa",Normal,PLCode,false,PLDefSClass);
-  EditField(h,v+=vs ,80, "Atlaiìu matrica",Normal,RebCode,false,RebSClass);
+  EditField(h,v+=vs ,80, "AtlaiÅ¾u matrica",Normal,RebCode,false,RebSClass);
   if (HasSalesman or HasSalesmanBonus) then begin
-  EditField(h,v+=vs,80,"A®ents",Normal,SalesMan,false,UserSClass);
+  EditField(h,v+=vs,80,"AÄ£ents",Normal,SalesMan,false,UserSClass);
   end;
   EditField(h,v+=vs,80,"Nokl. artikuli",Normal,CompItemCode,false,CompItemSClass);
-  EditField(h2,v=6,80,"Ieg. valğta",Normal,VECurncyCode,false,CurncyCodeSClass);
+  EditField(h2,v=6,80,"Ieg. valÅ«ta",Normal,VECurncyCode,false,CurncyCodeSClass);
   EditField(h2,v+=2*vs ,80, "Pieg. atl. matrica",Normal,VERebCode,false,RebSClass);
   if (HasSalesGroup) then begin
-  EditField(h2,v+=vs,80,"A®entu grupa",Normal,SalesGroup,false,SalesGroupSClass);
+  EditField(h2,v+=vs,80,"AÄ£entu grupa",Normal,SalesGroup,false,SalesGroupSClass);
   end;
-  ButtonFrame(h5,v=24,150,3,"Cenas p•c");
-  RadioButton(h5,v,0,0,"Pasğt´juma datuma",PriceBasedOn);
-  RadioButton(h5,v+=16,1,0,"Pl‚not‚ nosğt´äanas dat.",PriceBasedOn);
-  RadioButton(h5,v+=16,2,0,"Izveäanas datuma",PriceBasedOn);  
+  ButtonFrame(h5,v=24,150,3,"Cenas pÄ“c");
+  RadioButton(h5,v,0,0,"PasÅ«tÄ«juma datuma",PriceBasedOn);
+  RadioButton(h5,v+=16,1,0,"PlÄnotÄ nosÅ«tÄ«Å¡anas dat.",PriceBasedOn);
+  RadioButton(h5,v+=16,2,0,"IzveÅ¡anas datuma",PriceBasedOn);  
   Tile(tilenr,180,false,tilenr,Comment); tilenr = tilenr + 1;
-  EditField(h,v=6,-20,"Koment‚rs",Normal,Comment,false,0);
-  EditField(h,v+=vs,-20,"Real. br´din‚jums",Normal,WarnText1,false,0);
-  EditField(h,v+=vs,-20,"Pieg. br´din‚jums",Normal,VEWarnText1,false,0);
-  EditField(h,v+=vs,120,"PVN re®. Nr.",Normal,VATNr,false,0);  
-  EditField(h2-20,v,120,"Re®. Nr.1",Normal,RegNr1,false,0);
+  EditField(h,v=6,-20,"KomentÄrs",Normal,Comment,false,0);
+  EditField(h,v+=vs,-20,"Real. brÄ«dinÄjums",Normal,WarnText1,false,0);
+  EditField(h,v+=vs,-20,"Pieg. brÄ«dinÄjums",Normal,VEWarnText1,false,0);
+  EditField(h,v+=vs,120,"PVN reÄ£. Nr.",Normal,VATNr,false,0);  
+  EditField(h2-20,v,120,"ReÄ£. Nr.1",Normal,RegNr1,false,0);
   ButtonFrame(h5+30,v+18,143,1,"Tips");  
-  RadioButton(h5+30,v+18,0,0,"Komp‚nija",CustType);  
+  RadioButton(h5+30,v+18,0,0,"KompÄnija",CustType);  
   RadioButton(h5+110,v+18,1,0,"Persona",CustType);  
   v = v + vs;
-	EditField(h,v,120,"Valsts PVN Re®. Nr.",Normal,CountryVATNr,false,0);
-  EditField(h2-20,v,120,"Re®. Nr.2",Normal,RegNr2,false,RegDefSClass);  
-  EditField(h,v+=vs,120,"PVN Nr. p‚rb. dat.",Normal,VATNrCheckDate,false,PasteCurDate);  
+	EditField(h,v,120,"Valsts PVN ReÄ£. Nr.",Normal,CountryVATNr,false,0);
+  EditField(h2-20,v,120,"ReÄ£. Nr.2",Normal,RegNr2,false,RegDefSClass);  
+  EditField(h,v+=vs,120,"PVN Nr. pÄrb. dat.",Normal,VATNrCheckDate,false,PasteCurDate);  
   EditField(h2-20,v,120,"GVN",Normal,RecipientGLN,false,0); 
   if (HasLocalization("HRV,SVN")) then begin 
-    EditField(h,v+=vs,120,"Juridisk‚ forma",Normal,LegalForm,false,CULegalFormSClass);
+    EditField(h,v+=vs,120,"JuridiskÄ forma",Normal,LegalForm,false,CULegalFormSClass);
   end;  
   EditField(h,v+=vs,20,"Real. PVN kods",Normal,VATCode,false,VATCodeSClass);
   if (HasTaxMatrix) then begin
@@ -1810,103 +1817,103 @@ begin
   end;
   EditField(h,v+=vs,50,"Valoda",Normal,LangCode,false,LangSClass);  
   EditField(h2-20, v,50,"Biznesa daba",Normal,BusinessNature,false,BNSClass); 
-  EditField(h,v+=vs, 260,"UzÀ•mums",Normal,BusinessEntity,false,SetSClass); 
+  EditField(h,v+=vs, 260,"UzÅ†Ä“mums",Normal,BusinessEntity,false,SetSClass); 
   if (HasLocalization("ARG")) then begin 
-	  ButtonFrame(h+125,v+=20,177,4,"Nodokºu nosac´jumi "); 
+	  ButtonFrame(h+125,v+=20,177,4,"NodokÄ¼u nosacÄ«jumi "); 
     RadioButton(h+125,v,2,0,"Bez ieraksta",TaxCondition); 
-    RadioButton(h+125,v+=16,0,0,"Viet•jais",TaxCondition); 
-    RadioButton(h+125,v+=16,1,0,"Daudzpus•js l´gums",TaxCondition); 
+    RadioButton(h+125,v+=16,0,0,"VietÄ“jais",TaxCondition); 
+    RadioButton(h+125,v+=16,1,0,"DaudzpusÄ“js lÄ«gums",TaxCondition); 
     RadioButton(h+125,v+=16,3,0,"Simplified Taxpaying Regimen",TaxCondition);    
   end;  
   if (HasLocalization("BRA")) then begin  
-    EditField(h,v+=vs,120,"SUFRAMA Re®. Nr.",Normal,SuframaRegNr,false,0);  
+    EditField(h,v+=vs,120,"SUFRAMA ReÄ£. Nr.",Normal,SuframaRegNr,false,0);  
   end;
-//  EditField(h,v+=vs,120,"Kan‚ls",Normal,WebServiceChannel,false,SetSClass);
+//  EditField(h,v+=vs,120,"KanÄls",Normal,WebServiceChannel,false,SetSClass);
   v = 130;
   v = VATZoneButtonsLabelslat(h5+30,v,170,16);
   Tile(tilenr,130,false,tilenr,AccAP); tilenr = tilenr + 1;
   EditField(h,v=6,80,"Kreditoru konts",Normal,AccAP,false,AccSClass);
   EditField(h,v+=vs,80,"Izmaksu konts",Normal,AccCost,false,AccSClass);
-  EditField(h,v+=vs,80,"Kred. priekä. konts",Normal,OnAccAccAP,false,AccSClass);
+  EditField(h,v+=vs,80,"Kred. priekÅ¡. konts",Normal,OnAccAccAP,false,AccSClass);
   EditField(h,v+=vs,120,"Real. objekti",Normal,Objects,false,ObjSClass);
   EditField(h,v+=vs,120,"Pieg. objekti",Normal,VEObjects,false,ObjSClass);  
-  EditField(h,v+=vs,50,"Maks‚juma uzd. kods",Normal,PaymentCode,false,PaymentCodeSClass);  
-  EditField(h,v+=vs,50,"Nodokºu atvieglojumi",Normal,TaxExemption,false,TaxExemptionsSClass); 
+  EditField(h,v+=vs,50,"MaksÄjuma uzd. kods",Normal,PaymentCode,false,PaymentCodeSClass);  
+  EditField(h,v+=vs,50,"NodokÄ¼u atvieglojumi",Normal,TaxExemption,false,TaxExemptionsSClass); 
   if (HasLocalization("HRV,HUN,POL,SRB,SLV,SVN")) then begin
-  ButtonFrame(h,v+=40,150,3,"Gr‚matot maks‚juma PVN");  
-  RadioButton(h,v,0,0,"Noklus•juma",IPBookVAT);  
-  RadioButton(h,v+=16,1,0,"Gr‚matot PVN",IPBookVAT);  
-  RadioButton(h,v+=16,2,0,"Negr‚matot PVN",IPBookVAT);  
+  ButtonFrame(h,v+=40,150,3,"GrÄmatot maksÄjuma PVN");  
+  RadioButton(h,v,0,0,"NoklusÄ“juma",IPBookVAT);  
+  RadioButton(h,v+=16,1,0,"GrÄmatot PVN",IPBookVAT);  
+  RadioButton(h,v+=16,2,0,"NegrÄmatot PVN",IPBookVAT);  
   end;
   EditField(h1,v=6,200,"IBAN kods",Normal,IBANCode,false,0);  
   EditField(h1,v+=vs,-20,"Banka",Normal,AccOperator,false,BankSClass);  
   EditField(h1,v+=vs,-20,"Bankas konts",Normal,BankAccount,false,0);  
   EditField(h1,v+=vs,-20,"Bankas konts 2",Normal,Bank,false,0);  
-  EditField(h1,v+=vs,80,"K‚rt. atsl.",Normal,SortCode,false,0);
+  EditField(h1,v+=vs,80,"KÄrt. atsl.",Normal,SortCode,false,0);
   if (HasWithholdingTax) then begin
-  EditField(h1,v+=vs,120,"Ietur•juma samaksas veidi",Normal,WithPayMode,false,PMSClass);
+  EditField(h1,v+=vs,120,"IeturÄ“juma samaksas veidi",Normal,WithPayMode,false,PMSClass);
   end;
   if (HasLocalization("HRV,HUN,POL,SRB,SLV,SVN")) then begin
-    ButtonFrame(h1,v+=60,150,3,"Gr‚matot maks‚juma uzd. PVN");
-  RadioButton(h1,v,0,0,"Noklus•juma",OPBookVAT);  
-  RadioButton(h1,v+=16,1,0,"Gr‚matot PVN",OPBookVAT);  
-  RadioButton(h1,v+=16,2,0,"Negr‚matot PVN",OPBookVAT);  
+    ButtonFrame(h1,v+=60,150,3,"GrÄmatot maksÄjuma uzd. PVN");
+  RadioButton(h1,v,0,0,"NoklusÄ“juma",OPBookVAT);  
+  RadioButton(h1,v+=16,1,0,"GrÄmatot PVN",OPBookVAT);  
+  RadioButton(h1,v+=16,2,0,"NegrÄmatot PVN",OPBookVAT);  
   end;  
   Tile(tilenr,170,false,tilenr,ANACode); tilenr = tilenr + 1;
-  StaticText(h,v=20,"E-r•úini",true); 
-  EditField(h,vm=(v+=10),80,"E-r•úinu konts",Normal,ANACode,false,0); 
-  EditField(h,v+=vs,80,"Alt. E-r•úinu konts",Normal,eInvAlternativeAccount,false,0);
+  StaticText(h,v=20,"E-rÄ“Ä·ini",true); 
+  EditField(h,vm=(v+=10),80,"E-rÄ“Ä·inu konts",Normal,ANACode,false,0); 
+  EditField(h,v+=vs,80,"Alt. E-rÄ“Ä·inu konts",Normal,eInvAlternativeAccount,false,0);
 
-  ButtonFrame(h,v+=40,163,1,"R•úina veids"); 
-  RadioButton(h,v,kEInvoiceRcvPreferenceDefault,0,"Noklus•juma",eInvRcvPref); 
+  ButtonFrame(h,v+=40,163,1,"RÄ“Ä·ina veids"); 
+  RadioButton(h,v,kEInvoiceRcvPreferenceDefault,0,"NoklusÄ“juma",eInvRcvPref); 
   RadioButton(h,v+=16,kEInvoiceRcvPreferenceElectronic,0,"Elektroniskais",eInvRcvPref); 
   if (HasLocalization("LVA")) then begin
     RadioButton(h,v+=16,kEInvoiceRcvPreferenceEMail,0,"e-pasts",eInvRcvPref); 
-    RadioButton(h,v+=16,kEInvoiceRcvPreferencePaper,0,"Pap´ra r•úins",eInvRcvPref); 
+    RadioButton(h,v+=16,kEInvoiceRcvPreferencePaper,0,"PapÄ«ra rÄ“Ä·ins",eInvRcvPref); 
     RadioButton(h,v+=16,kEInvoiceRcvPreferenceInternetBank,0,"Internete banka",eInvRcvPref); 
   end else begin
   if (HasLocalization("FIN,NOR,SWE")) then begin
     RadioButton(h,v+=16,kEInvoiceRcvPreferenceEMail,0,"E-pasts",eInvRcvPref);
   end else begin
-    RadioButton(h,v+=16,kEInvoiceRcvPreferencePaper,0,"Pap´ra",eInvRcvPref); 
+    RadioButton(h,v+=16,kEInvoiceRcvPreferencePaper,0,"PapÄ«ra",eInvRcvPref); 
     end;
   end;  
   if (Modb.InterCompany) then begin
-    RadioButton(h,v+=16,kEInvoiceRcvPreferenceInternal,0,"Iekä•jais",eInvRcvPref); 
+    RadioButton(h,v+=16,kEInvoiceRcvPreferenceInternal,0,"IekÅ¡Ä“jais",eInvRcvPref); 
     EditField(h+130,v,30,"",Normal,eInvRcvToCompanyCode,false,Companies2SClass);
   end;
-  RadioButton(h,v+=16,kEInvoiceRcvPreferenceNone,0,"NesaÀemt",eInvRcvPref); 
+  RadioButton(h,v+=16,kEInvoiceRcvPreferenceNone,0,"NesaÅ†emt",eInvRcvPref); 
   EndFrame;
   if (HasLocalization("EST,LTU")) then begin
-    ButtonFrame(h,v+=40,143,1,"Papildu pieg‚de (nav oblig.)"); 
+    ButtonFrame(h,v+=40,143,1,"Papildu piegÄde (nav oblig.)"); 
     RadioButton(h,v,kEInvoiceRcvPreferenceDefault,0,"Neizmantot",eInvAltRcvPref); 
-    RadioButton(h,v+=16,kEInvoiceRcvPreferenceElectronic,0,"Elektronisks r•úins",eInvAltRcvPref); 
-    RadioButton(h,v+=16,kEInvoiceRcvPreferencePaper,0,"Reúins pap. form‚",eInvAltRcvPref); 
+    RadioButton(h,v+=16,kEInvoiceRcvPreferenceElectronic,0,"Elektronisks rÄ“Ä·ins",eInvAltRcvPref); 
+    RadioButton(h,v+=16,kEInvoiceRcvPreferencePaper,0,"ReÄ·ins pap. formÄ",eInvAltRcvPref); 
     RadioButton(h,v+=16,kEInvoiceRcvPreferenceEMail,0,"E-pasts",eInvAltRcvPref); 
     RadioButton(h,v+=16,kEInvoiceRcvPreferenceInternetBank,0,"Internetbanka",eInvAltRcvPref); 
     EndFrame;
   end;
   vm2 = v;
 
-  CheckBox(h1,v=vm,0,"Nesğt´t e-r•úinus",eInvStop); 
+  CheckBox(h1,v=vm,0,"NesÅ«tÄ«t e-rÄ“Ä·inus",eInvStop); 
   if (HasLocalization("FIN")==false) then begin
-    CheckBox(h1,v+=16,0,"E-r•úini ar pdf failiem",eInvAttachPDF); 
-    ButtonFrame(h1,v+=44,143,3,"Pasta tarifs pap´ra r•úiniem"); 
+    CheckBox(h1,v+=16,0,"E-rÄ“Ä·ini ar pdf failiem",eInvAttachPDF); 
+    ButtonFrame(h1,v+=44,143,3,"Pasta tarifs papÄ«ra rÄ“Ä·iniem"); 
   end else begin
-    ButtonFrame(h1,v+=60,143,3,"Pasta tarifs pap´ra r•úiniem"); 
+    ButtonFrame(h1,v+=60,143,3,"Pasta tarifs papÄ«ra rÄ“Ä·iniem"); 
   end;
-  RadioButton(h1,v,2,0,"Noklus•juma",eInvPostage); 
-  RadioButton(h1,v+=16,0,0,"Priorit‚rs",eInvPostage); 
+  RadioButton(h1,v,2,0,"NoklusÄ“juma",eInvPostage); 
+  RadioButton(h1,v+=16,0,0,"PrioritÄrs",eInvPostage); 
   RadioButton(h1,v+=16,1,0,"Ekonomisks",eInvPostage); 
   if (HasLocalization("EST,LTU")) then begin
-    CheckBox(h1,v+=84,0,"Sa´sin‚ti e-r•úini",eInvShortNote); 
+    CheckBox(h1,v+=84,0,"SaÄ«sinÄti e-rÄ“Ä·ini",eInvShortNote); 
   end;
-  StaticText(h,v=(vm2+40),"Pieg‚d‚t‚ju pasğt´jumi",true);
-  ButtonFrame(h,v+=20,163,3,"SaÀemäanas veids"); 
-  RadioButton(h,v,kPORcvPreferenceNone,0,"NesaÀemt",ePORcvPref); 
-  RadioButton(h,v+=16,kPORcvPreferenceDefault,0,"Noklus•juma",ePORcvPref); 
+  StaticText(h,v=(vm2+40),"PiegÄdÄtÄju pasÅ«tÄ«jumi",true);
+  ButtonFrame(h,v+=20,163,3,"SaÅ†emÅ¡anas veids"); 
+  RadioButton(h,v,kPORcvPreferenceNone,0,"NesaÅ†emt",ePORcvPref); 
+  RadioButton(h,v+=16,kPORcvPreferenceDefault,0,"NoklusÄ“juma",ePORcvPref); 
   if (Modb.InterCompany) then begin
-  RadioButton(h,v+=16,kPORcvPreferenceInternal,0,"Iekä•j‚ komp‚nija",ePORcvPref); 
+  RadioButton(h,v+=16,kPORcvPreferenceInternal,0,"IekÅ¡Ä“jÄ kompÄnija",ePORcvPref); 
   EditField(h+130,v,30,"",Normal,ePORcvToCompanyCode,false,Companies2SClass);
   end;
   EndFrame;
@@ -1914,14 +1921,14 @@ begin
   if (StandardHansa==false) then begin
     Tile(tilenr,70,false,tilenr,WebConf); tilenr = tilenr + 1;
   EditField(h,vm=(v=6),120,"Interneta konf.",Normal,WebConf,true,0);
-  EditField(h1,v,150,"Galven‚ klasifik‚cija",Normal,MainDispGroup,false,WebNGProductCatSClass);
-  EditField(h,v+=vs,120,"Web s‚kuma lapa",Normal,WebStartPage,false,0);
-  EditField(h1,v,150,"R‚d´t m‚jas lap‚",Normal,WebDisplays,false,WebDisplaySClass);
-  EditField(h,v+=vs,120,"Pieg‚des kods",Normal,FreightCode,false,WebFreightSClass);
-    EditField(h1,v,150,"T´mekºa objekta tips",Normal,WebOTCode,false,OTSClass); 
+  EditField(h1,v,150,"GalvenÄ klasifikÄcija",Normal,MainDispGroup,false,WebNGProductCatSClass);
+  EditField(h,v+=vs,120,"Web sÄkuma lapa",Normal,WebStartPage,false,0);
+  EditField(h1,v,150,"RÄdÄ«t mÄjas lapÄ",Normal,WebDisplays,false,WebDisplaySClass);
+  EditField(h,v+=vs,120,"PiegÄdes kods",Normal,FreightCode,false,WebFreightSClass);
+    EditField(h1,v,150,"TÄ«mekÄ¼a objekta tips",Normal,WebOTCode,false,OTSClass); 
   end;
   Tile(tilenr,170,false,tilenr,Comment0); tilenr = tilenr + 1;
-  EditField(h,v=6,-20,"Koment‚rs",Normal,Comment0,false,0);
+  EditField(h,v=6,-20,"KomentÄrs",Normal,Comment0,false,0);
   EditField(h,v+=vs,-20,"",Normal,Comment1,false,0);
   EditField(h,v+=vs,-20,"",Normal,Comment2,false,0);
   EditField(h,v+=vs,-20,"Tituls",Normal,Title,false,CourtesyTitlesSClass);
@@ -1933,39 +1940,39 @@ begin
     Tile(tilenr,250,false,tilenr,DocType); tilenr = tilenr + 1;
   EditField(h,v=6,100,"Dok. tips",Normal,DocType,false,CUDocTypeSClass);
   EditField(h2,v,-20,"ID",Normal,PassportNr,false,0); 
-    EditField(h2,v+=vs,-20,"V‚rds dokument‚",Normal,NameinDocument,false,0); 
+    EditField(h2,v+=vs,-20,"VÄrds dokumentÄ",Normal,NameinDocument,false,0); 
 //  EditFieldTL(h,vm=(v+=20),100,"Nationality",M4StrSet,Normal,423,Nationality,false,StrSetSClass);
-  EditField(h,vm=(v+=20),100,"Taut´ba",Normal,Nationality,false,CountrySClass);
+  EditField(h,vm=(v+=20),100,"TautÄ«ba",Normal,Nationality,false,CountrySClass);
     EditField(h,v+=20,100,"Dzimis",Normal,BirthDate,false,PasteCurDate);
     EditField(h,v+=20,100,"Dzim. vieta",Normal,BirthPlace,false,0);  
     EditField(h,v+=20,100,"Dzim. valsts",Normal,BirthCountry,false,CountrySClass);  
   EditField(h,v+=20,100,"Profesija",Normal,Profesion,false,0);   
-  EditField(h,v+=20,100,"Av´ze",Normal,Newspaper,false,NewspaperSClass);
+  EditField(h,v+=20,100,"AvÄ«ze",Normal,Newspaper,false,NewspaperSClass);
   EditField(h,v+=20,100,"Balss parole",Normal,Passphrase,false,0);
-  EditField(h,v+=vs,100,"Tğrisma firma",Normal,TourOperator,false,CUSClass);
-  EditField(h,v+=vs,100,"A®ents",Normal,Agent,false,CUSClass);
-  EditField(h,v+=vs,100,"Maks‚äanas metode",Normal,DefGuestPayMode,false,PMSClass);
+  EditField(h,v+=vs,100,"TÅ«risma firma",Normal,TourOperator,false,CUSClass);
+  EditField(h,v+=vs,100,"AÄ£ents",Normal,Agent,false,CUSClass);
+  EditField(h,v+=vs,100,"MaksÄÅ¡anas metode",Normal,DefGuestPayMode,false,PMSClass);
   EditField(h,v+=vs,100,"Noklus. rezerv. avots",Normal,BookOrigin,false,BookOrgSClass);
-  EditField(h,v+=vs,300,"Uztura piez´mes",Normal,DietRemarks,false,0);
-  EditField(h,v+=vs,300,"Pras´bas",Normal,RequirementRemarks,false,0);
+  EditField(h,v+=vs,300,"Uztura piezÄ«mes",Normal,DietRemarks,false,0);
+  EditField(h,v+=vs,300,"PrasÄ«bas",Normal,RequirementRemarks,false,0);
 
   ButtonFrame(h2,v=vm+20,100,2,"Dzimums");
-  RadioButton(h2,v,0,0,"V´rietis",Gender);
+  RadioButton(h2,v,0,0,"VÄ«rietis",Gender);
   RadioButton(h2,v+=17,1,0,"Sieviete",Gender);
 
-  CheckBox(h2+130,v=vm+20,0,"Sm•ú•t‚js",Smoking);
-  CheckBox(h2+130,v+=17,0,"Melnaj‚ sarakst‚",Blacklist);
+  CheckBox(h2+130,v=vm+20,0,"SmÄ“Ä·Ä“tÄjs",Smoking);
+  CheckBox(h2+130,v+=17,0,"MelnajÄ sarakstÄ",Blacklist);
 
-  ButtonFrame(h2,vm=(v+=40),100,4,"şimenes st‚voklis");
-  RadioButton(h2,v,0,0,"Neprec•jies",MarStatus);
-  RadioButton(h2,v+=17,1,0,"Prec•jies",MarStatus);
-  RadioButton(h2,v+=17,2,0,"áú´ries",MarStatus);
+  ButtonFrame(h2,vm=(v+=40),100,4,"Ä¢imenes stÄvoklis");
+  RadioButton(h2,v,0,0,"NeprecÄ“jies",MarStatus);
+  RadioButton(h2,v+=17,1,0,"PrecÄ“jies",MarStatus);
+  RadioButton(h2,v+=17,2,0,"Å Ä·Ä«ries",MarStatus);
   RadioButton(h2,v+=17,3,0,"Atraitnis",MarStatus);
 
   ButtonFrame(h2=h2+130,v=vm,100,3,"Vecuma grupa");
-  RadioButton(h2,v,1,0,"B•rns",AgeStatus);
-  RadioButton(h2,v+=17,0,0,"Pieauguäais",AgeStatus);
-  RadioButton(h2,v+=17,2,0,"Pension‚rs",AgeStatus);
+  RadioButton(h2,v,1,0,"BÄ“rns",AgeStatus);
+  RadioButton(h2,v+=17,0,0,"PieauguÅ¡ais",AgeStatus);
+  RadioButton(h2,v+=17,2,0,"PensionÄrs",AgeStatus);
   end;
   
   if (StandardHansa==false) then begin
@@ -2016,12 +2023,12 @@ begin
       EditField(h,v+=vs,80,label,Normal,UserDate3,false,PasteCurDate);
   end;
   
-  EditField(h,v+=vs,-20,"Adreäu saraksti",Normal,AddressBooks,false,0);
+  EditField(h,v+=vs,-20,"AdreÅ¡u saraksti",Normal,AddressBooks,false,0);
   end;
 
   Tile(tilenr,500,false,tilenr,Math2); tilenr = tilenr + 1;
   CheckBox(50,v=6,0,"HTML",HtmlFlag); 
-  StaticText(50,v+=30,"Piez´mes",true);
+  StaticText(50,v+=30,"PiezÄ«mes",true);
   TextField(60,v-5,-20,370,Math2,0);
   if (CUr.CUType!=0 and HasCharts) then begin
     Tile(tilenr,400,false,tilenr,-); tilenr = tilenr + 1;
@@ -2033,33 +2040,33 @@ begin
       SpecialMenu("Klienta statuss",'e',0,"CUStatusCUDsm"); 
     end;
     if (UserCanReport("VEPSRn","",true)) then begin 
-      SpecialMenu("Pieg‚d‚t‚ja statuss",'u',4,"VEStatusVEDsm"); 
+      SpecialMenu("PiegÄdÄtÄja statuss",'u',4,"VEStatusVEDsm"); 
     end;
-    SpecialMenu("Pievienot esoäu kontaktpersonu",' ',1,"AddContactCUDsm"); 
+    SpecialMenu("Pievienot esoÅ¡u kontaktpersonu",' ',1,"AddContactCUDsm"); 
     SpecialMenu("Veidot jaunu kontaktpersonu",' ',1,"NewContactCUDsm"); 
-    SpecialMenu("Veidot aktivit‚ti",'c',2,"NewActCUDsm");
+    SpecialMenu("Veidot aktivitÄti",'c',2,"NewActCUDsm");
   end else begin
     if (UserCanReport("CustPSRn","",true) and HasCustomerStatusReport) then begin
   SpecialMenu("Klienta statuss",'e',0,"CUStatusCUDsm");
   end;
     if (UserCanReport("VEPSRn","",true)) then begin
-      SpecialMenu("Pieg‚d‚t‚ja statuss",'u',4,"VEStatusVEDsm");
+      SpecialMenu("PiegÄdÄtÄja statuss",'u',4,"VEStatusVEDsm");
     end;
-  SpecialMenu("Pievienot esoäu kontaktpersonu",' ',1,"AddContactCUDsm");
-  SpecialMenu("Dz•st pievienotu kontaktpersonu",' ',1,"DelContactCUDsm");
+  SpecialMenu("Pievienot esoÅ¡u kontaktpersonu",' ',1,"AddContactCUDsm");
+  SpecialMenu("DzÄ“st pievienotu kontaktpersonu",' ',1,"DelContactCUDsm");
   SpecialMenu("Labot pievienotas kontaktpers. datus",' ',1,"EditContactCUDsm");
   SpecialMenu("Atjaunot kontaktpersonas",' ',6,"UpdContactAddrCUDsm");
     if (HasLocalization("ARG")) then begin
-      SpecialMenu("Atv•rt re®ion‚lo p‚rskatu",' ',1,"RPCUTaxDsm"); 
+      SpecialMenu("AtvÄ“rt reÄ£ionÄlo pÄrskatu",' ',1,"RPCUTaxDsm"); 
     end;
     if (HasLocalization("ARG,BRA,ITA,KEN,MEX,PRT,SGP,ZAF")) then begin
-      SpecialMenu("Atv•rt #Supplier# ietur•jumus",' ',1,"WHVEDsm"); 
+      SpecialMenu("AtvÄ“rt #Supplier# ieturÄ“jumus",' ',1,"WHVEDsm"); 
     end; //EMZ
   if (GuiType==kGuiCocoa) then begin
-    SpecialMenu("Kop•t uz lok‚lo adreäu gr‚matu",' ',7,"CopyToLocalAddressBookDsm");
+    SpecialMenu("KopÄ“t uz lokÄlo adreÅ¡u grÄmatu",' ',7,"CopyToLocalAddressBookDsm");
   end;
   if (GuiType==kGuiiPhone) then begin
-    SpecialMenu("Main´t paroli",' ',1,"ChangePasswdCUDsm");
+    SpecialMenu("MainÄ«t paroli",' ',1,"ChangePasswdCUDsm");
   end;
     SpecMenuGroup("",kSpecMenuGroupTypeExtendedPlusMenu,0); 
 //    SpecialMenu("Activity",'c',2,"NewActCUDsm");
@@ -2068,7 +2075,7 @@ begin
       SpecialMenu("E-pastu",'m',5,"NewMailCUDsm"); 
     end;
     SpecialMenu("Objektu",' ',1,"CreateObjectCUDsm"); 
-    SpecialMenu("Paroles paziÀojumu",' ',3,"RandomPassMailCUDsm"); 
+    SpecialMenu("Paroles paziÅ†ojumu",' ',3,"RandomPassMailCUDsm"); 
   end;
   EndWindow;
   
@@ -2078,16 +2085,16 @@ end;
 window JALEventRequestLClass:1
   wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
 begin
-  WindowBegin("Pas‚kumu piepras´jumi",JALEventRequestLClass,CGmlist,-);
+  WindowBegin("PasÄkumu pieprasÄ«jumi",JALEventRequestLClass,CGmlist,-);
   SetWRect(20,80,660,298);
   Sizeable(-1,-1,0,0);
   SpawnClass(JALEventRequestDClass);
   UseView(JALEventRequestVc);
   RecordList(4,17,-21,-39);
-  RlColKey(4,4,"S•r. Nr.",SerNr,false,SerNr);
-  RlColKey(100,100,"Pas‚kums",EventNr,false,EventNr);
+  RlColKey(4,4,"SÄ“r. Nr.",SerNr,false,SerNr);
+  RlColKey(100,100,"PasÄkums",EventNr,false,EventNr);
   RlColKey(196,196,"SMU",SMFCode,false,SMFCode);
-  SearchField("Search");
+  SearchField("MeklÄ“t");
   EndWindow;
 end;
 
@@ -2095,12 +2102,12 @@ window JALEventRequestDClass:1
   wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
 begin
   real h,v,vs,v2,vs2,hm;
-  WindowBegin("Pas‚kumu piepras´jums",JALEventRequestDClass,CGview,-);
+  WindowBegin("PasÄkumu pieprasÄ«jums",JALEventRequestDClass,CGview,-);
   SetWRect(20,80,600,339);
   UseView(JALEventRequestVc);
   vs=20; h=120; vs2=16; hm=-100;
-  EditField(h,v=6,150,"S•r. Nr.",Normal,SerNr,false,);
-  EditField(h,v+=vs,150,"Pas‚kums",Normal,EventNr,false,0);
+  EditField(h,v=6,150,"SÄ“r. Nr.",Normal,SerNr,false,);
+  EditField(h,v+=vs,150,"PasÄkums",Normal,EventNr,false,0);
   EditField(h,v+=vs,150,"SMU",Normal,SMFCode,false,0);
   CheckBox(h,v+=vs,0,"Izveidots",Status);
   EndWindow;
@@ -2111,12 +2118,12 @@ window CertificateTextWClass:1
 begin
   real h,v,vs;
   
-  WindowBegin("Setifik‚ta teksts",CertificateTextWClass,CGOther,-);
+  WindowBegin("SetifikÄta teksts",CertificateTextWClass,CGOther,-);
   UseView(CUVc);
   SetWRect(20,80,450,300);
   AutoSizeWindow(false);
   ToolBar;
-  HalPushButton(-180,5,-80,22,"CertificateTextWClassSave","Saglab‚t");
+  HalPushButton(-180,5,-80,22,"CertificateTextWClassSave","SaglabÄt");
   EndToolBar;
   h = 150;
   TextField(20,v=6,-20,-20,Math2,0);

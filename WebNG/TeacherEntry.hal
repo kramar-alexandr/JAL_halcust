@@ -573,6 +573,35 @@ begin
   return;
 end;
 
+procedure ShowExtraCertFiles()
+begin
+  record JALClassBlock JCb;
+  record MailVc Mailr;
+  record ConfVc Confr;
+  Boolean firstf;
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+
+  BlockLoad(JCb);
+  
+  WebOutString("\"cert_link\":[")
+  Confr.AddrName = JCb.CertFileConf;
+  if (ReadFirstKey("AddrName",Confr,1,true)) begin
+    while (LoopKey("UserTime:" & Confr.SerNr,Mailr,1,true)) begin
+      if (ReadRecordLink(Mailr,1,Attachr,RLr)) begin
+        if (firstf) then begin
+          WebOutString(",");
+        end else begin
+          firstf = true;
+        end;
+        WebOutString("{\"name\":\"" & Mailr.Header & "\",\"link\":\"/WebDownloadDocs2.hal?uuid=" & Attachr.UUID & "&code=" & Attachr.SerNr & "\"}");
+      end;
+    end;
+  end;
+  WebOutString("],");
+  return;
+end;
+
 global webpublic 
 procedure WebgetTeacherInfo()
 begin
@@ -717,8 +746,9 @@ begin
   end;
   WebOutStringFormatNL("],");  
   WebOutStringFormatNL("\"totcnt\":" & totcnt);
-  WebOutStringFormatNL(",\"application_cnt\":" & application_cnt);
-  WebOutStringFormatNL(",\"totsmu\":" & totsmu);
+  WebOutStringFormatNL(",\"application_cnt\":" & application_cnt & ",");
+  ShowExtraCertFiles;
+  WebOutStringFormatNL("\"totsmu\":" & totsmu);
   WebOutString("}");
   
   
@@ -934,46 +964,46 @@ begin
   WebOutString("<p class='members'>" & ToolWebNGTranslateText2(80104) & "</p>");
   WebOutString("</div>");
   WebOutString("<div class='documents'>");
-  WebOutString("<p>" & ToolWebNGTranslateText2(80093) & "</p>");//SMU re®istr‚cijas statuss
+  WebOutString("<p>" & ToolWebNGTranslateText2(80093) & "</p>");//SMU reï¿½istrï¿½cijas statuss
   WebOutString("<div class='docs'>");
   WebOutString("<div class='docs-card'>");
   WebOutString("<img class='posted' src='../img/doc-grey.png' alt=''>");
-  WebOutString("<p>" & ToolWebNGTranslateText2(80094) & "</p>");//Iesðt´ts dokuments
+  WebOutString("<p>" & ToolWebNGTranslateText2(80094) & "</p>");//Iesï¿½tï¿½ts dokuments
   WebOutString("</div>");
   WebOutString("<div class='docs-card'>");
   WebOutString("<img class='submitTeacher' src='../img/doc-grey.png' alt=''>");
-  WebOutString("<p>" & ToolWebNGTranslateText2(80095) & "</p>");//Skolot‚js apstiprin‚jis
+  WebOutString("<p>" & ToolWebNGTranslateText2(80095) & "</p>");//Skolotï¿½js apstiprinï¿½jis
   WebOutString("</div>");
   WebOutString("<div class='docs-card'>");
   WebOutString("<img class='submitJAL' src='../img/doc-grey.png' alt=''>");
-  WebOutString("<p>" & ToolWebNGTranslateText2(80096) & "</p>");//JA Latvija apstiprin‚jis
+  WebOutString("<p>" & ToolWebNGTranslateText2(80096) & "</p>");//JA Latvija apstiprinï¿½jis
   WebOutString("</div>");
   WebOutString("</div>");
-  WebOutString("<p>" & ToolWebNGTranslateText2(80097) & "</p>");//Aktivit‚te:
+  WebOutString("<p>" & ToolWebNGTranslateText2(80097) & "</p>");//Aktivitï¿½te:
   WebOutString("<div class='activitate'>");
   WebOutString("<div class='docs-card cbziema'>");
   WebOutString("<img src='' alt=''>");//../img/yes.png
-  WebOutString("<p>" & ToolWebNGTranslateText2(80098) & "</p>");//Cits Baz‚rs ziema
+  WebOutString("<p>" & ToolWebNGTranslateText2(80098) & "</p>");//Cits Bazï¿½rs ziema
   WebOutString("</div>");
   WebOutString("<div class='docs-card cbreg'>");
   WebOutString("<img src='' alt=''>");//../img/mail.png
-  WebOutString("<p>" & ToolWebNGTranslateText2(80099) & "</p>");//Cits Baz‚rs re®ionos
+  WebOutString("<p>" & ToolWebNGTranslateText2(80099) & "</p>");//Cits Bazï¿½rs reï¿½ionos
   WebOutString("</div>");
   WebOutString("<div class='docs-card cbpav'>");
   WebOutString("<img src='' alt=''>");//../img/space.png
-  WebOutString("<p>" & ToolWebNGTranslateText2(80100) & "</p>");//Cits Baz‚rs pavasar´
+  WebOutString("<p>" & ToolWebNGTranslateText2(80100) & "</p>");//Cits Bazï¿½rs pavasarï¿½
   WebOutString("</div>");
   WebOutString("<div class='docs-card judiena'>");
   WebOutString("<img src='' alt=''>");//../img/no.png
-  WebOutString("<p>" & ToolWebNGTranslateText2(80101) & "</p>");//Jauno uzÀ•m•ju dienas
+  WebOutString("<p>" & ToolWebNGTranslateText2(80101) & "</p>");//Jauno uzï¿½ï¿½mï¿½ju dienas
   WebOutString("</div>");
   WebOutString("</div>");
   WebOutString("</div>");
   WebOutString("<div class='smu-button'>");
-  WebOutString("<button class='spbutton show-info-btn'>" & ToolWebNGTranslateText2(70053) & "</button>");//ATV”RT PIETEIKUMU
+  WebOutString("<button class='spbutton show-info-btn'>" & ToolWebNGTranslateText2(70053) & "</button>");//ATVï¿½RT PIETEIKUMU
   WebOutString("<button class='spbutton reg-succes'>" & ToolWebNGTranslateText2(80102) & "<div class='reg_message'><div class='reg_icon'></div><div class='reg_text'>");
   ShowWebElement("REGSUCCESS_TIP");
-  WebOutString("</div></div></button>");//REþ.APLIEC±BA
+  WebOutString("</div></div></button>");//REï¿½.APLIECï¿½BA
   WebOutString("</div>");
   WebOutString("</div>");
   WebOutString("</div>");  
@@ -1444,6 +1474,20 @@ begin
   return;
 end;
 
+function string 255 OutPutConfirmation(Integer fc,string tval,string resval)
+begin
+  string 255 res;
+
+  if (fc==1) then begin
+    res = resval;
+  end else begin
+    res = tval;
+  end;
+
+  OutPutConfirmation = res;
+  return;
+end;
+
 global webpublic procedure WebGetSkhInfo()
 begin
   record SMFVc SMFr;
@@ -1474,10 +1518,13 @@ begin
         WebOutStringFormatNL("\"fullName\":\"" & FormatJSONString(CUr.Name) & "\",");
         WebOutStringFormatNL("\"school\":\"" & FormatJSONString(SMFr.SchoolName) & "\",");
         WebOutStringFormatNL("\"email\":\"" & FormatJSONString(CUr.eMail) & "\",");
+        WebOutStringFormatNL("\"TITAN\":\"" & CUr.TitanFlag & "\",");
+        WebOutStringFormatNL("\"EnuDiena\":\"" & CUr.EnuDienaFlag & "\",");
         WebOutStringFormatNL("\"prodInfo\":\"" & FormatJSONString(SMFr.ProdSpec) & "\",");
         WebOutStringFormatNL("\"social\":\"" & FormatJSONString(SMFr.Email) & "\",");
         WebOutStringFormatNL("\"prodType\":\"" & FormatJSONString(OBr.Comment) & "\",");
         WebOutStringFormatNL("\"smuCode\":\"" & SMFr.SMFCode & "\",");
+        WebOutStringFormatNL("\"smuName\":\"" & FormatJSONString(SMFr.SMFName) & "\",");
         WebOutStringFormatNL("\"hasSMU\":\"" & smuf & "\",");
         WebOutStringFormatNL("\"regDate\":\"" & SMFr.RegDate & "\",");
         WebOutString("""Text"":""");
@@ -1504,14 +1551,16 @@ begin
           WebOutStringFormatNL("\"hightSchool\":" & "true" & ",");
         end;
         if(true) then begin
-          WebOutStringFormatNL("\"ApprovalStatus\":\"" & SMFr.ApprovalStatus & "\",");
-          WebOutStringFormatNL("\"smu\":\"" & FormatJSONString(SMFr.SMFName) & "\",");
+          WebOutStringFormatNL("\"ApprovalStatus\":\"" & OutPutConfirmation(CUr.ForceCertificate,SMFr.ApprovalStatus,5) & "\",");
+          WebOutStringFormatNL("\"smu\":\"" & FormatJSONString(OutPutConfirmation(CUr.ForceCertificate,SMFr.SMFName," ")) & "\",");
           WebOutStringFormatNL("\"regDate\":\"" & SMFr.TransDate & "\",");
           WebOutStringFormatNL("\"perfrom\":\"" & SMFr.ActDateStart & "\",");
           WebOutStringFormatNL("\"perto\":\"" & SMFr.ActDateEnd & "\",");
           WebOutStringFormatNL("\"class\":\"" & FormatJSONString(SMFr.ClassNum & SMFr.ClassChar) & "\",");
           WebOutStringFormatNL("\"liquidated\":\"" & SMFr.StatusFlag & "\",");
           WebOutStringFormatNL("\"CertificateFlag\":\"" & CUr.CertificateFlag & "\",");
+          WebOutStringFormatNL("\"ForceCertificate\":\"" & CUr.ForceCertificate & "\",");
+
           if(nonblank(SMFr.Manager) or !smuf) then begin
             WebOutStringFormatNL("\"director\":" & "true" & ",");
           end else begin
@@ -1520,14 +1569,15 @@ begin
         end else begin
           WebOutStringFormatNL("\"smu\":" & "false" & ",");
         end;  
+        ShowExtraCertFiles;
          if (CUr.AgeFlag==0) then begin
           CUr.ConfirmPar = 1;     
         end;
         confirmteach = GetTeacherConfirmation(CUr);
         WebOutStringFormatNL("\"verified\": {" );
-        WebOutStringFormatNL("\"personal\":" & CUr.ConfirmSKL  &  ",");
-        WebOutStringFormatNL("\"parents\":" & CUr.ConfirmPar & ",");
-        WebOutStringFormatNL("\"teacher\":" & confirmteach );
+        WebOutStringFormatNL("\"personal\":" & OutPutConfirmation(CUr.ForceCertificate,CUr.ConfirmSKL,1)  &  ",");
+        WebOutStringFormatNL("\"parents\":" & OutPutConfirmation(CUr.ForceCertificate,CUr.ConfirmPar,1) & ",");
+        WebOutStringFormatNL("\"teacher\":" & OutPutConfirmation(CUr.ForceCertificate,confirmteach,1) );
         WebOutStringFormatNL("}" );
         WebOutStringFormatNL("}");
     end;
@@ -2354,6 +2404,7 @@ begin
   return;
 end;
 
+global
 function string 255 GetNextCertificateNr(Date td)
 begin
   Integer number,max;

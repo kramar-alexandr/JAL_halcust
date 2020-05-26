@@ -1,99 +1,101 @@
 event startup
 begin
-  SetLangMode(LangLatvian,"LAT",0);
+  SetLangMode(LangLatvian,"LAT",2);
   
 //  JAL modulis
   Module("JAL","JAL",730,modJAL);
   
   Register("SMU","SMU",SMFVc,modJAL);
-  Register("SMU Arh´vs","SMU Arh´vs",ArchiveSMFVc,modJAL);
+  Register("SMU ArhÄ«vs","SMU ArhÄ«vs",ArchiveSMFVc,modJAL);
   //Register("SMU atskaites","SMU atskaites",ReportsVc,modJAL);    
-  Register("Skolot‚ji","Skolot‚ji",TeacherVc,modJAL);
+  Register("SkolotÄji","SkolotÄji",TeacherVc,modJAL);
   Register("Skolas","Skolas",SchoolVc,modJAL);  
   Register("Mentori","Mentori",MentorVc,modJAL);
   Register("Kontakti","Kontakti",CUVc,modJAL);
   Register("Dokumenti","Dokumenti",JALFileVc,modJAL);
 
-  Setting("Jaunumu saÀ•m•ju e-pasti",NewsEmailTClass,modJAL);
-  Setting("Klasifik‚ciju defin•äana",JALClassTClass,modJAL);
+  Setting("Jaunumu saÅ†Ä“mÄ“ju e-pasti",NewsEmailTClass,modJAL);
+  Setting("KlasifikÄciju definÄ“Å¡ana",JALClassTClass,modJAL);
   Setting("Novadi",JALDistrictTClass,modJAL);
-  Setting("Re®ioni",JALRegionTClass,modJAL);
-  Setting("Priekämeti",JALSubjectTClass,modJAL);
-  Setting("Skolu plğsmas",JALLangTClass,modJAL);
-  Setting("SMU ziÀojumu iestat´jumi",ReportMailTClass,modJAL);
+  Setting("ReÄ£ioni",JALRegionTClass,modJAL);
+  Setting("PriekÅ¡meti",JALSubjectTClass,modJAL);
+  Setting("Skolu plÅ«smas",JALLangTClass,modJAL);
+  Setting("SMU ziÅ†ojumu iestatÄ«jumi",ReportMailTClass,modJAL);
   Setting("JAL serveri",JALServerLClass,modJAL);
   Setting("JAL partneri",JALPartnerTClass,modJAL);
-  Setting("Pieteikumi skolot‚jiem/mentoriem",JALTeacherAccLClass,modJAL);
-  Setting("Pas‚kumi",JALEventLClass,modJAL);
-  Setting("Pas‚kumu piepras´jumi",JALEventRequestLClass,modJAL);
+  Setting("Pieteikumi skolotÄjiem/mentoriem",JALTeacherAccLClass,modJAL);
+  Setting("PasÄkumi",JALEventLClass,modJAL);
+  Setting("PasÄkumu pieprasÄ«jumi",JALEventRequestLClass,modJAL);
   
-  Setting("Pas‚kumu lauki",JALEventFieldLClass,modJAL);
-  Setting("Pas‚kumu izv•lnes",JALEventSelectBoxLClass,modJAL);
-  Setting("Pas‚kumu pieteikumi",JALEventEntryLClass,modJAL);
+  Setting("PasÄkumu lauki",JALEventFieldLClass,modJAL);
+  Setting("PasÄkumu izvÄ“lnes",JALEventSelectBoxLClass,modJAL);
+  Setting("PasÄkumu pieteikumi",JALEventEntryLClass,modJAL);
   Setting("Elementi",WebNGElementSortedLClass,modWebShopNG);
   Setting("Grupas",WebElementGroupLClass,modWebShopNG);
   Setting("Elementu veidnes",WebTemplateLClass,modWebShopNG);
-	Setting("Jauna SMU aktivit‚te", SmuNewActTClass,modJAL);
-	Setting("Finanäu apr•úini",FCSMULClass,modJAL);
-	Setting("Pas‚kumu ien‚kumi",EventTurnoverLClass,modJAL);
+	Setting("Jauna SMU aktivitÄte", SmuNewActTClass,modJAL);
+	Setting("FinanÅ¡u aprÄ“Ä·ini",FCSMULClass,modJAL);
+	Setting("PasÄkumu ienÄkumi",EventTurnoverLClass,modJAL);
 	Setting("Darbinieku amati",JALJobPositionTClass,modJAL);
 	Setting("Nozares",JALIndustryTClass,modJAL);
 	Setting("Semestri",JALSemesterTClass,modJAL);
-	Setting("Skolot‚ji ar pieredzi",ExpTeacherLClass,modJAL);
+	Setting("SkolotÄji ar pieredzi",ExpTeacherLClass,modJAL);
 	Setting("Standarta teksti",LTxtLClass,modJAL);
-	Setting("SMU likvid‚cija",JALLiquidationTCLass,modJAL);
-  Setting("Sertifik‚ta teksts",CertificateTextWClass,modJAL);
+	Setting("SMU likvidÄcija",JALLiquidationTCLass,modJAL);
+  Setting("SertifikÄta teksts",CertificateTextWClass,modJAL);
+  Setting("SertifikÄta augstskolas",CertificateSchoolLClass,modJAL);
 
 //archive settings
-  Setting("Pas‚kumu pieteikumu arh´vs",ArchiveJALEventEntryLClass,modJAL);
-	Setting("Finanäu apr•úinu arh´vs",ArchiveFCSMULClass,modJAL);
-	Setting("Pas‚kumu ien‚kumu arh´vs",ArchiveEventTurnoverLClass,modJAL);
-  Setting("Pas‚kumu piepras´jumu arh´vs",ArchiveJALEventRequestLClass,modJAL);
-  Setting("Pieteikumi skolot‚jiem/mentoriem arh´vs",ArchiveJALTeacherAccLClass,modJAL);
+  Setting("PasÄkumu pieteikumu arhÄ«vs",ArchiveJALEventEntryLClass,modJAL);
+	Setting("FinanÅ¡u aprÄ“Ä·inu arhÄ«vs",ArchiveFCSMULClass,modJAL);
+	Setting("PasÄkumu ienÄkumu arhÄ«vs",ArchiveEventTurnoverLClass,modJAL);
+  Setting("PasÄkumu pieprasÄ«jumu arhÄ«vs",ArchiveJALEventRequestLClass,modJAL);
+  Setting("Pieteikumi skolotÄjiem/mentoriem arhÄ«vs",ArchiveJALTeacherAccLClass,modJAL);
 
 
-  Maintenance("Dz•st datus",ClearDBVClass,ClearDBMn,modJAL);
-  Maintenance("Dz•st trğkstoäos attachmentus",ClearDBVClass,RemoveLostAttachmentsMn,modTC);
-  Maintenance("Dz•st piesaistnes",ClearSMFAttachVClass,ClearSMFAttachMn,modJAL);
-  Maintenance("Sğt´t jaunumus",SendNewsToEmailsVClass,SendNewsToEmailsMn,modJAL);
-  Maintenance("Aizpild´t skolas",FillTeacherSchoolsVClass,FillTeacherSchoolsMn,modJAL);
-  //Maintenance("P‚rveidot kontaktus",JALMarkasCUVClass,JALMarkasCUMn,modJAL);
+  Maintenance("DzÄ“st datus",ClearDBVClass,ClearDBMn,modJAL);
+  Maintenance("DzÄ“st trÅ«kstoÅ¡os attachmentus",ClearDBVClass,RemoveLostAttachmentsMn,modTC);
+  Maintenance("DzÄ“st piesaistnes",ClearSMFAttachVClass,ClearSMFAttachMn,modJAL);
+  Maintenance("SÅ«tÄ«t jaunumus",SendNewsToEmailsVClass,SendNewsToEmailsMn,modJAL);
+  Maintenance("AizpildÄ«t skolas",FillTeacherSchoolsVClass,FillTeacherSchoolsMn,modJAL);
+  //Maintenance("PÄrveidot kontaktus",JALMarkasCUVClass,JALMarkasCUMn,modJAL);
   Maintenance("Atjaunot skolas",RenewSchoolsVClass,RenewSchoolsMn,modJAL);
-  Maintenance("Arhiv•t m‚c´bu gadu",ArchiveSemesterVClass,ArchiveSemesterMn,modJAL);
+  Maintenance("ArhivÄ“t mÄcÄ«bu gadu",ArchiveSemesterVClass,ArchiveSemesterMn,modJAL);
   Maintenance("Atjaunot kontaktus",RefreshContactsVClass,RefreshContactsMn,modJAL);
 
 
-  Maintenance("Main´t piekºuves failus",RepairAppVClass,RepairAppMn,modJAL);
-  Maintenance("Veidot Komp‚nijas",ForceGenCompVClass,ForceGenCompMn,modJAL);
-  Maintenance("¹aut skol•niem piesl•gties",SetLoginFlagVClass,SetLoginFlagMn,modJAL);
+  Maintenance("MainÄ«t piekÄ¼uves failus",RepairAppVClass,RepairAppMn,modJAL);
+  Maintenance("Veidot KompÄnijas",ForceGenCompVClass,ForceGenCompMn,modJAL);
+  Maintenance("Ä»aut skolÄ“niem pieslÄ“gties",SetLoginFlagVClass,SetLoginFlagMn,modJAL);
 	Maintenance("School activacia",EmptyVClass,ActivateSchoolsMn,modJAL);
 	
-  Report("P‚rskats par atskait•m", SMFreportsRClass,SMFreportsRn,0,modJAL);  
-  Report("P‚rskats par mentoriem", MentorRClass,MentorRn,0,modJAL);  
-  Report("P‚rskats par SMU", SMFRClass,SMFRn,0,modJAL);
-  Report("P‚rskats par skolot‚jiem", TeacherRClass,TeacherRn,0,modJAL);
-  Report("P‚rskats par skol‚m", SchoolRClass,SchoolRn,0,modJAL);
-  Report("SMU iesğt´tie dokumenti",JALDocsRClass,JALDocsRn,0,modJAL);
-  Report("P‚rskats par kursiem",SMUCourseEventRClass,SMUCourseEventRn,0,modJAL);
-  Report("SMU Bilance (nav izstr‚d‚ta)", SMFbalanceRClass,SMFbalanceRn,0,modJAL);  
-  Report("SMU Naudas plğsma (nav izstr‚d‚ta)", SMFCashFlowRClass,SMFCashFlowRn,0,modJAL);
-  Report("SMU PeºÀa un Zaud•jumi (nav izstr‚d‚ta)", SMFpzRClass,SMFpzRn,0,modJAL);
-  Report("Dal´bnieku saraksts", EventParticipantsRClass,EventParticipantsRn,0,modJAL);
-  Report("Dal´bnieku pieteikumi", EventParticipants2RClass,EventParticipants2Rn,0,modJAL);
+  Report("PÄrskats par atskaitÄ“m", SMFreportsRClass,SMFreportsRn,0,modJAL);  
+  Report("PÄrskats par mentoriem", MentorRClass,MentorRn,0,modJAL);  
+  Report("PÄrskats par SMU", SMFRClass,SMFRn,0,modJAL);
+  Report("PÄrskats par skolotÄjiem", TeacherRClass,TeacherRn,0,modJAL);
+  Report("PÄrskats par skolÄm", SchoolRClass,SchoolRn,0,modJAL);
+  Report("SkolÄ“nu saraksts",StudentListRClass,StudentListRn,0,modJAL);
+  Report("SMU iesÅ«tÄ«tie dokumenti",JALDocsRClass,JALDocsRn,0,modJAL);
+  Report("PÄrskats par kursiem",SMUCourseEventRClass,SMUCourseEventRn,0,modJAL);
+  Report("SMU Bilance (nav izstrÄdÄta)", SMFbalanceRClass,SMFbalanceRn,0,modJAL);  
+  Report("SMU Naudas plÅ«sma (nav izstrÄdÄta)", SMFCashFlowRClass,SMFCashFlowRn,0,modJAL);
+  Report("SMU PeÄ¼Å†a un ZaudÄ“jumi (nav izstrÄdÄta)", SMFpzRClass,SMFpzRn,0,modJAL);
+  Report("DalÄ«bnieku saraksts", EventParticipantsRClass,EventParticipantsRn,0,modJAL);
+  Report("DalÄ«bnieku pieteikumi", EventParticipants2RClass,EventParticipants2Rn,0,modJAL);
   
-  Report("Jaunumu saÀ•m•ji",JALNewsListRClass,JALNewsListRn,0,modJAL);
-  Report("P‚rskats par neesoäiem failiem",ListLostAttachmentsRClass,ListLostAttachmentsRn,0,modJAL);
-  Report("Studentu anom‚lijas",StudentAnomaliesRClass,StudentAnomaliesRn,0,modJAL);
-  Report("Sertifik‚tu saraksts",CertificateListRClass,CertificateListRn,0,modJAL);
+  Report("Jaunumu saÅ†Ä“mÄ“ji",JALNewsListRClass,JALNewsListRn,0,modJAL);
+  Report("PÄrskats par neesoÅ¡iem failiem",ListLostAttachmentsRClass,ListLostAttachmentsRn,0,modJAL);
+  Report("Studentu anomÄlijas",StudentAnomaliesRClass,StudentAnomaliesRn,0,modJAL);
+  Report("SertifikÄtu saraksts",CertificateListRClass,CertificateListRn,0,modJAL);
 
-  Import("Skolu ievietoäana (vecs)",SchoolIn,SchoolIn,modJAL);
+  Import("Skolu ievietoÅ¡ana (vecs)",SchoolIn,SchoolIn,modJAL);
 
 //  WebNG modulis
-  Setting("Blogu koment‚ri",WebNGBlogCommentLClass,modWebShopNG);
+  Setting("Blogu komentÄri",WebNGBlogCommentLClass,modWebShopNG);
 
   Document("SMU",SMFFormRClass,SMFForm,SMFFClass,modJAL);
-  Document("Pas‚kuma apliecin‚jums",CertificateFormRClass,CertificateForm,CertificateFClass,modJAL);
-  Document("Sertifik‚ts",LiqCertificateFormRClass,LiqCertificateForm,LiqCertificateFClass,modJAL);
+  Document("PasÄkuma apliecinÄjums",CertificateFormRClass,CertificateForm,CertificateFClass,modJAL);
+  Document("SertifikÄts",LiqCertificateFormRClass,LiqCertificateForm,LiqCertificateFClass,modJAL);
 
 
 /* LV strings: */
@@ -104,101 +106,101 @@ begin
   SString(32014,"SK4");
   SString(32015,"SK5");
 
-  SString(32111,"Neapstiprin‚ta");
+  SString(32111,"NeapstiprinÄta");
   SString(32112,"Iesniegts");
-  SString(32113,"Nosğt´ts JAL");
-  SString(32114,"JAL Apstiprin‚ts");
-  SString(32115,"JAL Noraid´ts");
-  SString(32116,"Likvid•ta");
-  SString(32117,"Skolot‚ja Noraid´ts");
+  SString(32113,"NosÅ«tÄ«ts JAL");
+  SString(32114,"JAL ApstiprinÄts");
+  SString(32115,"JAL NoraidÄ«ts");
+  SString(32116,"LikvidÄ“ta");
+  SString(32117,"SkolotÄja NoraidÄ«ts");
 
-  SString(32121,"R´ga");
+  SString(32121,"RÄ«ga");
   SString(32122,"Vidzeme");
   SString(32123,"Latgale");
   SString(32124,"Zemgale");
   SString(32125,"Kurzeme");
 
-  SString(32131,"Raìoäana");
+  SString(32131,"RaÅ¾oÅ¡ana");
   SString(32132,"Pakalpojumi");
   SString(32133,"Abi");
 
   SString(32140,"Novads");
 
 //CertificateListRn
-  SString(32150,"Sertifik‚tu saraksts");
+  SString(32150,"SertifikÄtu saraksts");
   SString(32151,"Gads");
-  SString(32152,"V‚rds, uzv‚rds");
+  SString(32152,"VÄrds, uzvÄrds");
   SString(32153,"Personas kods");
-  SString(32154,"Sertifik‚ta Nr.");
+  SString(32154,"SertifikÄta Nr.");
   SString(32155,"E-pasts");
   SString(32156,"Skola");
-  SString(32157,"Skolot‚js");
+  SString(32157,"SkolotÄjs");
 
 //Error messages
-  SString(32202,"SMU kod‚ nor‚d´tâ skola netika atrasta. P‚rbaudiet vai datub‚z• pieejama skola ar kodu ");
-  SString(32203,"Skola ar ä‚du kodu, jau ir ievad´ta.");
-  SString(32204,"Skola, kurâ str‚d‚ nor‚d´tais skolot‚js, nesakr´t ar SMU kod‚ nor‚d´to skolu. P‚rbaudiet vai äis ir ´stais skolot‚js, un vai SMU kod‚ nav kºğda!");
-  SString(32205,"Nor‚d´tais skolas kods, nesakr´t ar SMU kod‚ nor‚d´to skolu!");
-  SString(32206,"Ja dz•äat äo ierakstu, tad visticam‚k jums j‚dz•ä ar´ glob‚lais lietot‚js - ");
+  SString(32202,"SMU kodÄ norÄdÄ«tâ€š skola netika atrasta. PÄrbaudiet vai datubÄzÄ“ pieejama skola ar kodu ");
+  SString(32203,"Skola ar Å¡Ädu kodu, jau ir ievadÄ«ta.");
+  SString(32204,"Skola, kurâ€š strÄdÄ norÄdÄ«tais skolotÄjs, nesakrÄ«t ar SMU kodÄ norÄdÄ«to skolu. PÄrbaudiet vai Å¡is ir Ä«stais skolotÄjs, un vai SMU kodÄ nav kÄ¼Å«da!");
+  SString(32205,"NorÄdÄ«tais skolas kods, nesakrÄ«t ar SMU kodÄ norÄdÄ«to skolu!");
+  SString(32206,"Ja dzÄ“Å¡at Å¡o ierakstu, tad visticamÄk jums jÄdzÄ“Å¡ arÄ« globÄlais lietotÄjs - ");
 
-//RecordÜeku messid?iem (tev jâaizpilda ..)
-  SString(32250,"Trğkst vietas uz servera. Sazinieties ar HansaWorld Latvia, lai var•tu pievienot komp‚niju."); 
+//Recordâ€¹eku messid?iem (tev jâ€šaizpilda ..)
+  SString(32250,"TrÅ«kst vietas uz servera. Sazinieties ar HansaWorld Latvia, lai varÄ“tu pievienot kompÄniju."); 
   SString(32251," skolas kods");
   SString(32252," skolas nosaukums");
-  SString(32253," re®ions");
+  SString(32253," reÄ£ions");
   SString(32254," direktors");
   SString(32255," adrese");
   SString(32256," telefons");
   SString(32257," e-pasts");
-  SString(32258," skolot‚ja kods");
-  SString(32259," skolot‚ja v‚rds un uzv‚rds");
+  SString(32258," skolotÄja kods");
+  SString(32259," skolotÄja vÄrds un uzvÄrds");
   SString(32260," SMU kods");
   SString(32261," SMU nosaukums");
-  SString(32262," vad´t‚js");
-  SString(32263,"Kop‚: ");
+  SString(32262," vadÄ«tÄjs");
+  SString(32263,"KopÄ: ");
   SString(32264,"Skolas nosaukums");
   SString(32266,"Skolas k.");
-  SString(32267,"Skolot‚ja k.");
+  SString(32267,"SkolotÄja k.");
   SString(32268,"Sk. skaits"); 
   SString(32269," skolas");   
-  SString(32270," skol•ni");   
+  SString(32270," skolÄ“ni");   
   
   SString(32271," Teksts 1");
   SString(32272," Teksts 2");
   SString(32273," Teksts 3 ");
 
   SString(1080," ");
-  SString(32275,"Skolot‚ju nevar apstiprin‚t, jo nor‚d´t‚ skola nav apstiprin‚ta JAL dal´bskola.");
+  SString(32275,"SkolotÄju nevar apstiprinÄt, jo norÄdÄ«tÄ skola nav apstiprinÄta JAL dalÄ«bskola.");
 
 
-//Atskait¥s izmantotie
-  SString(32274," skolot‚ji");   
-  SString(32276,"Dal´bnieki: ");   
-  SString(32277,"Skolot‚js ");  
-  SString(32278,"Netika atrasts neviens dal´bnieks ");  
+//Atskaitâ€¢s izmantotie
+  SString(32274," skolotÄji");   
+  SString(32276,"DalÄ«bnieki: ");   
+  SString(32277,"SkolotÄjs ");  
+  SString(32278,"Netika atrasts neviens dalÄ«bnieks ");  
   
-  SString(32280,"Re®ions: ");
-  SString(32281,"Sec´ba p•c ");
+  SString(32280,"ReÄ£ions: ");
+  SString(32281,"SecÄ«ba pÄ“c ");
   SString(32282,"skolas koda");
   SString(32283,"nosaukuma");
-  SString(32284,"skol•nu skaita");
+  SString(32284,"skolÄ“nu skaita");
 
-  SString(32285,"raìoäana");
+  SString(32285,"raÅ¾oÅ¡ana");
   SString(32286,"pakalpojumi");
   SString(32287,"abi");
   SString(32288,"visi");
-  SString(32289,"Neapstiprin‚tie");
-  SString(32290,"Akt´vie");
-  SString(32291,"Neakt´vie");
+  SString(32289,"NeapstiprinÄtie");
+  SString(32290,"AktÄ«vie");
+  SString(32291,"NeaktÄ«vie");
   SString(32292,"Visi");
   SString(32293,"Tips: ");
   SString(32294,"Sk. kods: ");
   SString(32295,"Telefons");
-  SString(32296,"skolot‚ja v‚rda");
-  SString(32279,"skolot‚ja koda");
+  SString(32296,"skolotÄja vÄrda");
+  SString(32279,"skolotÄja koda");
   SString(32297,"skolas nosaukuma");
-  SString(32298,"Neaptiprin‚tie");
-  SString(32299,"Apstiprin‚tie");
+  SString(32298,"NeaptiprinÄtie");
+  SString(32299,"ApstiprinÄtie");
   
   SString(32300,"09");
   SString(32301,"10");
@@ -210,64 +212,64 @@ begin
   SString(32307,"04");
   SString(32308,"05");
 
-//Atskaiäu nosaukumi:
-  SString(32320,"Skolu p‚rskats");
-  SString(32321,"Skolot‚ju p‚rskats");
-  SString(32322,"SMU p‚rskats");
-  SString(32323,"SMU atskaiäu p‚rskats");
-  SString(32324,"Mentoru p‚rskats");
-  SString(32325,"Kursu dal´bnieki");
+//AtskaiÅ¡u nosaukumi:
+  SString(32320,"Skolu pÄrskats");
+  SString(32321,"SkolotÄju pÄrskats");
+  SString(32322,"SMU pÄrskats");
+  SString(32323,"SMU atskaiÅ¡u pÄrskats");
+  SString(32324,"Mentoru pÄrskats");
+  SString(32325,"Kursu dalÄ«bnieki");
 
 
-  SString(32330,"Nav nor‚d´ts datums");
+  SString(32330,"Nav norÄdÄ«ts datums");
 
-//ZiÀojumu teksti:
-  SString(32340,"Ir piere®istr•jies jauns mentors");
-  SString(32341," ir piere®istr•jies k‚ mentors");
-  SString(32342,"Ir piere®istr•jies jauns skolot‚js");
-  SString(32343," ir piere®istr•jies/-usies k‚ skolot‚js. Apstiprin‚t!");
-  SString(32344,"Ir piere®istr•ts jauns SMU");
-  SString(32345," ir piere®istr•jis jaunu SMU ar ");
-  SString(32346," dal´bniekiem");
-  SString(32347,"Jğs esat veiksm´gi piere®istr•jies m‚jas lap‚ http://jalatvia.lv");
-  SString(32348,"Re®istr‚cija bija veiksm´ga");
-  SString(32352,"Tavs SMU ir apstiprin‚ts!");
-  SString(32353,"Jums ir izveidota komp‚nija HansaWorld sist•m‚. " & chr(13) & "Inform‚cija par to, k‚ lejupiel‚d•t programmu un uzst‚d´t to pieejama tav‚ jalatvia.lv profil‚" & chr(13) & "jalatvia.lv");
-  SString(32354,"SaÀemti jauni faili no ");
-  SString(32355,"Skolot‚js ir apstiprin‚jis dokumentu. á´s v•stules pielikum‚ ir SMU ieraksts, kur‚ redz•siet visus dokumentus.");
-  SString(32356,"Ir saÀemts e-pasts ar nosğt´tiem failiem");
-  SString(32357,"Jğsu faili tika veiksm´gi pievienoti komp‚nijai ");
-  SString(32358,"Diemì•l Jğsu sğt´tie faili netika nekur pievienoti. Iesakam sazin‚ties ar danuta@jal.lv");
+//ZiÅ†ojumu teksti:
+  SString(32340,"Ir piereÄ£istrÄ“jies jauns mentors");
+  SString(32341," ir piereÄ£istrÄ“jies kÄ mentors");
+  SString(32342,"Ir piereÄ£istrÄ“jies jauns skolotÄjs");
+  SString(32343," ir piereÄ£istrÄ“jies/-usies kÄ skolotÄjs. ApstiprinÄt!");
+  SString(32344,"Ir piereÄ£istrÄ“ts jauns SMU");
+  SString(32345," ir piereÄ£istrÄ“jis jaunu SMU ar ");
+  SString(32346," dalÄ«bniekiem");
+  SString(32347,"JÅ«s esat veiksmÄ«gi piereÄ£istrÄ“jies mÄjas lapÄ http://jalatvia.lv");
+  SString(32348,"ReÄ£istrÄcija bija veiksmÄ«ga");
+  SString(32352,"Tavs SMU ir apstiprinÄts!");
+  SString(32353,"Jums ir izveidota kompÄnija HansaWorld sistÄ“mÄ. " & chr(13) & "InformÄcija par to, kÄ lejupielÄdÄ“t programmu un uzstÄdÄ«t to pieejama tavÄ jalatvia.lv profilÄ" & chr(13) & "jalatvia.lv");
+  SString(32354,"SaÅ†emti jauni faili no ");
+  SString(32355,"SkolotÄjs ir apstiprinÄjis dokumentu. Å Ä«s vÄ“stules pielikumÄ ir SMU ieraksts, kurÄ redzÄ“siet visus dokumentus.");
+  SString(32356,"Ir saÅ†emts e-pasts ar nosÅ«tÄ«tiem failiem");
+  SString(32357,"JÅ«su faili tika veiksmÄ«gi pievienoti kompÄnijai ");
+  SString(32358,"DiemÅ¾Ä“l JÅ«su sÅ«tÄ«tie faili netika nekur pievienoti. Iesakam sazinÄties ar danuta@jal.lv");
 
 
-  SString(32370,"Jğs esat apstiprin‚ts k‚ JAL dal´bskolas skolot‚js");
-  SString(32371,"Jğs esat apstiprin‚ts k‚ JAL dal´bskolas """);
-  SString(32372,""" skolot‚js.");
-  SString(32373,"Jğsu SMU servera paraksts: ");
-  SString(32374,"Instrukcijas, par to k‚ lejupiel‚d•t HansaWorld programmu un uzst‚d´t to, atrodamas ien‚kot jalatvia.lv profil‚.");
+  SString(32370,"JÅ«s esat apstiprinÄts kÄ JAL dalÄ«bskolas skolotÄjs");
+  SString(32371,"JÅ«s esat apstiprinÄts kÄ JAL dalÄ«bskolas """);
+  SString(32372,""" skolotÄjs.");
+  SString(32373,"JÅ«su SMU servera paraksts: ");
+  SString(32374,"Instrukcijas, par to kÄ lejupielÄdÄ“t HansaWorld programmu un uzstÄdÄ«t to, atrodamas ienÄkot jalatvia.lv profilÄ.");
   SString(32375,"");
   SString(32376,"jalatvia.lv");
 
-  SString(32380,"Jğsu SMU ir apstiprin‚ts, varat piesl•gties SMU serverim.");
+  SString(32380,"JÅ«su SMU ir apstiprinÄts, varat pieslÄ“gties SMU serverim.");
   SString(32381,"Pieejamie paraksti:");
-  SString(32382,"Apstiprin‚mo komp‚niju skaits tuvojas beig‚m. Sazinieties ar HansaWorld, ja esat saÀ•mis äo ziÀu");
-  SString(32383,"Pieteikäan‚s kursiem");
-  SString(32384,"Jğs esat veiksm´gi pieteicies kursam - ");
+  SString(32382,"ApstiprinÄmo kompÄniju skaits tuvojas beigÄm. Sazinieties ar HansaWorld, ja esat saÅ†Ä“mis Å¡o ziÅ†u");
+  SString(32383,"PieteikÅ¡anÄs kursiem");
+  SString(32384,"JÅ«s esat veiksmÄ«gi pieteicies kursam - ");
   
-  SString(1955,"Jğsu jalatvia.lv lietot‚ja parole ir:");//standarta teksts pielabots
+  SString(1955,"JÅ«su jalatvia.lv lietotÄja parole ir:");//standarta teksts pielabots
 
-  SString(32350,"‚‹•®´úºÀäğì‰”ş±µ¹¿áíë");
+  SString(32350,"ÄÄÄ“Ä£Ä«Ä·Ä¼Å†Å¡Å«Å¾Ä€ÄŒÄ’Ä¢ÄªÄ¶Ä»Å…Å ÅªÅ½");
   SString(32351,"acegiklnsuzACEGIKLNSUZ");
 
 //Mentori:
-  SString(32360,"Komp‚nijas nosaukums");
+  SString(32360,"KompÄnijas nosaukums");
   SString(32361,"Amats");
 
 //JAL dokumenti
-  SString(32400,"Iesğt´ts");
-  SString(32401,"Apstiprin‚ts(skolot‚js)");
-  SString(32402,"Apstiprin‚ts(JAL)");
-  SString(32403,"Noraid´ts");
+  SString(32400,"IesÅ«tÄ«ts");
+  SString(32401,"ApstiprinÄts(skolotÄjs)");
+  SString(32402,"ApstiprinÄts(JAL)");
+  SString(32403,"NoraidÄ«ts");
 
   //SString(32380,"Netika atrasts neviens dokuments");
   SString(32407,"Dokumenta nos.");
@@ -278,44 +280,44 @@ begin
   SString(32391,"No: ");
   SString(32392,"Zin.: ");
   SString(32393,"Zin.: ");
-  SString(32394,"SMU vad´t‚js: ");
+  SString(32394,"SMU vadÄ«tÄjs: ");
   SString(32395,"Darbinieks: ");
-  SString(32396,"T•ma: ");
+  SString(32396,"TÄ“ma: ");
   SString(32397,"Teksts: ");
-  SString(32398,"Ieraksti kop‚:");
+  SString(32398,"Ieraksti kopÄ:");
   SString(32399,"SMU e-pasti");
 
-  SString(32450,"Dokumenta v•sture");
+  SString(32450,"Dokumenta vÄ“sture");
   SString(32451,"Dokuments nr.");
   SString(32452,"Statuss");
-  SString(32453,"V•sture");
-  SString(32454,"Nav v•stures");
+  SString(32453,"VÄ“sture");
+  SString(32454,"Nav vÄ“stures");
   SString(32455,"Darbinieki");
   
   
   SString(32460,"Produkts");
   SString(32461,"Dal. skaits");
-  SString(32462,"Skolot‚js/mentors");
+  SString(32462,"SkolotÄjs/mentors");
   SString(32463,"Skola");
   SString(32464,"Pamatskola/vidusskola");
   SString(32465,"Dokumenti");
   SString(32466,"Punktu skaits");
   
-  SString(32470,"E-pasta lauku var nor‚d´t tikai nere®istr•tiem lietot‚jiem");
-  SString(32471,"E-pasta lauks ir oblig‚ts");
-  SString(32472,"Lai aktiviz•tu savu profilu, dodieties uz zem‚k nor‚d´to adresi.");
+  SString(32470,"E-pasta lauku var norÄdÄ«t tikai nereÄ£istrÄ“tiem lietotÄjiem");
+  SString(32471,"E-pasta lauks ir obligÄts");
+  SString(32472,"Lai aktivizÄ“tu savu profilu, dodieties uz zemÄk norÄdÄ«to adresi.");
   
   SString(32480,"Izveidots");
-  SString(32481,"Apstiprin‚ts");
-  SString(32482,"Noraid´ts");
-	SString(32483,"Skol•na dal´ba skol•nu m‚c´bu uzÀ•mum‚");
+  SString(32481,"ApstiprinÄts");
+  SString(32482,"NoraidÄ«ts");
+	SString(32483,"SkolÄ“na dalÄ«ba skolÄ“nu mÄcÄ«bu uzÅ†Ä“mumÄ");
 	SString(32484,"JA Latvia lapa registrets jusu konsultets SMU");
 	SString(32485,"Link confirm for teacher");
 	SString(32486,"Sveiks, skolen! Esi registrejies Junior Achievement Latvia lapa. Lai apstiprinatu registraciju un aktivizetu savu kontu, spied seit - ");
 	SString(32487,"confirm for employment");
 	SString(32488,"Sveiks, skolen! Apsveicam, Tavs Skolenu macibu uznemums (SMU) ir veiksmigs registrets Junior Achievement Latvia lapa. Tagad vari papildinat savu SMU profilu ar papildus informaciju par savu preci un pievienot foto. So atradisi sava profila sadala SMU profils. Aicinam sekot lidzi aktualitatem lapa un ari kalendara, kur bus visa informacija par pasakumiem, uz ko Tava komanda var pieteikties.");
-	SString(32489,"Labdien! Skol•ns, kuram esat Junior Achievement Latvia nor‚d´ts k‚ vec‚ks/aizbildnis, ir ticis pievienots Skol•nu m‚c´bu uzÀ•muma (SMU)");
-	SString(32490,"Sveiks, skolen! Tu esi ticis pievienots ka viens no Skolenu macibu uznemuma “SMU nosaukums”  dalibniekiem. Lugums so uzaicinajumu apstiprinat, izmantojot so saiti – ");
+	SString(32489,"Labdien! SkolÄ“ns, kuram esat Junior Achievement Latvia norÄdÄ«ts kÄ vecÄks/aizbildnis, ir ticis pievienots SkolÄ“nu mÄcÄ«bu uzÅ†Ä“muma (SMU)");
+	SString(32490,"Sveiks, skolen! Tu esi ticis pievienots ka viens no Skolenu macibu uznemuma ÄSMU nosaukumsÄ’  dalibniekiem. Lugums so uzaicinajumu apstiprinat, izmantojot so saiti Ä– ");
 	SString(32491,"Skolena profila Junior Achievement Latvia lapa nomainita parole.");
 	SString(32492,"	Lietotajs:");	
 	SString(32493,"Jauna parole:");	
@@ -323,39 +325,46 @@ begin
 	SString(32495,"Labdien! Jusu e-pasta adrese noradita ka vecaka/aizbildna kontaktinformacija skolenam Skolena vards Junior Achievement Latvia profila. ");
 	SString(32496,"Labdien! Vecaka/aizbildna kontaktinformacija Junior Achievement Latvia lapa nomainita veiksmigi. ");
 	SString(32497,"Jauna e-pasta adrese un kontaktpersona :");
-	SString(32498,"Sveiks, skol•n!Apsveicam, Tavs Skol•nu m‚c´bu uzÀ•mums (SMU) ir veiksm´gi re®istr•ts Junior Achievement Latvia lap‚.Tagad varipapildin‚t savu SMU profilu ar papildus inform‚ciju par savu preci un pievienot foto.");
-	SString(32499,"Labdien, skolotaj! Junior Achievement Latvia lap‚ saÀemts pieteikums re®istr•t Jğsu konsult•tu Skol•nu m‚c´bu uzÀ•mumu (SMU). Pieteikums pieejams äeit ");
+	SString(32498,"Sveiks, skolÄ“n!Apsveicam, Tavs SkolÄ“nu mÄcÄ«bu uzÅ†Ä“mums (SMU) ir veiksmÄ«gi reÄ£istrÄ“ts Junior Achievement Latvia lapÄ.Tagad varipapildinÄt savu SMU profilu ar papildus informÄciju par savu preci un pievienot foto.");
+	SString(32499,"Labdien, skolotaj! Junior Achievement Latvia lapÄ saÅ†emts pieteikums reÄ£istrÄ“t JÅ«su konsultÄ“tu SkolÄ“nu mÄcÄ«bu uzÅ†Ä“mumu (SMU). Pieteikums pieejams Å¡eit ");
 	SString(32500,"Skolena registracijas apstiprinajums JA Latvia lapa");
-	SString(32501,"Sveiks, skol•n! Tu esi ticis pievienots k‚ viens no Skol•nu m‚c´bu uzÀ•muma (SMU) ");
-	SString(32502," dal´bniekiem. Lğgums äo uzaicin‚jumu apstiprin‚t, izmantojot äo saiti - ");
-	SString(32503,"Labdien, skolotaj! Junior Achievement Latvia lapa sanemts pieteikums registret Jusu konsultetu Skolenu macibu uznemumu (SMU). Pieteikums pieejams seit – links uz pieteikumu -, ludzam to izskatit un apstiprinat vai noraidit.");
+	SString(32501,"Sveiks, skolÄ“n! Tu esi ticis pievienots kÄ viens no SkolÄ“nu mÄcÄ«bu uzÅ†Ä“muma (SMU) ");
+	SString(32502," dalÄ«bniekiem. LÅ«gums Å¡o uzaicinÄjumu apstiprinÄt, izmantojot Å¡o saiti - ");
+	SString(32503,"Labdien, skolotaj! Junior Achievement Latvia lapa sanemts pieteikums registret Jusu konsultetu Skolenu macibu uznemumu (SMU). Pieteikums pieejams seit Ä– links uz pieteikumu -, ludzam to izskatit un apstiprinat vai noraidit.");
 	SString(32504,"Labdien!  Skolens, kuram esat Junior Achievement Latvia noradits ka vecaks/aizbildnis, vairs nepiedalas Skolenu macibu uznemuma (SMU) ");
-	SString(32505,"Sveiks,skol•n!  Inform•jam, ka esi ticis izÀemts no Skol•nu m‚c´bu uzÀ•muma (SMU) ");
-	SString(32506,"áo atrad´si sav‚ profil‚ sadaº‚ SMU profils. Aicin‚m sekot l´dzi aktualit‚t•m lap‚ un ar´ kalend‚r‚, kur bğs visa inform‚cija par pas‚kumiem, uzko Tava komanda var pieteikties.");
-	SString(32507,"Skol•na dal´ba skol•nu m‚c´bu uzÀ•mum‚");
-	SString(32508,"JA Latvia lap‚ re®istr•ts Jğsu konsult•ts SMU");
-	SString(32509,"Skol•ns, kuram esat Junior Achievement Latvia nor‚d´ts k‚ vec‚ks/aizbildnis, vairs nepiedal‚s Skol•nu m‚c´bu uzÀ•muma (SMU)");
+	SString(32505,"Sveiks,skolÄ“n!  InformÄ“jam, ka esi ticis izÅ†emts no SkolÄ“nu mÄcÄ«bu uzÅ†Ä“muma (SMU) ");
+	SString(32506,"Å o atradÄ«si savÄ profilÄ sadaÄ¼Ä SMU profils. AicinÄm sekot lÄ«dzi aktualitÄtÄ“m lapÄ un arÄ« kalendÄrÄ, kur bÅ«s visa informÄcija par pasÄkumiem, uzko Tava komanda var pieteikties.");
+	SString(32507,"SkolÄ“na dalÄ«ba skolÄ“nu mÄcÄ«bu uzÅ†Ä“mumÄ");
+	SString(32508,"JA Latvia lapÄ reÄ£istrÄ“ts JÅ«su konsultÄ“ts SMU");
+	SString(32509,"SkolÄ“ns, kuram esat Junior Achievement Latvia norÄdÄ«ts kÄ vecÄks/aizbildnis, vairs nepiedalÄs SkolÄ“nu mÄcÄ«bu uzÅ†Ä“muma (SMU)");
 	
-  SString(32520,"Re®istr•ts jauns SMU ");
-  SString(3000000,"Neizdev‚s lejupl‚d•t dokumentu.");
-  SString(3000001,"Funkciju var izmantot tikai no galven‚ pas‚kuma");
+  SString(32520,"ReÄ£istrÄ“ts jauns SMU ");
+  SString(3000000,"NeizdevÄs lejuplÄdÄ“t dokumentu.");
+  SString(3000001,"Funkciju var izmantot tikai no galvenÄ pasÄkuma");
 
-  SString(3000010,"janv‚r´");
-  SString(3000011,"febru‚r´");
-  SString(3000012,"mart‚");
-  SString(3000013,"apr´l´");
-  SString(3000014,"maij‚");
-  SString(3000015,"jğnij‚");
-  SString(3000016,"jğlij‚");
-  SString(3000017,"august‚");
-  SString(3000018,"septembr´");
-  SString(3000019,"oktobr´");
-  SString(3000020,"novembr´");
-  SString(3000021,"decembr´");
+  SString(3000010,"janvÄrÄ«");
+  SString(3000011,"februÄrÄ«");
+  SString(3000012,"martÄ");
+  SString(3000013,"aprÄ«lÄ«");
+  SString(3000014,"maijÄ");
+  SString(3000015,"jÅ«nijÄ");
+  SString(3000016,"jÅ«lijÄ");
+  SString(3000017,"augustÄ");
+  SString(3000018,"septembrÄ«");
+  SString(3000019,"oktobrÄ«");
+  SString(3000020,"novembrÄ«");
+  SString(3000021,"decembrÄ«");
 
-//Re®ionu stringset
+  SString(3000030,"SkolÄ“nu saraksts");
+  SString(3000031,"Skola");
+  SString(3000032,"VÄrds, UzvÄrds");
+  SString(3000033,"SMU nosaukums");
+  SString(3000034,"Klase");
+  SString(3000035,"E-pasts");
+
+//ReÄ£ionu stringset
   SetBegin(10501);
-  SetText(0,"R´ga");
+  SetText(0,"RÄ«ga");
   SetText(1,"Vidzeme");
   SetText(2,"Latgale");
   SetText(3,"Zemgale");
@@ -363,7 +372,7 @@ begin
   EndSet;
 
   SetBegin(10502);
-  SetText(0,"Latvieäu");
+  SetText(0,"LatvieÅ¡u");
   SetText(1,"Krievu");
   SetText(2,"LK");
   SetText(3,"Polu");
@@ -372,72 +381,72 @@ begin
 
   SetBegin(10503);
   SetText(0,"SMU");
-  SetText(1,"Skolot‚js");
+  SetText(1,"SkolotÄjs");
   SetText(2,"Mentors");
   SetText(3,"Cits");
   EndSet;
 
   SetBegin(10506);
-  SetText(0,"J‚");
-  SetText(1,"N•");
+  SetText(0,"JÄ");
+  SetText(1,"NÄ“");
   EndSet;
 
   SetBegin(10505);
-  SetText(-1,"Nezin‚ms");
+  SetText(-1,"NezinÄms");
   SetText(0,"Elements");
   SetText(1,"Saturs");
   SetText(2,"Produkts");
   SetText(3,"Komponents");
   SetText(4,"Lapa");
-  SetText(5,"Pas‚kums");
+  SetText(5,"PasÄkums");
   EndSet;
 
   SetBegin(10507);
   SetText(0,"Visur");
-  SetText(1,"Nere®istr•tiem");
-  SetText(2,"Re®istr•tiem");
+  SetText(1,"NereÄ£istrÄ“tiem");
+  SetText(2,"ReÄ£istrÄ“tiem");
   EndSet;
 
   SetBegin(10508);
-  SetText(0,"Br´vs teksts");
-  SetText(1,"Izv•lnes varianti");
-  SetText(2,"Izv•les rğtiÀa");
+  SetText(0,"BrÄ«vs teksts");
+  SetText(1,"IzvÄ“lnes varianti");
+  SetText(2,"IzvÄ“les rÅ«tiÅ†a");
   SetText(3,"Radiopoga");
-  SetText(4,"Dal´bnieki");
+  SetText(4,"DalÄ«bnieki");
   SetText(5,"Fails");
   EndSet;
 
   SetBegin(1005);
-  SetText(0,"Skolot‚js");
+  SetText(0,"SkolotÄjs");
   SetText(1,"Mentors");
   SetText(2,"Darbinieks");
-  SetText(3,"Skol•ns");
+  SetText(3,"SkolÄ“ns");
   EndSet;
 
   SetBegin(1700);
-  SetText(0,"şener•jot un dubl•jot");
-  SetText(1,"şener•jot");
-  SetText(2,"Dubl•jot");
+  SetText(0,"Ä¢enerÄ“jot un dublÄ“jot");
+  SetText(1,"Ä¢enerÄ“jot");
+  SetText(2,"DublÄ“jot");
   EndSet;
 
   SetBegin(1701);
-  SetText(0,"J‚");
-  SetText(1,"N•");
+  SetText(0,"JÄ");
+  SetText(1,"NÄ“");
   EndSet;
 
   SetBegin(3000);
-  SetText(0,"Re®ion‚lais pas‚kums Cits Baz‚rs");
-  SetText(1,"Valsts l´meÀa pas‚kums Cits Baz‚rs ziema");
-  SetText(2,"Valsts l´meÀa pas‚kums Cits Baz‚rs pavasaris");
-  SetText(3,"Latvijas jauno uzÀ•m•ju dienas");
-  SetText(4,"Citi pas‚kumi, tirgoäan‚s vietas");
+  SetText(0,"ReÄ£ionÄlais pasÄkums Cits BazÄrs");
+  SetText(1,"Valsts lÄ«meÅ†a pasÄkums Cits BazÄrs ziema");
+  SetText(2,"Valsts lÄ«meÅ†a pasÄkums Cits BazÄrs pavasaris");
+  SetText(3,"Latvijas jauno uzÅ†Ä“mÄ“ju dienas");
+  SetText(4,"Citi pasÄkumi, tirgoÅ¡anÄs vietas");
   EndSet;
 
   SetBegin(3001);
   SetText(0,"-");
   SetText(1,"Pamatskola");
   SetText(2,"Vidusskola");
-  SetText(3,"Profesion‚l‚ izgl´t´ba");
+  SetText(3,"ProfesionÄlÄ izglÄ«tÄ«ba");
   EndSet;
 
   return;
