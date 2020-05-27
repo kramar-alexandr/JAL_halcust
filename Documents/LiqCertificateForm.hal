@@ -23,6 +23,46 @@ begin
   return;
 end;
 
+procedure OutputMultiLineWordBreak(string tstr,string fn)
+begin
+  Integer pos,chrcnt,rowcnt,tpos,i,rw,lastspace;
+  string 255 tmp,t;
+  
+  pos = 0;
+  chrcnt = 30;
+  rowcnt = 3;
+  tmp = tstr;
+  while (len(tmp)>0) begin
+    t = "";
+    lastspace = chrcnt;
+    for (i=0;i<len(tmp);i=i+1) begin
+      if (mid(tmp,i,1)==" ") then begin
+        lastspace = i+1;
+      end;
+      if (chrcnt<=i) then begin
+        i = len(tmp);
+        t = mid(tmp,0,lastspace);
+      end;
+    end;
+    if (blank(t)) then begin
+      t = tmp;
+    end;
+    tmp = mid(tmp,len(t),len(tmp)-len(t));
+    rw = rw + 1;
+    if (rw>rowcnt and len(tmp)>0) then begin
+      //t = t & "...";
+    end;
+    OUTFORMFIELD(fn,t);    
+//      EndFormRow;   
+    if (rw>rowcnt) then begin
+      goto LTextOut;
+    end;
+  end;
+
+LTextOut:;
+  return;
+end;
+
 procedure PrintCertificate(record CUVc CUr)
 begin
   Integer i,rw,lcnt;
@@ -39,7 +79,8 @@ begin
   OutFormField("F_SCHOOLYEAR",GetSchoolYear(CUr.CertificateDate));
   SCr.SchoolCode = CUr.SchoolCode;
   if (ReadFirstMain(SCr,1,true)) then begin
-    OutFormField("F_SCHOOLNAME",SCr.SchoolName);
+    //OutFormField("F_SCHOOLNAME",SCr.SchoolName);
+    OutputMultiLineWordBreak(SCr.SchoolName,"F_SCHOOLNAME");
     OutFormField("F_SCHOOLDIR",SCr.Director);
   end;  
   TCr.TeacherCode = CUr.TeacherCode;
