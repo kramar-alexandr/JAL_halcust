@@ -585,6 +585,7 @@ begin
   BlockLoad(JCb);
   
   WebOutString("\"cert_link\":[")
+/*
   Confr.AddrName = JCb.CertFileConf;
   if (ReadFirstKey("AddrName",Confr,1,true)) begin
     while (LoopKey("UserTime:" & Confr.SerNr,Mailr,1,true)) begin
@@ -598,6 +599,7 @@ begin
       end;
     end;
   end;
+*/
   WebOutString("],");
   return;
 end;
@@ -2478,20 +2480,48 @@ begin
   return;
 end;
 
-updating procedure DoPrintLiqCertificate(record RcVc RepSpec)
+function string 255 GetExtraFileList()
 begin
-  string 255 filename;
+  string 255 res,folder,fn;
+  Integer i,cnt;
+
+  folder = "webcust/CertFiles";
+  cnt = CountFilesInDir(folder);
+  for (i=0;i<cnt;i=i+1) begin
+    fn = GetFileNameInDir(folder,i);
+    if (right(fn,4)==".pdf") then begin
+      res = res & " '../../" & folder & "/" & fn & "'";
+    end;
+  end;
+
+  GetExtraFileList = res;
+  return;
+end;
+
+updating procedure DoPrintLiqCertificate(record RcVc RepSpec,string sess,Boolean mulf,var string allfilelist)
+begin
+  string 255 filename,filename2,filename3,extrafiles;
+
+  filename = "tmp/" & sess & "/Sertifikats" & RepSpec.f1 & ".pdf";  
+  filename2 = "Sertifikats.pdf";
+  filename3 = "tmp/" & sess & "/Sertifikats" & RepSpec.f1 & "_full.pdf";;
   
-  filename = "Sertifikats.pdf";
   SetDocumentFilename(filename);
   SetMedia(mtPdf);
   PrintDocument(RepSpec,"LiqCertificateForm",false);
   SetDocumentFilename("");
-  if (FileExists(filename)) then begin
-    WebSetContentType("application/pdf");
-    WebSetContentDisposition("attachment; filename=" & filename);//or inline?
-    WebOutFile(filename);
-    Delete_File(filename);
+  extrafiles = GetExtraFileList;
+  RunShellScript("cd tmp/" & sess & "; pdfunite Sertifikats" & RepSpec.f1 & ".pdf " & extrafiles & " Sertifikats" & RepSpec.f1 & "_full.pdf; cd ..;");
+
+
+  if (FileExists(filename3)) then begin  
+    allfilelist = allfilelist & " Sertifikats" & RepSpec.f1 & "_full.pdf";    
+    if (mulf==false) then begin
+      WebSetContentType("application/pdf");
+      WebSetContentDisposition("attachment; filename=" & filename2);//or inline?
+      WebOutFile(filename3);
+      DeleteFolder("tmp/" & sess);
+    end;
   end;
 
   return;
@@ -2507,6 +2537,9 @@ begin
   Integer type;
   Boolean res;
   record RcVc RepSpec;
+  string 255 allfilelist,sess;
+  Date td2;
+  Boolean TrHs;
 
   if (nonblank(CurrentCust)) then begin
     tCUr.Code = CurrentCust;
@@ -2514,16 +2547,46 @@ begin
       type = GetJAlCustType(tCUr,SMFr,TCr,MTr);
       if (type==1) then begin
         if (WebGetArg("all")=="1") then begin
-          //print document
-          RepSpec.f2 = TCr.TeacherCode;
-          DoPrintLiqCertificate(RepSpec);
+          sess = MakeUUID;
+
+          CreateFolder("tmp/" & sess);
+
+          CUr.CertificateFlag = 1;
+          td2 = CurrentDate;
+          td2.month = 1;
+          td2.day = 1;
+          CUr.CertificateDate = td2;
+          TrHs = true;
+          while (LoopKey("CertificateDate",CUr,2,TrHs)) begin
+            if (CUr.CertificateFlag!=1 or (GetYear(CUr.CertificateDate)!=td2.year)) then begin
+              TrHs = false;
+            end else begin
+              if (CUr.TeacherCode==TCr.TeacherCode) then begin
+                RepSpec.f1 = CUr.Code;
+                DoPrintLiqCertificate(RepSpec,sess,true,allfilelist);
+              end;
+            end;
+          end;
+          //unite all files
+          //output file
+          //delete file
+          RunShellScript("cd tmp/" & sess & "; pdfunite " & allfilelist & " Sertifikati_visi.pdf; cd ..;");
+
+          WebSetContentType("application/pdf");
+          WebSetContentDisposition("attachment; filename=Sertifikati.pdf");//or inline?
+          WebOutFile("tmp/" & sess & "/Sertifikati_visi.pdf");
+          DeleteFolder("tmp/" & sess);
+
         end else begin
+          sess = MakeUUID;
+
+          CreateFolder("tmp/" & sess);
           CUr.Code = WebGetArg("student");
           if (ReadFirstMain(CUr,1,true)) then begin
             if (CUr.TeacherCode==TCr.TeacherCode and CUr.CertificateFlag==1) then begin
               //print document
               RepSpec.f1 = CUr.Code;
-              DoPrintLiqCertificate(RepSpec);
+              DoPrintLiqCertificate(RepSpec,sess,false,allfilelist);
             end;
           end;
         end;
@@ -2543,14 +2606,18 @@ begin
   Integer type;
   Boolean res;
   record RcVc RepSpec;
+  string 255 allfilelist,sess;
 
   if (nonblank(CurrentCust)) then begin
     CUr.Code = CurrentCust;
     if (ReadFirstMain(CUr,1,true)) then begin
       if (CUr.CertificateFlag==1) then begin
         //print document
+        sess = MakeUUID;
+
+        CreateFolder("tmp/" & sess);
         RepSpec.f1 = CUr.Code;
-        DoPrintLiqCertificate(RepSpec);
+        DoPrintLiqCertificate(RepSpec,sess,false,allfilelist);
       end;
     end;
   end;

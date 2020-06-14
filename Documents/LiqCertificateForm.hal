@@ -102,6 +102,7 @@ begin
   Date td2;
   Boolean TrHs;
  
+/*
   if (nonblank(RepSpec.f2)) then begin
     //teacher
     CUr.CertificateFlag = 1;
@@ -122,11 +123,12 @@ begin
       end;
     end;
   end else begin
+*/
     CUr.Code = RepSpec.f1;
     if (ReadFirstMain(CUr,1,true)) then begin
       PrintCertificate(CUr);
     end;
-  end;
+//  end;
 
   return;
 end;
