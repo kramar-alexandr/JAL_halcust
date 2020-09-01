@@ -28,8 +28,10 @@ begin
           CUr.AllowLogin = 0;
         end;
       end;
-      if (RepSpec.flags[3]==1 and nonblank(RepSpec.f1)) then begin
-        CUr.SchoolCode = RepSpec.f1;
+      if (RepSpec.flags[3]==1) then begin
+        if (nonblank(CUr.SchoolCode) and nonblank(RepSpec.f1)) then begin
+          CUr.SchoolCode = RepSpec.f1;
+        end;
       end;
       if (RepSpec.flags[4]==1) then begin
         if (nonblank(CUr.TeacherCode) and nonblank(RepSpec.f2)) then begin
