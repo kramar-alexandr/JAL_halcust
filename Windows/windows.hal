@@ -642,9 +642,9 @@ begin
   CheckBox(h,v+=20,0,"Pieprasīt informācijas atjaunošanu",flags[5]);
   h2 = 300;
   CheckBox(h,v+=20,0,"Mainīt visiem kontaktiem skolu uz:",flags[3]);
-  EditField(h2,v,50,"",Normal,f1,false,0);
+  EditField(h2,v,50,"",Normal,f1,false,SchoolSClass);
   CheckBox(h,v+=20,0,"Mainīt visiem kontaktiem skolotāju uz:",flags[4]);
-  EditField(h2,v,50,"",Normal,f2,false,0);
+  EditField(h2,v,50,"",Normal,f2,false,TeacherSClass);
   EndWindow;
 
 	
