@@ -387,7 +387,7 @@ begin
   WebOutStringFormatNL("<div id=""ereg""></div><div id=""edistrict""></div></div>");
 
 
-  WebOutStringFormatNL("<input type=""submit"" class=""spbutton""  value=""" & toolwebngtranslatetext(21064) & """ >");
+  WebOutStringFormatNL("<input type=""submit"" class=""spbutton""  value=""" & toolwebngtranslatetext(21065) & """ >");
   WebOutStringFormatNL("</form>");
   
   WebOutStringFormatNL("<script>");
