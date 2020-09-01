@@ -132,7 +132,7 @@ begin
       if (JEr.Type==0) then begin
         JE2r.Mother = JEr.SerNr;
         JE2r.Type = type;
-        if (ReadFirstKey("TypeMother",JE2r,1,true)) then begin
+        if (ReadFirstKey("TypeMother",JE2r,2,true)) then begin
           tJEEr.EventNr = JE2r.SerNr;
           tJEEr.CustType = JEEr.CustType;
           tJEEr.AddCode = JEEr.AddCode;

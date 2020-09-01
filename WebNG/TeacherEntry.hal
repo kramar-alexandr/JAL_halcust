@@ -1575,6 +1575,8 @@ begin
          if (CUr.AgeFlag==0) then begin
           CUr.ConfirmPar = 1;     
         end;
+        
+        WebOutStringFormatNL("\"forceupdate\":\"" & CUr.ForceUpdate & "\",");
         confirmteach = GetTeacherConfirmation(CUr);
         WebOutStringFormatNL("\"verified\": {" );
         WebOutStringFormatNL("\"personal\":" & OutPutConfirmation(CUr.ForceCertificate,CUr.ConfirmSKL,1)  &  ",");
@@ -2010,8 +2012,8 @@ begin
 
                 WebOutStringFormatNL("{");
                 WebOutStringFormatNL("\"serNr\":\"" & JEEr.SerNr & "\",");
-                WebOutStringFormatNL("\"dataStart\":\"" & DateToString(JEr.StartDate,"MM.DD.YYYY") & "\",");
-                WebOutStringFormatNL("\"dataEnd\":\"" & DateToString(JEr.EndDate,"MM.DD.YYYY") & "\",");
+                WebOutStringFormatNL("\"dataStart\":\"" & DateToString(JEr.StartDate,"DD.MM.YYYY") & "\",");
+                WebOutStringFormatNL("\"dataEnd\":\"" & DateToString(JEr.EndDate,"DD.MM.YYYY") & "\",");
                 WebOutStringFormatNL("\"smu\":\""  & JEEr.AddCode & "\",");
                 WebOutStringFormatNL("\"name\":\""  & FormatJSONString(JEEr.SMFName) & "\",");
                 WebOutStringFormatNL("\"type\":\"" & JEr.Type & "\",");

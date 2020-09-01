@@ -1112,6 +1112,7 @@ begin
   RecordField(CertificatePrint,M4Int,0,0);
   RecordField(CalcClassNum,M4Long,0,0);
   RecordField(ForceCertificate,M4Int,0,0);
+  RecordField(ForceUpdate,M4Int,0,0);
   KeyBegin(CertificateDate);
   KeySegment(CertificateFlag);
   KeySegment(CertificateDate);

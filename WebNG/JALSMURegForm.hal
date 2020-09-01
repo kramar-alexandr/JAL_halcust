@@ -174,11 +174,11 @@ begin
   end else begin
     WebOutStringFormatNL("<div id=""schoolar" & count & """ class=""smallinput"">");
     WebOutString("<div class='reg_label_head'>" & toolwebngtranslatetext(20081) & "</div>");
-	  WebOutString("<input id=""schoolarname" & count & """ type=""text"" required name=""schoolarname" & count & """ placeholder=""V‚rds"">");
-    WebOutString("<input id=""schoolarsurname" & count & """ type=""text"" required name=""schoolarsurname" & count & """ placeholder=""Uzv‚rds"">");
+	  WebOutString("<input id=""schoolarname" & count & """ type=""text"" required name=""schoolarname" & count & """ placeholder=""V?rds"">");
+    WebOutString("<input id=""schoolarsurname" & count & """ type=""text"" required name=""schoolarsurname" & count & """ placeholder=""Uzv?rds"">");
     WebOutString("<input id=""schoolaremail" & count & """ type=""email"" required name=""schoolaremail" & count & """ onchange=""testemail(this.value);return false;"" placeholder=""E-pasts"">");
-    WebOutString("<div data-title='J‚ievada ir aktu‚lais e-pasts, kas tiek izmantots ikdien‚' class='info-sign'><img src='img/information.png'></img></div></div>");
-    WebOutString("<input id=""schoolaremail" & count & "2"" type=""email"" required name=""schoolaremail" & count & "2"" onchange=""testemail(this.value); compemails2('E-pasti nesakr´t',1,'schoolaremail" & count & "');return false;"" placeholder=""Atk‚rtojiet e-pastu"">");
+    WebOutString("<div data-title='J?ievada ir aktu?lais e-pasts, kas tiek izmantots ikdien?' class='info-sign'><img src='img/information.png'></img></div></div>");
+    WebOutString("<input id=""schoolaremail" & count & "2"" type=""email"" required name=""schoolaremail" & count & "2"" onchange=""testemail(this.value); compemails2('E-pasti nesakr?t',1,'schoolaremail" & count & "');return false;"" placeholder=""Atk?rtojiet e-pastu"">");
   end;
   
   
@@ -226,7 +226,7 @@ begin
   WebOutStringFormatNL("</div>");
   WebOutStringFormatNL("<div class='cont'>");
   WebOutString("<input id='' class="""" placeholder=""" & toolwebngtranslatetext(25913) & """ type=""input"" pattern=""[A-Za-z0-9]{1,3}"" name=""classchar"">");
-  WebOutString("<div data-title='J‚ievada klases burts - A,B,C,D u.c. l´dz 3 simboliem' class='info-sign'><img src='img/information.png'></img></div>");
+  WebOutString("<div data-title='J?ievada klases burts - A,B,C,D u.c. l?dz 3 simboliem' class='info-sign'><img src='img/information.png'></img></div>");
   /*
   WebOutStringFormatNL("<select class='spinput small _select' name='classchar'>");
   WebOutStringFormatNL("<option value="""">" & toolwebngtranslatetext(25913) & "</option>");
@@ -268,16 +268,16 @@ begin
   //WebOutStringFormatNL("<!--[if gt IE 7]><![IGNORE[--><![IGNORE[]]>");
   CreateResForm(0,false);
   WebOutStringFormatNL("<div id=""passw"" class=""smallinput""><div id=""pass1""><input class=""spinputa _passw"" placeholder=""Parole"" type=""password"" required name=""password1""><div data-title='Vismaz 4 simboli' class='info-sign'><img src='img/information.png'></img></div></div>");
-  WebOutStringFormatNL("<div id=""passw2""><input class=""spinputa _passw"" placeholder=""Parole atk‚rtoti"" type=""password"" required name=""password2""></div></div>");
-  WebOutString("<div class='reg_label_head'>Lðdzu apstiprini savu vecumu</div>");
+  WebOutStringFormatNL("<div id=""passw2""><input class=""spinputa _passw"" placeholder=""Parole atk?rtoti"" type=""password"" required name=""password2""></div></div>");
+  WebOutString("<div class='reg_label_head'>L?dzu apstiprini savu vecumu</div>");
   WebOutStringFormatNL("<div><input class=""radio"" id='age' type=""radio""  name=""age"" onclick='hideBlockParrent()' value=""0""><label class='age' for=""age"">Man jau ir 13 gadu</label></div>");
-  WebOutStringFormatNL("<div><input class=""radio"" type=""radio"" id='ageTwo' name=""age"" onclick='showBlockParrent()' value=""1""><label class='age' for=""ageTwo"">Man v•l nav 13 gadu</label></div>");
-  WebOutString("<div id='parrents'><div class='reg_label_head'>Vec‚ka vai aizbildÀa v‚rds, uzv‚rds</div>");
-  WebOutStringFormatNL("<div><input id='parentname' class=""spinputa"" placeholder=""V‚rds"" type=""text"" name=""parentname""></div>");
-  WebOutStringFormatNL("<div><input id='parentsurname' class=""spinputa"" placeholder=""Uzv‚rds"" type=""text"" name=""parentsurname""></div>");
-  WebOutString("<div class='reg_label_head'>Vec‚ka vai aizbildÀa e-pasts</div>");
-  WebOutStringFormatNL("<div><input id='parentemail' class=""parentemail"" placeholder=""E-Pasts"" type=""email"" name=""parentemail"" onchange=""compemails2('E-pasti nesakr´t',1,'parentemail');return false;""><div data-title='J‚ievada ir aktu‚lais e-pasts, kas tiek izmantots ikdien‚' class='info-sign'><img src='img/information.png'></img></div></div>");
-  WebOutStringFormatNL("<div><input id='parentemail2' class=""parentemail"" placeholder=""Atk‚rtojiet e-pastu"" type=""email"" name=""parentemail2"" onchange=""compemails2('E-pasti nesakr´t',1,'parentemail');return false;""></div></div>");
+  WebOutStringFormatNL("<div><input class=""radio"" type=""radio"" id='ageTwo' name=""age"" onclick='showBlockParrent()' value=""1""><label class='age' for=""ageTwo"">Man v?l nav 13 gadu</label></div>");
+  WebOutString("<div id='parrents'><div class='reg_label_head'>Vec?ka vai aizbild?a v?rds, uzv?rds</div>");
+  WebOutStringFormatNL("<div><input id='parentname' class=""spinputa"" placeholder=""V?rds"" type=""text"" name=""parentname""></div>");
+  WebOutStringFormatNL("<div><input id='parentsurname' class=""spinputa"" placeholder=""Uzv?rds"" type=""text"" name=""parentsurname""></div>");
+  WebOutString("<div class='reg_label_head'>Vec?ka vai aizbild?a e-pasts</div>");
+  WebOutStringFormatNL("<div><input id='parentemail' class=""parentemail"" placeholder=""E-Pasts"" type=""email"" name=""parentemail"" onchange=""compemails2('E-pasti nesakr?t',1,'parentemail');return false;""><div data-title='J?ievada ir aktu?lais e-pasts, kas tiek izmantots ikdien?' class='info-sign'><img src='img/information.png'></img></div></div>");
+  WebOutStringFormatNL("<div><input id='parentemail2' class=""parentemail"" placeholder=""Atk?rtojiet e-pastu"" type=""email"" name=""parentemail2"" onchange=""compemails2('E-pasti nesakr?t',1,'parentemail');return false;""></div></div>");
   
 
   CreateResForm(1,true);
@@ -370,6 +370,58 @@ begin
   return;
 end;
 
+
+global
+procedure SMUUpdateForm()
+begin
+  integer err;
+  OutPutJALWebTexts(-1);
+  WebOutStringFormatNL("<form method=""POST"" action=""/WebSMUUpdate.hal"" onSubmit=""return TestFieldsForSMU2(this,'" & toolwebngtranslatetext(20010) & "','" & toolwebngtranslatetext(20012) & "','" & toolwebngtranslatetext(20013) & "','" & toolwebngtranslatetext(20014) & "','" & toolwebngtranslatetext(20015) & "','" & toolwebngtranslatetext(20016) & "','" & toolwebngtranslatetext(20018) & "','" & toolwebngtranslatetext(20019) & "','" & toolwebngtranslatetext(20020) & "','" & toolwebngtranslatetext(20021) & "')"">");
+  WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path") & """>");
+  SelBoxForReg;
+  WebOutStringFormatNL("<div><input class=""radio"" id='age' type=""radio""  name=""age"" onclick='hideBlockParrent()' value=""0""><label class='age' for=""age"">Man jau ir 13 gadu</label></div>");
+  WebOutStringFormatNL("<div><input class=""radio"" type=""radio"" id='ageTwo' name=""age"" onclick='showBlockParrent()' value=""1""><label class='age' for=""ageTwo"">Man v?l nav 13 gadu</label></div>");
+  
+
+  WebOutStringFormatNL("<div id=""errormsg""><div id=""eschool""></div><div id=""eteacher""></div>");
+  WebOutStringFormatNL("<div id=""ereg""></div><div id=""edistrict""></div></div>");
+
+
+  WebOutStringFormatNL("<input type=""submit"" class=""spbutton""  value=""" & toolwebngtranslatetext(21064) & """ >");
+  WebOutStringFormatNL("</form>");
+  
+  WebOutStringFormatNL("<script>");
+  WebOutStringFormatNL("function getschool() {");
+  WebOutStringFormatNL("  var reqid = document.getElementById('districtselect').options[document.getElementById('districtselect').selectedIndex].value;");
+  WebOutStringFormatNL("  var link = '" & FormatSimpleLink("/ajx",true) & "?action=getschool&district=' + reqid;");
+  WebOutStringFormatNL("  xmlhttp=new XMLHttpRequest();");
+  WebOutStringFormatNL("  xmlhttp.open('GET',link,false);");
+  WebOutStringFormatNL("  xmlhttp.send(null);");
+  WebOutStringFormatNL("  document.getElementById('schoolandteacher').innerHTML = xmlhttp.responseText;");
+  
+  WebOutStringFormatNL("}");
+  WebOutStringFormatNL("function getteacher() {");
+  WebOutStringFormatNL("  var reqid = document.getElementById('schoolselect').options[document.getElementById('schoolselect').selectedIndex].value;");
+  WebOutStringFormatNL("  var link = '" & FormatSimpleLink("/ajx",true) & "?action=getteacher&school=' + reqid;");
+  WebOutStringFormatNL("  xmlhttp=new XMLHttpRequest();");
+  WebOutStringFormatNL("  xmlhttp.open('GET',link,false);");
+  WebOutStringFormatNL("  xmlhttp.send(null);");
+  WebOutStringFormatNL("  document.getElementById('teacherdiv').innerHTML = xmlhttp.responseText;");
+  
+  WebOutStringFormatNL("}");
+  //WebOutStringFormatNL("}");
+  WebOutStringFormatNL("function getdistrict() {");
+  WebOutStringFormatNL("  var reqid = document.getElementById('regselect').options[document.getElementById('regselect').selectedIndex].value;");
+  WebOutStringFormatNL("  var link = '" & FormatSimpleLink("/ajx",true) & "?action=getdistrict&reg=' + reqid;");
+  WebOutStringFormatNL("  xmlhttp=new XMLHttpRequest();");
+  WebOutStringFormatNL("  xmlhttp.open('GET',link,false);");
+  WebOutStringFormatNL("  xmlhttp.send(null);");
+  WebOutStringFormatNL("  document.getElementById('districtdiv').innerHTML = xmlhttp.responseText;");
+  
+  WebOutStringFormatNL("}");
+ WebOutStringFormatNL("</script>");
+  return;
+end;
 
 
 procedure getteacher()
@@ -773,6 +825,79 @@ begin
     //stopalert("asdf");
     ShowRedirectHtml(FormatSimpleLink("/afterreg1",true),false);
   end else begin
+    ShowRedirectHtml(FormatSimpleLink("/badreg",true),false);
+  end;
+ 
+return;
+end;
+
+global webpublic
+updating procedure WebSMUUpdate()
+begin
+  string 255 studentname,studentsurname,studentemail;
+  integer size,i;
+  string 100 reg,text;
+  string 100 smuname;
+  string 10 teacher;
+  string 10 school;
+  boolean TrHs,testf;
+  string 25 tstr;
+  record CUVc CUr,tCUr,oldCUr;
+  record SMFVc SMFr,oldSMFr;
+  record TeacherVc TCr;
+  record SchoolVc SCr;
+  record JALClassblock JALClassbl;
+  record ReportMailBlock RMbl;
+  record JALRegionBlock JRbl;
+  row JALRegionBlock JRblrw;
+  string 5 code,cust;
+  integer err;
+  integer year;
+  row SMFVc SMFrw;
+  record ConfVc Cr;
+  string 255 headertext;
+  Boolean res; 
+  BlockLoad(RMbl);
+  BlockLoad(JALClassbl);
+
+  err = 0;
+
+  SCr.SchoolCode = WebGetArg("school");
+  if (ReadFirstMain(SCr,1,true)) then begin
+    if (SCr.Approved==0) then begin
+      err = err + 2;
+    end;
+  end else begin
+    err = err + 2;
+  end;
+  TCr.TeacherCode = WebGetArg("teacher");
+  if (ReadFirstMain(TCr,1,true)) then begin
+    if (TCr.Approved==0) then begin
+      err = err + 2;
+    end;
+  end else begin
+    err = err + 2;
+  end;
+	
+	logtext(0,"err " & err);
+	
+  if (err==0) then begin
+    CUr.Code = CurrentCust;
+    if (ReadFirstMain(CUr,1,true)) then begin 
+      RecordCopy(oldCUr,CUr);
+      CUr.SchoolCode = WebGetArg("school");
+      CUr.TeacherCode = WebGetArg("teacher");
+      CUr.AgeFlag = StringToInt(WebGetArg("age"));
+      CUr.ForceUpdate = 0;
+      if (RecordUpdate(oldCUr,CUr,true)==0) then begin
+        ShowRedirectHtml(FormatSimpleLink("/profilePupil",true),false);
+        res = true;
+      end;
+    end;
+ 
+  end;
+
+  if (!res) then begin
     ShowRedirectHtml(FormatSimpleLink("/badreg",true),false);
   end;
  

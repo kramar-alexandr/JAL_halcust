@@ -19,6 +19,7 @@ external procedure ShowWebElement(string);
 external procedure WebNGSearchView();
 //CUST-BEGIN
 external procedure SMURegForm();
+external procedure SMUUpdateForm();
 external procedure STURegForm();
 external procedure DrawSignForNewsPage();
 external procedure changeSelBox(boolean);
@@ -246,6 +247,8 @@ begin
     OutPutJALWebTexts(1);
   case "ShowSchoolMap":
     ShowSchoolMap(WEr);
+  case "SMUUpdateForm":
+    SMUUpdateForm;
 
 //CUST-END
   end;

@@ -36,6 +36,11 @@ begin
           CUr.TeacherCode = RepSpec.f2;
         end;
       end;
+      if (nonblank(CUr.TeacherCode)) then begin
+        if (RepSpec.flags[5]==1) then begin
+          CUr.ForceUpdate = 1;
+        end;
+      end;
       RecordUpdate(oldCUr,CUr,true);
     end;
   end;

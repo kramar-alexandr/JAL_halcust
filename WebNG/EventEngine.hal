@@ -1616,13 +1616,12 @@ begin
     case 1://2nd level
       //GetListOfRequests(JEr.SerNr,vReq);//we should remove requests that are not valid anymore
       JEEr.EventNr = JEr.Mother;
-      JEEr.StatusFlag = 1;
       TrHs = true;
-      while (LoopKey("Status",JEEr,2,TrHs)) begin
-        if (JEEr.EventNr!=JEr.Mother or JEEr.StatusFlag!=1) then begin
+      while (LoopKey("EventNr",JEEr,1,TrHs)) begin
+        if (JEEr.EventNr!=JEr.Mother) then begin
           TrHs = false;
         end else begin
-          if (vReq[JEEr.AddCode]==false) then begin
+          if (vReq[JEEr.AddCode]==false and (JEEr.StatusFlag==1 or JEEr.StatusFlag==3 or JEEr.StatusFlag==4)) then begin
             //create request
             vReq[JEEr.AddCode] = true;
             CreateSingleEventRequest(JEEr);
