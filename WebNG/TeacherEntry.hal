@@ -2108,21 +2108,30 @@ begin
   record JALEventEntryVc JEEr;
   record RcVc RepSpec;
   string 255 filename;
+  record SMFVc SMFr;
+  record CUVc CUr;
+  record RLinkVc RLr;
+  Boolean smuf;
 
   JEEr.SerNr = StringToLongint(WebGetArg("app"));
   if (ReadFirstMain(JEEr,1,true)) then begin
-    if (JEEr.CustCode==CUrrentCust) then begin
-      filename = "Apliecinajums.pdf";
-      SetDocumentFilename(filename);
-      SetMedia(mtPdf);
-      RepSpec.long1 = JEEr.SerNr;
-      PrintDocument(RepSpec,"CertificateForm",false);
-      SetDocumentFilename("");
-      if (FileExists(filename)) then begin
-        WebSetContentType("application/pdf");
-        WebSetContentDisposition("attachment; filename=" & filename);//or inline?
-        WebOutFile(filename);
-        Delete_File(filename);
+    CUr.Code = CurrentCust;
+    if (ReadFirstMain(CUr,1,true)) then begin
+      smuf = (ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr));
+
+      if ((smuf and SMFr.SMFCode==JEEr.AddCode and JEEr.CustType==0) or CurrentCust==JEEr.CustCode) then begin
+        filename = "Apliecinajums.pdf";
+        SetDocumentFilename(filename);
+        SetMedia(mtPdf);
+        RepSpec.long1 = JEEr.SerNr;
+        PrintDocument(RepSpec,"CertificateForm",false);
+        SetDocumentFilename("");
+        if (FileExists(filename)) then begin
+          WebSetContentType("application/pdf");
+          WebSetContentDisposition("attachment; filename=" & filename);//or inline?
+          WebOutFile(filename);
+          Delete_File(filename);
+        end;
       end;
     end;
   end;
