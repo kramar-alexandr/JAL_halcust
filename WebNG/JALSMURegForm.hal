@@ -857,6 +857,10 @@ begin
   record ConfVc Cr;
   string 255 headertext;
   Boolean res; 
+  Integer stat;
+  record JALTeacherAccVc JTr;
+  string 255 oldteacher;
+
   BlockLoad(RMbl);
   BlockLoad(JALClassbl);
 
@@ -885,11 +889,27 @@ begin
     CUr.Code = CurrentCust;
     if (ReadFirstMain(CUr,1,true)) then begin 
       RecordCopy(oldCUr,CUr);
+      oldteacher = CUr.TeacherCode;
       CUr.SchoolCode = WebGetArg("school");
       CUr.TeacherCode = WebGetArg("teacher");
       CUr.AgeFlag = StringToInt(WebGetArg("age"));
       CUr.ForceUpdate = 0;
+      if (CUr.ConfirmTeach==1) then begin
+        if (oldteacher!=CUr.TeacherCode) then begin
+          CUr.ConfirmTeach = 0;
+        end else begin
+          stat = 1;
+        end;
+      end;
       if (RecordUpdate(oldCUr,CUr,true)==0) then begin
+        RecordNew(JTr);
+        JTr.SerNr =  NextSerNr("JALTeacherAccVc",CurrentDate,-1,false,"");
+        JTr.SMFCode = CUr.Code;
+        JTr.RecCode = CUr.TeacherCode;
+        JTr.StatusFlag = stat;
+        JTr.TransDate = CurrentDate;
+        JTr.RecType = 3;
+        RecordStore(JTr,true);
         ShowRedirectHtml(FormatSimpleLink("/profilePupil",true),false);
         res = true;
       end;

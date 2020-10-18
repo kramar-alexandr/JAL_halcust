@@ -9,25 +9,25 @@
 
 //biksessadfads
 
-remote procedure GetElementGroupAr(array string,array string,var integer);
-external inner function Boolean HasMetroTestFeatures();
-external inner function Boolean HasJewelleryInterface();
-external inner function Boolean HasModHotel();
-external inner function Boolean HasModHRM();
-external inner function Boolean IsEnterprise();
-external inner function Boolean StandardHansa();
-external inner function Boolean HasCharts();
-external inner function string 60 UserDefined(string,string);
-external inner function Boolean HasExtTax();
-external inner function Boolean HasSalesGroup();
-external inner function Boolean HasTaxMatrix();
-external inner function real VATZoneButtonsLabelsLAT(real,real,real,real);
-external inner function Boolean HasWithholdingTax();
-external inner function Boolean HasCustomerStatusReport();
-external inner function Boolean HasSalesman();
-external inner function Boolean HasSalesmanBonus();
+remote outer procedure GetElementGroupAr(array string,array string,var integer);
+external function Boolean HasMetroTestFeatures();
+external function Boolean HasJewelleryInterface();
+external function Boolean HasModHotel();
+external function Boolean HasModHRM();
+external function Boolean IsEnterprise();
+external function Boolean StandardHansa();
+external function Boolean HasCharts();
+external function string 60 UserDefined(string,string);
+external function Boolean HasExtTax();
+external function Boolean HasSalesGroup();
+external function Boolean HasTaxMatrix();
+external function real VATZoneButtonsLabelsLAT(real,real,real,real);
+external function Boolean HasWithholdingTax();
+external function Boolean HasCustomerStatusReport();
+external function Boolean HasSalesman();
+external function Boolean HasSalesmanBonus();
 
-
+/*
 event DefineWindows
 begin
   array string 50 procname,labelname;
@@ -37,9 +37,13 @@ begin
   real fs;
 
   real h,h2,h3,hc,v,v2,vs,vm,tilenr;
-  
+*/
+
   SetLangMode(LangLatvian,"LAT",2);
 
+window SchoolLClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
   WindowBegin("Skolas",SchoolLClass,CGmlist,-);
   SpawnClass(SchoolDClass);
   SetWRect(64,80,600,289);
@@ -54,7 +58,14 @@ begin
   RlCol(-30,-30,"Apst.",Approved,false);
   SearchField("Meklēt");
   EndWindow;
+end;
 
+window SchoolDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Skola",SchoolDClass,CGview,-);
   SetWRect(64,80,619,380);
   UseView(SchoolVc);
@@ -81,6 +92,14 @@ begin
     StaticText(h-58,v=v+12,"Komentārs",false);
   end;  
   EndWindow;
+end;
+
+window SchoolSClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
 
   WindowBegin("Ievietot skolu",SchoolSClass,CGslist,-);
   SetWRect(64,80,379,298);
@@ -93,6 +112,14 @@ begin
   RlColKey(-60,-60,"Reģions",Region,false,Region);
   SearchField("Meklēt");
   EndWindow;
+end;
+
+window TeacherLClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
 
   WindowBegin("Skolotāji",TeacherLClass,CGmlist,-);
   SpawnClass(TeacherDClass);
@@ -109,6 +136,14 @@ begin
   //RlColKey(-390,-160,"Skolas nosaukums",SchoolName,false,SchoolName);
   SearchField("Meklēt");
   EndWindow;
+end;
+
+window TeacherDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
 
   WindowBegin("Skolotājs",TeacherDClass,CGview,-);
   SetWRect(64,80,560,600);
@@ -135,6 +170,15 @@ begin
   MatCol(1,186,"Skolas nos.",0,SchoolName,false,0);
   EndMatrix;
   EndWindow;
+end;
+
+window TeacherSClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
+
 
   WindowBegin("Ievietot skolotāju",TeacherSClass,CGslist,-);
   SetWRect(64,80,379,298);
@@ -147,6 +191,14 @@ begin
   RlCol(-30,-30,"Apst.",Approved,false);
   SearchField("Meklēt");
   EndWindow;
+end;
+
+window ReportsLClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
 
 
   WindowBegin("SMU atskaites",ReportsLClass,CGmlist,-);
@@ -161,6 +213,15 @@ begin
   RlColKey(-50,-50,"Iesniegts",SentStatuss,false,0);
   SearchField("Meklēt");
   EndWindow;
+end;
+
+window ReportsDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;
+
 
   WindowBegin("SMU atskaite",ReportsDClass,CGview,-);
   SetWRect(64,80,660,520);
@@ -211,15 +272,39 @@ begin
   StaticText(80,25,"Spied OK",false);
   EndWindow;
 */
+end;
+
+window ClearDBVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Dzēst datus",ClearDBVClass,CGMnt,RcType);
   SetWRect(10,90,260,130);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
+end;
+
+window ClearSMFAttachVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
 
   WindowBegin("Dzēst pielikumus",ClearSMFAttachVClass,CGMnt,RcType);
   SetWRect(10,90,260,130);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
+end;
+
+window ApproveCompVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
 
   WindowBegin("Veidot kompānijas",ApproveCompVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
@@ -227,33 +312,76 @@ begin
   StaticText(80,45,"Spied OK",false);
   StaticText(10,70,"UZMANĪBU! Pēc kompāniju pievienošanas serveris tiks pārstartēts",false);
   EndWindow;
+end;
+
+window FillTeacherSchoolsVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
 
   WindowBegin("Aizpildīt skolas",FillTeacherSchoolsVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   EndWindow;
+end;
 
+window RenewSchoolsVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Atjaunot skolas",RenewSchoolsVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   CheckBox(h,v=6,0,"Noņemt \"Apstiprināts\" atzīmi",flags[1]);
   EndWindow;
+end;
 
+window ArchiveSemesterVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Arhivēt mācību gadu",ArchiveSemesterVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   EditFieldTL(h=150,v=6,130,"Mācību gads",M4Str,Normal,20,f1,false,JALSemesterSClass);
   EndWindow;
+end;
 
+window RepairAppVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Labot pielikumus",RepairAppVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   EditFieldTL(h=150,v=6,130,"Uzņēmums",M4Str,Normal,20,f1,false,SMFSClass);
   StaticText(80,45,"Spied OK",false);
   EndWindow;
+end;
 
+window MoveFilesVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
 
   WindowBegin("Pārvietot dokumentus",MoveFilesVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
+end;
 
+window SmuNewActTClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Jauna SMU Aktivitāte",SmuNewActTClass,CGSbl,SRType);
   SetBlid(SmuNewActBlock);
   SetWRect(20,80,570,298);
@@ -262,7 +390,14 @@ begin
   EditField(130,30,130,"Teksts",Normal,ActText,false,0);
   EditField(130,60,130,"Persona",Normal,ActPerson,false,0);
   EndWindow;
+end;
 
+window CompaniesTClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Kompānijas",CompaniesTClass,CGHbl,HBlRecType);
   SetBlid(CompaniesBlock);
   SetWRect(20,80,570,298);
@@ -304,6 +439,14 @@ begin
 
 
 //atskaites:
+end;
+
+window SchoolRClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
 
   WindowBegin("Atskaite par skolām",SchoolRClass,CGRcW,RcType);
   SetWRect(80,80,500,230);
@@ -317,19 +460,40 @@ begin
   RadioButton(h,v+=16,1,0,"Tikai neapstiprinātos",flags[1]);
   RadioButton(h,v+=16,2,0,"Tikai apstiprinātos",flags[1]);
   EndWindow;
+end;
 
+window StudentListRClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Skolēnu saraksts",StudentListRClass,CGRcW,RcType);
   SetWRect(80,80,500,230);
   EditFieldTL(h=150,v=6,130,"Mācību gads",M4Str,Normal,20,f1,false,JALSemesterSClass);
   EndWindow;
-  
+end;
+
+window SMUCourseEventRClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Atskaite par kursiem",SMUCourseEventRClass,CGRcW,RcType);
   SetWRect(80,80,500,150);
   PeriodField(h=150,v=6,"Periods");
   EditFieldTL(h=150,v+=vs,150,"Kurss",M4Long,Normal,100,long1,false,CourseEventSClass);
   CheckBox(h,v+=vs,0,"Rādīt tikai SMU dalībniekus",flags[0]);
   EndWindow;
+end;
 
+window EventParticipantsRClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Atskaite par kursiem",EventParticipantsRClass,CGRcW,RcType);
   SetWRect(80,80,500,250);
   EditFieldTL(h=150,v=6,150,"Kurss",M4Long,Normal,100,long1,false,JALEventSClass);
@@ -351,17 +515,38 @@ begin
   RadioButton(h2,v+=16,4,0,"Visi",flags[0]);
 
   EndWindow;
+end;
 
+window EventParticipants2RClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Atskaite par pieteikumiem",EventParticipants2RClass,CGRcW,RcType);
   SetWRect(80,80,500,250);
   EditFieldTL(h=150,v=6,150,"Kurss",M4Long,Normal,100,long1,false,JALEventSClass);
   EndWindow;
+end;
 
+window SMFEmpListRClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("SMU Dalībnieki",SMFEmpListRClass,CGRcW,RcType);
   SetWRect(80,80,500,250);
   EditFieldTL(h=150,v=6,150,"SMU",M4Code,Normal,100,f1,false,0);
   EndWindow;
+end;
 
+window TeacherRClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Atskaite par skolotājiem",TeacherRClass,CGRcW,RcType);
   SetWRect(80,80,500,180);
   EditFieldTL(150,v=6,150,"Skolas kods",M4Str,Normal,100,f1,false,SchoolSClass);
@@ -375,14 +560,28 @@ begin
   RadioButton(h2,v+=16,1,0,"Tikai apstiprinātos",flags[1]);
   RadioButton(h2,v+=16,2,0,"Visus",flags[1]);
   EndWindow;
+end;
 
+window CertificateListRClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Sertifikātu saraksts",CertificateListRClass,CGRcW,RcType);
   SetWRect(80,80,500,180);
   EditFieldTL(h=120,v=6,50,"Gads",M4Long,Normal,0,long1,false,0);
   EditFieldTL(h,v+=vs,100,"Skola",M4Str,Normal,100,f2,false,SchoolSClass);
   EditFieldTL(h,v+=vs,100,"Skolotājs",M4Str,Normal,100,f3,false,TeacherSClass);
   EndWindow;
-  
+end;
+
+window SMFRClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
 
   WindowBegin("Atskaite par SMU",SMFRClass,CGRcW,RcType);
   SetWRect(80,80,500,210);
@@ -400,20 +599,41 @@ begin
   RadioButton(h,v+=16,3,0,"Visi",flags[2]);
   CheckBox(h=50,v+=26,1,"Rādīt dalībniekus",flags[5]);
   EndWindow;
+end;
 
+window SMFreportsRClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Atskaite par SMU atskaitēm",SMFreportsRClass,CGRcW,RcType);
   SetWRect(80,80,500,120);
   PeriodField(h=100,v=6,"Periods");
   EditFieldTL(h,v+=vs,100,"SMU",M4Str,Normal,100,f1,false,SMFSClass);
   EndWindow;
+end;
 
+window MentorRClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Atskaite par mentoriem",MentorRClass,CGRcW,RcType);
   SetWRect(80,80,500,180);
   EditFieldTL(150,v+=vs,150,"Reģions",M4Str,Normal,100,f1,false,JALRegionSClass);
   EditFieldTL(150,v+=vs,150,"Novads",M4Str,Normal,100,f2,false,JALDistrictSClass);
   CheckBox(150,v+=vs,1,"Izlaist neapstiprinātos",flags[1]);
   EndWindow;
+end;
 
+window ReportMailTClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("SMU ziņojumu iestatījumi",ReportMailTClass,CGSbl,-);
   SetWRect(80,80,560,260);
   SetBlid(ReportMailBlock);
@@ -426,7 +646,14 @@ begin
   EditField(180,v=v+20,150,"Mentoru",Normal,MentorMail,false,ConfSClass);
   EditField(180,v=v+20,150,"Studentu",Normal,STUMail,false,ConfSClass);
   EndWindow;
+end;
 
+window JALLangTClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Skolu plūsmas",JALLangTClass,CGHBl,-);
   SetWRect(80,80,400,280);
   SetBlid(JALLangBlock);
@@ -435,18 +662,39 @@ begin
   MatCol(1,100,"Plūsma",0,Lang,false,0);
   EndMatrix;
   EndWindow;
+end;
 
+window JALLangSClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Skolu plūsmas",JALLangSClass,CGother,-);
   SetWRect(240,80,470,298);
   StringList(9,9,206,209);
   EndWindow;
+end;
 
+window JALRegionSClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Reģioni",JALRegionSClass,CGother,-);
   SetWRect(240,80,470,298);
   StringList(9,9,206,209);
   EndWindow;
 	
-	
+end;
+
+window JALRegionTClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
 	WindowBegin("Reģionu definēšana",JALRegionTClass,CGHBL,-);
   SetWRect(80,80,800,280);
   SetBlid(JALRegionBlock);
@@ -455,7 +703,14 @@ begin
   MatCol(1,120,"Apakšreģ. vai cits nos.",0,SubRegion,false,0);
   EndMatrix;
   EndWindow;
-	
+end;
+
+window JALSubjectTClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Priekšmeti definēšana",JALSubjectTClass,CGHBL,-);// Edit ************************** BPI Ukraine - KramarAlexandr - Tuesday, 9 October 2018 17:02:46
   SetWRect(80,80,800,280);
   SetBlid(JALSubjectBlock);
@@ -463,7 +718,14 @@ begin
   MatCol(1,25,"Priekšmeti",0,Subject,false,0);
   EndMatrix;
   EndWindow;
+end;
 
+window NewsEmailTClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Jaunumu saņēmēji",NewsEmailTClass,CGHBL,-);
   SetWRect(80,80,500,280);
   SetBlid(NewsEmailBlock);
@@ -471,7 +733,14 @@ begin
   MatCol(1,25,"E-pasts",0,Email,false,0);
   EndMatrix;
   EndWindow;
+end;
 
+window JALClassTClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
 
   WindowBegin("Klasifikāciju definēšana",JALClassTClass,CGSbl,-);
   SetWRect(80,80,800,500);
@@ -537,7 +806,14 @@ begin
   EditField(h,v=v+vs,100,"Vērtējums no",Normal,ScoreFrom,false,0);
   EditField(h,v=v+vs,100,"Vērtējums līdz",Normal,ScoreTo,false,0);
   EndWindow;
+end;
 
+window FCSMULClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Finanšu aprēķini",FCSMULClass,CGmlist,-);
   SpawnClass(FCSMUDClass);
   SetWRect(64,80,860,350); 
@@ -549,7 +825,14 @@ begin
   RlCol   (120,120,"Prece",ItemName,false);
   SearchField("Meklēt");
   EndWindow;
-  
+end;
+
+window FCSMUDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Finanšu aprēķini",FCSMUDClass,CGview,-);
   SetWRect(64,80,860,350);
   Sizeable(-1,-1,0,0);
@@ -572,43 +855,99 @@ begin
   MatCol(1,150,"1 vien. pašizm. EUR",0,UCost,false,0);
   EndMatrix;
   EndWindow;
+end;
 
+window DelSchoolVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   
   WindowBegin("Dzēst visas skolas",DelSchoolVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
+end;
 
+window DistrictGuesserVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Novadi no adresēm",DistrictGuesserVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
-  
+end;
+
+window MissingDistrictCntVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Novadu iztrūkums",MissingDistrictCntVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
-  
+end;
+
+window ClearDistrictVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Novadu tīrīšana",ClearDistrictVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
+end;
 
+window GUMailboxesVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Veidot pastkastes Globālajiem lietotājiem",GUMailboxesVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
-  
+end;
+
+window ForceGenCompVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Veidot kompānijas",ForceGenCompVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
-  
+end;
+
+window SetLoginFlagVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Pieslēgšanās",SetLoginFlagVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
+end;
 
+window MentorLClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Mentori",MentorLClass,CGmlist,-);
   SpawnClass(MentorDClass);
   SetWRect(64,80,860,350);
@@ -624,17 +963,38 @@ begin
   RlColKey(-35,-35,"Apst.",Approved,false,Approved);
   SearchField("Meklēt");
   EndWindow;
+end;
 
+window SetLoginFlagVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
 	WindowBegin("Pieslēgšanās",SetLoginFlagVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
+end;
 
+window EmptyVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Run",EmptyVClass,CGMnt,RcType);
   SetWRect(64,80,860,350);
   Sizeable(-1,-1,0,0);
   EndWindow;
+end;
 
+window RefreshContactsVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
 	WindowBegin("Atjaunot kontaktus",RefreshContactsVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   CheckBox(h=50,v=20,0,"Slēgt / atvērt kontaktus neapstiprinātām skolām",flags[1]);
@@ -646,7 +1006,14 @@ begin
   CheckBox(h,v+=20,0,"Mainīt visiem kontaktiem skolotāju uz:",flags[4]);
   EditField(h2,v,50,"",Normal,f2,false,TeacherSClass);
   EndWindow;
+end;
 
+window MentorDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
 	
   WindowBegin("Mentors",MentorDClass,CGview,-);
   SetWRect(64,80,560,250);
@@ -662,7 +1029,14 @@ begin
   EditField(h2,v,90,"Novads",Normal,District,false,JALDistrictSClass);
   CheckBox(h-3,v+=28,0,"Apstiprināts",Approved);
   EndWindow;
+end;
 
+window WebNGContentLClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Tīmekļa saturs",WebNGContentLClass,CGmlist,-);
   SetWRect(10,80,800,291);
   SpawnClass(WebNGContentDClass);
@@ -678,7 +1052,14 @@ begin
   SpecialMenu("Parādīt saturu pārlūkprogrmmā",'w',1,"ShowWebNGContentInBrowserLsm");
   SpecialMenu("Meklēt",'F',1,"TWebNGContSearchDsm");
   EndWindow;
+end;
 
+window WebNGContentDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Tīmekļa saturs",WebNGContentDClass,CGview,-);
   UseView(WebNGContentVc);
   SetWRect(20,80,500,435);
@@ -701,7 +1082,14 @@ begin
   //SpecialMenu("Publicēt attēlus",' ',1,"PublishGalleryDsm");
   //SpecialMenu("Izņemt attēlus no tīmekļa",' ',1,"UnPublishGalleryDsm");
   EndWindow;
+end;
 
+window WebNGContentStyleDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Satura stils",WebNGContentStyleDClass,CGview,-);
   UseView(WebNGContentStyleVc);
   SetWRect(20,80,500,420);
@@ -733,7 +1121,14 @@ begin
   RadioButton(h,v,0,0,"Sākot ar jaunāko",SortingFlag);
   RadioButton(h,v+=16,1,0,"Nejaušs",SortingFlag);
   EndWindow;
+end;
 
+window SRTClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Numuru sērijas pēc noklusējuma",SRTClass,CGSbl,SRType);
   SetWRect(64,80,509,333);
   SetBlid(SRBlock);
@@ -762,7 +1157,14 @@ begin
   EditField(h,v+=vs,65,"Skolas kods",Normal,LastSchoolCode,false,0);
 
   EndWindow;
+end;
 
+window WebNGBlogCommentDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
 
   WindowBegin("Komentārs",WebNGBlogCommentDClass,CGview,-);
   SetWRect(20,80,680,500);
@@ -792,7 +1194,14 @@ begin
   RadioButton(h3,v+=16,1,0,"Ziņa",TextType);
   TextField(h,v+=46,-21,-16,Math,0);
   EndWindow;
+end;
 
+window WebNGBlogCommentLClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Komentāri un vērtējumi",WebNGBlogCommentLClass,CGmlist,-);
   SetWRect(20,80,700,350);
   Sizeable(-1,-1,0,0);
@@ -807,29 +1216,64 @@ begin
   RlCol   (-60,-60,"Laiks",TransTime,false);
   SearchField("Meklēt");
   EndWindow;
+end;
 
+window SendNewsToEmailsVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Sūtīt jaunumus",SendNewsToEmailsVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   EditFieldTL(100,10, -20,"Satura ieraksti",M4Str,Normal,50,f1,false,WebNGContentLClass);
   StaticText(100,40,"Spied OK",false);
   EndWindow;
+end;
 
+window SaveAttachmentsVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Pieņemt E-pastus",SaveAttachmentsVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
    //EditFieldTL(100,10, -20,"Satura ieraksti",M4Str,Normal,50,f1,false,WebNGContentLClass);
   StaticText(100,40,"Spied OK",false);
   EndWindow;
+end;
 
+window FillCUCodesVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Aizpildīt kontaktu kodus",FillCUCodesVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   StaticText(100,40,"Spiediet OK",false);
   EndWindow;
+end;
 
+window JALDistrictSClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Novadi",JALDistrictSClass,CGother,-);
   SetWRect(240,80,470,298);
   StringList(9,9,206,209);
   EndWindow;
+end;
 
+window JALDistrictTClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Reģionu definēšana",JALDistrictTClass,CGHBL,-);
   SetWRect(80,80,600,280);
   SetBlid(JALDistrictBlock);
@@ -838,7 +1282,14 @@ begin
   MatCol(1,120,"Reģions",0,Region,false,JALRegionSClass);
   EndMatrix;
   EndWindow;
+end;
 
+window JALFileLClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Dokumenti",JALFileLClass,CGmList,-);
   SpawnClass(JALFileDClass);
   UseView(JALFileVc);
@@ -850,7 +1301,14 @@ begin
   RLCol   (180,180,"SMU nos.",SMFName,false);
   SearchField("Meklēt");
   EndWindow;
+end;
 
+window JALFileDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Dokuments",JALFileDClass,CGView,-);
   v=6;h=100;h2=250;vs=20;
   UseView(JALFileVc);
@@ -869,7 +1327,14 @@ begin
   RadioButton(h,v+=16,4,0,"Attēls",Status);
  
   EndWindow;
+end;
 
+window JALDocsRClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Atskaite par skolām",JALDocsRClass,CGRcW,RcType);
   SetWRect(80,80,500,250);
   EditFieldTL(h=150,v=6,150,"SMU",M4Str,Normal,100,f1,false,SMFSClass);
@@ -881,24 +1346,59 @@ begin
   CheckBox(h,v+=16,0,"Apstiprināts(JAL)",flags[2]);
   CheckBox(h,v+=16,0,"Noraidīts",flags[3]);
   EndWindow;
+end;
 
+window DeleteCompNewVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
 
   WindowBegin("Dzēst kompānijas visas",DeleteCompNewVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   EndWindow;
+end;
 
+window ClearJALContentVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Dzēst JAL saturu",ClearJALContentVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   EndWindow;
+end;
 
+window ClearJALMailBoxesVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Dzēst JAL e-pastus",ClearJALMailBoxesVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   EndWindow;
+end;
 
+window ChangeSMUVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Pārveidot visus SMU par neaktīviem",ChangeSMUVClass,CGMnt,RcType);
   SetWRect(80,80,500,150);
   EndWindow;
+end;
 
+window JALServerLClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("JAL serveri",JALServerLClass,CGmList,-);
   SetWRect(80,80,300,300);
   UseView(JALServerVc);
@@ -909,7 +1409,14 @@ begin
   RlCol   (200,200,"Pēdējā komp.",LastComp,false);
 
   EndWindow;
+end;
 
+window JALServerDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("JAL serveris",JALServerDClass,CGView,-);
   SetWRect(80,80,400,280);
   UseView(JALServerVc);
@@ -924,7 +1431,14 @@ begin
   EditField(h,v+=vs,-20,"IP adrese",Normal,IP,false,0);
 
   EndWindow;
+end;
 
+window JALTeacherAccLClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
 
   WindowBegin("Pieteikumi skolotājiem/mentoriem",JALTeacherAccLClass,CGmlist,-);
   SpawnClass(JALTeacherAccDClass);
@@ -937,7 +1451,14 @@ begin
   RlCol(200,200,"Datums",TransDate,False);
   SearchField("Meklēt");
   EndWindow;
+end;
 
+window JALTeacherAccDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Pieteikums",JALTeacherAccDClass,CGview,-);
   SetWRect(64,80,560,230);
   UseView(JALTeacherAccVc);
@@ -953,7 +1474,14 @@ begin
   RadioButton(h,v+=16,1,0,"Apstiprināts",StatusFlag);
   RadioButton(h,v+=16,2,0,"Noraidīts",StatusFlag);
   EndWindow;
+end;
 
+window JALEventLClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Pasākumi",JALEventLClass,CGmlist,-);
   SpawnClass(JALEventDClass);
   SetWRect(64,80,560,350);
@@ -965,7 +1493,14 @@ begin
   RlCol(200,200,"Komentārs",Comment,False);
   SearchField("Meklēt");
   EndWindow;
+end;
 
+window JALEventSClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Pasākumi",JALEventSClass,CGslist,-);
   SpawnClass(JALEventDClass);
   SetWRect(64,80,560,350);
@@ -977,7 +1512,14 @@ begin
   RlCol(200,200,"Komentārs",Comment,False);
   SearchField("Meklēt");
   EndWindow;
+end;
 
+window JALEventDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Pasākums",JALEventDClass,CGview,-);
   SetWRect(64,80,740,600);
   UseView(JALEventVc);
@@ -1036,14 +1578,28 @@ begin
   HalPushButton(h+=140,-35,h+130,-5,"JALEvent2LevelDsm","2. kārtas anketa");
 
   EndWindow;
+end;
 
+window JALEventTextDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Izdrukas teksts",JALEventTextDClass,CGview,-);
   SetWRect(64,80,560,450);
   UseView(JALEventTextVc);
   v = 10; vs = 22; h = 100; h2 = 300;
   TextField(20,v-5,-20,340,Math,0);
   EndWindow;
+end;
 
+window JALEventFieldLClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Pasākumu lauki",JALEventFieldLClass,CGmlist,-);
   SpawnClass(JALEventFieldDClass);
   SetWRect(64,80,560,350);
@@ -1054,7 +1610,14 @@ begin
   RlCol(200,200,"Komentārs",Comment,False);
   SearchField("Meklēt");
   EndWindow;
+end;
 
+window JALEventFieldSClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Ievietot pasākuma lauku",JALEventFieldSClass,CGslist,-);
   SpawnClass(JALEventFieldDClass);
   SetWRect(64,80,560,350);
@@ -1065,7 +1628,14 @@ begin
   RlCol(200,200,"Komentārs",Comment,False);
   SearchField("Meklēt");
   EndWindow;
+end;
 
+window JALEventFieldDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Pasākuma  lauks",JALEventFieldDClass,CGview,-);
   SetWRect(64,80,560,350);
   UseView(JALEventFieldVc);
@@ -1084,7 +1654,14 @@ begin
   EndMatrix;
 
   EndWindow;
+end;
 
+window JALEventSelectBoxLClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
     WindowBegin("Pasākumu izvēlnes",JALEventSelectBoxLClass,CGmlist,-);
   SpawnClass(JALEventSelectBoxDClass);
   SetWRect(64,80,560,350);
@@ -1095,7 +1672,14 @@ begin
   RlCol(200,200,"Komentārs",Comment,False);
   SearchField("Meklēt");
   EndWindow;
+end;
 
+window JALEventSelectBoxSClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Ievietot pasākuma izvēlni",JALEventSelectBoxSClass,CGslist,-);
   SpawnClass(JALEventSelectBoxDClass);
   SetWRect(64,80,560,350);
@@ -1106,7 +1690,14 @@ begin
   RlCol(200,200,"Komentārs",Comment,False);
   SearchField("Meklēt");
   EndWindow;
+end;
 
+window JALEventSelectBoxDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Pasākuma  izvēlne",JALEventSelectBoxDClass,CGview,-);
   SetWRect(64,80,500,250);
   UseView(JALEventSelectBoxVc);
@@ -1120,7 +1711,14 @@ begin
   EndMatrix;
 
   EndWindow;
+end;
 
+window JALEventEntryLClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Pasākumu pieteikumi",JALEventEntryLClass,CGmlist,-);
   SpawnClass(JALEventEntryDClass);
   SetWRect(64,80,560,350);
@@ -1131,7 +1729,14 @@ begin
   RlCol(100,100,"Datums",TransDate,False);
   SearchField("Meklēt");
   EndWindow;
+end;
 
+window JALEventEntrySClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Pasākumu pieteikumi",JALEventEntrySClass,CGslist,-);
   SpawnClass(JALEventEntryDClass);
   SetWRect(64,80,560,350);
@@ -1142,7 +1747,14 @@ begin
   RlCol(100,100,"Datums",TransDate,False);
   SearchField("Meklēt");
   EndWindow;
+end;
 
+window JALEventEntryDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Pasākuma pieteikums",JALEventEntryDClass,CGview,-);
   SetWRect(64,80,650,530);
   UseView(JALEventEntryVc);
@@ -1172,7 +1784,15 @@ begin
   MatCol(1,240,"Vērtība",0,Value,false,SetSClass);
   EndMatrix;
   EndWindow;
+end;
 
+window WebNGElementSortedLClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;
+array string 255 procname,labelname;
 
  WindowBegin("Elementi",WebNGElementSortedLClass,CGmList,-);
 //  DynamicWindow;
@@ -1205,7 +1825,14 @@ begin
   RlCol(150,150,"Komentārs",Comment,false);
   SearchField("Meklēt");
   EndWindow;
+end;
 
+window WebElementGroupLClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Elementu grupas",WebElementGroupLClass,CGmList,-);
   SetWRect(50,50,700,300);
   UseView(WebElementGroupVc);
@@ -1216,7 +1843,14 @@ begin
   RlCol(150,150,"Komentārs",Comment,false);
   SearchField("Meklēt");
   EndWindow;
+end;
 
+window WebElementGroupSClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Elementu grupas",WebElementGroupSClass,CGsList,-);
   SetWRect(50,50,700,300);
   UseView(WebElementGroupVc);
@@ -1227,7 +1861,14 @@ begin
   RlCol(150,150,"Komentārs",Comment,false);
   SearchField("Meklēt");
   EndWindow;
+end;
 
+window WebElementGroupDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
 
   
   WindowBegin("Elementu grupa",WebElementGroupDClass,CGView,-);
@@ -1236,7 +1877,14 @@ begin
   EditField(h=100,v=6,80,"Kods",Normal,Code,false,0);
   EditField(h,v+=vs,-20,"Komentārs",Normal,Comment,false,0);
   EndWindow;
+end;
 
+window WebTemplateLClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Elementu veidnes",WebTemplateLClass,CGmList,-);
   SetWRect(50,50,700,300);
   UseView(WebTemplateVc);
@@ -1246,7 +1894,14 @@ begin
   RlCol(150,150,"Komentārs",Comment,false);
   SearchField("Meklēt");
   EndWindow;
+end;
 
+window WebTemplateSClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Ievietot elementa veidni",WebTemplateSClass,CGsList,-);
   SetWRect(50,50,700,300);
   UseView(WebTemplateVc);
@@ -1256,7 +1911,14 @@ begin
   RlCol(150,150,"Komentārs",Comment,false);
   SearchField("Meklēt");
   EndWindow;
+end;
 
+window WebTemplateDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   
   WindowBegin("Elementu veidne",WebTemplateDClass,CGView,-);
   SetWRect(80,80,600,380);
@@ -1271,7 +1933,14 @@ begin
   MatCol(1,-100,"Tulkojums",0,TransFlag,false,SetSClass);
   EndMatrix;
   EndWindow;
+end;
 
+window WebNGChildMenuDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Veidot izvēlni",WebNGChildMenuDClass,CGView,-);
   SetWRect(20,100,500,300);
   BrowseButtons(false);
@@ -1284,7 +1953,14 @@ begin
   HalPushButton(-180,12,-80,32,"CreateChildMenuNoBtn","Atcelt");
 
   EndWindow;
+end;
 
+window WebNGDuplicateMenuDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Kopēt izvēlni",WebNGDuplicateMenuDClass,CGView,-);
   SetWRect(20,100,500,300);
   BrowseButtons(false);
@@ -1297,26 +1973,61 @@ begin
   HalPushButton(-180,12,-80,32,"CreateChildMenuNoBtn","Atcelt");
 
   EndWindow;
+end;
 
+window JALNewsListRClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Atskaite par skolām",JALNewsListRClass,CGRcW,RcType);
   SetWRect(80,80,500,100);
   StaticText(80,45,"Spied OK",false);
   endWindow;
+end;
 
+window ListLostAttachmentsRClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Atskaite par skolām",ListLostAttachmentsRClass,CGRcW,RcType);
   SetWRect(80,80,500,100);
   StaticText(80,45,"Spied OK",false);
   endWindow;
-  
+end;
+
+window JALMarkasCUVClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Pārveidot kontaktus",JALMarkasCUVClass,CGMnt,RcType);
   SetWRect(10,90,260,130);
   StaticText(80,25,"Spied OK",false);
   EndWindow;
+end;
 
+window StudentAnomaliesRClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Atskaite par studentiem",StudentAnomaliesRClass,CGRcW,RcType);
   SetWRect(80,80,500,150);
   EndWindow;
-  
+end;
+
+window JALPartnerTClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("JAL partneri",JALPartnerTClass,CGHBl,-);
   SetWRect(80,80,400,280);
   SetBlid(JALPartnerBlock);
@@ -1324,7 +2035,14 @@ begin
   MatCol(1,25,"Klasifikācijas",0,Classification,false,CClassSClass);
   EndMatrix;
   EndWindow;
+end;
 
+window JALJobPositionTClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("JAL darbinieku amati",JALJobPositionTClass,CGHBl,-);
   SetWRect(80,80,400,280);
   SetBlid(JALJobPositionBlock);
@@ -1332,7 +2050,14 @@ begin
   MatCol(1,25,"Amati",0,JobPosition,false,JobTitleSClass);
   EndMatrix;
   EndWindow;
+end;
 
+window JALIndustryTClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("JAL nozares",JALIndustryTClass,CGHBl,-);
   SetWRect(80,80,400,280);
   SetBlid(JALIndustryBlock);
@@ -1340,12 +2065,26 @@ begin
   MatCol(1,25,"Nozare",0,Industry,false,0);
   EndMatrix;
   EndWindow;
+end;
 
+window JALIndustrySClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Ievietot nozari",JALIndustrySClass,CGother,-);
   SetWRect(240,80,470,298);
   StringList(9,9,206,209);
   EndWindow;
+end;
 
+window JALSemesterTClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Semestri",JALSemesterTClass,CGHBl,-);
   SetWRect(80,80,500,280);
   SetBlid(JALSemesterBlock);
@@ -1355,13 +2094,27 @@ begin
   MatCol(1,185,"Gads",0,YearStr,false,0);
   EndMatrix;
   EndWindow;
+end;
 
+window JALSemesterSClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Ievietot Semestri",JALSemesterSClass,CGOther,-);
   SetWRect(80,80,500,280);
   StringList(0,0,-17,-1);
   SearchField("Search");
   EndWindow;
+end;
 
+window JALLiquidationTCLass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("SMU Likvidācija",JALLiquidationTCLass,CGHBl,-);
   SetWRect(80,80,500,280);
   SetBlid(JALLiquidationBlock);
@@ -1372,7 +2125,14 @@ begin
   MatCol(1,265,"Anketa",0,EventNr,false,JALEventSClass);
   EndMatrix;
   EndWindow;
+end;
 
+window EventTurnoverLClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   
 
   WindowBegin("Pasākumu ienākumi",EventTurnoverLClass,CGmlist,-);
@@ -1386,7 +2146,14 @@ begin
   RlCol   (120,120,"Prece",ItemName,false);
   SearchField("Meklēt");
   EndWindow;
- 
+end;
+
+window EventTurnoverVcDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   
   WindowBegin("Pasākumu ienākumi",EventTurnoverVcDClass,CGview,-);
   SetWRect(64,80,860,350);
@@ -1404,25 +2171,53 @@ begin
   MatCol(1,680,"Peļņa",0,Profit,false,0);
   EndMatrix;
   EndWindow;
+end;
 
+window SMFFormRClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("SMU",SMFFormRClass,CGRcW,RcType);
   SetWRect(20,80,400,220);
   vs=20;
   EditFieldTL(h=160,v=6,120,"SMU",M4Code,Normal,30,f1,false,SMFSClass);
   EndWindow;
+end;
 
+window CertificateFormRClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Apliecinājums",CertificateFormRClass,CGRcW,RcType);
   SetWRect(20,80,400,220);
   vs=20;
   EditFieldTL(h=160,v=6,120,"Pieteikums",M4Long,Normal,0,long1,false,JALEventEntrySClass);
   EndWindow;
+end;
 
+window LiqCertificateFormRClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Sertifikāts",LiqCertificateFormRClass,CGRcW,RcType);
   SetWRect(20,80,400,220);
   vs=20;
   EditFieldTL(h=160,v=6,120,"Skolēns",M4Code,Normal,20,f1,false,CUSClass);
   EndWindow;
+end;
 
+window ExpTeacherLClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Skolotāji ar pieredzi",ExpTeacherLClass,CGmlist,-);
   SpawnClass(ExpTeacherDClass);
   SetWRect(64,80,560,350);
@@ -1432,7 +2227,14 @@ begin
   RlColKey(4,2,"Reģions",Region,false,Region);
   SearchField("Meklēt");
   EndWindow;
+end;
 
+window ExpTeacherDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
   WindowBegin("Skolotāji ar pieredzi",ExpTeacherDClass,CGview,-);
   SetWRect(64,80,560,350);
   UseView(ExpTeacherVc);
@@ -1444,7 +2246,14 @@ begin
   MatCol(1,-150,"E-pasts",0,eMail,false,0);
   EndMatrix;
   EndWindow;
+end;
 
+window ReportMailTClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+integer cnt,pos,i;
+longint curt;;
 
   WindowBegin("Pievienot skolēnu",SMFAddStudentWClass,CGother,RcType);
   SetWRect(20,80,330,110);
@@ -1457,8 +2266,6 @@ begin
   vs = 20; h=100;
   EditFieldTL(h,v=6, 100,"Skolēns",M4UStr,Normal,20,f1,false,CUSClass);
   EndWindow;
-
-  return;
 end;
 
 window WebNGMenuDClass:1

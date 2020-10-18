@@ -177,7 +177,7 @@ SourceFile("halcust\\RActions", 3);
 SourceFile("halcust\\Reports", 3);
 SourceFile("halcust\\Tools", 3);
 SourceFile("halcust\\WActions", 3);
-SourceFile("halcust\\Windows", 3);
+SourceFile("halcust\\Windows", 0);
 SourceFile("halcust\\WebNG",0);
 SourceFile("halcust\\Level0", 0);
 SourceFile("halcust\\Level0/Documents", 0);
@@ -447,6 +447,10 @@ begin
   KeySegment(SMFCode);
   KeyBegin(Semester);
   KeySegment(Semester);
+  KeySegment(SMFCode);
+  SubsetKeyBegin2(MCode);
+  StoreInBaseKey;
+  AppendMatrixFieldToKeyName(Code,0);
   KeySegment(SMFCode);
   EndRecord;
 
@@ -880,6 +884,14 @@ begin
   MainKeyBegin(SerNr,0);
   KeySegment(Semester);
   KeySegment(SerNr);
+
+  SubsetKeyBegin2(RecTypeN);
+  AppendListFieldToKeyName(RecCode);
+  KeySegment(StatusFlag);
+  KeySegment(RecType);
+  KeySegment(TransDate);
+  KeySegment(TransTime);
+  KeySegment(SerNr);
   EndRecord;
 
   RecordBegin(JALEventVc,-,"");
@@ -1040,6 +1052,13 @@ begin
   MainKeyBegin(SerNr,0);
   KeySegment(Semester);
   KeySegment(SerNr);
+
+  KeyBegin(CustType);
+  KeySegment(EventNr);
+  KeySegment(CustType);
+  KeySegment(AddCode);
+  KeySegment(SerNr);
+
   EndRecord;
 
 

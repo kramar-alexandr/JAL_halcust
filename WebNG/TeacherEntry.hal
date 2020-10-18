@@ -448,6 +448,26 @@ begin
   return;
 end;
 
+procedure GetSemesterDate(string semstr,var Date sd,var Date ed)
+begin
+  record JALSemesterBlock JSb;
+  row JALSemesterBlock JSbrw;
+  Integer i,rwcnt;
+
+  BlockLoad(JSb);
+  rwcnt = MatRowCnt(JSb);
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(JSb,i,JSbrw);
+    if (semstr==JSBrw.YearStr) then begin
+      i = rwcnt;
+      sd = JSbrw.DateFrom;
+      ed = JSbrw.DateTo;
+    end;
+  end;
+
+  return;
+end;
+
 function Boolean SMUParticipatedInEvent(record SMFVc SMFr,Longint eventnr,var Integer parttype)
 begin
   Boolean res;
@@ -462,6 +482,24 @@ begin
   end;
 
   SMUParticipatedInEvent = res;
+  return;
+end;
+
+
+function Boolean ArchiveSMUParticipatedInEvent(record ArchiveSMFVc SMFr,Longint eventnr,var Integer parttype)
+begin
+  Boolean res;
+  record ArchiveJALEventEntryVc JEEr;
+
+  JEEr.AddCode = SMFr.SMFCode;
+  JEEr.EventNr = eventnr;
+  JEEr.CustType = 0;
+  if (ReadFirstKey("CustType",JEEr,3,true)) then begin
+    res = true;
+    parttype = JEEr.StatusFlag;
+  end;
+
+  ArchiveSMUParticipatedInEvent = res;
   return;
 end;
 
@@ -482,6 +520,27 @@ begin
   end;
 
   GetEventHist = res;
+  return;
+end;
+
+
+function Boolean GetEventHist_Archive(record ArchiveSMFVc A_SMFr,Date sd,Date ed,Integer type,var Integer parttype)
+begin
+  Boolean res;
+  record JALEventVc JEr;
+  
+  JEr.StatusFlag = type;
+  JEr.StartDate = sd;
+  parttype = -1;
+  if (ReadFirstKey("StatusFlag",JEr,2,false)) then begin
+    if (JEr.StatusFlag==type and DateInRange(JEr.StartDate,sd,ed)) then begin
+      if (ArchiveSMUParticipatedInEvent(A_SMFr,JEr.SerNr,parttype)) then begin
+        res = true;
+      end;
+    end;
+  end;
+
+  GetEventHist_Archive = res;
   return;
 end;
 
@@ -608,6 +667,7 @@ global webpublic
 procedure WebgetTeacherInfo()
 begin
   record SMFVc SMFr;
+  record ArchiveSMFVc A_SMFr;
   row SMFVc SMFrw;
   Integer i,mtrw,cnt,totcnt,totsmu,application_cnt;
   string 50 code,status,type,semstr;
@@ -617,7 +677,9 @@ begin
   Boolean titanflag,enudienaflag;
   Integer partype;
   record JALTeacherAccVc JTr;
+  record ArchiveJALTeacherAccVc A_JTr;
   record CUVc CUr;
+  vector Boolean vCust;
   
   code = webgetarg("code");
   type = webgetarg("type");
@@ -736,6 +798,61 @@ begin
         end;
       end;
     end;
+
+
+    RecordClear(A_JTr);
+    ResetLoop(A_JTr);
+    TrHs = true;
+    A_JTr.RecType = 3;
+    A_JTr.StatusFlag = 1;
+    while (LoopKey("RecTypeN:" & code,A_JTr,2,TrHs)) begin
+      if (A_JTr.RecType!=3 or A_JTr.StatusFlag!=1) then begin
+        TrHs = false;
+      end else begin
+        CUr.Code = A_JTr.SMFCode;
+        if (vCust[A_JTr.SMFCode]==false and ReadFirstMain(CUr,1,true))then begin
+          vCust[A_JTr.SMFCode] = true;
+          RecordClear(A_SMFr);
+          i = 1;
+          while (ReadRecordToLink(CUr,i,A_SMFr,RLr)) begin
+            i = i + 1;
+            cnt = cnt + 1;
+            if(cnt>1)then begin
+                weboutstring(",");
+            end;
+            WebOutStringFormatNL("{");
+            WebOutStringFormatNL("\"Nr\":\"" & cnt & "\",");
+            WebOutStringFormatNL("\"SerNr\":\"" & A_JTr.SerNr & "\",");
+            WebOutStringFormatNL("\"Statuss\":\"" & A_JTr.StatusFlag & "\",");
+            WebOutStringFormatNL("\"Datums\":\"" & DateToString(A_JTr.TransDate,"YYYY/MM/DD") & "\",");
+            WebOutStringFormatNL("\"Klase\":\"" & A_SMFr.ClassNum & A_SMFr.ClassChar & "\",");
+            WebOutStringFormatNL("\"Klase2\":\"" & A_SMFr.ClassNum & "\",");
+            WebOutStringFormatNL("\"Skolens\":\"" & FormatJSONString(CUr.Name) & "\",");
+            WebOutStringFormatNL("\"Kods\":\"" & CUr.Code & "\",");
+            WebOutStringFormatNL("\"CertFlag\":\"" & CUr.CertificateFlag & "\",");
+            WebOutStringFormatNL("\"CertPrintf\":\"" & CUr.CertificatePrint & "\",");
+            
+            //WebOutStringFormatNL("\"Enudiena\":\"" & CUr.EnuDienaFlag & "\",");
+            //WebOutStringFormatNL("\"Titan\":\"" & CUr.TitanFlag & "\",");
+
+            enudienaflag = GetEventHist_Archive(A_SMFr,sd,ed,1,partype);
+            titanflag = GetEventHist_Archive(A_SMFr,sd,ed,2,partype);
+
+            WebOutStringFormatNL("\"SMU\":\"" & A_SMFr.SMFCode & "\",");
+            WebOutStringFormatNL("\"Nosaukums\":\"" & FormatJSONString(A_SMFr.SMFName) & "\",");
+            WebOutStringFormatNL("\"ApprovalStatus\":\"" & A_SMFr.ApprovalStatus & "\",");
+            WebOutStringFormatNL("\"Likvidets\":\"" & A_SMFr.StatusFlag & "\",");
+            WebOutStringFormatNL("\"MacibuGads\":\"" & A_SMFr.Semester & "\",");
+            WebOutStringFormatNL("\"Izglitiba\":\"" & GetEduLevel(StringToInt(A_SMFr.ClassNum)) & "\",");
+            WebOutStringFormatNL("\"Titan\":\"" & titanflag & "\",");
+            WebOutStringFormatNL("\"Enudiena\":\"" & enudienaflag & "\"");
+            WebOutStringFormatNL("}");
+          end;
+        end;
+      end;
+    end;
+
+
     ResetLoop(SMFr);
     RecordClear(SMFr);
     while (LoopKey("MCode:" & code,SMFr,1,true)) begin
@@ -778,6 +895,69 @@ begin
   end;*/
 
 return;
+end;
+
+global webpublic 
+procedure WebgetStudentSMUArchive()
+begin
+  record SMFVc SMFr;
+  record ArchiveSMFVc A_SMFr;
+  row SMFVc SMFrw;
+  Integer i,j,cnt;
+  string 50 tstr;
+  Boolean TrHs,testf;
+  record RLinkVc RLr;
+  Date sd,ed;
+  Boolean titanflag,enudienaflag;
+  Integer partype;
+  record CUVc CUr,tCUr;
+    
+  WebOutString("{");
+  CUr.Code = CurrentCust;
+  if (ReadFirstMain(Cur,1,true)) then begin
+    WebOutString("\"SMU\":[");
+    i = 1;
+    while (ReadRecordToLink(CUr,i,A_SMFr,RLr)) begin
+      i = i + 1;
+      cnt = cnt + 1;
+      if(cnt>1)then begin
+          weboutstring(",");
+      end;
+      WebOutStringFormatNL("{");
+
+      WebOutStringFormatNL("\"SMU\":\"" & A_SMFr.SMFCode & "\",");
+      WebOutStringFormatNL("\"Nosaukums\":\"" & FormatJSONString(A_SMFr.SMFName) & "\",");
+      WebOutStringFormatNL("\"startdate\":\"" & A_SMFr.ActDateStart & "\",");
+      WebOutStringFormatNL("\"enddate\":\"" & A_SMFr.ActDateEnd & "\",");
+      WebOutStringFormatNL("\"ProdSpec\":\"" & A_SMFr.ProdSpec & "\",");
+      WebOutStringFormatNL("\"targetAudit\":\"" & FormatJSONString(A_SMFr.TargetAud) & "\",");
+      WebOutStringFormatNL("\"education\":\"" & StringFromSet(3001,A_SMFr.EducationType) & "\",");
+      WebOutString("""emplist"":[");
+      j = 1;
+      while (ReadRecordLink(A_SMFr,j,tCUr,RLr)) begin
+        if (j>1) then begin
+          WebOutString(",");
+        end;
+        WebOutString("{""Code"":""" & tCUr.Code & """,");
+        WebOutString("""Name"":""" & FormatJSONString(tCUr.Name) & """,");
+        WebOutString("""eMail"":""" & FormatJSONString(tCUr.eMail) & """}");
+        j = j + 1;
+      end;
+      WebOutString("],"); 
+      WebOutStringFormatNL("\"prodText\":\"");
+      for (j=0;j<SizeTextCnt(A_SMFr);j=j+200) begin
+        tstr = StringFromText(A_SMFr,j,200);
+        WebOutString(FormatJSONString(StrReplace(tstr,chr(13),"\\n")));
+      end;
+      WebOutString("\"");
+      WebOutStringFormatNL("}");
+    end;
+
+    WebOutStringFormatNL("]");  
+  end;
+  WebOutString("}");
+
+  return;
 end;
 
 procedure DisplayEntryRows(integer type,string code,integer status)
@@ -964,6 +1144,7 @@ begin
   WebOutString("<a class='open-info-smu'><h2 class='title'></h2></a>");
   WebOutString("<p class='leader'>" & ToolWebNGTranslateText2(80103) & "</p>");
   WebOutString("<p class='members'>" & ToolWebNGTranslateText2(80104) & "</p>");
+  WebOutString("<p class='semester'></p>");
   WebOutString("</div>");
   WebOutString("<div class='documents'>");
   WebOutString("<p>" & ToolWebNGTranslateText2(80093) & "</p>");//SMU re�istr�cijas statuss
@@ -1075,10 +1256,59 @@ begin
   integer type;
 
   if nonblank(CurrentCust)then begin
-      CUr.Code = CurrentCust;
-      if readfirstmain(CUr,1,true) then begin
-        type = GetJAlCustType(CUr,SMFr,TCr,MTr);
-        ShowTeacherSmuEntry(CUr,TCr);
+    CUr.Code = CurrentCust;
+    if readfirstmain(CUr,1,true) then begin
+      type = GetJAlCustType(CUr,SMFr,TCr,MTr);
+      ShowTeacherSmuEntry(CUr,TCr);
+    end;
+  end;
+return;
+end;
+
+
+global procedure ShowTeacherSmuArchiveEntry(record CUVc CUr,record TeacherVc TCr)
+begin
+
+  WebOutString("<div id='smu_doc_template'>");
+  ShowSMUDocSectionTemplate;
+  WebOutString("</div>");
+
+  WebOutString("<div id='smu_info_template'>");
+  WebOutString("<div class='company-detail'>");
+  ShowSMUInfoTemplate;
+  WebOutString("<div class='company-header'>");
+  WebOutString("<h2>" & ToolWebNGTranslateText2(80053) & "</h2>");//
+  WebOutString("<p>" & ToolWebNGTranslateText2(80054) & "</p>");//
+  WebOutString("</div>");
+
+  WebOutString("</div>");
+  WebOutString("</div>");
+  
+  WebOutStringFormatNL("<script>");
+  WebOutStringFormatNL("  var link = '" & FormatSimpleLink("/WebGetSmuArchiveInfo.hal",true) & "?code=" & TCr.TeacherCode & "'");
+  WebOutStringFormatNL("  xmlhttp=new XMLHttpRequest();");
+  WebOutStringFormatNL("  xmlhttp.open('GET',link,false);");
+  WebOutStringFormatNL("  xmlhttp.send(null);");
+  WebOutStringFormatNL("  var SMUData = xmlhttp.responseText;");
+  WebOutStringFormatNL("</script>");
+  
+return;
+end;
+
+global
+procedure WebShowSmuArchiveEntry()
+begin
+  record CUVc CUr;
+  record SMFVc SMFr;
+  record TeacherVc TCr;
+  record MentorVc MTr;
+  integer type;
+
+  if nonblank(CurrentCust)then begin
+    CUr.Code = CurrentCust;
+    if readfirstmain(CUr,1,true) then begin
+      type = GetJAlCustType(CUr,SMFr,TCr,MTr);
+      ShowTeacherSmuArchiveEntry(CUr,TCr);
     end;
   end;
 return;
@@ -1272,6 +1502,85 @@ begin
   end;
 
 end;
+return;
+end;
+
+
+global webpublic procedure WebGetSmuArchiveInfo()
+begin
+  record ArchiveSMFVc A_SMFr;
+  integer i,mtrw,cnt;
+  string 50 code,status,type;
+  string 255 semstr,tstr;
+  Date sd,ed;
+  Integer cbziema,cbreg,cbpav,judiena;
+  record CUVc CUr;
+  record RLinkVc RLr;
+  Integer j;
+
+  if(WebLoginStatus==3)then begin
+    code = webgetarg("code");
+    
+    WebOutStringFormatNL("[");
+    
+    if(nonblank(code))then begin
+      while (LoopKey("MCode:" & code,A_SMFr,1,true)) begin
+        cnt = cnt + 1;
+        if(cnt>1)then begin
+            weboutstring(",");
+        end;
+        WebOutStringFormatNL("{");
+        WebOutStringFormatNL("\"regNr\":\"" & A_SMFr.SMFCode & "\",");
+        WebOutStringFormatNL("\"klass\":\"" & A_SMFr.Semester & "\",");
+        WebOutStringFormatNL("\"title\":\"" & FormatJSONString(A_SMFr.SMFName) & "\",");
+
+        WebOutStringFormatNL("\"targetAudit\":\"" & FormatJSONString(A_SMFr.TargetAud) & "\",");
+        WebOutStringFormatNL("\"education\":\"" & StringFromSet(3001,A_SMFr.EducationType) & "\",");
+        WebOutStringFormatNL("\"prodDescr\":\"");
+        for (i=0;i<SizeTextCnt(A_SMFr);i=i+200) begin
+          tstr = StringFromText(A_SMFr,i,200);
+          WebOutString(FormatJSONString(StrReplace(tstr,chr(13),"\\n")));
+        end;
+        WebOutString("\",");
+
+        WebOutStringFormatNL("\"leader\":\"" & FormatJSONString(A_SMFr.Manager) & "\",");
+        WebOutStringFormatNL("\"members\":\"" & FormatJSONString(A_SMFr.Member) & "\",");
+        WebOutStringFormatNL("\"semester\":\"" & FormatJSONString(A_SMFr.Semester) & "\",");
+        WebOutStringFormatNL("\"approvalstatus\":\"" & A_SMFr.ApprovalStatus & "\",");
+
+  
+        WebOutString("""emplist"":[");
+        j = 1;
+        while (ReadRecordLink(A_SMFr,j,CUr,RLr)) begin
+          if (j>1) then begin
+            WebOutString(",");
+          end;
+          WebOutString("{""Code"":""" & CUr.Code & """,");
+          WebOutString("""Name"":""" & FormatJSONString(CUr.Name) & """,");
+          WebOutString("""type"":""0"",");
+          WebOutString("""eMail"":""" & FormatJSONString(CUr.eMail) & """,");
+          WebOutString("""JobDesc"":""" & FormatJSONString(CUr.JobDesc) & """,");
+          WebOutString("""Salary"":""" & CUr.Salary & """}");
+          j = j + 1;
+        end;
+        WebOutString("],"); 
+
+        GetSemesterDate(A_SMFr.Semester,sd,ed);
+        GetEventHist_Archive(A_SMFr,sd,ed,3,cbziema);
+        GetEventHist_Archive(A_SMFr,sd,ed,4,cbreg);
+        GetEventHist_Archive(A_SMFr,sd,ed,5,cbpav);
+        GetEventHist_Archive(A_SMFr,sd,ed,6,judiena);
+        
+        WebOutStringFormatNL("\"cbziema\":\"" & cbziema & "\",");
+        WebOutStringFormatNL("\"cbreg\":\"" & cbreg & "\",");
+        WebOutStringFormatNL("\"cbpav\":\"" & cbpav & "\",");
+        WebOutStringFormatNL("\"judiena\":\"" & judiena & "\"");
+
+        WebOutStringFormatNL("}");
+      end;
+    end;
+    WebOutStringFormatNL("]");
+  end;
 return;
 end;
 
@@ -1577,7 +1886,8 @@ begin
         end;
         
         WebOutStringFormatNL("\"forceupdate\":\"" & CUr.ForceUpdate & "\",");
-        confirmteach = GetTeacherConfirmation(CUr);
+        //confirmteach = GetTeacherConfirmation(CUr);
+        confirmteach = CUr.ConfirmTeach;
         WebOutStringFormatNL("\"verified\": {" );
         WebOutStringFormatNL("\"personal\":" & OutPutConfirmation(CUr.ForceCertificate,CUr.ConfirmSKL,1)  &  ",");
         WebOutStringFormatNL("\"parents\":" & OutPutConfirmation(CUr.ForceCertificate,CUr.ConfirmPar,1) & ",");

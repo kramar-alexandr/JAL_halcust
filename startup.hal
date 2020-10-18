@@ -451,3 +451,18 @@ begin
 
   return;
 end;
+
+event startup
+begin
+  
+  SetLangMode(LangEnglish,"ENG",2);
+
+  SetBegin(3001);
+  SetText(0,"-");
+  SetText(1,"Pamatskola");
+  SetText(2,"Vidusskola");
+  SetText(3,"Profesionālā izglītība");
+  EndSet;
+
+
+end;

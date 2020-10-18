@@ -45,6 +45,7 @@ external procedure TchChangePage();// Edit ************************** BPI Ukrain
 external procedure DrawPasswordRecoveryPage();
 external procedure WebShowEntry();
 external procedure WebShowSmuEntry();
+external procedure WebShowSmuArchiveEntry();
 external procedure ExtractObjWithSeparator(string,string,Boolean,var Integer,var string);
 external procedure ShowLastNewsPicture(string);
 external procedure ShowSMUEditPage();
@@ -230,6 +231,8 @@ begin
     WebShowEntry; res = true;
   case "WebShowSmuEntry":
     WebShowSmuEntry; res = true;
+  case "WebShowSmuArchiveEntry":
+    WebShowSmuArchiveEntry; res = true;
   case "ShowLastNewsPicture":
     ShowLastNewsPicture(WEr.WebMenu); res = true;
   case "ShowSMUEditPage":
