@@ -62,6 +62,7 @@ external function string 255 ConvertXml(string);
 external procedure HansaWorldHALApp(record WebNGStructVc,string,string);
 //CUST-BEGIN
 external procedure ShowWebProfile();
+external outer procedure ShowSMUShopApp(string WebNGStructVc,string);
 //CUST-END
 
 procedure SetCountryAndLanguage(var string path)
@@ -527,6 +528,7 @@ LHandlePath:;
     case kStructTypeProductionPlan: ProdPlanApp(WSr,mpath);
     case kStructTypeAvailableApps: AvailableAppsOnWeb(WSr,mpath);
     case 55: EventAppHandler(WSr,mpath,path);//CUST
+    case 120: ShowSMUShopApp(WSr,mpath);//CUST
     otherwise
       RollbackOneRequestURL;
       ShowErrorPage(ToolWebNGTranslateText(25000)); //File not found

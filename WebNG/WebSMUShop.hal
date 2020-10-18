@@ -1,0 +1,306 @@
+external inner function string 255 removenextnode(var string);
+external inner function string 255 FormatSimpleLink(string,boolean);
+external inner procedure ShowWebAppPageStart(record WebNGPageVc,string);
+external inner procedure ShowWebAppPageEnd(record WebNGPageVc);
+
+function Boolean FindItemImage(record SMFItemVc SIr,var string link)
+begin
+  Boolean res;
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+
+  if (ReadRecordLink(SIr,1,Attachr,RLr)) begin
+    res = true;
+    link = "/WebShowSMUShopItemImage.hal?smf=" & SMFr.SMFCode & "&id=" & SIr.UUID;
+  end;
+
+  FindItemImage = res;
+  return;
+end;
+
+function string 255 DefaultItemImage()
+begin
+  string 255 res;
+
+  res = "/images/shop_def_item.png";
+
+  DefaultItemImage = res;
+  return;
+end;
+
+global webpublic
+procedure WebShowSMUShopItemImage()
+begin
+  record SMFItemVc SIr;
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+  
+  SIr.UUID = StringToUUID(WebGetArg("id"));
+  if (ReadFirstMain(SIr,1,true)) then begin
+    if (SIr.SMFCode==WebGetArg("smf")) then begin
+      if (ReadRecordLink(SIr,1,Attachr,RLr)) begin
+        ext = right(Attachr.FileName,4);
+        SetContentTypeForExtension(ext);
+        WebSetContentDisposition("inline; filename=" & Attachr.FileName);
+        WebOutAttachment(Attachr.SerNr);
+      end;
+    end;
+  end;
+
+  return;
+end;
+
+procedure ShowSingleSMUShopItem(record SMFItemVc SIr)
+begin
+  string 255 link;
+  
+  WebOutString("<div class='smu_shop_single_item'>");
+  WebOutString("<div class='smu_shop_item_image'>");
+  if (FindItemImage(SIr,link)==false) then begin
+    link = DefaultItemImage;
+  end;
+  WebOutString("<img src='" & link & "'>");
+  WebOutString("</div>");//smu_shop_item_image
+
+  WebOutstring("<div class='smu_shop_item_details'>");
+  WebOutString("<div class='smu_shop_item_title'>" & SIr.Name & "</div>");
+  WebOutString("<div class='smu_shop_item_price'>" & SIr.Price & "</div>");
+  WebOutString("</div>");//smu_shop_item_details
+
+  WebOutString("</div>");//smu_shop_single_item
+
+  return;
+end;
+
+procedure ShowSMUShopItems(record SMFVc SMFr)
+begin
+  Boolean TrHs;
+  record SMFItemVc SIr;
+
+  WebOutString("<div class='smu_shop_item_frame'>");
+  WebOutString("<div class='smu_shop_item_title'>" & ToolWebNGTranslateText2() & "</div>");
+
+  WebOutString("<div class='smu_shop_item_list'>");
+
+  TrHs = true;
+  SIr.SMFCode = SMFr.SMFCode;
+  while (LoopKey("SMFCode",SIr,1,TrHs)) begin
+    if (SIr.SMFCode!=SMFr.SMFCode) then begin
+      TrHs = false;
+    end else begin
+      ShowSingleSMUShopItem(SIr);
+    end;
+  end;
+
+  WebOutString("</div>");//smu_shop_item_list
+  WebOutString("</div>");//smu_shop_item_frame
+
+  return;
+end;
+
+
+procedure AddMedia(record SMFVc SMFr,string fn,string cls)
+begin
+  string 255 tstr;
+  
+  tstr = GetFieldValueByName(SMFr,fn,-1);
+  if (nonblank(tstr)) then begin
+    WebOutString("<div class='smu_shop_media " & cls & "'><a href='" & tstr & "'></a></div>");
+  end;
+
+  return;
+end;
+
+function Boolean FindJALFile(string smfcode,Integer type,var record JALFileVc rJFr)
+begin
+  record JALFileVc JFr;
+  Boolean res;
+
+  JFr.SMFCode = smfcode;
+  JFr.Type = type;
+  if (ReadFirstKey("SMFType",JFr,2,true)) then begin
+    res = true;
+    RecordCopy(rJFr,JFr);
+  end;
+
+  FindJALFile = res;
+  return;
+end;
+
+function string 255 GetJALFileLink(record JALFileVc JFr)
+begin
+  string 255 res;
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+
+  if (ReadRecordLink(SIr,1,Attachr,RLr)) begin
+    res = true;
+    link = "/WebShowJALFile.hal?smf=" & SMFr.SMFCode & "&id=" & JFr.UUID;
+  end;
+ 
+
+  GetJALFileLink = res;
+  return;
+end;
+
+global webpublic
+procedure WebShowJALFile()
+begin
+  record JALFileVc JFr;
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+  
+  JFr.UUID = StringToUUID(WebGetArg("id"));
+  if (ReadFirstMain(JFr,1,true)) then begin
+    if (JFr.SMFCode==WebGetArg("smf")) then begin
+      if (ReadRecordLink(JFr,1,Attachr,RLr)) begin
+        ext = right(Attachr.FileName,4);
+        SetContentTypeForExtension(ext);
+        WebSetContentDisposition("inline; filename=" & Attachr.FileName);
+        WebOutAttachment(Attachr.SerNr);
+      end;
+    end;
+  end;
+
+  return;
+end;
+
+function Boolean GetCompanyLogo(record SMFVc SMFr,var string link)
+begin
+  Boolean res;
+  
+  if (FindJALFile(SMFr.SMFCode,0,JFr)) then begin
+    link = GetJALFileLink(JFr);
+    res = true;
+  end;
+
+  GetCompanyLogo = res;
+  return;
+end;
+
+function Boolean GetCompanyBackground(record SMFVc SMFr,var string link)
+begin
+  Boolean res;
+  
+  if (FindJALFile(SMFr.SMFCode,1,JFr)) then begin
+    link = GetJALFileLink(JFr);
+    res = true;
+  end;
+
+  GetCompanyLogo = res;
+  return;
+end;
+
+function string 255 DefaultLogo()
+begin
+  string 255 res;
+
+  res = "/images/shop_default_logo.png";
+
+  DefaultLogo = res;
+  return;
+end;
+
+function string 255 DefaultBackground()
+begin
+  string 255 res;
+
+  res = "/images/shop_default_background.png";
+
+  DefaultBackground = res;
+  return;
+end;
+
+procedure ShowSMUShopEmployees(record SMFVc SMFr)
+begin
+  
+  
+
+  return;
+end;
+
+procedure ShowSingleSMUWebShop(record SMFVc SMFr)
+begin
+  
+  if (GetCompanyLogo(SMFr,logolink)==false) then begin
+    logolink = DefaultLogo;
+  end;
+  if (GetCompanyBackground(SMFr,bglink)==false) then begin
+    bglink = DefaultBackground;
+  end;
+
+  WebOutString("<div class='smu_shop_frame'>");
+  WebOutString("<div class='smu_shop_title_section'>");
+  WebOutString("<div class='smu_shop_logo'><img src='" & logolink & "'></div>");
+  WebOutString("<div class='smu_shop_compname_section'>");
+  
+  WebOutString("<div class='smu_shop_title'>" & SMFr.SMFName & "</div>");
+  WebOutString("<div class='smu_shop_prodspec'>" & SMFr.ProdSpec & "</div>");
+  
+  WebOutString("<div class='smu_shop_media_frame'>")
+
+  AddMedia(SMFr,"ExtWebPage","externalpage");
+  AddMedia(SMFr,"Facebook","fbpage");
+  AddMedia(SMFr,"Instagram","instagrampage");
+  AddMedia(SMFr,"Twitter","twitterpage");
+  
+  WebOutString("</div>");//smu_shop_media_frame
+  WebOutString("</div>");//smu_shop_compname_section
+
+  WebOutString("</div>");//smu_shop_title_section
+
+  WebOutString("<div class='smu_shop_aboutus_frame'><div class='smu_shop_aboutus'>");
+  WebOutString("<div class='smu_shop_aboutus_title'>" & ToolWebNGTranslateText2() & "</div><div class='smu_shop_aboutus_text'>");
+  WebOutText(SMFr,false,"");
+  WebOutString("</div>");
+  WebOutString("</div></div>");//smu_shop_aboutus_frame
+
+  ShowSMUShopItems(SMFr);
+  ShowSMUShopEmployees(SMFr);
+
+  WebOutString("</div>");//smu_shop_frame
+
+  
+
+  return;
+end;
+
+procedure ShowSMUShopList()
+begin
+  
+  
+
+  return;
+end;
+
+global
+procedure ShowSMUShopApp(string WebNGStructVc WSr,string mpath)
+begin
+  string 255 path,node;
+  record SMFVc SMFr;
+  Boolean showf;
+
+  WPr.Code = WSr.WebPage;
+  if (nonblank(WPr.Code)) then begin
+    if (ReadFirstMain(WPr,1,true)) then begin end;
+  end;
+  ShowWebAppPageStart(WPr,"");
+
+  path = mpath;
+  node = removenextnode(path);
+  if (nonblank(node)) then begin
+    SMFr.WebShopUrl = node;
+    if (ReadFirstKey("WebShopUrl",SMFr,1,true)) then begin
+      ShowSingleSMUWebShop(SMFr);
+      showf = true;
+    end
+  end;
+  if (showf==false) then begin
+    ShowSMUShopList;
+  end;
+
+  ShowWebAppPageEnd(WPr);
+
+
+  return;
+end;

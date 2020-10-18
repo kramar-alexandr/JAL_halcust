@@ -63,6 +63,14 @@ begin
   RecordField(EnuDienaFlag,M4Int,0,0);
   RecordField(OldApprovalStatus,M4Int,0,0);
   RecordField(PrintCert,M4Int,0,0);
+  RecordField(ExtWebPage,M4Str,255,0);
+  RecordField(Facebook,M4Str,255,0);
+  RecordField(Instagram,M4Str,255,0);
+  RecordField(Twitter,M4Str,255,0);
+  RecordField(WebShopUrl,M4Str,100,0);
+  RecordField(WebStatus,M4Int,0,0);
+  RecordField(WebApprovedDate,M4Date,0,0);
+
   ArrayBegin(Math,-,1);
   ArrayField(Type,M4Set,1005,0);
   ArrayField(Code,M4Code,10,0);
@@ -438,6 +446,15 @@ begin
   AppendMatrixFieldToKeyName(Code,0);
   KeySegment(SMFCode);
 
+  KeyBegin(WebShopUrl);
+  KeySegment(WebShopUrl);
+  KeySegment(SMFCode);
+
+  KeyBegin(WebStatus);
+  KeySegment(WebStatus);
+  KeySegment(WebApprovedDate);
+  KeySegment(SMFCode);
+
   EndRecord;
 
   RecordBegin(ArchiveSMFVc,-,"");
@@ -791,13 +808,14 @@ begin
 
   
   RecordBegin(JALFileVc,-,"");
-  RecordField(SerNr,M4Long,0,0);
+  NewAutosyncRegister(kSyncDirectionToClient,true);
   RecordField(SMFCode,M4Code,12,0);
   RecordField(SMFName,M4Str,60,0);
   RecordField(Status,M4Int,0,0);
   RecordField(TransDate,M4Date,0,0);
   RecordField(Score,M4Int,0,0);
   RecordField(Name,M4Str,200,0);
+  RecordField(Type,M4Set,32000,0);
   MainKeyBegin(SerNr,0);
   KeySegment(SerNr);
   KeyBegin(SMFCode);
@@ -807,6 +825,10 @@ begin
   KeyBegin(SMFTransDate);
   KeySegment(SMFCode);
   KeySegment(TransDate);
+  KeySegment(SerNr);
+  KeyBegin(SMFType);
+  KeySegment(SMFCode);
+  KeySegment(Type);
   KeySegment(SerNr);
 
   EndRecord;
