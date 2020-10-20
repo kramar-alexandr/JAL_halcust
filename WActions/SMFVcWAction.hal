@@ -304,14 +304,14 @@ procedure DblJALFilesVc(string dblstr,string l,Integer currepwn)
 begin
   Integer wn;
   record JALFileVc JFr;
-  longint tstr;
+  UUID tstr;
 
   if (nonblank(l)) then begin
-    tstr = stringToLongInt(l);
+    tstr = stringToUUID(l);
   end else begin
-    tstr = stringToLongInt(dblstr);
+    tstr = stringToUUID(dblstr);
   end;
-  JFr.SerNr = tstr;
+  JFr.UUID = tstr;
 
   if Readfirstmain(JFr,1,true) then begin
     wn = OpenWindow("JALFileDClass",0,currepwn,"","",JFr);

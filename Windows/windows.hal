@@ -1290,13 +1290,13 @@ begin
   real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
 integer cnt,pos,i;
 longint curt;;
-  WindowBegin("Dokumenti",JALFileLClass,CGmList,-);
+  WindowBegin("Faili",JALFileLClass,CGmList,-);
   SpawnClass(JALFileDClass);
   UseView(JALFileVc);
   SetWRect(80,80,300,300);
 
   RecordList(4,17,-21,-39);
-  RlColKey(4,4,"Sēr. nr.",SerNr,false,SerNr);
+//  RlColKey(80,80,"Sēr. nr.",SerNr,false,SerNr);
   RlColKey(80,80,"SMU kods",SMFCode,false,SMFCode);
   RLCol   (180,180,"SMU nos.",SMFName,false);
   SearchField("Meklēt");
@@ -1309,23 +1309,28 @@ begin
   real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
 integer cnt,pos,i;
 longint curt;;
-  WindowBegin("Dokuments",JALFileDClass,CGView,-);
+  WindowBegin("Fails",JALFileDClass,CGView,-);
   v=6;h=100;h2=250;vs=20;
   UseView(JALFileVc);
   SetWRect(80,80,440,400);
-  EditField(h,v,80,"Sēr. nr.",Normal,SerNr,false,0);
-	EditField(h,v+=vs,-40,"Dok name",Normal,Name,false,0);
-  EditField(h,v+=vs,80,"SMU kods",Normal,SMFCode,false,SMFSClass);
-  EditField(h,v+=vs,-40,"SMU nosaukums",Normal,SMFName,false,0);
-	EditField(h,v+=vs,-40,"Reg Date",Normal,TransDate,false,0);
-	EditField(h,v+=vs,80,"Vērtējums",Normal,Score,false,0);
+//  EditField(h,v,80,"Sēr. nr.",Normal,SerNr,false,0);
+//	EditField(h,v+=vs,-40,"Dok name",Normal,Name,false,0);
+  EditField(h,v=6,-40,"SMU kods",Normal,SMFCode,false,SMFSClass);
+//  EditField(h,v+=vs,-40,"SMU nosaukums",Normal,SMFName,false,0);
+	EditField(h,v+=vs,90,"Datums",Normal,TransDate,false,0);
+  ButtonFrame(h,v+=40,100,4,"Tips");
+  RadioButton(h,v,0,0,"Logo",Type);
+  RadioButton(h,v+=16,1,0,"Fons",Type);
+  EndFrame;
+//	EditField(h,v+=vs,80,"Vērtējums",Normal,Score,false,0);
+/*
   ButtonFrame(h,v+=40,100,4,"Statuss");
   RadioButton(h,v,0,0,"Iesūtīts",Status);
   RadioButton(h,v+=16,1,0,"Apstiprināts(skolotājs)",Status);
   RadioButton(h,v+=16,2,0,"Apstiprināts(JAL)",Status);
   RadioButton(h,v+=16,3,0,"Noraidīts",Status);
   RadioButton(h,v+=16,4,0,"Attēls",Status);
- 
+*/
   EndWindow;
 end;
 
@@ -2940,4 +2945,36 @@ begin
   EndWindow;
 	
 	return;
+end;
+
+window SMFItemLClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  WindowBegin("Preces",SMFItemLClass,CGmlist,-);
+  SetWRect(20,80,660,298);
+  Sizeable(-1,-1,0,0);
+  SpawnClass(SMFItemDClass);
+  UseView(SMFItemVc);
+  RecordList(4,17,-21,-39);
+  RlColKey(4,4,"SMU",SMFCode,false,SMFCode);
+  RlCol(134,134,"Nosaukums",Name,false);
+  RlColTL(490,490,"Aktīvs",M4Mark,ActiveFlag,false);
+  SearchField("Search");
+  EndWindow;
+end;
+
+window SMFItemDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,v2,vs2,hm;
+  WindowBegin("Prece",SMFItemDClass,CGview,-);
+  SetWRect(20,80,600,339);
+  UseView(SMFItemVc);
+  vs=20; h=120; vs2=16; hm=-100;
+  EditField(h,v=6,200,"SMU",Normal,SMFCode,false,SMFSClass);
+  EditField(h,v+=vs,-40,"Nosaukums",Normal,Name,false,0);
+  //EditField(h,v+=vs,100,"Secība",Normal,Order,false,0);
+  EditField(h,v+=vs,100,"Cena",Normal,Price,false,0);
+  CheckBox(h+240,v=6,0,"Aktīvs",ActiveFlag);
+  EndWindow;
 end;

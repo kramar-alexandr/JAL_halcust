@@ -816,20 +816,20 @@ begin
   RecordField(Score,M4Int,0,0);
   RecordField(Name,M4Str,200,0);
   RecordField(Type,M4Set,32000,0);
-  MainKeyBegin(SerNr,0);
-  KeySegment(SerNr);
+  MainKeyBegin(MainKey,0);
+  KeySegment(UUID);
   KeyBegin(SMFCode);
   KeySegment(SMFCode);
   KeySegment(Status);
-  KeySegment(SerNr);
+  KeySegment(UUID);
   KeyBegin(SMFTransDate);
   KeySegment(SMFCode);
   KeySegment(TransDate);
-  KeySegment(SerNr);
+  KeySegment(UUID);
   KeyBegin(SMFType);
   KeySegment(SMFCode);
   KeySegment(Type);
-  KeySegment(SerNr);
+  KeySegment(UUID);
 
   EndRecord;
 
@@ -1250,6 +1250,21 @@ begin
   RecordField(Text,M4TextField,0,0);
   MainKeyBegin(SerNr,0);
   KeySegment(SerNr);
+  EndRecord;
+  
+  RecordBegin(SMFItemVc,-,"");
+  NewAutosyncRegister(kSyncDirectionToClient,true);
+  RecordField(SMFCode,M4Code,40,0);
+  RecordField(Name,M4Str,250,0);
+  RecordField(Order,M4Int,0,0);
+  RecordField(Price,M4Val,0,0);
+  RecordField(ActiveFlag,M4Int,0,0);
+  MainKeyBegin(MainKey,0);
+  KeySegment(UUID);
+  KeyBegin(SMFCode);
+  KeySegment(SMFCode);
+  KeySegment(Order);
+  KeySegment(UUID);
   EndRecord;
   
   return;

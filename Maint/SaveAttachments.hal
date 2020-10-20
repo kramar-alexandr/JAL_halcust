@@ -5,7 +5,7 @@ begin
 
 
   RecordNew(JFr);
-  JFr.SerNr = NextSerNr("JALFileVc",CurrentDate,-1,false,"");
+  JFr.UUID = MakeUUID;
   JFr.SMFCode = SMFr.SMFCode;
   JFr.SMFName = SMFr.SMFName;
   JFr.TransDate = CurrentDate;

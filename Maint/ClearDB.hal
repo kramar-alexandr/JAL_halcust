@@ -1,1 +1,95 @@
-global updating procedure ClearDBMn(record RCVc RepSpec)begin  record SMFVc SMFr;  record JALFileVc JFr;  record JALFileHistVc JFHr;  record CUVc CUr;  integer cnt,i;  record Attach2Vc Attachr;  record RLinkVc RLr;  record TeacherVc TCr;  record SchoolVc Schoolr,oldSchoolr;  ResetLoop(SMFr);  SMFr.SMFCode="ZZZZZZZZZ";  while LoopBackKey("SMFCode",SMFr,1,true) begin    RecordDelete(SMFr);  end;  ResetLoop(CUr);  CUr.Code = "ZZZZZZZZ";  while LoopBackKey("Code",CUr,1,true) begin    if SetInSet("SKLN",CUr.Classification) then begin      RecordRemove(CUr);//      StepBack(CUr);    end;  end;  JFr.SerNr = 99999999999;  while LoopBackKey("SerNr",JFr,1,true) begin    RecordRemove(JFr);//    StepBack(JFr);  end;  JFHr.SerNr = 99999999999;  while LoopBackKey("SerNr",JFHr,1,true) begin    RecordRemove(JFHr);//    StepBack(JFHr);  end;  /*  //TO add teachers here as well??  ResetLoop(CUr);  CUr.Code = "";  while loopmain(CUr,1,true) begin    if SetInSet("SKLT",CUr.Classification) then begin      RecordRemove(CUr);      StepBack(CUr);    end;  end;  while loopmain(TCr,1,true) begin    RecordRemove(TCr);    StepBack(TCr);  end;  while (LoopMain(Schoolr,1,true)) begin    RecordCopy(oldSchoolr,Schoolr);    Schoolr.Approved = 0;    RecordUpdate(oldSchoolr,Schoolr,true);  end;*/  //return;end;globalupdating procedure ClearSMFAttachMn(record RCVc RepSpec)begin  record SMFVc SMFr;  record JALFileVc JFr;  record JALFileHistVc JFHr;  record CUVc CUr;  integer cnt,i;  record Attach2Vc Attachr;  record RLinkVc RLr;  while loopmain(SMFr,1,true) begin        i = 1;    cnt = 0;    while readrecordlink(SMFr,i,Attachr,RLr) begin      RecordRemove(Attachr);      cnt = cnt + 1;      if cnt>10 then begin        goto LEnd;      end;    end;    lEnd:;  end;return;end;
+
+
+
+global 
+updating procedure ClearDBMn(record RCVc RepSpec)
+begin
+  record SMFVc SMFr;
+  record JALFileVc JFr;
+  record JALFileHistVc JFHr;
+  record CUVc CUr;
+  integer cnt,i;
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+  record TeacherVc TCr;
+  record SchoolVc Schoolr,oldSchoolr;
+
+  ResetLoop(SMFr);
+  SMFr.SMFCode="ZZZZZZZZZ";
+  while LoopBackKey("SMFCode",SMFr,1,true) begin
+    RecordDelete(SMFr);
+  end;
+
+  ResetLoop(CUr);
+  CUr.Code = "ZZZZZZZZ";
+  while LoopBackKey("Code",CUr,1,true) begin
+    if SetInSet("SKLN",CUr.Classification) then begin
+      RecordRemove(CUr);
+//      StepBack(CUr);
+    end;
+  end;
+  while LoopKey("UUID",JFr,1,true) begin
+    RecordRemove(JFr);
+    StepBack(JFr);
+  end;
+  JFHr.SerNr = 99999999999;
+  while LoopBackKey("SerNr",JFHr,1,true) begin
+    RecordRemove(JFHr);
+//    StepBack(JFHr);
+  end;
+  
+/*
+  //TO add teachers here as well??
+  ResetLoop(CUr);
+  CUr.Code = "";
+  while loopmain(CUr,1,true) begin
+    if SetInSet("SKLT",CUr.Classification) then begin
+      RecordRemove(CUr);
+      StepBack(CUr);
+    end;
+  end;
+
+  while loopmain(TCr,1,true) begin
+    RecordRemove(TCr);
+    StepBack(TCr);
+  end;
+  while (LoopMain(Schoolr,1,true)) begin
+    RecordCopy(oldSchoolr,Schoolr);
+    Schoolr.Approved = 0;
+    RecordUpdate(oldSchoolr,Schoolr,true);
+  end;
+*/
+  //
+
+return;
+end;
+
+
+global
+updating procedure ClearSMFAttachMn(record RCVc RepSpec)
+begin
+  record SMFVc SMFr;
+  record JALFileVc JFr;
+  record JALFileHistVc JFHr;
+  record CUVc CUr;
+  integer cnt,i;
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+
+
+  while loopmain(SMFr,1,true) begin    
+    i = 1;
+    cnt = 0;
+    while readrecordlink(SMFr,i,Attachr,RLr) begin
+      RecordRemove(Attachr);
+      cnt = cnt + 1;
+      if cnt>10 then begin
+        goto LEnd;
+      end;
+    end;
+    lEnd:;
+  end;
+
+
+return;
+end;

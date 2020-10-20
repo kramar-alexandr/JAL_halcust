@@ -1,1 +1,264 @@
-external function string 255 FormatSimpleLink(string,boolean);external function string 255 GetLinkToStruct(LongInt,boolean);external function string 255 ToolWebNGTranslateText(integer);external procedure ShowRedirectHtml(string,boolean);external function boolean FileNameIsImage(string);external function Boolean FindSMURecord(string,var record SMFVc);updating procedure DeleteImages(record CUVc CUr)begin  record Attach2Vc Attachr;  record RLinkVc RLr;  integer i;  i = 1;  while readrecordlink(CUr,i,Attachr,RLr) begin    if FileNameIsImage(Attachr.FileName) then begin      RecordDelete(RLr);    end else begin      i = i + 1;    end;  end;return;end;globalupdating procedure DoFileRecordStore(record SMFVc SMFr,area FADone,string filename,Integer status)begin  Boolean res;  record JALFileVc JFr;    logtext(0,"DoFileRecordStore1");  CreateFile(filename);  logtext(0,"DoFileRecordStore2");  CloseFile;  logtext(0,"DoFileRecordStore3");  RecordNew(JFr);  JFr.SerNr = NextSerNr("JALFileVc",CurrentDate,-1,false,"");  JFr.SMFCode = SMFr.SMFCode;  JFr.SMFName = SMFr.SMFName;  JFr.TransDate = CurrentDate;  JFr.Status = status;  logtext(0,"DoFileRecordStore4");  if (RecordStore(JFr,true)) then begin    logtext(0,"DoFileRecordStore5");    if (FileExists(filename)) then begin      WRITEAREATOFILE(FADone,filename,0);      if (RecordLinkFile(filename,0,JFr,CurrentCompany)) then begin end;    logtext(0,"DoFileRecordStore6");      Delete_File(filename);      logtext(0,"DoFileRecordStore7");    end;    res = true;  end;    return;end;function string 200 GetCleanName(string tstr)begin  string 200 res;  integer i,tmp;  for (i = 0; i < len(tstr); i = i + 1) begin    tmp = asc(mid(tstr,i,1));    if (tmp>47 and tmp<58) or (tmp>64 and tmp < 91) or (tmp>96 and tmp < 123) or tmp == 46 then begin      if tmp == 46 and res == "" then begin        res = "noname";      end;      res = res & mid(tstr,i,1);    end;  end;    GetCleanName = res;return;end;function string 2 ReplaceStrings(string tstr,string realstr,var integer movep)begin  string 2 res;  res = realstr;  movep = 1;  if left(tstr,4)=="&lt;" then begin    res = "<";    movep = 4;  end;  if left(tstr,4)=="&gt;" then begin    res = ">";    movep = 4;  end;  if left(tstr,6)=="&apos;" then begin    res = "'";    movep = 6;  end;  if left(tstr,6)=="&quot;" then begin    res = """";    movep = 6;  end;  ReplaceStrings = res;  return;end;procedure ReplaceWebStrings(area a,var area newarea)begin  longint ln,i;  string 10 tstr,tmp;  integer movep;  ln = GetAreaLength(a);  i = 0;  while i < ln begin    tmp = GetStringFromArea(a,i,1);    tstr = GetStringFromArea(a,i,6);    tmp = ReplaceStrings(tstr,tmp,movep);    AddTextToArea(tmp,newarea);    i = i + movep;  end;  return;end;function string 255 NormalizeFileName(string tstr)begin  string 255 res;  Integer i,n;  string 2 c;    for (i=0;i<len(tstr);i=i+1) begin    c = mid(tstr,i,1);    n = asc(c);    if (n>=48 and n<=57) or (n==46) or (n>=65 and n<=90) or (n>=97 and n<=122) then begin      res = res & c;    end;  end;    NormalizeFileName = res;  return;end;function Boolean DoUpload(Integer status)begin  Area FileArea,img,FADone,nFileArea;  string 255 filename;  Longint enter;  Longint lcnt,pos,spos,epos,pepos;  string 255 tstr,namestr;  boolean getnamef;  Longint namepos,nameepos,i;  record CUVc CUr;  record WebNGStructVc WSr;  string 255 link;  record SMFVc SMFr;  record RLinkVc RLr;  record JALFileVc JFr;  boolean savef;  getnamef = false;  namepos = 0;  nameepos = 0;  savef = true;  WebGetRawPostData(FileArea);  //ReplaceWebStrings(nFileArea,FileArea);    enter = 0;  pos = 0;  epos = -1;  spos = 0;  LogText(0,"Uploading picture - CU: " & CurrentCust);  //stopalert(lcnt & " aa");  while pos < GetAreaLength(FileArea)+1 begin        tstr = GetStringFromArea(FileArea,pos,1);           pos = pos + 1;    if tstr == chr(13) then begin      enter = enter + 1;      pepos = epos;      epos = pos - 1;      if enter == 1 then begin        namepos = pos + 1;      end;      if enter == 2 then begin        nameepos = pos - 1;      end;      if enter == 4 then begin        spos = pos+1;      end;    end;  end;  CUr.Code = CurrentCust;  if readfirstmain(CUr,1,true) then begin         namestr = GetStringFromArea(FileArea,namepos,nameepos-namepos);    for (i = 0; i < len(namestr); i = i + 1) begin      if mid(namestr,i,9) == "filename=" then begin        filename = mid(namestr,i+10,len(namestr) - (i + 11));      end;    end;    filename = NormalizeFileName(filename);    if filename <> "" and (readrecordlink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr)) then begin      GetAreaFromArea(FileArea,spos,pepos-spos,FADone);      LogText(0,"Picture is being uploaded " & spos & ":" & (pepos-spos) & ":" & GetStringFromArea(FADone,0,100) & ":" & filename);      if ((pepos-spos)<3000000) then begin        qupdating.DoFileRecordStore(SMFr,FADone,filename,status);      end;    end;  end else begin    savef = false;  end;    DoUpload = savef;  return;end;global webpublicprocedure WebUpload()begin  record JALClassBlock JCbl;  boolean savef;  string 255 link;  //link = GetSessionString("tpath");  savef = DoUpload(4);  BlockLoad(JCbl);  if savef then begin    link = GetLinkToStruct(JCbl.UploadAfter,true);  end else begin    link = GetLinkToStruct(JCbl.UploadFail,true);  end;  PutSessionString("tpath","");  //ShowRedirectHtml(FormatSimpleLink(link,true),false);  ShowRedirectHtml("/corrections",false);return;end;global webpublicprocedure WebRegUpload()begin  record JALClassBlock JCbl;  boolean savef;  string 255 link;  savef = DoUpload(0);  BlockLoad(JCbl);  if savef then begin    link = "/corrections";  end else begin    link = "/corrections";  end;  PutSessionString("tpath","");  ShowRedirectHtml(link,false);return;end;
+external function string 255 FormatSimpleLink(string,boolean);
+external function string 255 GetLinkToStruct(LongInt,boolean);
+external function string 255 ToolWebNGTranslateText(integer);
+external procedure ShowRedirectHtml(string,boolean);
+external function boolean FileNameIsImage(string);
+external function Boolean FindSMURecord(string,var record SMFVc);
+
+
+updating procedure DeleteImages(record CUVc CUr)
+begin
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+  integer i;
+
+  i = 1;
+  while readrecordlink(CUr,i,Attachr,RLr) begin
+    if FileNameIsImage(Attachr.FileName) then begin
+      RecordDelete(RLr);
+    end else begin
+      i = i + 1;
+    end;
+  end;
+
+return;
+end;
+
+global
+updating procedure DoFileRecordStore(record SMFVc SMFr,area FADone,string filename,Integer status)
+begin
+  Boolean res;
+  record JALFileVc JFr;
+  
+  logtext(0,"DoFileRecordStore1");
+  CreateFile(filename);
+  logtext(0,"DoFileRecordStore2");
+  CloseFile;
+  logtext(0,"DoFileRecordStore3");
+  RecordNew(JFr);
+  JFr.UUID = MakeUUID;
+  JFr.SMFCode = SMFr.SMFCode;
+  JFr.SMFName = SMFr.SMFName;
+  JFr.TransDate = CurrentDate;
+  JFr.Status = status;
+  logtext(0,"DoFileRecordStore4");
+
+  if (RecordStore(JFr,true)) then begin
+    logtext(0,"DoFileRecordStore5");
+    if (FileExists(filename)) then begin
+      WRITEAREATOFILE(FADone,filename,0);
+      if (RecordLinkFile(filename,0,JFr,CurrentCompany)) then begin end;
+    logtext(0,"DoFileRecordStore6");
+      Delete_File(filename);  
+    logtext(0,"DoFileRecordStore7");
+    end;
+    res = true;
+  end;
+  
+  return;
+end;
+
+function string 200 GetCleanName(string tstr)
+begin
+  string 200 res;
+  integer i,tmp;
+
+  for (i = 0; i < len(tstr); i = i + 1) begin
+    tmp = asc(mid(tstr,i,1));
+    if (tmp>47 and tmp<58) or (tmp>64 and tmp < 91) or (tmp>96 and tmp < 123) or tmp == 46 then begin
+      if tmp == 46 and res == "" then begin
+        res = "noname";
+      end;
+      res = res & mid(tstr,i,1);
+    end;
+  end;
+  
+  GetCleanName = res;
+return;
+end;
+
+function string 2 ReplaceStrings(string tstr,string realstr,var integer movep)
+begin
+  string 2 res;
+
+  res = realstr;
+  movep = 1;
+
+  if left(tstr,4)=="&lt;" then begin
+    res = "<";
+    movep = 4;
+  end;
+  if left(tstr,4)=="&gt;" then begin
+    res = ">";
+    movep = 4;
+  end;
+  if left(tstr,6)=="&apos;" then begin
+    res = "'";
+    movep = 6;
+  end;
+  if left(tstr,6)=="&quot;" then begin
+    res = """";
+    movep = 6;
+  end;
+
+  ReplaceStrings = res;
+  return;
+end;
+
+procedure ReplaceWebStrings(area a,var area newarea)
+begin
+  longint ln,i;
+  string 10 tstr,tmp;
+  integer movep;
+
+  ln = GetAreaLength(a);
+  i = 0;
+  while i < ln begin
+    tmp = GetStringFromArea(a,i,1);
+    tstr = GetStringFromArea(a,i,6);
+    tmp = ReplaceStrings(tstr,tmp,movep);
+    AddTextToArea(tmp,newarea);
+    i = i + movep;
+  end;
+
+  return;
+end;
+
+function string 255 NormalizeFileName(string tstr)
+begin
+  string 255 res;
+  Integer i,n;
+  string 2 c;
+  
+  for (i=0;i<len(tstr);i=i+1) begin
+    c = mid(tstr,i,1);
+    n = asc(c);
+    if (n>=48 and n<=57) or (n==46) or (n>=65 and n<=90) or (n>=97 and n<=122) then begin
+      res = res & c;
+    end;
+  end;
+  
+  NormalizeFileName = res;
+  return;
+end;
+
+function Boolean DoUpload(Integer status)
+begin
+  Area FileArea,img,FADone,nFileArea;
+  string 255 filename;
+  Longint enter;
+  Longint lcnt,pos,spos,epos,pepos;
+  string 255 tstr,namestr;
+  boolean getnamef;
+  Longint namepos,nameepos,i;
+  record CUVc CUr;
+  record WebNGStructVc WSr;
+  string 255 link;
+  record SMFVc SMFr;
+  record RLinkVc RLr;
+  record JALFileVc JFr;
+  boolean savef;
+
+  getnamef = false;
+  namepos = 0;
+  nameepos = 0;
+  savef = true;
+  WebGetRawPostData(FileArea);
+  //ReplaceWebStrings(nFileArea,FileArea);
+  
+  enter = 0;
+  pos = 0;
+  epos = -1;
+  spos = 0;
+  LogText(0,"Uploading picture - CU: " & CurrentCust);
+  //stopalert(lcnt & " aa");
+  while pos < GetAreaLength(FileArea)+1 begin
+    
+    tstr = GetStringFromArea(FileArea,pos,1); 
+      
+    pos = pos + 1;
+    if tstr == chr(13) then begin
+      enter = enter + 1;
+      pepos = epos;
+      epos = pos - 1;
+
+      if enter == 1 then begin
+        namepos = pos + 1;
+      end;
+      if enter == 2 then begin
+        nameepos = pos - 1;
+      end;
+      if enter == 4 then begin
+        spos = pos+1;
+      end;
+    end;
+  end;
+
+
+  CUr.Code = CurrentCust;
+  if readfirstmain(CUr,1,true) then begin 
+    
+    namestr = GetStringFromArea(FileArea,namepos,nameepos-namepos);
+    for (i = 0; i < len(namestr); i = i + 1) begin
+      if mid(namestr,i,9) == "filename=" then begin
+        filename = mid(namestr,i+10,len(namestr) - (i + 11));
+      end;
+    end;
+    filename = NormalizeFileName(filename);
+    if filename <> "" and (readrecordlink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr)) then begin
+      GetAreaFromArea(FileArea,spos,pepos-spos,FADone);
+      LogText(0,"Picture is being uploaded " & spos & ":" & (pepos-spos) & ":" & GetStringFromArea(FADone,0,100) & ":" & filename);
+      if ((pepos-spos)<3000000) then begin
+        qupdating.DoFileRecordStore(SMFr,FADone,filename,status);
+      end;
+    end;
+  end else begin
+    savef = false;
+  end;
+  
+  DoUpload = savef;
+  return;
+end;
+
+
+global webpublic
+procedure WebUpload()
+begin
+  record JALClassBlock JCbl;
+  boolean savef;
+  string 255 link;
+
+  //link = GetSessionString("tpath");
+  savef = DoUpload(4);
+  BlockLoad(JCbl);
+  if savef then begin
+    link = GetLinkToStruct(JCbl.UploadAfter,true);
+  end else begin
+    link = GetLinkToStruct(JCbl.UploadFail,true);
+  end;
+  PutSessionString("tpath","");
+  //ShowRedirectHtml(FormatSimpleLink(link,true),false);
+  ShowRedirectHtml("/corrections",false);
+
+return;
+end;
+
+global webpublic
+procedure WebRegUpload()
+begin
+  record JALClassBlock JCbl;
+  boolean savef;
+  string 255 link;
+
+  savef = DoUpload(0);
+  BlockLoad(JCbl);
+  if savef then begin
+    link = "/corrections";
+  end else begin
+    link = "/corrections";
+  end;
+  PutSessionString("tpath","");
+  ShowRedirectHtml(link,false);
+
+return;
+end;

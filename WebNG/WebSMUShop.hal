@@ -1,7 +1,9 @@
-external inner function string 255 removenextnode(var string);
-external inner function string 255 FormatSimpleLink(string,boolean);
-external inner procedure ShowWebAppPageStart(record WebNGPageVc,string);
-external inner procedure ShowWebAppPageEnd(record WebNGPageVc);
+external function string 255 removenextnode(var string);
+external function string 255 FormatSimpleLink(string,boolean);
+external procedure ShowWebAppPageStart(record WebNGPageVc,string);
+external procedure ShowWebAppPageEnd(record WebNGPageVc);
+external procedure SetContentTypeForExtension(string);
+external function string 255 ToolWebNGTranslateText2(Longint);
 
 function Boolean FindItemImage(record SMFItemVc SIr,var string link)
 begin
@@ -11,7 +13,7 @@ begin
 
   if (ReadRecordLink(SIr,1,Attachr,RLr)) begin
     res = true;
-    link = "/WebShowSMUShopItemImage.hal?smf=" & SMFr.SMFCode & "&id=" & SIr.UUID;
+    link = "/WebShowSMUShopItemImage.hal?smf=" & SIr.SMFCode & "&id=" & SIr.UUID;
   end;
 
   FindItemImage = res;
@@ -34,6 +36,7 @@ begin
   record SMFItemVc SIr;
   record Attach2Vc Attachr;
   record RLinkVc RLr;
+  string 255 ext;
   
   SIr.UUID = StringToUUID(WebGetArg("id"));
   if (ReadFirstMain(SIr,1,true)) then begin
@@ -63,7 +66,7 @@ begin
   WebOutString("</div>");//smu_shop_item_image
 
   WebOutstring("<div class='smu_shop_item_details'>");
-  WebOutString("<div class='smu_shop_item_title'>" & SIr.Name & "</div>");
+  WebOutString("<div class='smu_shop_single_item_title'>" & SIr.Name & "</div>");
   WebOutString("<div class='smu_shop_item_price'>" & SIr.Price & "</div>");
   WebOutString("</div>");//smu_shop_item_details
 
@@ -78,7 +81,7 @@ begin
   record SMFItemVc SIr;
 
   WebOutString("<div class='smu_shop_item_frame'>");
-  WebOutString("<div class='smu_shop_item_title'>" & ToolWebNGTranslateText2() & "</div>");
+  WebOutString("<div class='smu_shop_item_title'>" & ToolWebNGTranslateText2(89201) & "</div>");
 
   WebOutString("<div class='smu_shop_item_list'>");
 
@@ -133,9 +136,8 @@ begin
   record Attach2Vc Attachr;
   record RLinkVc RLr;
 
-  if (ReadRecordLink(SIr,1,Attachr,RLr)) begin
-    res = true;
-    link = "/WebShowJALFile.hal?smf=" & SMFr.SMFCode & "&id=" & JFr.UUID;
+  if (ReadRecordLink(JFr,1,Attachr,RLr)) then begin
+    res = "/WebShowJALFile.hal?smf=" & JFr.SMFCode & "&id=" & JFr.UUID;
   end;
  
 
@@ -149,6 +151,7 @@ begin
   record JALFileVc JFr;
   record Attach2Vc Attachr;
   record RLinkVc RLr;
+  string 255 ext;
   
   JFr.UUID = StringToUUID(WebGetArg("id"));
   if (ReadFirstMain(JFr,1,true)) then begin
@@ -168,6 +171,7 @@ end;
 function Boolean GetCompanyLogo(record SMFVc SMFr,var string link)
 begin
   Boolean res;
+  record JALFileVc JFr;
   
   if (FindJALFile(SMFr.SMFCode,0,JFr)) then begin
     link = GetJALFileLink(JFr);
@@ -181,13 +185,14 @@ end;
 function Boolean GetCompanyBackground(record SMFVc SMFr,var string link)
 begin
   Boolean res;
+  record JALFileVc JFr;
   
   if (FindJALFile(SMFr.SMFCode,1,JFr)) then begin
     link = GetJALFileLink(JFr);
     res = true;
   end;
 
-  GetCompanyLogo = res;
+  GetCompanyBackground = res;
   return;
 end;
 
@@ -221,18 +226,23 @@ end;
 
 procedure ShowSingleSMUWebShop(record SMFVc SMFr)
 begin
-  
+  string 255 logolink,bglink;
+
   if (GetCompanyLogo(SMFr,logolink)==false) then begin
     logolink = DefaultLogo;
   end;
   if (GetCompanyBackground(SMFr,bglink)==false) then begin
-    bglink = DefaultBackground;
+    //bglink = DefaultBackground;
   end;
 
   WebOutString("<div class='smu_shop_frame'>");
   WebOutString("<div class='smu_shop_title_section'>");
   WebOutString("<div class='smu_shop_logo'><img src='" & logolink & "'></div>");
   WebOutString("<div class='smu_shop_compname_section'>");
+
+  if (nonblank(bglink)) then begin
+    WebOutString("<style>#banner{background-image:url(" & bglink & ");}</style>");
+  end;
   
   WebOutString("<div class='smu_shop_title'>" & SMFr.SMFName & "</div>");
   WebOutString("<div class='smu_shop_prodspec'>" & SMFr.ProdSpec & "</div>");
@@ -250,7 +260,7 @@ begin
   WebOutString("</div>");//smu_shop_title_section
 
   WebOutString("<div class='smu_shop_aboutus_frame'><div class='smu_shop_aboutus'>");
-  WebOutString("<div class='smu_shop_aboutus_title'>" & ToolWebNGTranslateText2() & "</div><div class='smu_shop_aboutus_text'>");
+  WebOutString("<div class='smu_shop_aboutus_title'>" & ToolWebNGTranslateText2(89200) & "</div><div class='smu_shop_aboutus_text'>");
   WebOutText(SMFr,false,"");
   WebOutString("</div>");
   WebOutString("</div></div>");//smu_shop_aboutus_frame
@@ -274,11 +284,12 @@ begin
 end;
 
 global
-procedure ShowSMUShopApp(string WebNGStructVc WSr,string mpath)
+procedure ShowSMUShopApp(record WebNGStructVc WSr,string mpath)
 begin
   string 255 path,node;
   record SMFVc SMFr;
   Boolean showf;
+  record WebNGPageVc WPr;
 
   WPr.Code = WSr.WebPage;
   if (nonblank(WPr.Code)) then begin
@@ -293,7 +304,7 @@ begin
     if (ReadFirstKey("WebShopUrl",SMFr,1,true)) then begin
       ShowSingleSMUWebShop(SMFr);
       showf = true;
-    end
+    end;
   end;
   if (showf==false) then begin
     ShowSMUShopList;

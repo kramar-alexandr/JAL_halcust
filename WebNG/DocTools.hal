@@ -46,7 +46,7 @@ begin
 return;
 end;
 
-procedure ShowScoreSelectBox(string code,longint sernr,integer score)
+procedure ShowScoreSelectBox(string code,UUID sernr,integer score)
 begin
   integer i;
   record JALClassBlock JCbl;
@@ -72,12 +72,12 @@ return;
 end;
 
 
-function boolean LastStatusExists(longint sernr,integer type,var integer newstat)
+function boolean LastStatusExists(UUID sernr,integer type,var integer newstat)
 begin
   boolean res;
   record JALFileHistVc JFHr;
   boolean TrHs;
-
+/*
   res = false;
   TrHs = true;
   JFHr.TransDate = AddYear(CurrentDate,1);
@@ -92,7 +92,7 @@ begin
       end;
     end;
   end;
-
+*/
 
   LastStatusExists = res;
 return;
@@ -151,26 +151,26 @@ begin
           case 0: WebOutStringFormatNL("<a href=""/WebOutImg.hal?sernr=" & Attachr.SerNr & """ target=_blank title=""" & fn & """>" & fn & "</a>");       
           case 1: WebOutStringFormatNL("<a class=""short"" href=""/WebOutImg.hal?sernr=" & Attachr.SerNr & """ target=_blank title=""" & fn & """>" & fn & "</a>");       
                   WebOutStringFormatNL("<div class=""approve_but"">");
-                  WebOutStringFormatNL("<a class=""approve_up"" href=""/WebChangeFileStatus.hal?file=" & JFr.SerNr & "&stat=" & (status+1) & "&tpath=" & link & "&user=" & WebGetArg("user") & """></a>");
-                  WebOutStringFormatNL("<a class=""approve_down"" href=""/WebChangeFileStatus.hal?file=" & JFr.SerNr & "&stat=3&tpath=" & link & "&user=" & WebGetArg("user") & """></a>");
+                  WebOutStringFormatNL("<a class=""approve_up"" href=""/WebChangeFileStatus.hal?file=" & JFr.UUID & "&stat=" & (status+1) & "&tpath=" & link & "&user=" & WebGetArg("user") & """></a>");
+                  WebOutStringFormatNL("<a class=""approve_down"" href=""/WebChangeFileStatus.hal?file=" & JFr.UUID & "&stat=3&tpath=" & link & "&user=" & WebGetArg("user") & """></a>");
                   WebOutStringFormatNL("</div>");
           case 2: WebOutStringFormatNL("<a class=""short"" href=""/WebOutImg.hal?sernr=" & Attachr.SerNr & """ target=_blank title=""" & fn & """>" & fn & "</a>");       
                   WebOutStringFormatNL("<div class=""approve_but"">");
-                  WebOutStringFormatNL("<a class=""approve_back"" href=""/WebChangeFileStatus.hal?file=" & JFr.SerNr & "&stat=" & (status-1) & "&tpath=" & link & "&user=" & WebGetArg("user") & """></a>");
+                  WebOutStringFormatNL("<a class=""approve_back"" href=""/WebChangeFileStatus.hal?file=" & JFr.UUID & "&stat=" & (status-1) & "&tpath=" & link & "&user=" & WebGetArg("user") & """></a>");
                   WebOutStringFormatNL("</div>");
           case 3: WebOutStringFormatNL("<a class=""short"" href=""/WebOutImg.hal?sernr=" & Attachr.SerNr & """ target=_blank title=""" & fn & """>" & fn & "</a>");       
                   WebOutStringFormatNL("<div class=""approve_but"">");
                   WebOutStringFormatNL("<div class=""score_select"">");
-                  ShowScoreSelectBox(code,JFr.SerNr,JFr.Score);
+                  ShowScoreSelectBox(code,JFr.UUID,JFr.Score);
                   WebOutStringFormatNL("</div>");    
                   
-                  WebOutStringFormatNL("<a class=""approve_back"" href=""/WebChangeFileStatus.hal?file=" & JFr.SerNr & "&stat=" & (status-1) & "&tpath=" & link & "&user=" & WebGetArg("user") & """></a>");
+                  WebOutStringFormatNL("<a class=""approve_back"" href=""/WebChangeFileStatus.hal?file=" & JFr.UUID & "&stat=" & (status-1) & "&tpath=" & link & "&user=" & WebGetArg("user") & """></a>");
                   WebOutStringFormatNL("</div>");
           otherwise
-                  if (LastStatusExists(JFr.SerNr,type,newstat)) then begin
+                  if (LastStatusExists(JFr.UUID,type,newstat)) then begin
                     WebOutStringFormatNL("<a class=""short"" href=""/WebOutImg.hal?sernr=" & Attachr.SerNr & """ target=_blank title=""" & fn & """>" & fn & "</a>");       
                     WebOutStringFormatNL("<div class=""approve_but"">");
-                    WebOutStringFormatNL("<a class=""approve_back"" href=""/WebChangeFileStatus.hal?file=" & JFr.SerNr & "&stat=" & (newstat) & "&tpath=" & link & "&user=" & WebGetArg("user") & """></a>");
+                    WebOutStringFormatNL("<a class=""approve_back"" href=""/WebChangeFileStatus.hal?file=" & JFr.UUID & "&stat=" & (newstat) & "&tpath=" & link & "&user=" & WebGetArg("user") & """></a>");
                     WebOutStringFormatNL("</div>");
                   end else begin
                     WebOutStringFormatNL("<a href=""/WebOutImg.hal?sernr=" & Attachr.SerNr & """ target=_blank title=""" & fn & """>" & fn & "</a>"); 
@@ -329,7 +329,7 @@ begin
 
   link = "";
 
-  JFr.SerNr = StringToLongInt(WebGetArg("file"));
+  JFr.UUID = StringToUUID(WebGetArg("file"));
   status = StringToInt(WebGetArg("stat"));
 
   CUr.Code = CurrentCust;
@@ -390,7 +390,7 @@ begin
   record JALFileVc JFr,oldJFr;
   string 255 link;
   
-  JFr.SerNr = StringToLongint(WebGetArg("sernr"));
+  JFr.UUID = StringToUUID(WebGetArg("sernr"));
   if readfirstmain(JFr,1,true) then begin
     if JFr.SMFCode == WebGetArg("code") then begin
       recordCopy(oldJFr,JFr);

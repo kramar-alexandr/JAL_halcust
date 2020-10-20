@@ -12,7 +12,8 @@ begin
   Register("Skolas","Skolas",SchoolVc,modJAL);  
   Register("Mentori","Mentori",MentorVc,modJAL);
   Register("Kontakti","Kontakti",CUVc,modJAL);
-  Register("Dokumenti","Dokumenti",JALFileVc,modJAL);
+  Register("Faili","Faili",JALFileVc,modJAL);
+  Register("Preces","Preces",SMFItemVc,modJAL);
 
   Setting("Jaunumu saņēmēju e-pasti",NewsEmailTClass,modJAL);
   Setting("Klasifikāciju definēšana",JALClassTClass,modJAL);

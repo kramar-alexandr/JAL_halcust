@@ -942,7 +942,7 @@ begin
   string 60 code,dates,dateStart,dateEnd;
 	integer ret;
 	code = webGetArg("code");
-	docr.SerNr = "";
+	docr.UUID = MakeUUID;
 	WebOutStringFormatNL("[");
 	ret = 0;
 	While(LoopMain(docr,1,true)) begin
@@ -953,7 +953,7 @@ begin
 			ret=ret+1;
 			 WebOutStringFormatNL("{");
 										logtext(0,"3");
-												WebOutStringFormatNL("\"serNr\":\"" & docr.SerNr & "\",");
+												WebOutStringFormatNL("\"serNr\":\"" & docr.UUID & "\",");
                         WebOutStringFormatNL("\"regDate\":\"" & DateToString(docr.TransDate,"MM.DD.YYYY") & "\",");
                         WebOutStringFormatNL("\"docName\":\"" & docr.Name & "\",");
                         WebOutStringFormatNL("\"status\":\"" & docr.Status & "\"");

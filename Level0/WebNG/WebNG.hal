@@ -62,7 +62,7 @@ external function string 255 ConvertXml(string);
 external procedure HansaWorldHALApp(record WebNGStructVc,string,string);
 //CUST-BEGIN
 external procedure ShowWebProfile();
-external outer procedure ShowSMUShopApp(string WebNGStructVc,string);
+external outer procedure ShowSMUShopApp(record WebNGStructVc,string);
 //CUST-END
 
 procedure SetCountryAndLanguage(var string path)
