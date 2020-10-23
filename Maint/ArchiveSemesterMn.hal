@@ -5,6 +5,8 @@ begin
   row SMFVc SMFrw;
   row ArchiveSMFVc aSMFrw;
   string 255 tstr;
+  
+  RecordClear(aSMFr);
 
   aSMFr.SMFCode = SMFr.SMFCode;
   aSMFr.SMFName = SMFr.SMFName;

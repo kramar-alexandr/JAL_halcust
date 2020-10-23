@@ -2253,7 +2253,7 @@ longint curt;;
   EndWindow;
 end;
 
-window ReportMailTClass:1
+window SMFAddStudentWClass:1
   wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
 begin
   real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;

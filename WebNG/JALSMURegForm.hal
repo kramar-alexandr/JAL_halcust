@@ -13,6 +13,7 @@ external updating procedure GenMailForEmp(string,string,string,var record SMFVc,
 external updating function Boolean RecordAction_raEMailQue(var record MailVc,Boolean);
 external procedure SendJALEmail(vector string,string,string);
 external procedure OutPutJALWebTexts(Integer);
+external function boolean CheckRecaptcha(area);
 
 SetLangMode(LangLatvian,"LAT",2);
 
@@ -248,7 +249,7 @@ procedure SMURegForm()
 begin
   integer err;
   OutPutJALWebTexts(-1);
-  WebOutStringFormatNL("<form method=""POST"" action=""/WebSMUReg.hal"" onSubmit=""return TestFieldsForSMU(this,'" & toolwebngtranslatetext(20010) & "','" & toolwebngtranslatetext(20012) & "','" & toolwebngtranslatetext(20013) & "','" & toolwebngtranslatetext(20014) & "','" & toolwebngtranslatetext(20015) & "','" & toolwebngtranslatetext(20016) & "','" & toolwebngtranslatetext(20018) & "','" & toolwebngtranslatetext(20019) & "','" & toolwebngtranslatetext(20020) & "','" & toolwebngtranslatetext(20021) & "')"">");
+  WebOutStringFormatNL("<form method=""POST"" action=""/WebSMUReg.hal"" onSubmit=""return TestFieldsForSMU(this,'" & toolwebngtranslatetext(20010) & "','" & toolwebngtranslatetext(20012) & "','" & toolwebngtranslatetext(20013) & "','" & toolwebngtranslatetext(20014) & "','" & toolwebngtranslatetext(20015) & "','" & toolwebngtranslatetext(20016) & "','" & toolwebngtranslatetext(20018) & "','" & toolwebngtranslatetext(20019) & "','" & toolwebngtranslatetext(20020) & "','" & toolwebngtranslatetext(20021) & "')"" id='recaptcha_form'>");
   WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path") & """>");
   //WebOutStringFormatNL("<div class='_reg_first'>" & toolwebngtranslatetext(21061) & "</div><input class=""spinput _name"" type=""text"" name=""smuname"" value="""" >");
   //SelBoxForType;
@@ -379,6 +380,7 @@ begin
   WebOutStringFormatNL("<form method=""POST"" action=""/WebSMUUpdate.hal"" onSubmit=""return TestFieldsForSMU2(this,'" & toolwebngtranslatetext(20010) & "','" & toolwebngtranslatetext(20012) & "','" & toolwebngtranslatetext(20013) & "','" & toolwebngtranslatetext(20014) & "','" & toolwebngtranslatetext(20015) & "','" & toolwebngtranslatetext(20016) & "','" & toolwebngtranslatetext(20018) & "','" & toolwebngtranslatetext(20019) & "','" & toolwebngtranslatetext(20020) & "','" & toolwebngtranslatetext(20021) & "')"">");
   WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path") & """>");
   SelBoxForReg;
+  SelBoxForClass;
   WebOutStringFormatNL("<div><input class=""radio"" id='age' type=""radio""  name=""age"" onclick='hideBlockParrent()' value=""0""><label class='age' for=""age"">Man jau ir 13 gadu</label></div>");
   WebOutStringFormatNL("<div><input class=""radio"" type=""radio"" id='ageTwo' name=""age"" onclick='showBlockParrent()' value=""1""><label class='age' for=""ageTwo"">Man vēl nav 13 gadu</label></div>");
   
@@ -697,10 +699,20 @@ begin
   row SMFVc SMFrw;
   record ConfVc Cr;
   string 255 headertext;
+  area WebPostArea;
+
   BlockLoad(RMbl);
   BlockLoad(JALClassbl);
 
   err = 0;
+
+  WebGetPostData(WebPostArea);
+  if (CheckRecaptcha(WebPostArea)==false) then begin 
+    err = 64; 
+    logtext(0,"failed to verify CheckRecaptcha");
+  end else begin
+    logtext(0,"successfully verified CheckRecaptcha");
+  end;
 
   studentname = WebGetArg("schoolarname0");
   studentsurname = WebGetArg("schoolarsurname0");
@@ -713,29 +725,29 @@ begin
     logtext(0,"2");
   end;
   if blank(studentsurname) then begin
-    err = err + 2;
+    err = err + 4;
     logtext(0,"3");
   end;
   if blank(studentemail) then begin
-    err = err + 2;
+    err = err + 8;
     logtext(0,"4");
   end;
 
   SCr.SchoolCode = WebGetArg("school");
   if (ReadFirstMain(SCr,1,true)) then begin
     if (SCr.Approved==0) then begin
-      err = err + 2;
+      err = err + 16;
     end;
   end else begin
-    err = err + 2;
+    err = err + 16;
   end;
   TCr.TeacherCode = WebGetArg("teacher");
   if (ReadFirstMain(TCr,1,true)) then begin
     if (TCr.Approved==0) then begin
-      err = err + 2;
+      err = err + 32;
     end;
   end else begin
-    err = err + 2;
+    err = err + 32;
   end;
 	
 	logtext(0,"err " & err);
@@ -893,6 +905,9 @@ begin
       CUr.SchoolCode = WebGetArg("school");
       CUr.TeacherCode = WebGetArg("teacher");
       CUr.AgeFlag = StringToInt(WebGetArg("age"));
+      CUr.ClassNum = WebGetArg("classnum");
+      CUr.ClassChar = WebGetArg("classchar");
+
       CUr.ForceUpdate = 0;
       if (CUr.ConfirmTeach==1) then begin
         if (oldteacher!=CUr.TeacherCode) then begin

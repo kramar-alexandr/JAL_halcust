@@ -377,9 +377,12 @@ begin
   if (PSb.UseHttps==0) then begin
     goto LCheckAndRedirectToSecurePage;
   end;
+/*
   if (InString(path,"/payment/")>0 and PathIsWebshop(path)) then begin
     redirectf = true;
   end;
+*/
+  redirectf = true;
   if (WebSecureMode==false) then begin
     if (redirectf) then begin
       PutSessionString("https_forced_redirect","1");

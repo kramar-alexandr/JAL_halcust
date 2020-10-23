@@ -13,6 +13,7 @@ external function string 255 StrReplace(string,string,string);
 forward procedure GetTeacherSMUApplications(string,var Integer,Boolean);
 external procedure GetSchoolEmpList(string,string);
 external procedure ShowWebElement(string);
+external function Boolean StudentTooOld(string);
 
 global
 function string 255 FormatJSONString(string tstr)
@@ -762,39 +763,41 @@ begin
       end else begin
         CUr.Code = JTr.SMFCode;
         if (ReadFirstMain(CUr,1,true))then begin
-          cnt = cnt + 1;
-          if(cnt>1)then begin
-              weboutstring(",");
-          end;
-          WebOutStringFormatNL("{");
-          WebOutStringFormatNL("\"Nr\":\"" & cnt & "\",");
-          WebOutStringFormatNL("\"SerNr\":\"" & JTr.SerNr & "\",");
-          WebOutStringFormatNL("\"Statuss\":\"" & JTr.StatusFlag & "\",");
-          WebOutStringFormatNL("\"Datums\":\"" & DateToString(JTr.TransDate,"YYYY/MM/DD") & "\",");
-          WebOutStringFormatNL("\"Klase\":\"" & CUr.ClassNum & CUr.ClassChar & "\",");
-          WebOutStringFormatNL("\"Klase2\":\"" & CUr.ClassNum & "\",");
-          WebOutStringFormatNL("\"Skolens\":\"" & FormatJSONString(CUr.Name) & "\",");
-          WebOutStringFormatNL("\"Kods\":\"" & CUr.Code & "\",");
-          WebOutStringFormatNL("\"CertFlag\":\"" & CUr.CertificateFlag & "\",");
-          WebOutStringFormatNL("\"CertPrintf\":\"" & CUr.CertificatePrint & "\",");
-          
-          WebOutStringFormatNL("\"Enudiena\":\"" & CUr.EnuDienaFlag & "\",");
-          WebOutStringFormatNL("\"Titan\":\"" & CUr.TitanFlag & "\",");
-          RecordClear(SMFr);
-          ReadRecordLink(CUr,1,SMFr,RLr);
-          GetSMUSemester(SMFr,semstr,sd,ed);
-          enudienaflag = GetEventHist(SMFr,sd,ed,1,partype);
-          titanflag = GetEventHist(SMFr,sd,ed,2,partype);
+          if (StudentTooOld(CUr.Code)==false) then begin
+            cnt = cnt + 1;
+            if(cnt>1)then begin
+                weboutstring(",");
+            end;
+            WebOutStringFormatNL("{");
+            WebOutStringFormatNL("\"Nr\":\"" & cnt & "\",");
+            WebOutStringFormatNL("\"SerNr\":\"" & JTr.SerNr & "\",");
+            WebOutStringFormatNL("\"Statuss\":\"" & JTr.StatusFlag & "\",");
+            WebOutStringFormatNL("\"Datums\":\"" & DateToString(JTr.TransDate,"YYYY/MM/DD") & "\",");
+            WebOutStringFormatNL("\"Klase\":\"" & CUr.ClassNum & CUr.ClassChar & "\",");
+            WebOutStringFormatNL("\"Klase2\":\"" & CUr.ClassNum & "\",");
+            WebOutStringFormatNL("\"Skolens\":\"" & FormatJSONString(CUr.Name) & "\",");
+            WebOutStringFormatNL("\"Kods\":\"" & CUr.Code & "\",");
+            WebOutStringFormatNL("\"CertFlag\":\"" & CUr.CertificateFlag & "\",");
+            WebOutStringFormatNL("\"CertPrintf\":\"" & CUr.CertificatePrint & "\",");
+            
+            WebOutStringFormatNL("\"Enudiena\":\"" & CUr.EnuDienaFlag & "\",");
+            WebOutStringFormatNL("\"Titan\":\"" & CUr.TitanFlag & "\",");
+            RecordClear(SMFr);
+            ReadRecordLink(CUr,1,SMFr,RLr);
+            GetSMUSemester(SMFr,semstr,sd,ed);
+            enudienaflag = GetEventHist(SMFr,sd,ed,1,partype);
+            titanflag = GetEventHist(SMFr,sd,ed,2,partype);
 
-          WebOutStringFormatNL("\"SMU\":\"" & SMFr.SMFCode & "\",");
-          WebOutStringFormatNL("\"Nosaukums\":\"" & FormatJSONString(SMFr.SMFName) & "\",");
-          WebOutStringFormatNL("\"ApprovalStatus\":\"" & SMFr.ApprovalStatus & "\",");
-          WebOutStringFormatNL("\"Likvidets\":\"" & SMFr.StatusFlag & "\",");
-          WebOutStringFormatNL("\"MacibuGads\":\"" & semstr & "\",");
-          WebOutStringFormatNL("\"Izglitiba\":\"" & GetEduLevel(StringToInt(CUr.ClassNum)) & "\"");
-//          WebOutStringFormatNL("\"Titan\":\"" & SMFr.TitanFlag & "\",");
-//          WebOutStringFormatNL("\"Enudiena\":\"" & SMFr.EnuDienaFlag & "\"");
-          WebOutStringFormatNL("}");
+            WebOutStringFormatNL("\"SMU\":\"" & SMFr.SMFCode & "\",");
+            WebOutStringFormatNL("\"Nosaukums\":\"" & FormatJSONString(SMFr.SMFName) & "\",");
+            WebOutStringFormatNL("\"ApprovalStatus\":\"" & SMFr.ApprovalStatus & "\",");
+            WebOutStringFormatNL("\"Likvidets\":\"" & SMFr.StatusFlag & "\",");
+            WebOutStringFormatNL("\"MacibuGads\":\"" & semstr & "\",");
+            WebOutStringFormatNL("\"Izglitiba\":\"" & GetEduLevel(StringToInt(CUr.ClassNum)) & "\"");
+  //          WebOutStringFormatNL("\"Titan\":\"" & SMFr.TitanFlag & "\",");
+  //          WebOutStringFormatNL("\"Enudiena\":\"" & SMFr.EnuDienaFlag & "\"");
+            WebOutStringFormatNL("}");
+          end;
         end;
       end;
     end;
@@ -812,41 +815,43 @@ begin
         CUr.Code = A_JTr.SMFCode;
         if (vCust[A_JTr.SMFCode]==false and ReadFirstMain(CUr,1,true))then begin
           vCust[A_JTr.SMFCode] = true;
-          RecordClear(A_SMFr);
-          i = 1;
-          while (ReadRecordToLink(CUr,i,A_SMFr,RLr)) begin
-            i = i + 1;
-            cnt = cnt + 1;
-            if(cnt>1)then begin
-                weboutstring(",");
+          if (StudentTooOld(CUr.Code)==false) then begin
+            RecordClear(A_SMFr);
+            i = 1;
+            while (ReadRecordToLink(CUr,i,A_SMFr,RLr)) begin
+              i = i + 1;
+              cnt = cnt + 1;
+              if(cnt>1)then begin
+                  weboutstring(",");
+              end;
+              WebOutStringFormatNL("{");
+              WebOutStringFormatNL("\"Nr\":\"" & cnt & "\",");
+              WebOutStringFormatNL("\"SerNr\":\"" & A_JTr.SerNr & "\",");
+              WebOutStringFormatNL("\"Statuss\":\"" & A_JTr.StatusFlag & "\",");
+              WebOutStringFormatNL("\"Datums\":\"" & DateToString(A_JTr.TransDate,"YYYY/MM/DD") & "\",");
+              WebOutStringFormatNL("\"Klase\":\"" & A_SMFr.ClassNum & A_SMFr.ClassChar & "\",");
+              WebOutStringFormatNL("\"Klase2\":\"" & A_SMFr.ClassNum & "\",");
+              WebOutStringFormatNL("\"Skolens\":\"" & FormatJSONString(CUr.Name) & "\",");
+              WebOutStringFormatNL("\"Kods\":\"" & CUr.Code & "\",");
+              WebOutStringFormatNL("\"CertFlag\":\"" & CUr.CertificateFlag & "\",");
+              WebOutStringFormatNL("\"CertPrintf\":\"" & CUr.CertificatePrint & "\",");
+              
+              //WebOutStringFormatNL("\"Enudiena\":\"" & CUr.EnuDienaFlag & "\",");
+              //WebOutStringFormatNL("\"Titan\":\"" & CUr.TitanFlag & "\",");
+
+              enudienaflag = GetEventHist_Archive(A_SMFr,sd,ed,1,partype);
+              titanflag = GetEventHist_Archive(A_SMFr,sd,ed,2,partype);
+
+              WebOutStringFormatNL("\"SMU\":\"" & A_SMFr.SMFCode & "\",");
+              WebOutStringFormatNL("\"Nosaukums\":\"" & FormatJSONString(A_SMFr.SMFName) & "\",");
+              WebOutStringFormatNL("\"ApprovalStatus\":\"" & A_SMFr.ApprovalStatus & "\",");
+              WebOutStringFormatNL("\"Likvidets\":\"" & A_SMFr.StatusFlag & "\",");
+              WebOutStringFormatNL("\"MacibuGads\":\"" & A_SMFr.Semester & "\",");
+              WebOutStringFormatNL("\"Izglitiba\":\"" & GetEduLevel(StringToInt(A_SMFr.ClassNum)) & "\",");
+              WebOutStringFormatNL("\"Titan\":\"" & titanflag & "\",");
+              WebOutStringFormatNL("\"Enudiena\":\"" & enudienaflag & "\"");
+              WebOutStringFormatNL("}");
             end;
-            WebOutStringFormatNL("{");
-            WebOutStringFormatNL("\"Nr\":\"" & cnt & "\",");
-            WebOutStringFormatNL("\"SerNr\":\"" & A_JTr.SerNr & "\",");
-            WebOutStringFormatNL("\"Statuss\":\"" & A_JTr.StatusFlag & "\",");
-            WebOutStringFormatNL("\"Datums\":\"" & DateToString(A_JTr.TransDate,"YYYY/MM/DD") & "\",");
-            WebOutStringFormatNL("\"Klase\":\"" & A_SMFr.ClassNum & A_SMFr.ClassChar & "\",");
-            WebOutStringFormatNL("\"Klase2\":\"" & A_SMFr.ClassNum & "\",");
-            WebOutStringFormatNL("\"Skolens\":\"" & FormatJSONString(CUr.Name) & "\",");
-            WebOutStringFormatNL("\"Kods\":\"" & CUr.Code & "\",");
-            WebOutStringFormatNL("\"CertFlag\":\"" & CUr.CertificateFlag & "\",");
-            WebOutStringFormatNL("\"CertPrintf\":\"" & CUr.CertificatePrint & "\",");
-            
-            //WebOutStringFormatNL("\"Enudiena\":\"" & CUr.EnuDienaFlag & "\",");
-            //WebOutStringFormatNL("\"Titan\":\"" & CUr.TitanFlag & "\",");
-
-            enudienaflag = GetEventHist_Archive(A_SMFr,sd,ed,1,partype);
-            titanflag = GetEventHist_Archive(A_SMFr,sd,ed,2,partype);
-
-            WebOutStringFormatNL("\"SMU\":\"" & A_SMFr.SMFCode & "\",");
-            WebOutStringFormatNL("\"Nosaukums\":\"" & FormatJSONString(A_SMFr.SMFName) & "\",");
-            WebOutStringFormatNL("\"ApprovalStatus\":\"" & A_SMFr.ApprovalStatus & "\",");
-            WebOutStringFormatNL("\"Likvidets\":\"" & A_SMFr.StatusFlag & "\",");
-            WebOutStringFormatNL("\"MacibuGads\":\"" & A_SMFr.Semester & "\",");
-            WebOutStringFormatNL("\"Izglitiba\":\"" & GetEduLevel(StringToInt(A_SMFr.ClassNum)) & "\",");
-            WebOutStringFormatNL("\"Titan\":\"" & titanflag & "\",");
-            WebOutStringFormatNL("\"Enudiena\":\"" & enudienaflag & "\"");
-            WebOutStringFormatNL("}");
           end;
         end;
       end;

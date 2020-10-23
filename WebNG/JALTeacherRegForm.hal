@@ -7,6 +7,7 @@ external function Boolean GetNextCustNr(var string);
 external procedure NextM4Number(string,var string);
 external procedure SendJALEmail(vector string,string,string);
 external procedure OutPutJALWebTexts(Integer);
+external function boolean CheckRecaptcha(area);
 
 SetLangMode(LangLatvian,"LAT",0);
 
@@ -190,12 +191,12 @@ begin
   //stopalert("ads");
   OutPutJALWebTexts(-1);
   WebOutStringFormatNL("<form method=""POST"" action=""/WebTeacherReg.hal"" onSubmit=""return TestFieldsForTeacher(this,'" & ToolWebNGtranslateText(20055) & "','" & ToolWebNGtranslateText(20056) & "','" & ToolWebNGtranslateText(20057) & "','" & ToolWebNGtranslateText(20058) & "','" & ToolWebNGtranslateText(20063) & "','" & toolwebngtranslatetext(21102) & "',");
-  WebOutStringFormatNL("'" & toolwebngtranslatetext(20015) & "','" & toolwebngtranslatetext(20017) & "','" & toolwebngtranslatetext(20018) & "','" & toolwebngtranslatetext(20019) & "','" & toolwebngtranslatetext(20020) & "','" & toolwebngtranslatetext(20022) & "')"">");
+  WebOutStringFormatNL("'" & toolwebngtranslatetext(20015) & "','" & toolwebngtranslatetext(20017) & "','" & toolwebngtranslatetext(20018) & "','" & toolwebngtranslatetext(20019) & "','" & toolwebngtranslatetext(20020) & "','" & toolwebngtranslatetext(20022) & "')"" id='recaptcha_form'>");
   WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path") & """>");
   WebOutStringFormatNL("<input class=""spinput"" type=""text"" required name=""name"" placeholder=""V&#257rds, Uzv&#257rds"">");
   //WebOutStringFormatNL("<input class=""spinput"" type=""text"" required name=""pk"" placeholder=" & ToolWebNGtranslateText(20031) & ">");
   WebOutStringFormatNL("<input class=""spinput"" type=""tel"" required name=""tel"" pattern='[0-9]{5,10}' placeholder='Tel.nr'><div data-title='Tikai cipari' class='info-sign'><img src='img/information.png'></img></div>");
-  WebOutStringFormatNL("<input id=""regemail"" placeholder=" & ToolWebNGtranslateText(20033) & " class=""spinput"" type=""email"" required name=""email""  onchange=""testemail(this.value); compemails('" & ToolWebNGTranslateText(21102) & "',1);""><div data-title='J‚ievada ir aktu‚lais e-pasts, kas tiek izmantots ikdien‚' class='info-sign'><img src='img/information.png'></img></div>");
+  WebOutStringFormatNL("<input id=""regemail"" placeholder=" & ToolWebNGtranslateText(20033) & " class=""spinput"" type=""email"" required name=""email""  onchange=""testemail(this.value); compemails('" & ToolWebNGTranslateText(21102) & "',1);""><div data-title='Jï¿½ievada ir aktuï¿½lais e-pasts, kas tiek izmantots ikdienï¿½' class='info-sign'><img src='img/information.png'></img></div>");
   WebOutStringFormatNL("<input id=""regemail2"" placeholder=""Atk&#257rtojiet e-pastu"" class=""spinput"" type=""email"" required name=""email2""  onchange=""compemails('" & ToolWebNGTranslateText(21102) & "',0);"">");
   SelBoxForRegForTeacher;
   //WebOutStringFormatNL("<div id=""schooldiv"">");
@@ -204,11 +205,12 @@ begin
   //WebOutStringFormatNL("<input class=""spinput"" type=""text"" required name=""extrajob"" value="""" placeholder=" & ToolWebNGtranslateText(20034) & ">");
   SelBoxForSubject;
   //WebOutStringFormatNL("<div class='reg_label'>" & ToolWebNGtranslateText(20087) & "</div><input class=""spinput"" type=""text"" name=""spam"" value="""" placeholder=" & ToolWebNGtranslateText(20087) & ">");
-  WebOutStringFormatNL("<input class=""spinput"" type=""text"" required name=""contract"" value="""" placeholder=""Sadarb´bas l´guma nr."">");
+  WebOutStringFormatNL("<input class=""spinput"" type=""text"" required name=""contract"" value="""" placeholder=""Sadarbï¿½bas lï¿½guma nr."">");
   WebOutStringFormatNL("<input class=""spinput"" type=""password"" required name=""password1"" minlength=""4"" placeholder=""Parole""><div data-title='Vismaz 4 simboli' class='info-sign'><img src='img/information.png'></img></div>");
   WebOutStringFormatNL("<input class=""spinput"" type=""password"" required name=""password2"" minlength=""4"" placeholder=""Parole atk&#257rtoti"">");
   WebOutStringFormatNL("<div id=""errormsg""><div id=""ename""></div><div id=""econtract""></div><div id=""epk""></div><div id=""etel""></div><div id=""eemail""></div><div id=""esameemail""><div id=""samemailmsg"">");
   WebOutStringFormatNL("</div></div><div id=""ecode""></div><div id=""ecompare""></div><div id=""ereg""></div><div id=""eschool""></div><div id=""esubject""></div><div id=""epassword""></div><div id=""edistrict""></div></div>");
+
 
   WebOutStringFormatNL("<input type=""submit"" class=""spbutton""  value=""" & ToolWebNGtranslateText(21064) & """ >");
 
@@ -332,11 +334,21 @@ begin
   row TeacherVc TCrw;
   string 50 contract;
   vector string 255 vVals;
+  area WebPostArea;
 
   BlockLoad(RMbl);
 
 
   BlockLoad(JALClassbl);
+
+  WebGetPostData(WebPostArea);
+  if (CheckRecaptcha(WebPostArea)==false) then begin 
+    err = 64; 
+    logtext(0,"failed to verify CheckRecaptcha");
+  end else begin
+    logtext(0,"successfully verified CheckRecaptcha");
+  end;
+
 
   name = WebGetArg("name");
   email = WebGetArg("email");

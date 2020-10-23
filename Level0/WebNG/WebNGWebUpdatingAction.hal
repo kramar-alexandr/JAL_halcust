@@ -112,6 +112,24 @@ begin
   ContactRecordBlocked = res;
   return;
 end;
+
+global
+function Boolean StudentTooOld(string code)
+begin
+  record CUVc CUr;
+  Boolean res;
+
+  res = false;
+  CUr.Code = code;
+  if (ReadFirstMain(CUr,1,true)) then begin
+    if (CUr.CalcClassNum>12) then begin
+      res = true;
+    end;
+  end;
+
+  StudentTooOld = res;
+  return;
+end;
 //CUST-END
 
 updating procedure AfterLoginUpdating()
@@ -132,6 +150,14 @@ begin
           WebLogout;
           PutSessionString("loginfailed","true");
           PutSessionString("loginerror","1");
+          ShowRedirectHTML(FormatSimpleLink("/reg_login",true),false);
+          goto LAfterLoginUpdating;
+        end;
+        if (StudentTooOld(CurrentCust)) then begin
+          WebLogout;
+          PutSessionString("loginfailed","true");
+          PutSessionString("loginerror","2");
+          ShowRedirectHTML(FormatSimpleLink("/reg_login",true),false);
           goto LAfterLoginUpdating;
         end;
 //CUST-END
