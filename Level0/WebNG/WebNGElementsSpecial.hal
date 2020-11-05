@@ -257,7 +257,7 @@ begin
       case "1":
         WebOutStringFormat("<div class=""error"" style=""color:red"">" & ToolWebNGTranslateText(23022) & "</div>");
       case "2":
-        WebOutStringFormat("<div class=""error"" style=""color:red"">" & ToolWebNGTranslateText(23023) & "</div>");
+        WebOutStringFormat("<div class=""error"" style=""color:red"">" & ToolWebNGTranslateText(23023) & ToolWebNGTranslateText(23024) & "</div>");
       otherwise
         WebOutStringFormat("<div class=""error"" style=""color:red"">" & ToolWebNGTranslateText(23020) & "</div>"); //Login failed//CUST
     end;
