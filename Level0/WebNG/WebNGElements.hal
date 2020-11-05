@@ -49,6 +49,7 @@ external procedure WebShowSmuArchiveEntry();
 external procedure ExtractObjWithSeparator(string,string,Boolean,var Integer,var string);
 external procedure ShowLastNewsPicture(string);
 external procedure ShowSMUEditPage();
+external procedure ShowShopEditPage();
 external procedure ShowJALPartnerList();
 external procedure ShowJALMentorList();
 external procedure ShowJALEventList();
@@ -237,6 +238,8 @@ begin
     ShowLastNewsPicture(WEr.WebMenu); res = true;
   case "ShowSMUEditPage":
     ShowSMUEditPage; res = true;
+  case "ShowShopEditPage":
+    ShowShopEditPage; res = true;
   case "ShowJALPartnerList":
     ShowJALPartnerList; res = true;
   case "ShowJALMentorList":

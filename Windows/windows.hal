@@ -2973,7 +2973,7 @@ begin
   vs=20; h=120; vs2=16; hm=-100;
   EditField(h,v=6,200,"SMU",Normal,SMFCode,false,SMFSClass);
   EditField(h,v+=vs,-40,"Nosaukums",Normal,Name,false,0);
-  //EditField(h,v+=vs,100,"Secība",Normal,Order,false,0);
+  EditField(h,v+=vs,100,"Secība",Normal,Order,false,0);
   EditField(h,v+=vs,100,"Cena",Normal,Price,false,0);
   CheckBox(h+240,v=6,0,"Aktīvs",ActiveFlag);
   EndWindow;

@@ -2,6 +2,7 @@ external inner function Boolean Getformcode(Integer,Integer,string,string,string
 external inner function Integer NumberofDocumentPages(string,Integer);
 external inner procedure CommonDocumentFields(record RcVc);
 external inner procedure PrintCredManHeader(record CredManVc);
+external procedure OutputMultiLineWordBreak(string,string,Integer);
 
 procedure PrintSMF(record SMFVc SMFr)
 begin
@@ -30,7 +31,7 @@ begin
         vSCr[TCr.SchoolCode] = true;
         SCr.SchoolCode = TCr.SchoolCode;
         if (ReadFirstMain(SCr,1,true)) then begin
-          OutFormField("F_SCHOOLNAME",SCr.SchoolName);
+          OutputMultiLineWordBreak(SCr.SchoolName,"F_SCHOOLNAME",60);
           OutFormField("F_SCHOOLADDR",SCr.Address);
           OutFormField("F_PRINCIPLE",SCr.Director);
         end;  

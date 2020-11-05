@@ -267,7 +267,7 @@ begin
   if (framef) then begin
     WebOutString("        <div class=""profile table-emps smu-border""><div class='emp_content'>");
   end;
-  WebOutString("<div class='emp_head'>" & ToolWebNGTranslateText2(80072) & "</div>");//SMU Dal´bnieki
+  WebOutString("<div class='emp_head'>" & ToolWebNGTranslateText2(80072) & "</div>");//SMU Dalï¿½bnieki
   WebOutString("            <table id=""emplist-table"">");
   WebOutString("                <thead>");
   WebOutString("                <tr>");

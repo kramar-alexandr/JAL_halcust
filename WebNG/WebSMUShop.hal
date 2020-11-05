@@ -4,6 +4,14 @@ external procedure ShowWebAppPageStart(record WebNGPageVc,string);
 external procedure ShowWebAppPageEnd(record WebNGPageVc);
 external procedure SetContentTypeForExtension(string);
 external function string 255 ToolWebNGTranslateText2(Longint);
+external function integer GetJAlCustType(record CUVc,var record SMFVc,var record TeacherVc,var record MentorVc);
+external function string 255 UnFormatJSONString(string);
+external function string 255 FormatJSONString(string);
+external function Boolean FindSMURecord(string,var record SMFVc);
+external function string 255 StrReplace(string,string,string);
+external updating procedure RemoveSMFSession(record SMFSessionVc);
+external procedure OutPutJALWebTexts(Integer);
+external function string 255 RemoveEndingLineBreaks(string);
 
 function Boolean FindItemImage(record SMFItemVc SIr,var string link)
 begin
@@ -108,11 +116,36 @@ begin
   
   tstr = GetFieldValueByName(SMFr,fn,-1);
   if (nonblank(tstr)) then begin
-    WebOutString("<div class='smu_shop_media " & cls & "'><a href='" & tstr & "'></a></div>");
+    if (left(tstr,4)!="http") then begin
+      tstr = "https://" & tstr;
+    end;
+    WebOutString("<div class='smu_shop_media " & cls & "'><a href='" & tstr & "' target='_blank'></a></div>");
   end;
 
   return;
 end;
+
+procedure AddMedia2(record SMFVc SMFr,string fn,string cls)
+begin
+  string 255 tstr,link;
+  
+  tstr = GetFieldValueByName(SMFr,fn,-1);
+  if (nonblank(tstr)) then begin
+    if (fn=="ContactEmail") then begin
+      link = "mailto:" & tstr;
+    end else begin
+      if (left(tstr,4)!="http") then begin
+        tstr = "https://" & tstr;
+      end;
+      link = tstr;
+    end;
+    WebOutString("<div class='smu_shop_media_full " & cls & "'><a href='" & link & "' target='_blank' class='media_text'>" & tstr & "</a></div>");
+  end;
+
+  return;
+end;
+
+
 
 function Boolean FindJALFile(string smfcode,Integer type,var record JALFileVc rJFr)
 begin
@@ -224,6 +257,28 @@ begin
   return;
 end;
 
+procedure ShowSMUShopContactDetails(record SMFVc SMFr)
+begin
+  
+  WebOutString("<div class='smu_shop_contacts_frame'>");
+  WebOutString("<div class='smu_shop_contacts_title'>" & ToolWebNGTranslateText2(89202) & "</div>");
+
+  WebOutString("<div class='smu_shop_contacts_large_media'>");
+  AddMedia2(SMFr,"ContactEmail","contactemail");
+  AddMedia2(SMFr,"ExtWebPage","externalpage");
+  WebOutString("</div>");
+  WebOutString("<div class='smu_shop_contacts_small_media'>");
+  AddMedia(SMFr,"Facebook","fbpage");
+  AddMedia(SMFr,"Instagram","instagrampage");
+  AddMedia(SMFr,"Twitter","twitterpage");
+  WebOutString("</div>");
+
+  WebOutString("</div>");//smu_shop_item_list
+  WebOutString("</div>");//smu_shop_item_frame
+
+  return;
+end;
+
 procedure ShowSingleSMUWebShop(record SMFVc SMFr)
 begin
   string 255 logolink,bglink;
@@ -241,7 +296,7 @@ begin
   WebOutString("<div class='smu_shop_compname_section'>");
 
   if (nonblank(bglink)) then begin
-    WebOutString("<style>#banner{background-image:url(" & bglink & ");}</style>");
+    WebOutString("<style>#banner{background-image:url(" & bglink & ") !important;}</style>");
   end;
   
   WebOutString("<div class='smu_shop_title'>" & SMFr.SMFName & "</div>");
@@ -249,10 +304,14 @@ begin
   
   WebOutString("<div class='smu_shop_media_frame'>")
 
+  WebOutString("<div class='smu_shop_media_top'>");
   AddMedia(SMFr,"ExtWebPage","externalpage");
+  WebOutString("</div>");//smu_shop_media_top
+  WebOutString("<div class='smu_shop_media_bottom'>");
   AddMedia(SMFr,"Facebook","fbpage");
   AddMedia(SMFr,"Instagram","instagrampage");
   AddMedia(SMFr,"Twitter","twitterpage");
+  WebOutString("</div>");//smu_shop_media_bottom
   
   WebOutString("</div>");//smu_shop_media_frame
   WebOutString("</div>");//smu_shop_compname_section
@@ -267,6 +326,7 @@ begin
 
   ShowSMUShopItems(SMFr);
   ShowSMUShopEmployees(SMFr);
+  ShowSMUShopContactDetails(SMFr);
 
   WebOutString("</div>");//smu_shop_frame
 
@@ -275,11 +335,106 @@ begin
   return;
 end;
 
-procedure ShowSMUShopList()
+procedure ShowSingleSMUInList(record SMFVc SMFr)
+begin
+  string 255 logolink,distr;
+  record SchoolVc SCr;
+
+  if (GetCompanyLogo(SMFr,logolink)==false) then begin
+    logolink = DefaultLogo;
+  end;
+
+  WebOutString("<div class='smu_shoplist_smu'><a href='" & WebGetArg("path")  & "/" & SMFr.WebShopUrl & "' target='_blank'>");
+  WebOutString("<div class='smu_shoplist_logo'><img src='" & logolink & "'></div>");
+  WebOutString("<div class='smu_shoplist_details'>");
+  WebOutString("<div class='smu_shoplist_name'>" & SMFr.SMFName & "</div>");
+  WebOutString("<div class='smu_shoplist_school'>" & SMFr.SchoolName & "</div>");
+  SCr.SchoolCode = SMFr.SchoolCode;
+  if (ReadFirstMain(SCr,1,true)) then begin
+    distr = Left(SCr.District,1) & Lowercase(right(SCr.District,len(SCr.District)-1));
+    WebOutString("<div class='smu_shoplist_district'>" & distr & "</div>");
+  end;
+  WebOutString("<div class='smu_shoplist_smu_separator'></div>");
+  WebOutString("<div class='smu_shoplist_smu_prodspec'>" & SMFr.ProdSpec & "</div>");
+
+  WebOutString("</div>");//smu_shoplist_details
+  WebOutString("</a></div>");//smu_shoplist_smu
+  return;
+end;
+
+procedure DisplaySearch()
+begin
+  WebOutString("<div class='smu_shop_searchbox'><input type='text' placeholder='" & ToolWebNGTranslateText2(89203) & "'></div>");
+
+  return;
+end;
+
+procedure DisplayFilters()
 begin
   
-  
 
+  return;
+end;
+
+procedure ShowSMUShopList()
+begin
+  record SMFVc SMFr;
+  Boolean TrHs;
+
+  WebOutString("<div class='smu_shoplist_frame'>");
+  WebOutString("<div class='smu_shoplist_content'>");
+  DisplaySearch;
+  DisplayFilters;
+  
+  TrHs = true;
+  SMFr.WebApprovedDate = CurrentDate;
+  SMFr.WebStatus = 2;
+  WebOutString("<div class='smu_shoplist_hidden' style='display:none'>");
+  while (LoopBackKey("WebStatus",SMFr,2,TrHs)) begin
+    if (SMFr.WebStatus!=2) then begin
+      TrHs = false;
+    end else begin
+      ShowSingleSMUInList(SMFr);
+    end;
+  end;
+  WebOutString("</div>");//smu_shoplist_hidden
+  WebOutString("<div class='smu_shoplist'>");
+  WebOutString("</div>");//smu_shoplist
+  WebOutString("<div id='pagenave'></div>");
+  WebOutString("</div>");//smu_shoplist_content
+  WebOutString("</div>");//smu_shoplist_frame
+
+  return;
+end;
+
+function Boolean SMUAllowedToShow(record SMFVc SMFr)
+begin
+  Boolean res;
+  record SMFVc tSMFr;
+  record TeacherVc TCr;
+  record MentorVc MTr;
+  Integer type;
+  record CUVc CUr;
+  
+  if (SMFr.WebStatus==2) then begin//approved
+    res = true;
+    goto LSMUAllowedToShow;
+  end;
+  if (GetSessionString("isemp")=="1") then begin
+    res = true;
+  end;
+  if (res==false) then begin
+    CUr.Code = CurrentCust;
+    if (ReadFirstMain(CUr,1,true)) then begin
+      type = GetJAlCustType(CUr,tSMFr,TCr,MTr);
+      if (type==0 and SMFr.SMFCode==tSMFr.SMFCode) then begin
+        res = true;
+      end;
+    end;
+  end;
+
+LSMUAllowedToShow:;
+  SMUAllowedToShow = res;
   return;
 end;
 
@@ -291,19 +446,31 @@ begin
   Boolean showf;
   record WebNGPageVc WPr;
 
-  WPr.Code = WSr.WebPage;
+
+  path = mpath;
+  node = removenextnode(path);
+
+  if (node=="") then begin
+    WPr.Code = WSr.HALFunc;
+  end else begin
+    WPr.Code = WSr.WebPage;
+  end;
+
   if (nonblank(WPr.Code)) then begin
     if (ReadFirstMain(WPr,1,true)) then begin end;
   end;
   ShowWebAppPageStart(WPr,"");
 
-  path = mpath;
-  node = removenextnode(path);
   if (nonblank(node)) then begin
     SMFr.WebShopUrl = node;
     if (ReadFirstKey("WebShopUrl",SMFr,1,true)) then begin
-      ShowSingleSMUWebShop(SMFr);
-      showf = true;
+      if (SMUAllowedToShow(SMFr)) then begin
+        ShowSingleSMUWebShop(SMFr);
+        showf = true;
+      end;
+    end;
+    if (showf==false) then begin
+      WebOutString("SMU nav atrasts");
     end;
   end;
   if (showf==false) then begin
@@ -312,6 +479,402 @@ begin
 
   ShowWebAppPageEnd(WPr);
 
+
+  return;
+end;
+
+procedure ShowSMUEditField(string label,string name,string descr,string add)
+begin
+
+  WebOutString("<div class=""field_row " & add & """>");
+  WebOutString("<div class=""field_col""><div class=""field_label"">" & label & "</div><div class=""field_wrap""><input class=""" & name & """ type=""text"" name=""" & name & """ " & add & "></div></div>");
+  
+  WebOutString("<div class=""field_descr"">" & descr & "</div>");
+  WebOutString("<div class=""clear""></div>");
+  WebOutString("</div>");
+
+  return;
+end;
+
+procedure ShowSMUTextArea(string label,string name,string descr,string extra)
+begin
+
+  WebOutString("<div class=""field_row"">");
+  WebOutString("<div class=""field_col""><div class=""field_label"">" & label & "</div><div class=""field_wrap""><textarea class=""" & name & """ name=""" & name & """ " & extra & "></textarea></div></div>");
+  
+  WebOutString("<div class=""field_descr"">" & descr & "</div>");
+  WebOutString("<div class=""clear""></div>");
+  WebOutString("</div>");
+  
+  return;
+end;
+
+procedure ShowShopEditBasicInfo()
+begin
+  
+  WebOutString("<div class=""profile smu_basic_info smu-border"">");
+  WebOutString("<div class=""smu_top""><div class=""back_button_wrap""><a class=""spbutton profile_back"" href=""/profilePupil"">" & ToolWebNGTranslateText2(80022) & "</a></div><div class=""profile_header"">" & ToolWebNGTranslateText2(80110) & "</div></div>");
+  ShowSMUEditField(ToolWebNGTranslateText2(80010),"smu_name","","disabled");
+  ShowSMUEditField(ToolWebNGTranslateText2(80111),"smu_school","","disabled");
+  ShowSMUEditField(ToolWebNGTranslateText2(80112),"smu_spec","","disabled");
+  ShowSMUTextArea(ToolWebNGTranslateText2(80113),"smu_descr",ToolWebNGTranslateText2(80114),"");
+  WebOutString("</div>");
+
+  return;
+end;
+
+procedure ShowShopEditItem()
+begin
+  
+  WebOutString("<div class=""profile smu_items smu-border"">");
+  WebOutString("<div class=""smu_top""><div class=""profile_header"">" & ToolWebNGTranslateText2(80115) & "</div></div>");
+  //80116,80117,80118
+  WebOutString("<div class='item_template'><div class='shop_item'><div class='logo_frame'></div><div class='name_frame'></div><div class='price_frame'></div></div></div>");
+  WebOutString("</div>");
+
+  return;
+end;
+
+procedure ShowShopEditPhotos()
+begin
+  
+  WebOutString("<div class=""profile smu_images smu-border"">");
+  WebOutString("<div class=""smu_top""><div class=""profile_header"">" & ToolWebNGTranslateText2(80119) & "</div></div>");
+
+  WebOutString("<div class=""field_row smuitems"">");
+  WebOutString("<div class=""field_col"">");
+  WebOutString("<div class='logo_template'><div class='shop_logo'></div></div>");
+  WebOutString("<div class='background_template'><div class='shop_background'></div></div>");
+//80120,80126,80127
+  WebOutString("</div>");
+  
+  WebOutString("<div class=""field_descr"">" & ToolWebNGTranslateText2(80121) & "</div>");
+  WebOutString("<div class=""clear""></div>");
+  WebOutString("</div>");
+  WebOutString("</div>");
+
+  return;
+end;
+
+procedure ShowMediaEdit(string type,string descr)
+begin
+  
+  WebOutString("<div class=""field_row media_field " & type & """>");
+  WebOutString("<div class=""field_col""><div class=""field_wrap""><input type=""text""></div></div>");
+  
+  WebOutString("<div class=""field_descr"">" & descr & "</div>");
+  WebOutString("<div class=""clear""></div>");
+  WebOutString("</div>");
+
+  return;
+end;
+
+procedure ShowShopEditMedia()
+begin
+  
+  WebOutString("<div class=""profile smu_media smu-border"">");
+  WebOutString("<div class=""smu_top""><div class=""profile_header"">" & ToolWebNGTranslateText2(80122) & "</div></div>");
+
+  ShowMediaEdit("externalpage","");
+  ShowMediaEdit("fbpage","");
+  ShowMediaEdit("instagrampage","");
+  ShowMediaEdit("twitterpage",ToolWebNGTranslateText2(80123));
+
+  WebOutString("</div>");
+
+  WebOutString("<div class=""profile smu_email smu-border"">");
+  WebOutString("<div class=""smu_top""><div class=""profile_header"">" & ToolWebNGTranslateText2(80124) & "</div></div>");
+
+  ShowMediaEdit("contactemail",ToolWebNGTranslateText2(80125));
+
+  WebOutString("</div>");
+ 
+
+  return;
+end;
+
+global
+procedure ShowShopEditPage()
+begin
+  
+  OutPutJALWebTexts(0);
+  ShowShopEditBasicInfo;
+  ShowShopEditItem;
+  ShowShopEditPhotos;
+  ShowShopEditMedia;
+  
+  WebOutString("<div class='smu_submit_wrap'>");
+  WebOutString("<div class='smu_submit'><a class='spbutton save_only' href='#'>" & ToolWebNGTranslateText2(80042) & "</a></div>");
+  WebOutString("<div class='smu_submit'><a class='spbutton save_submit' href='#'>" & ToolWebNGTranslateText2(80043) & "</a></div>");
+  WebOutString("</div>")
+
+  return;
+end;
+
+procedure GetItemList(string smfcode)
+begin
+  string 255 background;
+  Integer cnt;
+  Boolean TrHs;
+  record SMFItemVc SIr;
+
+  WebOutString("""items"":[");
+  TrHs = true;
+  SIr.SMFCode = smfcode;
+  while (LoopKey("SMFCode",SIr,1,TrHs)) begin
+    if (SIr.SMFCode!=smfcode) then begin
+      TrHs = false;
+    end else begin
+      if (cnt>0) then begin
+        WebOutString(",");
+      end;				
+      FindItemImage(SIr,background);	
+      WebOutString("{""Name"":""" & FormatJSONString(SIr.Name) & """,""Price"":""" & FormatJSONString(SIr.Price) & """,""Price"":""" & background & """,""UUID"":""" & FormatJSONString(SIr.UUID) & """}");
+      cnt = cnt + 1;
+    end;
+  end;
+  WebOutString("]");
+
+  return;
+end;
+
+global webpublic
+procedure WebGetSMUDataForShopEditing()
+begin
+  record CUVc CUr;
+  record SMFVc SMFr;
+  record RLinkVc RLr;
+  Longint pos,i,j;
+  string 255 tstr,background,logo;
+  record SMFSessionVc SSr;
+  Boolean foundf;
+
+  WebOutString("{");
+  CUr.Code = CurrentCust;
+  if (ReadFirstMain(CUr,1,true)) then begin
+    if (ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr)) then begin
+      foundf = true;
+    end;
+  end;
+
+  if (!foundf) then begin
+    SSr.UUID = StringToUUID(WebGetArg("s"));
+    if (ReadFirstMain(SSr,1,true)) then begin
+      SMFr.SMFCode = SSr.SMFCode;
+      if (ReadFirstMain(SMFr,1,true)) then begin
+        foundf = true;
+      end;    
+      queued.RemoveSMFSession(SSr);
+    end;
+  end;
+  if (foundf) then begin
+    WebOutString("""SMFCode"":""" & SMFr.SMFCode & """,");
+    WebOutString("""SMFName"":""" & FormatJSONString(SMFr.SMFName) & """,");
+    WebOutString("""ProdSpec"":""" & FormatJSONString(SMFr.ProdSpec) & """,");
+    WebOutString("""School"":""" & FormatJSONString(SMFr.SchoolName) & """,");
+    WebOutString("""TwitterPage"":""" & FormatJSONString(SMFr.Twitter) & """,");
+    WebOutString("""FacebookPage"":""" & FormatJSONString(SMFr.Facebook) & """,");
+    WebOutString("""InstagramPage"":""" & FormatJSONString(SMFr.Instagram) & """,");
+    WebOutString("""ExtWebPage"":""" & FormatJSONString(SMFr.ExtWebPage) & """,");
+    GetCompanyBackground(SMFr,background);
+    GetCompanyLogo(SMFr,logo)
+    WebOutString("""Background"":""" & FormatJSONString(background) & """,");
+    WebOutString("""Logo"":""" & FormatJSONString(logo) & """,");
+    WebOutString("""ContactEmail"":""" & FormatJSONString(SMFr.ContactEmail) & """,");
+    WebOutString("""Text"":""");
+    for (i=0;i<SizeTextCnt(SMFr);i=i+200) begin
+      tstr = FormatJSONString(StringFromText(SMFr,i,200));
+      WebOutString(StrReplace(tstr,chr(13),"\\n"));
+    end;
+    WebOutString(""",");
+    GetItemList(SMFr.SMFCode);
+
+  end;
+  WebOutString("}");
+  
+
+  return;
+end;
+
+function string 255 GetUUIDList(array string arrUUID)
+begin
+  Integer i;
+  string 255 res;
+  
+  for (i=0;i<arrUUID.length;i=i+1) begin
+    if (nonblank(res)) then begin
+      res = res & ",";
+    end;
+    res = res & arrUUID[i];
+  end;
+
+  GetUUIDList = res;
+  return;
+end;
+
+updating procedure RemoveJALFile(string smfcode,Integer type)
+begin
+  record JALFileVc JFr;
+
+  if (FindJALFile(smfcode,type,JFr)) then begin
+    RecordRemove(JFr);
+  end;
+
+  return;
+end;
+
+updating procedure RemoveSMFItems(string smfcode,string uuidlist)
+begin
+  Longint pos;
+  string 255 tstr;
+  record SMFItemVc SIr;
+  
+  while (GetNextSubString(uuidlist,pos,",",tstr)) begin
+    SIr.UUID = StringToUUID(tstr);
+    if (ReadFirstMain(SIr,1,true)) then begin
+      if (SIr.SMFCode==smfcode) then begin
+        RecordRemove(SIr);
+      end;
+    end;
+  end;
+
+
+  return;
+end;
+
+global webpublic
+updating procedure WebStoreSMUDataForShop()
+begin
+  record CUVc CUr;
+  record SMFVc SMFr,oldSMFr;
+  record RLinkVc RLr;
+  record SMFItemVc SIr,oldSIr;
+  string 255 root,uuidstr,uuidlist,tstr;
+  JSON js;
+  Integer i;
+  Boolean updatef;
+  array string 255 arrUUID;
+  Integer errtype;
+  area a;
+
+  CUr.Code = CurrentCust;
+  if (ReadFirstMain(CUr,1,true)) then begin
+    if (ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr)) begin
+      RecordCopy(oldSMFr,SMFr);
+      WebGetRawPostData(a);
+      js = ParseJSONArea(a);
+      SMFr.Twitter = UnFormatJSONString(JSONGet(js,"Twitter"));
+      SMFr.Facebook = UnFormatJSONString(JSONGet(js,"Facebook"));
+      SMFr.Instagram = UnFormatJSONString(JSONGet(js,"Instagram"));
+      SMFr.ExtWebPage = UnFormatJSONString(JSONGet(js,"ExtWebPage"));
+      SMFr.ContactEmail = UnFormatJSONString(JSONGet(js,"ContactEmail"));
+      tstr = UnFormatJSONString(RemoveEndingLineBreaks(JSONGet(js,"Text")));
+      SetTextField(SMFr,tstr);
+      if (RecordUpdate(oldSMFr,SMFr,true)==0) then begin
+        i = 0;
+        root = "items/";
+        while (JSONNodeExists(js,root & "[" & i  & "]")) begin
+          updatef = false;
+          uuidstr = JSONGet(js,root & "[" & i & "]/uuid");
+          if (nonblank(uuidstr)) then begin
+            SIr.UUID = StringToUUID(uuidstr);
+            if (ReadFirstMain(SIr,1,true)) then begin
+              if (SMFr.SMFCode==SIr.SMFCode) then begin
+                RecordCopy(oldSIr,SIr);
+                updatef = true;
+              end;
+            end;
+          end;
+          if (!updatef) then begin
+            RecordNew(SIr);
+            SIr.UUID = MakeUUID;
+          end;
+          SIr.Name = JSONGet(js,root & "[" & i & "]/Name");
+          SIr.Price = StringToVal(JSONGet(js,root & "[" & i & "]/Price"),M4Val);
+          if (updatef) then begin
+            RecordUpdate(oldSIr,SIr,true);
+          end else begin
+            RecordStore(SIr,true);
+          end;   
+          arrUUID[arrUUID.length] = SIr.UUID;
+        end;
+      end;
+      if (nonblank(JSONGet(js,"RemoveItems"))) then begin
+        RemoveSMFItems(SMFr.SMFCode,JSONGet(js,"RemoveItems"));
+      end;
+      if (JSONGet(js,"RemoveLogo")=="1") then begin
+        RemoveJALFile(SMFr.SMFCode,0);
+      end;
+      if (JSONGet(js,"RemoveBackground")=="1") then begin
+        RemoveJALFile(SMFr.SMFCode,1);
+      end;
+    end;
+  end;
+
+lend:;
+  if (errtype>0) then begin
+    WebOutString("{\"errtype\":\"" & errtype & "\"}");  
+  end else begin
+    uuidlist = GetUUIDList(arrUUID);
+    WebOutString("{\"ok\":\"\",\"imglist\":" & uuidlist & "}");
+  end;
+  
+  return;
+end;
+
+global
+updating procedure FinishSMUFileUpload(string sess,string filename,string id,string tag,Integer type)
+begin
+  string 255 fn,nfn;
+  area filearea;
+  Integer i;
+  record JALFileVc JFr;
+
+  fn = "tmp/" & tag & "/" & sess;
+  if (FileExists(fn)) then begin
+    nfn = "tmp/" & tag & "/" & Trim(filename);
+    RenameFile(fn,nfn);
+    RecordNew(JFr);
+    JFr.SMFCode = id;
+    JFr.Type = type;
+    JFr.UUID = MakeUUID;
+    if (RecordStore(JFr,true)) then begin
+      RecordLinkFile(nfn,0,JFr,CurrentCompany);    
+    end;
+    Delete_File(nfn);
+  end;
+
+  return;
+end;
+
+global
+updating procedure FinishSMUItemFileUpload(string sess,string filename,string id,string tag)
+begin
+  string 255 fn,nfn;
+  area filearea;
+  Integer i;
+  record SMFItemVc SIr;
+  record CUVc CUr;
+  record SMFVc SMFr;
+  record RLinkVc RLr;
+
+  fn = "tmp/" & tag & "/" & sess;
+  if (FileExists(fn)) then begin
+    nfn = "tmp/" & tag & "/" & Trim(filename);
+    RenameFile(fn,nfn);
+    SIr.UUID = StringToUUID(id);
+    if (ReadFirstMain(SIr,1,true)) then begin
+      CUr.Code = CurrentCust;
+      if (ReadFirstMain(CUr,1,true)) then begin
+        if (ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr)) then begin
+          if (SMFr.SMFCode==SIr.SMFCode) then begin
+            RecordLinkFile(nfn,0,SIr,CurrentCompany);    
+          end;
+        end;
+      end;
+    end;
+    Delete_File(nfn);
+  end;
 
   return;
 end;

@@ -267,6 +267,9 @@ begin
       SendChangedStatusNotification(SMFr,3);
     end;
   end;
+  if (SMFr.WebStatus!=SMF2r.WebStatus and SMFr.WebStatus==2) then begin
+    SMFr.WebApprovedDate = CurrentDate;
+  end;
   
   SMFVcRecordUpdate = res;
 return;

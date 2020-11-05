@@ -64,15 +64,6 @@ begin
   //EditField(h,v+=vs,50,"Serveris",Normal,ServerCode,false,0);
   //EditField(h2,v+=vs,90,"Kompānija",Normal,CompNr,false,0);
 
-  ButtonFrame(h-100,v+=40,400,7,"Tīmekļa veikals");
-  EditField(h,v+=vs,200,"Saite",Normal,WebShopUrl,false,0);
-  EditField(h,v+=vs,200,"Ārējā mājas lapa",Normal,ExtWebPage,false,0);
-  EditField(h,v+=vs,200,"Facebook lapa",Normal,Facebook,false,0);
-
-  EditField(h,v+=vs,200,"Instragram lapa",Normal,Instagram,false,0);
-  EditField(h,v+=vs,200,"Twitter lapa",Normal,Twitter,false,0);
-  EndFrame;
-
   ButtonFrame(h,v=(vm+=(v+40)),120,7,"Statuss");
   RadioButton(h,v,0,0,"Neapstiprināta",ApprovalStatus);
   RadioButton(h,v+=16,1,0,"Iesniegts",ApprovalStatus);
@@ -138,6 +129,27 @@ begin
     //WebPage(20,v+vm,-20,-20,"http://localhost:8191/WebShowDocuments.hal?code=" & GetWindowString(wn,"SMFCode") & "&user=" & CurrentUser,"DocPage");
   end;
   */
+  vm = v;
+  ButtonFrame(h3,v+=60,305,7,"Tīmekļa veikals");
+  EditField(h3+100,v+=5,200,"Saite",Normal,WebShopUrl,false,0);
+  EditField(h3+100,v+=vs,200,"Ārējā mājas lapa",Normal,ExtWebPage,false,0);
+  EditField(h3+100,v+=vs,200,"E-pasta adrese",Normal,ContactEmail,false,0);
+
+  EditField(h3+100,v+=vs,200,"Facebook lapa",Normal,Facebook,false,0);
+
+  EditField(h3+100,v+=vs,200,"Instragram lapa",Normal,Instagram,false,0);
+  EditField(h3+100,v+=vs,200,"Twitter lapa",Normal,Twitter,false,0);
+  EndFrame;
+  v = vm;
+  ButtonFrame(h3=h3+320,v+=60,400,4,"Veikala statuss");
+  RadioButton(h3,v,0,0,"Nav",WebStatus);
+  RadioButton(h3,v+=16,1,0,"Nosūtīts apstiprināšanai",WebStatus);
+  RadioButton(h3,v+=16,2,0,"Apstiprināts",WebStatus);
+  RadioButton(h3,v+=16,3,0,"Noraidīts",WebStatus);
+  EditField(h3+50,v+=vs,90,"Datums",Normal,WebApprovedDate,false,PasteCurDate);
+  EndFrame;
+
+
   SpecialMenu("Skatīt saraksti ar SMU",' ',1,"ShowFullMailListDsm");
   SpecialMenu("Pievienot skolēnu",' ',1,"SMFDClassAddStudentDsm");
 

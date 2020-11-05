@@ -70,6 +70,7 @@ begin
   RecordField(WebShopUrl,M4Str,100,0);
   RecordField(WebStatus,M4Int,0,0);
   RecordField(WebApprovedDate,M4Date,0,0);
+  RecordField(ContactEmail,M4Str,255,0);
 
   ArrayBegin(Math,-,1);
   ArrayField(Type,M4Set,1005,0);

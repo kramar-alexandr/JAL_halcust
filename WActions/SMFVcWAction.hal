@@ -616,7 +616,7 @@ begin
   GetWindowRecord(wn,SMFr);
   CreateSMFSession(SMFr,SSr);
   //OpenWebBrowser("http://localhost:8192/editSMU?s=" & SSr.UUID);
-  OpenWebBrowser("http://jalatvia.lv/editSMU?s=" & SSr.UUID);
+  OpenWebBrowser("https://jalatvia.lv/editSMU?s=" & SSr.UUID);
 
   return;
 end;

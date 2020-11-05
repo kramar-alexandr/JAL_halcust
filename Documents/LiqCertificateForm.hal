@@ -23,13 +23,13 @@ begin
   return;
 end;
 
-procedure OutputMultiLineWordBreak(string tstr,string fn)
+global
+procedure OutputMultiLineWordBreak(string tstr,string fn,Integer chrcnt)
 begin
-  Integer pos,chrcnt,rowcnt,tpos,i,rw,lastspace;
+  Integer pos,rowcnt,tpos,i,rw,lastspace;
   string 255 tmp,t;
   
   pos = 0;
-  chrcnt = 30;
   rowcnt = 3;
   tmp = tstr;
   while (len(tmp)>0) begin
@@ -80,7 +80,7 @@ begin
   SCr.SchoolCode = CUr.SchoolCode;
   if (ReadFirstMain(SCr,1,true)) then begin
     //OutFormField("F_SCHOOLNAME",SCr.SchoolName);
-    OutputMultiLineWordBreak(SCr.SchoolName,"F_SCHOOLNAME");
+    OutputMultiLineWordBreak(SCr.SchoolName,"F_SCHOOLNAME",30);
     OutFormField("F_SCHOOLDIR",SCr.Director);
   end;  
   TCr.TeacherCode = CUr.TeacherCode;
