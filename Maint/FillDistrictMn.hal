@@ -1,0 +1,32 @@
+
+global
+updating procedure FillDistrictMn(record RCVc RepSpec)
+begin
+  record SMFVc SMFr,oldSMFr;
+  record SchoolVc SCr;
+  record JALDistrictBlock JDbl;
+  row JALDistrictBlock JDblrw;
+  Integer i,rwcnt;
+
+  
+  while (LoopMain(SMFr,1,true)) begin
+    if (blank(SMFr.District)) then begin
+      RecordCopy(oldSMFr,SMFr);
+      SCr.SchoolCode = SMFr.SchoolCode;
+      if (ReadFirstMain(SCr,1,true)) then begin
+        BlockLoad(JDbl);
+        rwcnt = MatRowCnt(JDbl);
+        for (i=0;i<rwcnt;i=i+1) begin
+          MatRowGet(JDbl,i,JDblrw);
+          if (JDblrw.District == SCr.District) then begin
+            SMFr.District = JDblrw.District;
+            RecordUpdate(oldSMFr,SMFr,true);
+            i = rwcnt;
+          end;
+        end;
+      end;
+    end;
+  end;
+
+  return;
+end;

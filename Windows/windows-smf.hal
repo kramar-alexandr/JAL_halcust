@@ -21,9 +21,8 @@ begin
   //RlColKey(-280,-280,"Skolotājs",TeacherName,false,TeacherName);
   RlColKey(-390,-390,"Tips",TypeName,false,Type);
   RlColKey(-300,-300,"Statuss",StatusName,false,Status);
-  RlCol   (-200,-200,"Serveris",ServerCode,false);
-  RlCol   (-140,-140,"Komp.",CompNr,false);
-  RlColKey(-100,-100,"Datums",TransDate,false,TransDate);
+  RlColKey(-200,-200,"Datums",TransDate,false,TransDate);
+  RlColKey(-100,-100,"Kat. Statuss",WebStatus,false,WebStatus);
   SearchField("Meklēt");
   EndWindow;
 end;
@@ -103,6 +102,7 @@ begin
   EditField(h4,v,-40,"Vārds, Uzvārds",Normal,TeacherName,false,0);*/
   EditField(h3,v+=vs, 30,"Skolas kods",Normal,SchoolCode,false,SchoolSClass);
   EditField(h4,v,-40,"Nosaukums",Normal,SchoolName,false,0);
+  EditField(h3,v+=vs, -40,"Novads",Normal,District,false,0);
 	EditField(h3,v+=vs,220,"Izglītības pakāpe",Normal,EducationType,false,SetSClass);
   
   //EditField(h2,v,-30,"Klients",ViewOnly,CustCode,false,0);
@@ -121,7 +121,8 @@ begin
   //Tile(2,400,true,"",-);
 	TextField(h3,v+=20,-40,80,Text,0);
   HalPushButton(h3,v+=100,h3+100,v+20,"SMFEmpListShowDsm","Dalībnieki");
-  HalPushButton(h3,v+=30,h3+100,v+20,"SMFDClassOpenSMFData","Reģistr. Dati");
+  HalPushButton(h3+120,v,h3+220,v+20,"SMFDClassOpenSMFData","Reģistr. Dati");
+  HalPushButton(h3+240,v,h3+340,v+20,"SMFDClassOpenSMFCatalog","Katalogs");
   /*CHN::not needed anymore based on Ebersteins
   wn = CurWindow;
   if GetWindowString(wn,"SMFCode") <> "" then begin

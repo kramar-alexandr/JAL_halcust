@@ -69,6 +69,7 @@ begin
   aSMFr.EnuDienaFlag = SMFr.EnuDienaFlag;
   aSMFr.OldApprovalStatus = SMFr.OldApprovalStatus;
   aSMFr.PrintCert = SMFr.PrintCert;
+  aSMFr.District = SMFr.District;
 
   rwcnt = MatRowCnt(SMFr);
   for (i=0;i<rwcnt;i=i+1) begin

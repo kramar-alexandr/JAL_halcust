@@ -55,6 +55,8 @@ begin
       WebOutString("jal_str['PievienotFoto']       = '" & ToolWebNGTranslateText2(80116) & "';");
       WebOutString("jal_str['PievienotAprakstu']   = '" & ToolWebNGTranslateText2(80117) & "';");
       WebOutString("jal_str['PievienotCenu']       = '" & ToolWebNGTranslateText2(80118) & "';");
+      WebOutString("jal_str['KatalogsNosutits']       = '" & ToolWebNGTranslateText2(80150) & "';");
+      WebOutString("jal_str['NevarLabot']       = '" & ToolWebNGTranslateText2(80151) & "';");
       
 
     case 1://teacher profile

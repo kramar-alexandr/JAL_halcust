@@ -60,6 +60,7 @@ begin
   Maintenance("Sūtīt jaunumus",SendNewsToEmailsVClass,SendNewsToEmailsMn,modJAL);
   Maintenance("Aizpildīt skolas",FillTeacherSchoolsVClass,FillTeacherSchoolsMn,modJAL);
   //Maintenance("Pārveidot kontaktus",JALMarkasCUVClass,JALMarkasCUMn,modJAL);
+  Maintenance("Aizpildīt SMU Novadus",FillDistrictVClass,FillDistrictMn,modJAL);
   Maintenance("Atjaunot skolas",RenewSchoolsVClass,RenewSchoolsMn,modJAL);
   Maintenance("Arhivēt mācību gadu",ArchiveSemesterVClass,ArchiveSemesterMn,modJAL);
   Maintenance("Atjaunot kontaktus",RefreshContactsVClass,RefreshContactsMn,modJAL);
@@ -338,7 +339,7 @@ begin
 	SString(32507,"Skolēna dalība skolēnu mācību uzņēmumā");
 	SString(32508,"JA Latvia lapā reģistrēts Jūsu konsultēts SMU");
 	SString(32509,"Skolēns, kuram esat Junior Achievement Latvia norādīts kā vecāks/aizbildnis, vairs nepiedalās Skolēnu mācību uzņēmuma (SMU)");
-	
+		
   SString(32520,"Reģistrēts jauns SMU ");
   SString(3000000,"Neizdevās lejuplādēt dokumentu.");
   SString(3000001,"Funkciju var izmantot tikai no galvenā pasākuma");
@@ -448,6 +449,13 @@ begin
   SetText(1,"Pamatskola");
   SetText(2,"Vidusskola");
   SetText(3,"Profesionālā izglītība");
+  EndSet;
+
+  SetBegin(3002);
+  SetText(0,"Nav");
+  SetText(1,"Nosūtīts");
+  SetText(2,"Apstiprināts");
+  SetText(3,"Noraidīts");
   EndSet;
 
   return;

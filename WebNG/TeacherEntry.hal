@@ -23,6 +23,7 @@ begin
   res = StrReplace(tstr,"\"","\\\"");
   res = StrReplace(res,chr(13) & chr(10),"\\n");//chr(13) & 
   res = StrReplace(res,chr(10),"\\n");//chr(13) & 
+  res = StrReplace(res,chr(9),"");//chr(13) & 
 
   FormatJSONString = res;
   return;

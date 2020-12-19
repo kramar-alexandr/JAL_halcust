@@ -621,7 +621,24 @@ begin
   return;
 end;
 
+global
+updating procedure SMFDClassOpenSMFCatalog()
+begin
+  record SMFVc SMFr;
+  record SMFSessionVc SSr;
+  Integer wn;
 
+  wn = CurWindow;
+  GetWindowRecord(wn,SMFr);
+  CreateSMFSession(SMFr,SSr);
+  if (TestEnablerFile("EnLocalhost")) then begin
+    OpenWebBrowser("http://localhost:8192/katalogs/" & SMFr.WebShopUrl & "?s=" & SSr.UUID);
+  end else begin
+    OpenWebBrowser("https://jalatvia.lv/katalogs/" & SMFr.WebShopUrl & "?s=" & SSr.UUID);
+  end;
+
+  return;
+end;
 global
 updating procedure JALEventFinalSheetDsm()
 begin
@@ -654,4 +671,51 @@ begin
   end;
 
   return;
+end;
+
+function Boolean FindTeacherApp(record CUVc CUr)
+begin
+  record JALTeacherAccVc JTr;
+  Boolean TrHs,res;
+
+  TrHs = true;
+  JTr.SMFCode = CUr.Code;
+  if (ReadFirstKey("SMFCode",JTr,1,TrHs)) begin
+    if (JTr.SMFCode!=CUr.Code) then begin
+      TrHs = false;
+    end else begin
+      if (JTr.RecType==3 and JTr.RecCode==CUr.TeacherCode) then begin
+        res = true;
+        TrHs = false;
+      end;
+    end;
+  end;
+
+  FindTeacherApp = res;
+  return;
+end;
+
+global
+updating procedure CUCreateTeacherAppDsm()
+begin
+record JALTeacherAccVc JTr;
+Integer wn;
+record CUVc CUr;
+
+  wn = CurWindow;
+  GetWindowRecord(wn,Cur);
+  if (FindTeacherApp(CUr)==false) then begin
+    RecordNew(JTr);
+    JTr.SerNr =  NextSerNr("JALTeacherAccVc",CurrentDate,-1,false,"");
+    JTr.SMFCode = CUr.Code;
+    JTr.RecCode = CUr.TeacherCode;
+    JTr.StatusFlag = 1;
+    JTr.TransDate = CurrentDate;
+    JTr.RecType = 3;
+    RecordStore(JTr,true);
+  end else begin
+    MessageBox(0,"Jau izveidots");
+  end;
+
+return;
 end;

@@ -37,8 +37,8 @@ begin
   string 10 res;
   string 255 recaptchaparm,tmpstr;
 
-  webrecaptcharesponse = "";
-  recaptchaparm = "g-recaptcha-response=";
+  webrecaptcharesponse = WebGetArg("g-recaptcha-response");
+/*
   m = len(recaptchaparm);
 
   l = GetAreaLength(a_POST);
@@ -63,6 +63,8 @@ begin
       goto LParser;
     end;
   end;
+*/
+  
 LParser:;
   return;
 end;
@@ -88,6 +90,7 @@ begin
     res = true;
     goto LCheckRecaptcha;
   end;
+  logtext(0,"webrecaptcharesponse=" & webrecaptcharesponse);
   if (nonblank(webrecaptcharesponse)) then begin 
     docheckf = true;
   end;
@@ -98,6 +101,7 @@ begin
     res = SendWebRequest(host,port,-1,true,"POST","/recaptcha/api/siteverify","application/x-www-form-urlencoded","",false,req,reply,40);
 //    writeareatofile(req,"recaptcha.req",0);
 //    writeareatofile(reply,"recaptcha.reply",0);
+    logtext(0,"recaptcha response " & GetStringFromArea(reply,0,255));
     if (res) then begin 
       js = ParseJSONArea(reply);
       if (res) then begin 

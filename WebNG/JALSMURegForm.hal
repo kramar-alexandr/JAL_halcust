@@ -249,7 +249,7 @@ procedure SMURegForm()
 begin
   integer err;
   OutPutJALWebTexts(-1);
-  WebOutStringFormatNL("<form method=""POST"" action=""/WebSMUReg.hal"" onSubmit=""return TestFieldsForSMU(this,'" & toolwebngtranslatetext(20010) & "','" & toolwebngtranslatetext(20012) & "','" & toolwebngtranslatetext(20013) & "','" & toolwebngtranslatetext(20014) & "','" & toolwebngtranslatetext(20015) & "','" & toolwebngtranslatetext(20016) & "','" & toolwebngtranslatetext(20018) & "','" & toolwebngtranslatetext(20019) & "','" & toolwebngtranslatetext(20020) & "','" & toolwebngtranslatetext(20021) & "')"" id='recaptcha_form'>");
+  WebOutStringFormatNL("<form method=""POST"" action=""/WebSMUReg.hal"" id='recaptcha_form'>");
   WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path") & """>");
   //WebOutStringFormatNL("<div class='_reg_first'>" & toolwebngtranslatetext(21061) & "</div><input class=""spinput _name"" type=""text"" name=""smuname"" value="""" >");
   //SelBoxForType;
@@ -300,7 +300,7 @@ begin
   WebOutStringFormatNL("<div id=""esurname""></div><div id=""eemail""></div><div id=""esameemail""></div><div id=""esameSMUname""><div id=""esameSMUmsg""></div></div><div id=""epassword""></div><div id=""ereg""></div><div id=""edistrict""></div><div id=""eclass""></div><div id=""ecompare""></div></div>");
 
 
-  WebOutStringFormatNL("<input type=""submit"" class=""spbutton""  value=""" & toolwebngtranslatetext(21064) & """ >");
+  WebOutStringFormatNL("<input type=""button"" class=""spbutton""  value=""" & toolwebngtranslatetext(21064) & """ onclick=""TestFieldsForSMU(this,'" & toolwebngtranslatetext(20010) & "','" & toolwebngtranslatetext(20012) & "','" & toolwebngtranslatetext(20013) & "','" & toolwebngtranslatetext(20014) & "','" & toolwebngtranslatetext(20015) & "','" & toolwebngtranslatetext(20016) & "','" & toolwebngtranslatetext(20018) & "','" & toolwebngtranslatetext(20019) & "','" & toolwebngtranslatetext(20020) & "','" & toolwebngtranslatetext(20021) & "')"""">");
   /*
   WebOutStringFormatNL("<script>");
   WebOutStringFormatNL("//<![CDATA[ ");

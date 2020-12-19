@@ -68,9 +68,10 @@ begin
   RecordField(Instagram,M4Str,255,0);
   RecordField(Twitter,M4Str,255,0);
   RecordField(WebShopUrl,M4Str,100,0);
-  RecordField(WebStatus,M4Int,0,0);
+  RecordField(WebStatus,M4Set,3002,0);
   RecordField(WebApprovedDate,M4Date,0,0);
   RecordField(ContactEmail,M4Str,255,0);
+  RecordField(District,M4Str,255,0);
 
   ArrayBegin(Math,-,1);
   ArrayField(Type,M4Set,1005,0);
@@ -519,6 +520,9 @@ begin
   RecordField(TeacherMail,M4Str,70,ConfVc);
   RecordField(MentorMail,M4Str,70,ConfVc);
   RecordField(STUMail,M4Str,70,ConfVc);
+  RecordField(WebShopText,M4Code,20,LTxtVc);
+  RecordField(WebShopMail,M4Str,70,ConfVc);
+  
   EndBlock;
   
 //Numuru s�riju bloks:
@@ -759,6 +763,10 @@ begin
   RecordField(TeacherRegText,M4Code,10,LTxtVc);
   RecordField(TeacherApproveText,M4Code,10,LTxtVc);
   RecordField(CertFileConf,M4Str,255,0);
+  RecordField(HideCatalog,M4Int,0,0);
+  RecordField(SMUBasketText,M4Code,20,0);
+  RecordField(BasketSender,M4Str,255,0);
+  RecordField(CustomerBasketText,M4Code,20,0);
   EndBlock;
   
 
@@ -1260,6 +1268,12 @@ begin
   RecordField(Order,M4Int,0,0);
   RecordField(Price,M4Val,0,0);
   RecordField(ActiveFlag,M4Int,0,0);
+  RecordField(TransDate,M4Date,0,0);
+  RecordField(DummyStr,M4Str,255,0);
+  RecordField(ShopUrl,M4Str,255,0);
+  RecordField(District,M4Str,255,0);
+  RecordField(SMFName,M4Str,255,0);
+  RecordField(SortString,M4Str,255,0);
   MainKeyBegin(MainKey,0);
   KeySegment(UUID);
   KeyBegin(SMFCode);

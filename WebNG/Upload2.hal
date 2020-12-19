@@ -1,6 +1,6 @@
 //<halrule>server-only</halrule>
-external inner procedure ReadWebUploadArgs(var string,var string,var string);
-external inner procedure GetWebUploadSessionVars(string,var string,var string,var string);
+external procedure ReadWebUploadArgs(var string,var string,var string);
+external procedure GetWebUploadSessionVars(string,var string,var string,var string);
 external procedure FinishDocFileUpload(string,string,string,string);
 external updating procedure FinishLandingFileUpload(string,string,string,string);
 external updating procedure FinishLoanAppFileUpload(string,string,string,string);

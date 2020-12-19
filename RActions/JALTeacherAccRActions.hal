@@ -78,3 +78,14 @@ begin
   JALTeacherAccVcRecordUpdate = res;
 return;
 end;
+
+global
+updating function LongInt JALTeacherAccVcRecordRemoveAfter(var record JALTeacherAccVc JTr,record JALTeacherAccVc JT2r,LongInt stat,LongInt long4)
+begin
+  Longint res;
+
+  LogText(0,"Removed JALTeacherAcc SerNr=" & JTr.SerNr & ":cur.code" & JTr.SMFCode & ":cust" & CurrentCust & ":user=" & CurrentUser)
+
+  JALTeacherAccVcRecordRemoveAfter = res;
+return;
+end;

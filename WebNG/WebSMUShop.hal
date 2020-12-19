@@ -1,3 +1,7 @@
+/*
+The basket was made with session because they didn't intend to have a basket at first, just favourites. To keep things simple I copied the favourites functionality because it already did almost everything that is needed for basket.
+*/
+
 external function string 255 removenextnode(var string);
 external function string 255 FormatSimpleLink(string,boolean);
 external procedure ShowWebAppPageStart(record WebNGPageVc,string);
@@ -12,6 +16,9 @@ external function string 255 StrReplace(string,string,string);
 external updating procedure RemoveSMFSession(record SMFSessionVc);
 external procedure OutPutJALWebTexts(Integer);
 external function string 255 RemoveEndingLineBreaks(string);
+external function string 60 RemoveObjectFromObjectList(string,string);
+external function string 60 AddObjectToObjectList(string,string);
+external procedure ShowWebElement(string);
 
 function Boolean FindItemImage(record SMFItemVc SIr,var string link)
 begin
@@ -38,6 +45,47 @@ begin
   return;
 end;
 
+
+
+function string 255 GetSMFShopUrl(record SMFVc SMFr)
+begin
+  Integer i,n;
+  string 255 res,c,tstr;
+  
+  tstr = SMFr.WebShopUrl;
+  if (blank(tstr)) then begin
+    tstr = SMFr.SMFName;
+  end;
+  for (i=0;i<len(tstr);i=i+1) begin
+    c = lowercase(mid(tstr,i,1));
+    switch (c) begin
+      case "ā": c = "a";
+      case "ī": c = "i";
+      case "ē": c = "e";
+      case "ū": c = "u";
+      case "č": c = "c";
+      case "ķ": c = "k";
+      case "ļ": c = "l";
+      case "ņ": c = "n";
+      case "š": c = "s";
+      case "ģ": c = "g";
+      case "ž": c = "z";
+      case "č": c = "c";
+      case " ": c = "-";
+      case "-":
+      otherwise
+        n = asc(c);
+        if ((n>=48 and n<=57) or (n>=97 and n<=122)) then begin
+        end else begin
+          c = "";
+        end;
+    end;
+    res = res & c;
+  end;
+
+  GetSMFShopUrl = res;
+  return;
+end;  
 global webpublic
 procedure WebShowSMUShopItemImage()
 begin
@@ -61,21 +109,29 @@ begin
   return;
 end;
 
-procedure ShowSingleSMUShopItem(record SMFItemVc SIr)
+procedure ShowSingleSMUShopItem(record SMFItemVc SIr,Boolean likedf,Boolean basketf)
 begin
-  string 255 link;
+  string 255 link,likedcls,basketcls;
   
   WebOutString("<div class='smu_shop_single_item'>");
   WebOutString("<div class='smu_shop_item_image'>");
   if (FindItemImage(SIr,link)==false) then begin
     link = DefaultItemImage;
   end;
+  if (likedf) then begin
+    likedcls = " active";
+  end;
+  if (basketf) then begin
+    basketcls = " added_to_basket";
+  end;
   WebOutString("<img src='" & link & "'>");
   WebOutString("</div>");//smu_shop_item_image
 
   WebOutstring("<div class='smu_shop_item_details'>");
-  WebOutString("<div class='smu_shop_single_item_title'>" & SIr.Name & "</div>");
+  WebOutString("<div class='smu_shop_single_item_title' title='" & SIr.Name & "'>" & SIr.Name & "</div>");
   WebOutString("<div class='smu_shop_item_price'>" & SIr.Price & "</div>");
+  WebOutString("<div class='smu_shop_item_liked" & likedcls & "' uuid='" & SIr.UUID & "'></div>");
+  WebOutString("<div class='smu_shop_item_basket" & basketcls & "' uuid='" & SIr.UUID & "'></div>");
   WebOutString("</div>");//smu_shop_item_details
 
   WebOutString("</div>");//smu_shop_single_item
@@ -83,23 +139,107 @@ begin
   return;
 end;
 
+function Integer IsItemLiked(string likeditems,string tuuid)
+begin
+  Integer res;
+
+  if (SetInSet(tuuid,likeditems)) then begin
+    res = 1;
+  end;
+
+  IsItemLiked = res;
+  return;
+end;
+
+function Integer IsItemInBasket(string likeditems,string tuuid)
+begin
+  Integer res;
+  string 255 tmp,item;
+  Longint pos,pos2;
+
+  while (GetNextSubString(likeditems,pos,",",tmp)) begin
+    pos2 = -1;
+    GetNextSubString(tmp,pos2,":",item);
+    if (item==tuuid) then begin
+      res = 1;
+      pos = 10000;
+    end;  
+  end;
+
+  IsItemInBasket = res;
+  return;
+end;
+
+function string 255 UpdateItemList(string tstr)
+begin
+  string 255 res;
+  string 255 tmp,item;
+  Longint pos,pos2;
+  record SMFItemVc SIr;
+
+  while (GetNextSubString(tstr,pos,",",tmp)) begin
+    pos2 = -1;
+    GetNextSubString(tmp,pos2,":",item);
+    SIr.UUID = StringToUUID(item);
+    if (ReadFirstMain(SIr,1,true)) begin
+      if (nonblank(res)) then begin
+        res = res & ",";
+      end;
+      res = res & tmp;
+    end;
+  end;
+
+  UpdateItemList = res;
+  return;
+end;
+
+function string 255 GetLikedItems()
+begin
+  string 255 res;
+  
+  res = GetSessionString("liked_items");
+  if (blank(res)) then begin
+    res = GetCookie("liked_items");
+  end;
+  res = UpdateItemList(res);
+
+  GetLikedItems = res;
+  return;
+end;
+
+function string 255 GetBasketItems()
+begin
+  string 255 res;
+  
+  res = GetSessionString("basket_items");
+  if (blank(res)) then begin
+    res = GetCookie("basket_items");
+  end;
+  res = UpdateItemList(res);
+
+  GetBasketItems = res;
+  return;
+end;
+
 procedure ShowSMUShopItems(record SMFVc SMFr)
 begin
   Boolean TrHs;
+  string 255 likeditems,basketitems;
   record SMFItemVc SIr;
 
   WebOutString("<div class='smu_shop_item_frame'>");
-  WebOutString("<div class='smu_shop_item_title'>" & ToolWebNGTranslateText2(89201) & "</div>");
+  WebOutString("<div class='smu_shop_item_title'>" & ToolWebNGTranslateText2(89235) & "</div>");
 
   WebOutString("<div class='smu_shop_item_list'>");
-
+  likeditems = GetLikedItems;
+  basketitems = GetBasketItems;
   TrHs = true;
   SIr.SMFCode = SMFr.SMFCode;
   while (LoopKey("SMFCode",SIr,1,TrHs)) begin
     if (SIr.SMFCode!=SMFr.SMFCode) then begin
       TrHs = false;
     end else begin
-      ShowSingleSMUShopItem(SIr);
+      ShowSingleSMUShopItem(SIr,IsItemLiked(likeditems,SIr.UUID),IsItemInBasket(basketitems,SIr.UUID));
     end;
   end;
 
@@ -279,9 +419,74 @@ begin
   return;
 end;
 
+function Boolean FindNoteWithTag(record SMFVc SMFr,string tag,var record NotepadVc Noter)
+begin
+  Integer i;
+  Boolean res;
+  record RLinkVc RLr;
+  record NotepadVc tNoter;
+
+  i = 1;
+  while (ReadRecordLink(SMFr,i,tNoter,RLr)) begin
+    if (tNoter.Classification==tag) then begin
+      RecordCopy(Noter,tNoter);
+      res = true;
+      goto LFindNoteWithTag;
+    end;
+    i = i + 1;
+  end;
+
+LFindNoteWithTag:;
+  FindNoteWithTag = res;
+  return;
+end;
+
+
+procedure ShowSMUEditField(string label,string name,string descr,string add)
+begin
+
+  WebOutString("<div class=""field_row " & add & """>");
+  WebOutString("<div class=""field_col""><div class=""field_label"">" & label & "</div><div class=""field_wrap""><input class=""" & name & """ type=""text"" name=""" & name & """ " & add & "></div></div>");
+  
+  WebOutString("<div class=""field_descr"">" & descr & "</div>");
+  WebOutString("<div class=""clear""></div>");
+  WebOutString("</div>");
+
+  return;
+end;
+
+procedure ShowSMUEditField2(string label,string name,string descr,string add,string extratext)
+begin
+
+  WebOutString("<div class=""field_row " & add & """>");
+  WebOutString("<div class='extra_text'>" & extratext & "</div>")
+  WebOutString("<div class=""field_col""><div class=""field_label"">" & label & "</div><div class=""field_wrap""><input class=""" & name & """ type=""text"" name=""" & name & """ " & add & "></div></div>");
+  
+  WebOutString("<div class=""field_descr"">" & descr & "</div>");
+  WebOutString("<div class=""clear""></div>");
+  WebOutString("</div>");
+
+  return;
+end;
+
+procedure ShowSMUTextArea(string label,string name,string descr,string extra)
+begin
+
+  WebOutString("<div class=""field_row"">");
+  WebOutString("<div class=""field_col""><div class=""field_label"">" & label & "</div><div class=""field_wrap""><textarea class=""" & name & """ name=""" & name & """ " & extra & "></textarea></div></div>");
+  
+  WebOutString("<div class=""field_descr"">" & descr & "</div>");
+  WebOutString("<div class=""clear""></div>");
+  WebOutString("</div>");
+  
+  return;
+end;
+
 procedure ShowSingleSMUWebShop(record SMFVc SMFr)
 begin
-  string 255 logolink,bglink;
+  string 255 logolink,bglink,addclass;
+  record NotepadVc Noter;
+  Boolean shippingf;
 
   if (GetCompanyLogo(SMFr,logolink)==false) then begin
     logolink = DefaultLogo;
@@ -305,33 +510,271 @@ begin
   WebOutString("<div class='smu_shop_media_frame'>")
 
   WebOutString("<div class='smu_shop_media_top'>");
-  AddMedia(SMFr,"ExtWebPage","externalpage");
-  WebOutString("</div>");//smu_shop_media_top
-  WebOutString("<div class='smu_shop_media_bottom'>");
   AddMedia(SMFr,"Facebook","fbpage");
   AddMedia(SMFr,"Instagram","instagrampage");
   AddMedia(SMFr,"Twitter","twitterpage");
   WebOutString("</div>");//smu_shop_media_bottom
   
   WebOutString("</div>");//smu_shop_media_frame
+  WebOutString("<div class='smu_shop_media_inline'>");
+  AddMedia2(SMFr,"ContactEmail","contactemail");
+  AddMedia2(SMFr,"ExtWebPage","externalpage");
+  WebOutString("</div>");//smu_shop_media_top
+
   WebOutString("</div>");//smu_shop_compname_section
 
   WebOutString("</div>");//smu_shop_title_section
 
+  if (FindNoteWithTag(SMFr,"Shipping",Noter)) then begin
+    shippingf = true;
+    addclass = " shipping";
+  end;
+
+  WebOutString("<div class='smu_shop_aboutus_mainwrap" & addclass & "'>")
   WebOutString("<div class='smu_shop_aboutus_frame'><div class='smu_shop_aboutus'>");
   WebOutString("<div class='smu_shop_aboutus_title'>" & ToolWebNGTranslateText2(89200) & "</div><div class='smu_shop_aboutus_text'>");
   WebOutText(SMFr,false,"");
   WebOutString("</div>");
   WebOutString("</div></div>");//smu_shop_aboutus_frame
+  if (shippingf) then begin
+    WebOutString("<div class='smu_shop_aboutus_frame shopping'><div class='smu_shop_aboutus'>");
+    WebOutString("<div class='smu_shop_aboutus_title'>" & ToolWebNGTranslateText2(80137) & "</div><div class='smu_shop_aboutus_text'>");
+    WebOutText(Noter,false,"");
+    WebOutString("</div>");
+    WebOutString("</div></div>");//smu_shop_aboutus_frame
+  end;
+  WebOutString("</div>");//smu_shop_aboutus_mainwrap
+
 
   ShowSMUShopItems(SMFr);
   ShowSMUShopEmployees(SMFr);
-  ShowSMUShopContactDetails(SMFr);
+
+  //ShowSMUShopContactDetails(SMFr);
 
   WebOutString("</div>");//smu_shop_frame
 
-  
+  return;
+end;
 
+procedure ShowSingleSMUShopItem2(record SMFItemVc SIr,Boolean likedf,Boolean basketf,Integer step,Integer qty)
+begin
+  string 255 link,likedcls,basketcls;
+  record SMFVc SMFr;
+
+  SMFr.SMFCode = SIr.SMFCode;
+  ReadFirstMain(SMFr,1,true);
+  
+  WebOutString("<div class='smu_shop_single_item' uuid='" & SIr.UUID & "' url='" & "/katalogs/" & GetSMFShopUrl(SMFr) & "'>");
+  WebOutString("<div class='smu_shop_item_image'>");
+  if (FindItemImage(SIr,link)==false) then begin
+    link = DefaultItemImage;
+  end;
+  if (likedf) then begin
+    likedcls = " active";
+  end;
+  if (basketf) then begin
+    basketcls = " added_to_basket";
+  end;
+  WebOutString("<img src='" & link & "'>");
+  WebOutString("</div>");//smu_shop_item_image
+  WebOutstring("<div class='smu_shop_item_details'>");
+  if (step>0) then begin
+    WebOutString("<div class='smu_shop_fav_main_det'><div class='smu_shop_item_smfname'>" & SMFr.SMFName & "</div>");
+    WebOutString("<div class='smu_shop_single_item_title'>" & SIr.Name & "</div></div>");
+    WebOutString("<div class='price_det'>");
+    if (step==1) then begin
+      WebOutString("<div class='smu_shop_single_item_qty qty_entry'><div class='remove'>-</div><input type='text' readonly value='" & qty & "'><div class='add'>+</div></div>");
+    end else begin
+      WebOutString("<div class='smu_shop_single_item_qty'>" & qty & " " & ToolWebNGTranslateText2(89233) & "</div>");
+    end;
+    WebOutString("<div class='smu_shop_item_price'>" & SIr.Price & " EUR</div></div>");
+  end else begin
+    WebOutString("<div class='smu_shop_fav_main_det'><div class='smu_shop_item_district'>" & SMFr.District & "</div>");
+    WebOutString("<div class='smu_shop_single_item_title'>" & SIr.Name & "</div></div>");
+    WebOutString("<div class='smu_shop_item_smfdetails'><div class='smu_shop_item_smfname'>" & SMFr.SMFName & "</div>");
+    WebOutString("<a class='smu_shop_item_contactemail' href='mailto:" & SMFr.ContactEmail & "'>" & SMFr.ContactEmail & "</a></div>");
+    WebOutString("<div class='smu_shop_item_price'>" & SIr.Price & " EUR</div>");
+    WebOutString("<div class='smu_shop_item_liked" & likedcls & "' uuid='" & SIr.UUID & "'></div>");
+    WebOutString("<div class='smu_shop_item_basket" & basketcls & "' uuid='" & SIr.UUID & "'></div>");
+  end;
+  WebOutString("</div>");//smu_shop_item_details
+
+  WebOutString("</div>");//smu_shop_single_item
+
+  return;
+end;
+
+procedure ShowBasketItemList(Integer step)
+begin
+  string 255 logolink,bglink,addclass;
+  record NotepadVc Noter;
+  Boolean shippingf;
+  record SMFItemVc SIr;
+  Boolean TrHs;
+  string 255 likeditems,tmp,actview,basketitems,item,qty;
+  Longint pos,pos2;
+
+  basketitems = GetBasketItems;
+
+  WebOutString("<div class='smu_shop_item_title_wrap'>");
+  if (blank(basketitems)) then begin
+    WebOutString("<div class='smu_shop_item_title empty_basket'>" & ToolWebNGTranslateText2(89236) & "</div>");
+    goto LShowBasketItemList;
+  end;
+  if (step==1) then begin
+    WebOutString("<div class='smu_shop_item_title'>" & ToolWebNGTranslateText2(89234) & "</div>");
+  end;
+  WebOutString("</div>");//smu_shop_item_title_wrap
+
+
+  WebOutString("<div class='smu_shop_item_list listview'>");
+  TrHs = true;
+  while (GetNextSubString(basketitems,pos,",",tmp)) begin
+    pos2 = -1;
+    GetNextSubString(tmp,pos2,":",item);
+    GetNextSubString(tmp,pos2,":",qty);
+
+    SIr.UUID = StringToUUID(item);
+    if (ReadFirstMain(SIr,1,true)) then begin
+      ShowSingleSMUShopItem2(SIr,IsItemLiked(likeditems,SIr.UUID),false,step,StringToInt(qty));
+    end;
+  end;
+
+LShowBasketItemList:;
+  WebOutString("</div>");//smu_shop_item_list
+
+
+  return;
+end;
+
+procedure ShowHiddenBanner()
+begin
+  
+  WebOutString("<div class='hidden_banner'><div class='banner_image'><img src='/images/hidden_banner.png'></div></div>")
+
+  return;
+end;
+
+procedure ShowBasketPage(var string path)
+begin
+  string 255 node;
+  Boolean orderf;
+  record JALClassBlock JCb;
+  Integer step;
+
+  BlockLoad(JCb);
+  if (JCb.HideCatalog==1) then begin
+    ShowHiddenBanner;
+  end;
+
+  WebOutString("<style>");
+  WebOutString("body #banner{");
+  WebOutString("  background-image:url(/images/grozs_banner.png) !important;");
+  WebOutString("  filter:brightness(40%);");
+  WebOutString("}");
+
+  WebOutString("</style>");
+
+  WebOutString("<div class='smu_shoplist_frame'><div class='smu_shop_item_frame basket'>");
+
+  node = removenextnode(path);
+  switch (node) begin
+    case "pasutit":
+      step = 2;
+      WebOutString("<div class='basket_back'>" & ToolWebNGTranslateText2(89220) & "</div>");
+      WebOutString("<div class='smu_shop_basket_frame'>");
+      
+      //show reg form
+      WebOutString("<div class='smu_shop_basket_order_form'>");
+      WebOutString("<div class='smu_shop_item_title'>" & ToolWebNGTranslateText2(89221) & "</div>");
+      ShowSMUEditField(ToolWebNGTranslateText2(89222),"name","","");
+      ShowSMUEditField(ToolWebNGTranslateText2(89223),"email","","");
+      ShowSMUEditField(ToolWebNGTranslateText2(89224),"phone","","");
+      ShowSMUEditField(ToolWebNGTranslateText2(89225),"shipaddr","","");
+      ShowSMUTextArea(ToolWebNGTranslateText2(89226),"comment","","");
+
+      WebOutString("<div class='smu_shop_basket_order_info'>" & ToolWebNGTranslateText2(89227) & "</div>");
+      WebOutString("</div>");//smu_shop_basket_order_form
+
+      //show items
+      WebOutString("<div class='smu_shop_basket_order_items'>");
+      ShowBasketItemList(step);
+      WebOutString("</div>");//smu_shop_basket_order_items
+      WebOutString("</div>");//smu_shop_basket_frame
+
+    case "pabeigts":
+      WebOutString("<div class='basket_finish'><div class='basket_finish_title'>" & ToolWebNGTranslateText2(89237) & "</div><div class='basket_finish_text'>" & ToolWebNGTranslateText2(89238) & "</div><div class='basket_finish_button spbutton'>" & ToolWebNGTranslateText2(89239) & "</div></div>");//89237
+    otherwise
+      step = 1;
+      ShowBasketItemList(step);
+  end;
+  
+  WebOutString("</div>");//smu_shop_item_frame
+  WebOutString("</div>");//smu_shop_frame
+  
+  if (nonblank(GetBasketItems)) then begin
+    switch (step) begin
+      case 1:
+        WebOutString("<div class='smu_shop_basket_order_finish_wrap step1'><div class='smu_shop_basket_order_finish_inner'><div class='smu_shop_basket_order_finish_col1'><div class=''>" & ToolWebNGTranslateText2(89228) & "</div></div><div class='smu_shop_basket_order_col2'><div class='smu_shop_basket_order_button spbutton'>" & ToolWebNGTranslateText2(89229) & "</div></div></div></div>")
+      case 2:
+        WebOutString("<div class='smu_shop_basket_order_finish_wrap step2'><div class='smu_shop_basket_order_finish_inner'><div class='smu_shop_basket_order_finish_col1'><div class='order_finish_title'>" & ToolWebNGTranslateText2(89230) & "</div><div class=''>" & ToolWebNGTranslateText2(89231) & "</div></div><div  class='smu_shop_basket_order_col2'><div class='smu_shop_basket_order_button spbutton'>" & ToolWebNGTranslateText2(89232) & "</div></div></div></div>")
+    end;
+  end;
+
+  return;
+end;
+
+
+procedure ShowFavouritesPage()
+begin
+  string 255 logolink,bglink,addclass;
+  record NotepadVc Noter;
+  Boolean shippingf;
+  record SMFItemVc SIr;
+  Boolean TrHs;
+  string 255 likeditems,tmp,actview,basketitems;
+  Longint pos;
+  record JALClassBlock JCb;
+
+  BlockLoad(JCb);
+  if (JCb.HideCatalog==1) then begin
+    ShowHiddenBanner;
+  end;
+
+  WebOutString("<style>");
+  WebOutString("body #banner{");
+  WebOutString("  background-image:url(/images/fav_banner.png) !important;");
+  WebOutString("  filter:brightness(40%);");
+  WebOutString("}");
+
+  WebOutString("</style>");
+
+  WebOutString("<div class='smu_shoplist_frame'><div class='smu_shop_item_frame favourites'>");
+
+  WebOutString("<div class='smu_shop_item_title_wrap'>");
+  WebOutString("<div class='smu_shop_item_title'>" & ToolWebNGTranslateText2(89240) & "</div>");
+  actview = GetSessionString("basket_view");
+  WebOutString("<div class='smu_shop_item_displayelement " & actview & "'><div class='display_gallery' list=''></div><div class='display_list' list='listview'></div></div>");
+  WebOutString("</div>");//smu_shop_item_title_wrap
+
+  WebOutString("<div class='smu_shop_mainsearch'><input type='text' placeholder='" & ToolWebNGTranslateText2(89216) & "'></div>");
+
+  WebOutString("<div class='smu_shop_item_list " & actview & "'>");
+  likeditems = GetLikedItems;
+  basketitems = GetBasketItems;
+  TrHs = true;
+  while (GetNextSubString(likeditems,pos,",",tmp)) begin
+    SIr.UUID = StringToUUID(tmp);
+    if (ReadFirstMain(SIr,1,true)) then begin
+      ShowSingleSMUShopItem2(SIr,IsItemLiked(likeditems,SIr.UUID),IsItemInBasket(basketitems,SIr.UUID),0,0);
+    end;
+  end;
+
+  WebOutString("</div>");//smu_shop_item_list
+  
+  WebOutString("</div>");//smu_shop_item_frame
+  WebOutString("</div>");//smu_shop_frame
+  
   return;
 end;
 
@@ -344,7 +787,7 @@ begin
     logolink = DefaultLogo;
   end;
 
-  WebOutString("<div class='smu_shoplist_smu'><a href='" & WebGetArg("path")  & "/" & SMFr.WebShopUrl & "' target='_blank'>");
+  WebOutString("<div class='smu_shoplist_smu' region='" & SMFr.Region & "' industry='" & SMFr.ProdSpec & "'><a href='" & WebGetArg("path")  & "/" & SMFr.WebShopUrl & "' target='_blank'>");
   WebOutString("<div class='smu_shoplist_logo'><img src='" & logolink & "'></div>");
   WebOutString("<div class='smu_shoplist_details'>");
   WebOutString("<div class='smu_shoplist_name'>" & SMFr.SMFName & "</div>");
@@ -362,9 +805,67 @@ begin
   return;
 end;
 
+function string 255 ShowRegionSelect()
+begin
+  string 255 res;
+  record JALRegionBlock JRb;
+  row JALRegionBlock JRbrw;
+  Integer i,rwcnt;
+
+  BlockLoad(JRb);
+  res = "<select id='region_select'>";
+  res = res & "<option value=''>" & ToolWebNGTranslateText2(80141) & "</option>";
+  rwcnt = MatRowCnt(JRb);
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(JRb,i,JRbrw);
+    res = res & "<option value='" & JRbrw.Region & "'>" & JRbrw.Region & "</option>";
+  end;
+  res = res & "</select>";
+
+  ShowRegionSelect = res;
+  return;
+end;
+
+function string 255 ShowTypeSelect()
+begin
+  string 255 res;
+  record JALIndustryBlock JIb;
+  row JALIndustryBlock JIbrw;
+  Integer i,rwcnt;
+
+  BlockLoad(JIb);
+  res = "<select id='industry_select'>";
+  res = res & "<option value=''>" & ToolWebNGTranslateText2(80142) & "</option>";
+  rwcnt = MatRowCnt(JIb);
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(JIb,i,JIbrw);
+    res = res & "<option value='" & JIbrw.Industry & "'>" & JIbrw.Industry & "</option>";
+  end;
+  res = res & "</select>";
+
+  ShowTypeSelect = res;
+  return;
+end;
+
 procedure DisplaySearch()
 begin
+  record SMFVc tSMFr;
+  record TeacherVc TCr;
+  record MentorVc MTr;
+  Integer type;
+  record CUVc CUr;
+
   WebOutString("<div class='smu_shop_searchbox'><input type='text' placeholder='" & ToolWebNGTranslateText2(89203) & "'></div>");
+  WebOutString("<div class='smu_shop_nav'><div class='my_shop_button'>" & ShowRegionSelect & "</div><div class='my_shop_button'>" & ShowTypeSelect & "</div>");
+  CUr.Code = CurrentCust;
+  if (ReadFirstMain(CUr,1,true)) then begin
+    type = GetJAlCustType(CUr,tSMFr,TCr,MTr);
+    if (type==0) then begin
+      WebOutString("<div class='my_shop_button'><a href='/shop_edit' class='spbutton'>" & ToolWebNGTranslateText2(89204) & "</a></div>");
+    end;
+  end;
+  
+  WebOutString("</div>");
 
   return;
 end;
@@ -407,6 +908,84 @@ begin
   return;
 end;
 
+
+procedure DisplayFiltersExternal()
+begin
+  record JALDistrictBlock JDbl;
+  row JALDistrictBlock JDblrw;
+  record JALIndustryBlock JIbl;
+  row JALIndustryBlock JIblrw;
+  Integer i,rwcnt;
+
+  WebOutString("<div class='smu_shop_filter_ext'>");
+  WebOutString("<div class='smu_shop_filter_title'>" & ToolWebNGTranslateText2(89210) & "</div>");
+  WebOutString("<div class='smu_shop_filter_title_sub'>" & ToolWebNGTranslateText2(89211) & "</div>");
+  WebOutString("<div class='smu_shop_filter_search_ext'><input type='text' placeholder='" & ToolWebNGTranslateText2(89212) & "'></div>");
+
+  WebOutString("<div class='smu_shop_filter_districtlist'>");
+  BlockLoad(JDbl);
+  rwcnt = MatRowCnt(JDbl);
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(JDbl,i,JDblrw);
+    WebOutString("<div class='district_line'><div class='input_checkbox'><input type='checkbox' val='" & JDblrw.District & "'><span class='checkmark'></span></div><div class='district_name'>" & JDblrw.District & "</div></div>");
+  end;
+  WebOutString("<div class='smu_shop_districtlist_expand' t1='" & ToolWebNGTranslateText2(89217) & "' t2='" & ToolWebNGTranslateText2(89218) & "'></div>");
+  
+  WebOutString("</div>");
+
+  WebOutString("<div class='smu_shop_filter_title_sub'>" & ToolWebNGTranslateText2(89213) & "</div>");
+
+  WebOutString("<div class='smu_shop_filter_industrylist'>");
+  BlockLoad(JIbl);
+  rwcnt = MatRowCnt(JIbl);
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(JIbl,i,JIblrw);
+    WebOutString("<div class='industry_line'><div class='input_checkbox'><input type='checkbox' val='" & JIblrw.Industry & "'><span class='checkmark'></span></div><div class='industry_name'>" & JIblrw.Industry & "</div></div>");
+  end;
+  WebOutString("</div>");
+
+  WebOutString("</div>");
+  
+  return;
+end;
+
+procedure DisplaySearchExternal()
+begin
+  
+  WebOutString("<div class='smu_shop_nav'>");
+  WebOutString("<div class='smu_shop_type_filter'>");
+  WebOutString("<div class='smu_type_filter_button' tag='products'>" & ToolWebNGTranslateText2(89214) & "</div><div class='smu_type_filter_button' tag='smus'>" & ToolWebNGTranslateText2(89215) & "</div>");
+  WebOutString("</div>");
+  WebOutString("<div class='smu_shop_mainsearch'><input type='text' placeholder='" & ToolWebNGTranslateText2(89216) & "'></div>");
+  WebOutString("</div>");
+
+  return;
+end;
+
+procedure ShowSMUShopListExternal()
+begin
+  record SMFVc SMFr;
+  Boolean TrHs;
+  record JALClassBlock JCb;
+
+  BlockLoad(JCb);
+  if (JCb.HideCatalog==1) then begin
+    ShowHiddenBanner;
+  end;
+  WebOutString("<div class='smu_external_frame'>")
+  DisplayFiltersExternal;
+  WebOutString("<div class='smu_shoplist_frame'>");
+  DisplaySearchExternal;
+  WebOutString("<div class='filter_data' text='" & ToolWebNGTranslateText2(89219) & "'></div>");
+  WebOutString("<div class='smu_shoplist'>");
+  WebOutString("</div>");//smu_shoplist
+  WebOutString("<div id='pagenave'></div>");
+  WebOutString("</div>");//smu_shoplist_frame
+  WebOutString("</div>");//smu_external_frame
+
+  return;
+end;
+
 function Boolean SMUAllowedToShow(record SMFVc SMFr)
 begin
   Boolean res;
@@ -415,13 +994,22 @@ begin
   record MentorVc MTr;
   Integer type;
   record CUVc CUr;
+  string 255 s;
+  record SMFSessionVc SSr;
   
+  s = WebGetArg("s");
+  SSr.UUID = StringToUUID(s);
+  if (ReadFirstMain(SSr,1,true)) then begin
+    queued.RemoveSMFSession(SSr);
+    if (SMFr.SMFCode==SSr.SMFCode) then begin
+      res = true;
+      goto LSMUAllowedToShow;
+    end;    
+  end;
+
   if (SMFr.WebStatus==2) then begin//approved
     res = true;
     goto LSMUAllowedToShow;
-  end;
-  if (GetSessionString("isemp")=="1") then begin
-    res = true;
   end;
   if (res==false) then begin
     CUr.Code = CurrentCust;
@@ -461,20 +1049,34 @@ begin
   end;
   ShowWebAppPageStart(WPr,"");
 
-  if (nonblank(node)) then begin
-    SMFr.WebShopUrl = node;
-    if (ReadFirstKey("WebShopUrl",SMFr,1,true)) then begin
-      if (SMUAllowedToShow(SMFr)) then begin
-        ShowSingleSMUWebShop(SMFr);
-        showf = true;
+  switch (node) begin
+    case "grozs":
+      ShowBasketPage(path);
+      showf = true;
+    case "favoriti":
+      ShowFavouritesPage;
+      showf = true;
+    otherwise
+      if (nonblank(node)) then begin
+        SMFr.WebShopUrl = node;
+        if (ReadFirstKey("WebShopUrl",SMFr,1,true)) then begin
+          if (SMUAllowedToShow(SMFr)) then begin
+            ShowSingleSMUWebShop(SMFr);
+            showf = true;
+          end;
+        end;
+        if (showf==false) then begin
+          WebOutString("SMU nav atrasts");
+        end;
       end;
-    end;
-    if (showf==false) then begin
-      WebOutString("SMU nav atrasts");
-    end;
   end;
-  if (showf==false) then begin
-    ShowSMUShopList;
+
+  if (showf==false and blank(node)) then begin
+    if (WSr.Name=="katalogs") then begin
+      ShowSMUShopListExternal;
+    end else begin
+      ShowSMUShopList;
+    end;
   end;
 
   ShowWebAppPageEnd(WPr);
@@ -483,41 +1085,17 @@ begin
   return;
 end;
 
-procedure ShowSMUEditField(string label,string name,string descr,string add)
-begin
-
-  WebOutString("<div class=""field_row " & add & """>");
-  WebOutString("<div class=""field_col""><div class=""field_label"">" & label & "</div><div class=""field_wrap""><input class=""" & name & """ type=""text"" name=""" & name & """ " & add & "></div></div>");
-  
-  WebOutString("<div class=""field_descr"">" & descr & "</div>");
-  WebOutString("<div class=""clear""></div>");
-  WebOutString("</div>");
-
-  return;
-end;
-
-procedure ShowSMUTextArea(string label,string name,string descr,string extra)
-begin
-
-  WebOutString("<div class=""field_row"">");
-  WebOutString("<div class=""field_col""><div class=""field_label"">" & label & "</div><div class=""field_wrap""><textarea class=""" & name & """ name=""" & name & """ " & extra & "></textarea></div></div>");
-  
-  WebOutString("<div class=""field_descr"">" & descr & "</div>");
-  WebOutString("<div class=""clear""></div>");
-  WebOutString("</div>");
-  
-  return;
-end;
-
 procedure ShowShopEditBasicInfo()
 begin
   
   WebOutString("<div class=""profile smu_basic_info smu-border"">");
-  WebOutString("<div class=""smu_top""><div class=""back_button_wrap""><a class=""spbutton profile_back"" href=""/profilePupil"">" & ToolWebNGTranslateText2(80022) & "</a></div><div class=""profile_header"">" & ToolWebNGTranslateText2(80110) & "</div></div>");
+  WebOutString("<div class=""smu_top""><div class=""back_button_wrap""><a class=""spbutton profile_back"" href=""/katalogs2"">" & ToolWebNGTranslateText2(80022) & "</a></div><div class=""profile_header"">" & ToolWebNGTranslateText2(80110) & "</div></div>");
   ShowSMUEditField(ToolWebNGTranslateText2(80010),"smu_name","","disabled");
   ShowSMUEditField(ToolWebNGTranslateText2(80111),"smu_school","","disabled");
   ShowSMUEditField(ToolWebNGTranslateText2(80112),"smu_spec","","disabled");
+  ShowSMUEditField2(ToolWebNGTranslateText2(80139),"smu_url",ToolWebNGTranslateText2(80138),"",ToolWebNGTranslateText2(80140));
   ShowSMUTextArea(ToolWebNGTranslateText2(80113),"smu_descr",ToolWebNGTranslateText2(80114),"");
+  ShowSMUTextArea(ToolWebNGTranslateText2(80137),"smu_shipping",ToolWebNGTranslateText2(80136),"");
   WebOutString("</div>");
 
   return;
@@ -529,7 +1107,8 @@ begin
   WebOutString("<div class=""profile smu_items smu-border"">");
   WebOutString("<div class=""smu_top""><div class=""profile_header"">" & ToolWebNGTranslateText2(80115) & "</div></div>");
   //80116,80117,80118
-  WebOutString("<div class='item_template'><div class='shop_item'><div class='logo_frame'></div><div class='name_frame'></div><div class='price_frame'></div></div></div>");
+  WebOutString("<div class='item_template'><div class='shop_item'><div class='logo_frame'></div><div class='name_frame'></div><div class='price_frame'></div><div class='remove'></div></div></div>");
+  WebOutString("<div class='item_list'></div>");
   WebOutString("</div>");
 
   return;
@@ -556,11 +1135,11 @@ begin
   return;
 end;
 
-procedure ShowMediaEdit(string type,string descr)
+procedure ShowMediaEdit(string type,string ph,string descr)
 begin
   
   WebOutString("<div class=""field_row media_field " & type & """>");
-  WebOutString("<div class=""field_col""><div class=""field_wrap""><input type=""text""></div></div>");
+  WebOutString("<div class=""field_col""><div class=""field_wrap""><input type=""text"" placeholder='" & ph & "'></div></div>");
   
   WebOutString("<div class=""field_descr"">" & descr & "</div>");
   WebOutString("<div class=""clear""></div>");
@@ -575,17 +1154,17 @@ begin
   WebOutString("<div class=""profile smu_media smu-border"">");
   WebOutString("<div class=""smu_top""><div class=""profile_header"">" & ToolWebNGTranslateText2(80122) & "</div></div>");
 
-  ShowMediaEdit("externalpage","");
-  ShowMediaEdit("fbpage","");
-  ShowMediaEdit("instagrampage","");
-  ShowMediaEdit("twitterpage",ToolWebNGTranslateText2(80123));
+  ShowMediaEdit("fbpage",ToolWebNGTranslateText2(80130),"");
+  ShowMediaEdit("instagrampage",ToolWebNGTranslateText2(80131),"");
+  ShowMediaEdit("twitterpage",ToolWebNGTranslateText2(80132),"");
+  ShowMediaEdit("externalpage",ToolWebNGTranslateText2(80133),ToolWebNGTranslateText2(80123));
 
   WebOutString("</div>");
 
   WebOutString("<div class=""profile smu_email smu-border"">");
   WebOutString("<div class=""smu_top""><div class=""profile_header"">" & ToolWebNGTranslateText2(80124) & "</div></div>");
 
-  ShowMediaEdit("contactemail",ToolWebNGTranslateText2(80125));
+  ShowMediaEdit("contactemail",ToolWebNGTranslateText2(80134),ToolWebNGTranslateText2(80125));
 
   WebOutString("</div>");
  
@@ -629,7 +1208,7 @@ begin
         WebOutString(",");
       end;				
       FindItemImage(SIr,background);	
-      WebOutString("{""Name"":""" & FormatJSONString(SIr.Name) & """,""Price"":""" & FormatJSONString(SIr.Price) & """,""Price"":""" & background & """,""UUID"":""" & FormatJSONString(SIr.UUID) & """}");
+      WebOutString("{""Name"":""" & FormatJSONString(SIr.Name) & """,""Price"":""" & FormatJSONString(SIr.Price) & """,""Logo"":""" & background & """,""UUID"":""" & FormatJSONString(SIr.UUID) & """}");
       cnt = cnt + 1;
     end;
   end;
@@ -648,6 +1227,7 @@ begin
   string 255 tstr,background,logo;
   record SMFSessionVc SSr;
   Boolean foundf;
+  record NotepadVc Noter;
 
   WebOutString("{");
   CUr.Code = CurrentCust;
@@ -671,10 +1251,12 @@ begin
     WebOutString("""SMFCode"":""" & SMFr.SMFCode & """,");
     WebOutString("""SMFName"":""" & FormatJSONString(SMFr.SMFName) & """,");
     WebOutString("""ProdSpec"":""" & FormatJSONString(SMFr.ProdSpec) & """,");
+    WebOutString("""Status"":" & SMFr.WebStatus & ",");
     WebOutString("""School"":""" & FormatJSONString(SMFr.SchoolName) & """,");
     WebOutString("""TwitterPage"":""" & FormatJSONString(SMFr.Twitter) & """,");
     WebOutString("""FacebookPage"":""" & FormatJSONString(SMFr.Facebook) & """,");
     WebOutString("""InstagramPage"":""" & FormatJSONString(SMFr.Instagram) & """,");
+    WebOutString("""ShopUrl"":""" & FormatJSONString(GetSMFShopUrl(SMFr)) & """,");
     WebOutString("""ExtWebPage"":""" & FormatJSONString(SMFr.ExtWebPage) & """,");
     GetCompanyBackground(SMFr,background);
     GetCompanyLogo(SMFr,logo)
@@ -685,6 +1267,14 @@ begin
     for (i=0;i<SizeTextCnt(SMFr);i=i+200) begin
       tstr = FormatJSONString(StringFromText(SMFr,i,200));
       WebOutString(StrReplace(tstr,chr(13),"\\n"));
+    end;
+    WebOutString(""",");
+    WebOutString("""Shipping"":""");
+    if (FindNoteWithTag(SMFr,"Shipping",Noter)) then begin
+      for (i=0;i<SizeTextCnt(Noter);i=i+200) begin
+        tstr = FormatJSONString(StringFromText(Noter,i,200));
+        WebOutString(StrReplace(tstr,chr(13),"\\n"));
+      end;
     end;
     WebOutString(""",");
     GetItemList(SMFr.SMFCode);
@@ -707,6 +1297,8 @@ begin
     end;
     res = res & arrUUID[i];
   end;
+
+  res = "\"" & res & "\"";
 
   GetUUIDList = res;
   return;
@@ -738,6 +1330,92 @@ begin
     end;
   end;
 
+  return;
+end;
+
+function Boolean ValidateURL(string url)
+begin
+  Boolean res;
+  string 255 tstr;
+  
+  tstr = UrlEncode(url);
+  if (tstr!=url) then begin 
+    res = false;
+  end else begin
+    res = true;
+  end;
+
+  ValidateURL = res;
+  return;
+end;
+
+function Boolean ValidateShopUrl(record SMFVc SMFr,string url)
+begin
+  Boolean res;
+  record SMFVc tSMFr;
+  Boolean TrHs;
+ 
+  if (SMFr.WebStatus!=0 and SMFr.WebStatus!=2) then begin
+    res = false;
+  end;
+
+  if (ValidateURL(url)) then begin
+    res = true;
+    TrHs = true;
+    tSMFr.WebShopUrl = url;
+    while (LoopKey("WebShopUrl",tSMFr,1,TrHs)) begin
+      if (tSMFr.WebShopUrl!=url) then begin
+        TrHs = false;
+      end else begin
+        if (SMFr.SMFCode!=tSMFr.SMFCode) then begin
+          res = false;
+          TrHs = false;
+        end;
+      end;
+    end;
+  end;
+
+  ValidateShopUrl = res;
+  return;
+end;
+
+updating procedure SendSMUWebShopForApproval(record SMFVc SMFr)
+begin
+  record ReportMailBlock RMbl;
+  record MailVc Mailr;
+  row MailVc Mailrw;
+  record MailSettingsBlock MSr;
+  record LTxtVc LTxtr;
+  Integer lcnt,i;
+
+  BlockLoad(MSr);
+  BlockLoad(RMbl);
+
+  RecordNew(Mailr);
+  LTxtr.Code = RMbl.WebShopText;
+  if (ReadFirstMain(LTxtr,1,true)) then begin
+    Mailr.Header = Ltxtr.Comment & " - " & SMFr.SMFName;
+    lcnt = LineTextCnt(Ltxtr);
+    for (i = 0; i < lcnt;i = i + 1) begin
+      LineTextPut(Mailr,i,LineTextGet(Ltxtr,i));
+    end;
+    
+    ClearRow(Mailr,Mailrw,0);
+    Mailrw.RowTyp = 1;
+    Mailrw.AddrCode = MSr.FromSystem;
+    MatRowPut(Mailr,0,Mailrw);
+    
+    ClearRow(Mailr,Mailrw,1);
+    Mailrw.RowTyp = kMailRowTypeTo;
+    Mailrw.AddrCode = RMbl.WebShopMail;
+    MatRowPut(Mailr,1,Mailrw);
+    
+    Mailr.SendFlag = 1;
+
+    if (RecordStore(Mailr,true)) then begin 
+      CreateRecordLink(Mailr,CurrentCompany,SMFr,CurrentCompany);
+    end;
+  end;
 
   return;
 end;
@@ -756,6 +1434,7 @@ begin
   array string 255 arrUUID;
   Integer errtype;
   area a;
+  record NotepadVc Noter,oldNoter;
 
   CUr.Code = CurrentCust;
   if (ReadFirstMain(CUr,1,true)) then begin
@@ -768,45 +1447,75 @@ begin
       SMFr.Instagram = UnFormatJSONString(JSONGet(js,"Instagram"));
       SMFr.ExtWebPage = UnFormatJSONString(JSONGet(js,"ExtWebPage"));
       SMFr.ContactEmail = UnFormatJSONString(JSONGet(js,"ContactEmail"));
-      tstr = UnFormatJSONString(RemoveEndingLineBreaks(JSONGet(js,"Text")));
-      SetTextField(SMFr,tstr);
-      if (RecordUpdate(oldSMFr,SMFr,true)==0) then begin
-        i = 0;
-        root = "items/";
-        while (JSONNodeExists(js,root & "[" & i  & "]")) begin
-          updatef = false;
-          uuidstr = JSONGet(js,root & "[" & i & "]/uuid");
-          if (nonblank(uuidstr)) then begin
-            SIr.UUID = StringToUUID(uuidstr);
-            if (ReadFirstMain(SIr,1,true)) then begin
-              if (SMFr.SMFCode==SIr.SMFCode) then begin
-                RecordCopy(oldSIr,SIr);
-                updatef = true;
-              end;
+      SMFr.WebShopUrl = UnFormatJSONString(JSONGet(js,"ShopUrl"));
+      if (JSONGet(js,"SendForApproval")=="1") then begin
+        SMFr.WebStatus = 1;
+      end;
+      if (ValidateShopUrl(SMFr,SMFr.WebShopUrl)) then begin
+        tstr = UnFormatJSONString(RemoveEndingLineBreaks(JSONGet(js,"Text")));
+        SetTextField(SMFr,tstr);
+        if (RecordUpdate(oldSMFr,SMFr,true)==0) then begin
+          tstr = UnFormatJSONString(RemoveEndingLineBreaks(JSONGet(js,"Shipping")));
+          if (FindNoteWithTag(SMFr,"Shipping",Noter)) then begin//Noter.Classification
+            RecordCopy(oldNoter,Noter);
+            SetTextField(Noter,tstr);
+            RecordUpdate(oldNoter,Noter,true);
+          end else begin
+            RecordNew(Noter);
+            Noter.SerNr = NextSerNr("NotepadVc",CurrentDate,-1,false,"");
+            SetTextField(Noter,tstr);
+            Noter.Classification = "Shipping";
+            if (RecordInsert(Noter,true)) then begin
+              CreateRecordLink(SMFr,CurrentCompany,Noter,CUrrentCompany);
             end;
           end;
-          if (!updatef) then begin
-            RecordNew(SIr);
-            SIr.UUID = MakeUUID;
+
+          i = 0;
+          root = "items/";
+          while (JSONNodeExists(js,root & "[" & i  & "]")) begin
+            updatef = false;
+            uuidstr = JSONGet(js,root & "[" & i & "]/uuid");
+            if (nonblank(uuidstr)) then begin
+              SIr.UUID = StringToUUID(uuidstr);
+              if (ReadFirstMain(SIr,1,true)) then begin
+                if (SMFr.SMFCode==SIr.SMFCode) then begin
+                  RecordCopy(oldSIr,SIr);
+                  updatef = true;
+                end;
+              end;
+            end;
+            if (!updatef) then begin
+              RecordNew(SIr);
+              SIr.UUID = MakeUUID;
+              SIr.SMFCode = SMFr.SMFCode;
+              SIr.ActiveFlag = 1;
+              SIr.TransDate = CurrentDate;
+            end;
+            SIr.Name = JSONGet(js,root & "[" & i & "]/Name");
+            SIr.Price = StringToVal(JSONGet(js,root & "[" & i & "]/Price"),M4Val);
+            if (updatef) then begin
+              RecordUpdate(oldSIr,SIr,true);
+            end else begin
+              RecordStore(SIr,true);
+            end;   
+            arrUUID[arrUUID.length] = SIr.UUID;
+            i = i + 1;
           end;
-          SIr.Name = JSONGet(js,root & "[" & i & "]/Name");
-          SIr.Price = StringToVal(JSONGet(js,root & "[" & i & "]/Price"),M4Val);
-          if (updatef) then begin
-            RecordUpdate(oldSIr,SIr,true);
-          end else begin
-            RecordStore(SIr,true);
-          end;   
-          arrUUID[arrUUID.length] = SIr.UUID;
         end;
-      end;
-      if (nonblank(JSONGet(js,"RemoveItems"))) then begin
-        RemoveSMFItems(SMFr.SMFCode,JSONGet(js,"RemoveItems"));
-      end;
-      if (JSONGet(js,"RemoveLogo")=="1") then begin
-        RemoveJALFile(SMFr.SMFCode,0);
-      end;
-      if (JSONGet(js,"RemoveBackground")=="1") then begin
-        RemoveJALFile(SMFr.SMFCode,1);
+        if (nonblank(JSONGet(js,"RemoveItems"))) then begin
+          RemoveSMFItems(SMFr.SMFCode,JSONGet(js,"RemoveItems"));
+        end;
+        if (JSONGet(js,"RemoveLogo")=="1") then begin
+          RemoveJALFile(SMFr.SMFCode,0);
+        end;
+        if (JSONGet(js,"RemoveBackground")=="1") then begin
+          RemoveJALFile(SMFr.SMFCode,1);
+        end;
+        if (JSONGet(js,"SendForApproval")=="1") then begin
+          SendSMUWebShopForApproval(SMFr);
+        end;
+      end else begin
+        errtype = 2;
       end;
     end;
   end;
@@ -847,6 +1556,340 @@ begin
   return;
 end;
 
+global webpublic
+updating procedure WebRemoveSMUProduct()
+begin
+  record SMFItemVc SIr;
+  record CUVc CUr;
+  record SMFVc SMFr;
+  record RLinkVc RLr;
+  
+  SIr.UUID = StringToUUID(WebGetArg("uuid"));
+  if (ReadFirstMain(SIr,1,true)) then begin
+    CUr.Code = CurrentCust;
+    if (ReadFirstMain(CUr,1,true)) then begin
+      if (ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr)) then begin
+        if (SMFr.SMFCode==SIr.SMFCode) then begin
+          RecordRemove(SIr);
+        end;
+      end;
+    end;
+  end;
+
+  return;
+end;
+
+procedure ReadFilterData(var Integer spos,var Integer epos,var string district,var string industry,var string filter)
+begin
+  Integer page,perpage;
+  
+  page = StringToInt(WebGetArg("page"))+1;
+  perpage = StringToInt(WebGetArg("perpage"));
+
+  spos = page*perpage-perpage;
+  epos = spos + perpage;
+
+  district = WebGetArg("district");
+  industry = WebGetArg("industry");
+  filter = WebGetArg("mainsearch");
+
+  return;
+end;
+
+function Boolean FilterSMURecord(record SMFVc SMFr,string district,string industry,string filter)
+begin
+  Boolean res;
+  string 255 tmp;
+  Longint pos;
+  
+  res = true;
+  if (nonblank(industry)) then begin    
+    res = false;
+    while (GetNextSubString(industry,pos,"|",tmp)) begin
+      if (SMFr.ProdSpec==tmp) then begin
+        res = true;
+        goto lnext;
+      end;
+    end;
+    if (res==false) then begin
+      goto LOut;
+    end;
+  end;
+lnext:;
+  if (nonblank(district)) then begin
+    res = false;
+    pos = -1;
+    while (GetNextSubString(district,pos,"|",tmp)) begin
+      if (SMFr.District==tmp) then begin
+        res = true;
+        goto LOut;
+      end;
+    end;
+    if (res==false) then begin
+      goto LOut;
+    end;
+  end;
+  if (nonblank(filter)) then begin
+    if (InString(SMFr.SMFName,filter)<=0) then begin
+      res = false;
+      goto LOut;
+    end;
+  end;
+
+LOut:;
+  FilterSMURecord = res;
+end;
+
+global webpublic
+procedure WebLoadSMUList()
+begin
+  record SMFVc SMFr;
+  Boolean TrHs;
+  Integer i,cnt,spos,epos;
+  string 255 district,industry,filter,logo;
+
+  ReadFilterData(spos,epos,district,industry,filter);
+
+  WebOutString("{\"list\":[");
+  TrHs = true;
+  SMFr.WebApprovedDate = CurrentDate;
+  SMFr.WebStatus = 2;
+  while (LoopBackKey("WebStatus",SMFr,2,TrHs)) begin
+    if (SMFr.WebStatus!=2) then begin
+      TrHs = false;
+    end else begin
+      if (FilterSMURecord(SMFr,district,industry,filter)) then begin
+        if (i>=spos and i<=epos) then begin
+          if (cnt>0) then begin
+            WebOutString(",");
+          end;
+          GetCompanyLogo(SMFr,logo);
+          WebOutString("{""smfname"":""" & FormatJSONString(SMFr.SMFName) & """,");
+          WebOutString("""prodspec"":""" & FormatJSONString(SMFr.ProdSpec) & """,");
+          WebOutString("""school"":""" & FormatJSONString(SMFr.SchoolName) & """,");
+          WebOutString("""district"":""" & FormatJSONString(SMFr.District) & """,");
+          WebOutString("""shopurl"":""" & FormatJSONString("/katalogs/" & GetSMFShopUrl(SMFr)) & """,");
+          WebOutString("""logo"":""" & FormatJSONString(logo) & """}");
+          cnt = cnt + 1;
+        end;
+        i = i + 1;
+      end;
+    end;
+  end;
+  WebOutString("],\"totalitems\":" & i & "}");
+  return;
+end;
+
+
+global webpublic
+procedure WebLoadSMUProductList()
+begin
+  record SMFVc SMFr;
+  Boolean TrHs,TrHs2;
+  Integer i,cnt,spos,epos,num;
+  record SMFItemVc SIr;
+  string 255 background;
+  string 255 district,industry,filter,likeditems,basketitems;
+  array record SMFItemVc arrSIr;
+
+  ReadFilterData(spos,epos,district,industry,filter);
+
+  WebOutString("{\"list\":[");
+  TrHs = true;
+  SMFr.WebApprovedDate = CurrentDate;
+  SMFr.WebStatus = 2;
+  likeditems = GetLikedItems;
+  basketitems = GetBasketItems;
+  while (LoopBackKey("WebStatus",SMFr,2,TrHs)) begin
+    if (SMFr.WebStatus!=2) then begin
+      TrHs = false;
+    end else begin
+      if (FilterSMURecord(SMFr,district,industry,"")) then begin
+        RecordClear(SIr);
+        ResetLoop(SIr);
+        SIr.SMFCode = SMFr.SMFCode;
+        TrHs2 = true;
+        while (LoopKey("SMFCode",SIr,1,TrHs2)) begin
+          if (SIr.SMFCode!=SMFr.SMFCode) then begin
+            TrHs2 = false;
+          end else begin
+            if (blank(filter) or InString(SIr.Name,filter)>0) then begin
+
+              FindItemImage(SIr,background);
+              SIr.DummyStr = background;
+              SIr.ShopUrl = "/katalogs/" & GetSMFShopUrl(SMFr);
+              SIr.District = SMFr.District;
+              SIr.SMFName = SMFr.SMFName;
+              if (blank(SIr.TransDate)) then begin
+                SIr.SortString = "19700101";
+              end else begin
+                SIr.SortString = DateToString(SIr.TransDate,"YYYYMMDD");
+              end;
+              arrSIr[arrSIr.length] = SIr;
+            end;
+          end;
+        end;
+
+      end;
+    end;
+  end;
+
+  SortRecordArray(arrSIr,"SortString");
+  if (epos>arrSIr.length) then begin
+    epos = arrSIr.length;
+  end;
+  for (i=spos;i<epos;i=i+1) begin
+    num = (arrSIr.length-1)-i;//
+    if (cnt>0) then begin
+      WebOutString(",");
+    end;
+    SIr = arrSIr[num];
+    WebOutString("{""smfname"":""" & FormatJSONString(SIr.SMFName) & """,");
+    WebOutString("""itemname"":""" & FormatJSONString(SIr.Name) & """,");
+    WebOutString("""uuid"":""" & FormatJSONString(SIr.UUID) & """,");
+    WebOutString("""price"":""" & FormatJSONString(SIr.Price) & """,");
+    WebOutString("""district"":""" & FormatJSONString(SIr.District) & """,");
+    WebOutString("""shopurl"":""" & FormatJSONString(SIr.ShopUrl) & """,");
+    WebOutString("""liked"":""" & IsItemLiked(likeditems,SIr.UUID) & """,");
+    WebOutString("""addedtobasket"":""" & IsItemInBasket(basketitems,SIr.UUID) & """,");
+    WebOutString("""logo"":""" & FormatJSONString(SIr.DummyStr) & """}");
+    cnt = cnt + 1;
+    
+  end;
+
+
+  WebOutString("],\"totalitems\":" & arrSIr.length & "}");
+
+  return;
+end;
+
+global webpublic
+procedure WebUpdateSMUProductLike()
+begin
+  string 255 tuuid,items,nitems,tmp,sessstr,item;
+  Longint pos,pos2;
+  Boolean basketf,foundf;
+
+  tuuid = WebGetArg("uuid");
+  basketf = WebGetArg("type")=="basket";
+  if (basketf) then begin
+    items = GetBasketItems;
+    sessstr = "basket_items";
+  end else begin
+    items = GetLikedItems;
+    sessstr = "liked_items";
+  end;
+  while (GetNextSubString(items,pos,",",tmp)) begin
+    pos2 = -1;
+    GetNextSubString(tmp,pos2,":",item);
+    if (item==tuuid) then begin
+      foundf = true;
+      goto lcontinue;
+    end;
+  end;
+  
+lcontinue:;
+    logtext(0,"dd2 " & foundf);
+  if (foundf) then begin
+    pos = -1;
+    while (GetNextSubString(items,pos,",",tmp)) begin
+      pos2 = -1;
+      GetNextSubString(tmp,pos2,":",item);
+      if (item!=tuuid) then begin
+        if (nonblank(nitems)) then begin
+          nitems = nitems & ",";
+        end;
+        nitems = nitems & tmp;
+      end;
+    end;
+  end else begin
+    nitems = items;
+    if (nonblank(nitems)) then begin
+      nitems = nitems & ",";
+    end;
+    nitems = nitems & tuuid;
+    if (basketf) then begin
+      nitems = nitems & ":1";
+    end;
+  end;
+
+  if (nitems!=items) then begin
+    PutSessionString(sessstr,nitems);
+    SetDetailedCookie(sessstr,nitems,"items","","/",15552000); //180days
+  end;
+
+  return;
+end;
+
+global webpublic
+procedure WebSetBasketView()
+begin
+  string 255 view;
+
+  view = WebGetArg("view");
+  PutSessionString("basket_view",view);
+
+  return;
+end;
+
+global webpublic
+procedure WebGetBasketQty()
+begin
+  string 255 tuuid,items,nitems,tmp,qty,item;
+  Longint pos,pos2;
+  Integer res,fav;
+
+  items = GetLikedItems;
+  while (GetNextSubString(items,pos,",",tmp)) begin
+    fav = fav + 1;
+  end;
+  pos = -1;
+  items = GetBasketItems;
+  while (GetNextSubString(items,pos,",",tmp)) begin
+    pos2 = -1;
+    GetNextSubString(tmp,pos2,":",item);
+    GetNextSubString(tmp,pos2,":",qty);
+    res = res + StringToInt(qty);
+  end;
+
+  WebOutString("{\"basket\":" & res & ",\"fav\":" & fav & "}");
+  return;
+end;
+
+global webpublic
+procedure WebUpdateSMUBasketQty()
+begin
+  string 255 tuuid,items,nitems,tmp,qty,item;
+  Longint pos,pos2;
+  Integer nqty,tdiff;
+
+  tuuid = WebGetArg("uuid");
+  tdiff = StringToInt(WebGetArg("diff"));
+
+  pos = -1;
+  items = GetBasketItems;
+  while (GetNextSubString(items,pos,",",tmp)) begin
+    pos2 = -1;
+    GetNextSubString(tmp,pos2,":",item);
+    GetNextSubString(tmp,pos2,":",qty);
+    nqty = StringToInt(qty);
+    if (item==tuuid) then begin
+      nqty = nqty + tdiff;
+    end;
+    if (nqty>0) then begin
+      if (nonblank(nitems)) then begin
+        nitems = nitems & ",";
+      end;
+      nitems = nitems & item & ":" & nqty;
+    end;
+  end;
+
+  PutSessionString("basket_items",nitems);
+  SetDetailedCookie("basket_items",nitems,"items","","/",15552000); //180days
+
+  return;
+end;
+
 global
 updating procedure FinishSMUItemFileUpload(string sess,string filename,string id,string tag)
 begin
@@ -877,4 +1920,249 @@ begin
   end;
 
   return;
+end;
+
+updating procedure StoreAndUpdateMail(record MailVc Mailr,record LTxtVc LTxtr,record RcVc RepSpec,string table)
+begin
+  string 255 id;
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+  area htmlarea,html1,html2,reshtml;
+  record LTxtVc LTxt2r;
+  Longint pos;
+  record MailVc oldMailr;
+
+  Mailr.SerNr = NextSerNr("MailVc",CurrentDate,-1,false,"");
+  if (RecordInsert(Mailr,true)) then begin
+    if (ReadFirstMain(Mailr,1,true)) then begin
+      if (ReadRecordLink(Mailr,1,Attachr,RLr)) begin
+        //RecordRemove(RLr);
+      end;    
+      //CopyRecordLinks(LTxtr,Mailr);
+      if (Mailr.HtmlFlag==1) then begin
+        if (ReadRecordLink(LTxtr,1,Attachr,RLr)) begin
+          AddAttachFileToArea(Attachr,htmlarea,false);
+          id = "<!--tablerows-->";
+          pos = FindStringInArea(id,htmlarea);
+          if (pos>0) then begin
+            GetAreaFromArea(htmlarea,0,pos,html1);
+            GetAreaFromArea(htmlarea,pos+len(id),GetAreaLength(htmlarea)-pos-len(id),html2);
+            AddAreaToArea(html1,reshtml);
+            AddTextToArea(table,reshtml);
+            AddAreaToArea(html2,reshtml);
+            AddAreaToTextField(reshtml,LTxt2r);
+            AddToHtmlRecord(Ltxt2r,true,Mailr,true,true);
+            ParseHtmlField(Mailr,RepSpec,"BasketMailVcReplaceToken");
+            RecordCopy(oldMailr,Mailr);
+            Mailr.SendFlag = 1;
+            RecordUpdate(oldMailr,Mailr,true);
+
+          end;
+        end;
+      end;
+    end;
+  end;
+
+  return;
+end;
+
+updating procedure SendSingleSMUBasketMail(record ORVc ORr,record SMFVc SMFr,record RcVc RepSpec)
+begin
+  record MailSettingsBlock MSr;
+  record MailVc Mailr;
+  record JALClassBlock JCb;
+  row ORVc ORrw;
+  Integer i,rwcnt;
+  record LTxtVc LTxtr;
+  row MailVc Mailrw;
+  string 255 table,style;
+
+//CustomerBasketText
+  BlockLoad(JCb);
+  LTxtr.Code = JCb.SMUBasketText;
+  if (ReadFirstMain(LTxtr,1,true)) then begin
+    RecordNew(Mailr);
+    Mailr.Header = LTxtr.Comment;    
+    BlockLoad(MSr);
+    ClearRow(Mailr,Mailrw,1);
+    Mailrw.RowTyp = kMailRowTypeFrom;
+    Mailrw.AddrCode = JCb.BasketSender;
+    MatRowPut(Mailr,0,Mailrw);
+    ClearRow(Mailr,Mailrw,1);
+    Mailrw.RowTyp = kMailRowTypeTo;
+    Mailrw.AddrCode = SMFr.ContactEmail;
+    MatRowPut(Mailr,1,Mailrw);
+
+    Mailr.HtmlFlag = 1;
+    style = "border:solid windowtext 1.0pt;mso-border-alt:solid windowtext .5pt;padding:0cm 5.4pt 0cm 5.4pt";
+    table = "";
+    rwcnt = MatRowCnt(ORr);
+    for (i=0;i<rwcnt;i=i+1) begin
+      MatRowGet(ORr,i,ORrw);
+      table = table & "<tr><td style='" & style & "'>" & ORrw.Spec & "</td><td style='" & style & "'>" & ORrw.Quant & "</td><td style='" & style & "'>" & ORrw.Price & "</td></tr>";
+    end;
+
+    StoreAndUpdateMail(Mailr,LTxtr,RepSpec,table);
+
+  end;    
+
+  return;
+end;
+
+updating procedure SendBasketMailToCustomer(record ORVc ORr,record RcVc RepSpec)
+begin
+  record MailSettingsBlock MSr;
+  record MailVc Mailr;
+  record SMFVc SMFr;
+  record JALClassBlock JCb;
+  row ORVc ORrw;
+  Integer i,rwcnt;
+  record LTxtVc LTxtr;
+  row MailVc Mailrw;
+  string 255 table,style;
+
+  BlockLoad(MSr);
+//CustomerBasketText
+  BlockLoad(JCb);
+  LTxtr.Code = JCb.CustomerBasketText;
+  if (ReadFirstMain(LTxtr,1,true)) then begin
+    RecordNew(Mailr);
+    Mailr.Header = LTxtr.Comment;    
+    ClearRow(Mailr,Mailrw,1);
+    Mailrw.RowTyp = kMailRowTypeFrom;
+    Mailrw.AddrCode = JCb.BasketSender;
+    MatRowPut(Mailr,0,Mailrw);
+    ClearRow(Mailr,Mailrw,1);
+    Mailrw.RowTyp = kMailRowTypeTo;
+    Mailrw.AddrCode = RepSpec.f2;
+    MatRowPut(Mailr,1,Mailrw);
+
+    Mailr.HtmlFlag = 1;
+
+    style = "border:solid windowtext 1.0pt;mso-border-alt:solid windowtext .5pt;padding:0cm 5.4pt 0cm 5.4pt";
+    table = "";
+    rwcnt = MatRowCnt(ORr);
+    for (i=0;i<rwcnt;i=i+1) begin
+      MatRowGet(ORr,i,ORrw);
+      SMFr.SMFCode = ORrw.ArtCode;
+      if (ReadFirstMain(SMFr,1,true)) then begin
+        table = table & "<tr><td style='" & style & "'>" & SMFr.SMFName & "</td><td style='" & style & "'>" & SMFr.ContactEmail & "</td><td style='" & style & "'>" & ORrw.Spec & "</td><td style='" & style & "'>" & ORrw.Quant & "</td><td style='" & style & "'>" & ORrw.Price & "</td></tr>";
+      end;
+    end;
+
+    StoreAndUpdateMail(Mailr,LTxtr,RepSpec,table);
+
+  end;    
+
+  return;
+end;
+
+procedure AddItemToOR(var record ORVc ORr,record SMFItemVc SIr,val qty)
+begin
+  row ORVc ORrw;
+  
+  ClearRow(ORr,ORrw,1);
+  ORrw.Spec = SIr.Name;
+  ORrw.Quant = qty;
+  ORrw.Price = SIr.Price;
+  ORrw.ArtCode = SIr.SMFCode;
+  MatRowPut(ORr,MatRowCnt(ORr),ORrw);
+
+  return;
+end;
+
+procedure AddItemToORArray(var array record ORVc arrORr,var record ORVc mainORr,record SMFItemVc SIr,val qty)
+begin
+  record ORVc ORr;
+  row ORVc ORrw;
+  Boolean foundf;
+  Integer num,i;
+
+  for (i=0;i<arrORr.length;i=i+1) begin
+    ORr = arrORr[i];
+    if (ORr.CustCode==SIr.SMFCode) then begin
+      foundf = true;
+      AddItemToOR(ORr,SIr,qty);
+      num = i;
+      i = arrORr.length;
+    end;
+  end;
+
+  if (!foundf) then begin
+    RecordNew(ORr);
+    ORr.CustCode = SIr.SMFCode;
+    AddItemToOR(ORr,SIr,qty);
+    num = arrORr.length;
+  end;
+  arrORr[num] = ORr;
+
+  AddItemToOR(mainORr,SIr,qty);
+
+
+  return;
+end;
+
+global webpublic
+updating procedure WebSubmitSMUBasket()
+begin
+  Longint pos,pos2;
+  string 255 items,tmp,item,qty;
+  val nqty;
+  record SMFItemVc SIr;
+  record ORVc ORr,mainORr;
+  array record ORVc arrORr;
+  record RcVc RepSpec;
+  Integer i;
+  record SMFVc SMFr;
+  
+  pos = -1;
+  items = GetBasketItems;
+  while (GetNextSubString(items,pos,",",tmp)) begin
+    pos2 = -1;
+    GetNextSubString(tmp,pos2,":",item);
+    GetNextSubString(tmp,pos2,":",qty);
+    nqty = StringToInt(qty);
+    SIr.UUID = StringToUUID(item);
+    if (ReadFirstMain(SIr,1,true)) then begin
+      AddItemToORArray(arrORr,mainORr,SIr,nqty);
+    end;
+  end;
+
+  RepSpec.f1 = WebGetArg("name");
+  RepSpec.f2 = WebGetArg("email");
+  RepSpec.f3 = WebGetArg("phone");
+  RepSpec.f4 = WebGetArg("shipaddr");
+  RepSpec.f5 = WebGetArg("Comment");
+
+  for (i=0;i<arrORr.length;i=i+1) begin
+    ORr = arrORr[i];
+    SMFr.SMFCode = ORr.CustCode;
+    if (ReadFirstMain(SMFr,1,true)) then begin
+      SendSingleSMUBasketMail(ORr,SMFr,RepSpec);
+    end;
+  end;
+  SendBasketMailToCustomer(mainORr,RepSpec);
+
+  PutSessionString("basket_items","");
+  SetDetailedCookie("basket_items","","items","","/",15552000); //180days
+
+  return;
+end;
+
+
+global
+function string 255 BasketMailVcReplaceToken(record MailVc Mailr,record RcVc RepSpec,string token)
+begin
+  string 255 res;
+
+  switch (token) begin
+    case "name":     res = RepSpec.f1;
+    case "email":    res = RepSpec.f2;
+    case "phone":    res = RepSpec.f3;
+    case "shipaddr": res = RepSpec.f4;
+    case "comment":  res = RepSpec.f5;
+
+  end;
+
+  BasketMailVcReplaceToken = res;
 end;

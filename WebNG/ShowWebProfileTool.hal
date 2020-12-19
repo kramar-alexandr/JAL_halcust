@@ -240,6 +240,7 @@ begin
     SMFr.SchoolName = SCr.SchoolName;
   end;
   SMFr.Region = SCr.Region;
+  SMFr.District = SCr.District;
   SMFr.Manager = CUr.Name;
   SMFr.Email = CUr.eMail;
   SMFr.StatusFlag = 0;
