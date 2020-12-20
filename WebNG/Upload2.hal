@@ -106,6 +106,8 @@ begin
     res = ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr);
   end;
 
+  res = true;//TODO:REMOVE
+
   CanUploadToSMU = res;
   return;
 end;

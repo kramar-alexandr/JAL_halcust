@@ -20,15 +20,24 @@ external function string 60 RemoveObjectFromObjectList(string,string);
 external function string 60 AddObjectToObjectList(string,string);
 external procedure ShowWebElement(string);
 
-function Boolean FindItemImage(record SMFItemVc SIr,var string link)
+function Boolean FindItemImage(record SMFItemVc SIr,var string link,var string name,Boolean thumbf)
 begin
   Boolean res;
   record Attach2Vc Attachr;
   record RLinkVc RLr;
+  Integer i;
 
-  if (ReadRecordLink(SIr,1,Attachr,RLr)) begin
-    res = true;
+  link = "";
+  name = "";
+  if (ReadRecordLink(SIr,1,Attachr,RLr) and res==false) begin
     link = "/WebShowSMUShopItemImage.hal?smf=" & SIr.SMFCode & "&id=" & SIr.UUID;
+    name = Attachr.FileName;
+    if (thumbf) then begin
+      link = link & "&thumb=1";
+    end;
+  end;
+  if (nonblank(link)) then begin
+    res = true;
   end;
 
   FindItemImage = res;
@@ -90,18 +99,29 @@ global webpublic
 procedure WebShowSMUShopItemImage()
 begin
   record SMFItemVc SIr;
-  record Attach2Vc Attachr;
+  record Attach2Vc Attachr,tAttachr;
   record RLinkVc RLr;
   string 255 ext;
+  Boolean thumbf,foundf;
+  Integer i;
   
+  thumbf = WebGetArg("thumb")=="1";
   SIr.UUID = StringToUUID(WebGetArg("id"));
   if (ReadFirstMain(SIr,1,true)) then begin
     if (SIr.SMFCode==WebGetArg("smf")) then begin
-      if (ReadRecordLink(SIr,1,Attachr,RLr)) begin
-        ext = right(Attachr.FileName,4);
+      i = 1;
+      while (ReadRecordLink(SIr,i,Attachr,RLr)) begin
+        if ((thumbf and left(Attachr.FileName,6)=="thumb_") or (left(Attachr.FileName,6)!="thumb_" and foundf==false)) then begin
+          RecordCopy(tAttachr,Attachr);
+          foundf = true;
+        end;
+        i = i + 1;
+      end;
+      if (foundf) then begin
+        ext = right(tAttachr.FileName,4);
         SetContentTypeForExtension(ext);
-        WebSetContentDisposition("inline; filename=" & Attachr.FileName);
-        WebOutAttachment(Attachr.SerNr);
+        WebSetContentDisposition("inline; filename=" & tAttachr.FileName);
+        WebOutAttachment(tAttachr.SerNr);
       end;
     end;
   end;
@@ -111,12 +131,15 @@ end;
 
 procedure ShowSingleSMUShopItem(record SMFItemVc SIr,Boolean likedf,Boolean basketf)
 begin
-  string 255 link,likedcls,basketcls;
+  string 255 link,link2,likedcls,basketcls,imgname;
   
   WebOutString("<div class='smu_shop_single_item'>");
   WebOutString("<div class='smu_shop_item_image'>");
-  if (FindItemImage(SIr,link)==false) then begin
+  if (FindItemImage(SIr,link,imgname,true)==false) then begin
     link = DefaultItemImage;
+  end;
+  if (FindItemImage(SIr,link2,imgname,false)==false) then begin
+    link2 = DefaultItemImage;        
   end;
   if (likedf) then begin
     likedcls = " active";
@@ -124,7 +147,7 @@ begin
   if (basketf) then begin
     basketcls = " added_to_basket";
   end;
-  WebOutString("<img src='" & link & "'>");
+  WebOutString("<img src='" & link & "' link2='" & link2 & "'>");
   WebOutString("</div>");//smu_shop_item_image
 
   WebOutstring("<div class='smu_shop_item_details'>");
@@ -558,7 +581,7 @@ end;
 
 procedure ShowSingleSMUShopItem2(record SMFItemVc SIr,Boolean likedf,Boolean basketf,Integer step,Integer qty)
 begin
-  string 255 link,likedcls,basketcls;
+  string 255 link,likedcls,basketcls,imgname;
   record SMFVc SMFr;
 
   SMFr.SMFCode = SIr.SMFCode;
@@ -566,7 +589,7 @@ begin
   
   WebOutString("<div class='smu_shop_single_item' uuid='" & SIr.UUID & "' url='" & "/katalogs/" & GetSMFShopUrl(SMFr) & "'>");
   WebOutString("<div class='smu_shop_item_image'>");
-  if (FindItemImage(SIr,link)==false) then begin
+  if (FindItemImage(SIr,link,imgname,true)==false) then begin
     link = DefaultItemImage;
   end;
   if (likedf) then begin
@@ -1192,7 +1215,7 @@ end;
 
 procedure GetItemList(string smfcode)
 begin
-  string 255 background;
+  string 255 background,imgname;
   Integer cnt;
   Boolean TrHs;
   record SMFItemVc SIr;
@@ -1207,7 +1230,7 @@ begin
       if (cnt>0) then begin
         WebOutString(",");
       end;				
-      FindItemImage(SIr,background);	
+      FindItemImage(SIr,background,imgname,true);	
       WebOutString("{""Name"":""" & FormatJSONString(SIr.Name) & """,""Price"":""" & FormatJSONString(SIr.Price) & """,""Logo"":""" & background & """,""UUID"":""" & FormatJSONString(SIr.UUID) & """}");
       cnt = cnt + 1;
     end;
@@ -1326,6 +1349,27 @@ begin
     if (ReadFirstMain(SIr,1,true)) then begin
       if (SIr.SMFCode==smfcode) then begin
         RecordRemove(SIr);
+      end;
+    end;
+  end;
+
+  return;
+end;
+updating procedure RemoveSMFItemImages(string smfcode,string uuidlist)
+begin
+  Longint pos;
+  string 255 tstr;
+  record SMFItemVc SIr;
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+  
+  while (GetNextSubString(uuidlist,pos,",",tstr)) begin
+    SIr.UUID = StringToUUID(tstr);
+    if (ReadFirstMain(SIr,1,true)) then begin
+      if (SIr.SMFCode==smfcode) then begin
+        while (ReadRecordLink(SIr,1,Attachr,RLr)) begin
+          RecordRemove(Attachr);
+        end;
       end;
     end;
   end;
@@ -1504,6 +1548,9 @@ begin
         end;
         if (nonblank(JSONGet(js,"RemoveItems"))) then begin
           RemoveSMFItems(SMFr.SMFCode,JSONGet(js,"RemoveItems"));
+        end;
+        if (nonblank(JSONGet(js,"ClearImages"))) then begin
+          RemoveSMFItemImages(SMFr.SMFCode,JSONGet(js,"ClearImages"));
         end;
         if (JSONGet(js,"RemoveLogo")=="1") then begin
           RemoveJALFile(SMFr.SMFCode,0);
@@ -1689,7 +1736,7 @@ begin
   Integer i,cnt,spos,epos,num;
   record SMFItemVc SIr;
   string 255 background;
-  string 255 district,industry,filter,likeditems,basketitems;
+  string 255 district,industry,filter,likeditems,basketitems,imgname;
   array record SMFItemVc arrSIr;
 
   ReadFilterData(spos,epos,district,industry,filter);
@@ -1715,7 +1762,7 @@ begin
           end else begin
             if (blank(filter) or InString(SIr.Name,filter)>0) then begin
 
-              FindItemImage(SIr,background);
+              FindItemImage(SIr,background,imgname,true);
               SIr.DummyStr = background;
               SIr.ShopUrl = "/katalogs/" & GetSMFShopUrl(SMFr);
               SIr.District = SMFr.District;
@@ -1907,14 +1954,14 @@ begin
     RenameFile(fn,nfn);
     SIr.UUID = StringToUUID(id);
     if (ReadFirstMain(SIr,1,true)) then begin
-      CUr.Code = CurrentCust;
-      if (ReadFirstMain(CUr,1,true)) then begin
-        if (ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr)) then begin
-          if (SMFr.SMFCode==SIr.SMFCode) then begin
+      //CUr.Code = CurrentCust;//TODO:REMOVE
+      //if (ReadFirstMain(CUr,1,true)) then begin
+        //if (ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr)) then begin 
+        //  if (SMFr.SMFCode==SIr.SMFCode) then begin
             RecordLinkFile(nfn,0,SIr,CurrentCompany);    
-          end;
-        end;
-      end;
+        //  end;
+        //end;
+      //end;
     end;
     Delete_File(nfn);
   end;
@@ -2166,3 +2213,32 @@ begin
 
   BasketMailVcReplaceToken = res;
 end;
+
+global webpublic
+procedure WebGetItemImages()
+begin
+  record SMFItemVc SIr;
+  record WebNGStructVc WSr;
+  string 255 link,name;
+  record WebNGPageVc WPr;
+
+  WSr.SerNr = 1051;
+  if (ReadFirstMain(WSr,1,true)) then begin
+    WPr.Code = WSr.WebPage;
+
+    if (nonblank(WPr.Code)) then begin
+      if (ReadFirstMain(WPr,1,true)) then begin end;
+    end;
+    ShowWebAppPageStart(WPr,"");
+    WebOutString("<div class='test_data'></div>");
+    while (LoopMain(SIr,1,true)) begin
+      if (FindItemImage(SIr,link,name,false)) then begin
+        WebOutString("<div class='test_item_wrap' link='" & link & "' uuid='" & SIr.UUID & "' smf='" & SIr.SMFCode & "' name='" & name & "'></div>");
+      end;
+    end;
+    ShowWebAppPageEnd(WPr);
+  end;
+
+  return;
+end;
+
