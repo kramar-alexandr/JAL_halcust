@@ -7,6 +7,7 @@ external updating procedure FinishLoanAppFileUpload(string,string,string,string)
 external procedure LoadLoanSession(var vector string);
 external function Boolean FindSMURecord(string,var record SMFVc);
 external updating procedure FinishSMUFileUpload(string,string,string,string,Integer);
+external updating procedure FinishSMUFileUpload2(string,string,string,string,Integer);
 external updating procedure FinishSMUItemFileUpload(string,string,string,string);
 
 
@@ -82,6 +83,8 @@ begin
       qupdating.FinishSMUFileUpload(sess,filename,id,tag,1);
     case "logo":
       qupdating.FinishSMUFileUpload(sess,filename,id,tag,0);
+    case "logo2":
+      qupdating.FinishSMUFileUpload2(sess,filename,id,tag,0);
     case "smuitem":
       qupdating.FinishSMUItemFileUpload(sess,filename,id,tag);
   end;
@@ -106,8 +109,6 @@ begin
     res = ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr);
   end;
 
-  res = true;//TODO:REMOVE
-
   CanUploadToSMU = res;
   return;
 end;
@@ -128,6 +129,8 @@ begin
   
   switch (tag) begin
     case "logo":
+      res = CanUploadToSMU;
+    case "logo2":
       res = CanUploadToSMU;
     case "background":
       res = CanUploadToSMU;

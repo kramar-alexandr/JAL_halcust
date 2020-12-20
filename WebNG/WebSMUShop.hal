@@ -331,8 +331,9 @@ begin
   string 255 res;
   record Attach2Vc Attachr;
   record RLinkVc RLr;
+  Integer i;
 
-  if (ReadRecordLink(JFr,1,Attachr,RLr)) then begin
+  if (ReadRecordLink(JFr,1,Attachr,RLr)) begin
     res = "/WebShowJALFile.hal?smf=" & JFr.SMFCode & "&id=" & JFr.UUID;
   end;
  
@@ -345,18 +346,28 @@ global webpublic
 procedure WebShowJALFile()
 begin
   record JALFileVc JFr;
-  record Attach2Vc Attachr;
+  record Attach2Vc Attachr,tAttachr;
   record RLinkVc RLr;
   string 255 ext;
+  Integer i;
+  Boolean foundf;
   
   JFr.UUID = StringToUUID(WebGetArg("id"));
   if (ReadFirstMain(JFr,1,true)) then begin
     if (JFr.SMFCode==WebGetArg("smf")) then begin
-      if (ReadRecordLink(JFr,1,Attachr,RLr)) begin
-        ext = right(Attachr.FileName,4);
+      i = 1;
+      while (ReadRecordLink(JFr,i,Attachr,RLr)) begin
+        if (left(Attachr.FileName,6)=="thumb_" or foundf==false) then begin
+          RecordCopy(tAttachr,Attachr);
+          foundf = true;
+        end;
+        i = i + 1;
+      end;
+      if (foundf) then begin
+        ext = right(tAttachr.FileName,4);
         SetContentTypeForExtension(ext);
-        WebSetContentDisposition("inline; filename=" & Attachr.FileName);
-        WebOutAttachment(Attachr.SerNr);
+        WebSetContentDisposition("inline; filename=" & tAttachr.FileName);
+        WebOutAttachment(tAttachr.SerNr);
       end;
     end;
   end;
@@ -1603,6 +1614,29 @@ begin
   return;
 end;
 
+
+global
+updating procedure FinishSMUFileUpload2(string sess,string filename,string id,string tag,Integer type)
+begin
+  string 255 fn,nfn;
+  area filearea;
+  Integer i;
+  record JALFileVc JFr;
+
+  fn = "tmp/" & tag & "/" & sess;
+  if (FileExists(fn)) then begin
+    nfn = "tmp/" & tag & "/" & Trim(filename);
+    RenameFile(fn,nfn);
+    JFr.UUID = StringToUUID(id);
+    if (ReadFirstmain(JFr,1,true)) then begin
+      RecordLinkFile(nfn,0,JFr,CurrentCompany);    
+    end;
+    Delete_File(nfn);
+  end;
+
+  return;
+end;
+
 global webpublic
 updating procedure WebRemoveSMUProduct()
 begin
@@ -1954,14 +1988,14 @@ begin
     RenameFile(fn,nfn);
     SIr.UUID = StringToUUID(id);
     if (ReadFirstMain(SIr,1,true)) then begin
-      //CUr.Code = CurrentCust;//TODO:REMOVE
-      //if (ReadFirstMain(CUr,1,true)) then begin
-        //if (ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr)) then begin 
-        //  if (SMFr.SMFCode==SIr.SMFCode) then begin
+      CUr.Code = CurrentCust;
+      if (ReadFirstMain(CUr,1,true)) then begin
+        if (ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr)) then begin 
+          if (SMFr.SMFCode==SIr.SMFCode) then begin
             RecordLinkFile(nfn,0,SIr,CurrentCompany);    
-        //  end;
-        //end;
-      //end;
+          end;
+        end;
+      end;
     end;
     Delete_File(nfn);
   end;
@@ -2213,7 +2247,7 @@ begin
 
   BasketMailVcReplaceToken = res;
 end;
-
+/*
 global webpublic
 procedure WebGetItemImages()
 begin
@@ -2221,6 +2255,9 @@ begin
   record WebNGStructVc WSr;
   string 255 link,name;
   record WebNGPageVc WPr;
+  record JALFileVc JFr;
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
 
   WSr.SerNr = 1051;
   if (ReadFirstMain(WSr,1,true)) then begin
@@ -2231,9 +2268,13 @@ begin
     end;
     ShowWebAppPageStart(WPr,"");
     WebOutString("<div class='test_data'></div>");
-    while (LoopMain(SIr,1,true)) begin
-      if (FindItemImage(SIr,link,name,false)) then begin
-        WebOutString("<div class='test_item_wrap' link='" & link & "' uuid='" & SIr.UUID & "' smf='" & SIr.SMFCode & "' name='" & name & "'></div>");
+    while (LoopMain(JFr,1,true)) begin
+      if (JFr.Type==0) then begin
+        if (ReadRecordLink(JFr,1,Attachr,RLr)) then begin
+          link = "/WebShowJALFile.hal?smf=" & JFr.SMFCode & "&id=" & JFr.UUID;
+
+          WebOutString("<div class='test_item_wrap' link='" & link & "' uuid='" & JFr.UUID & "' smf='" & JFr.SMFCode & "' name='" & Attachr.FileName & "'></div>");
+        end;
       end;
     end;
     ShowWebAppPageEnd(WPr);
@@ -2241,4 +2282,5 @@ begin
 
   return;
 end;
+*/
 
