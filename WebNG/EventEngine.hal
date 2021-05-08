@@ -518,6 +518,39 @@ begin
 return;
 end;
 
+procedure ShowRegistrationFields2(record JALEventVc JEr,record JALEventEntryVc JEEr) 
+begin
+  boolean editf;
+  row JALEventEntryVc JEErw;
+  row JALEventVc JErw;
+  integer i,rwcnt;
+  record JALEventFieldVc JFr;
+  string 255 value;
+
+  rwcnt = MatRowCnt(JEEr);
+  WebOutString("<div id='event_reg' class='app_readonly'>");
+  for (i = 0; i < rwcnt;i = i + 1) begin
+    MatRowGet(JEEr,i,JEErw);
+    JFr.SerNr = JEErw.Field;
+    if readfirstmain(JFr,1,true) then begin
+      value = JEErw.Value;;
+
+      switch JFr.Type begin
+        case 0: ShowSimpleField(i,JFr,JErw,value);
+        case 1: ShowSelectBox(i,JFr,JErw,value);
+        case 2: ShowCheckbox(i,JFr,JErw,value);
+        case 3: ShowRadioButton(i,JFr,JErw,value);
+        case 4: ShowParticipants(i,JFr,JErw,value);
+      end;
+    end;
+  end;
+  //ShowUploadedFiles(JEr);
+  WebOutString("<script>$('input').attr('readonly','');</script>");
+  WebOutString("<script>$('select').attr('disabled','true');</script>");
+  WebOutString("</div>");
+  return;
+end;
+
 procedure ShowEventSubPage(record JALEventVc JEr,string node,string path)
 begin
   boolean uplf;
@@ -601,7 +634,13 @@ begin
   record WebNGPageVc WPr;
   string 30 mpath,node;
   record JALEventVc JEr;
-  
+  record JALEventEntryVc JEEr;
+  record SMFVc SMFr;
+  record TeacherVc TCr;
+  record MentorVc MTr;
+  record CUVc CUr;
+  Integer type;
+
   WPr.Code = WSr.WebPage;
   if (nonblank(WPr.Code)) then begin
     if (ReadFirstMain(WPr,1,true)) then begin end;
@@ -615,10 +654,22 @@ begin
 
   if (IsNumeric(node) and nonblank(node)) then begin
     JEr.SerNr = StringToLongInt(node);
-    if readfirstmain(JEr,1,true) then begin
+    if (readfirstmain(JEr,1,true)) then begin
       node = removenextnode(mpath);
-      if (JEr.RegFlag == 1 and nonblank(CurrentCust)) or (JEr.RegFlag == 0) then begin
-        ShowEventSubPage(JEr,node,rpath);
+      if (node=="pieteikumi") then begin
+        CUr.Code = CurrentCust;
+        type = GetJAlCustType(CUr,SMFr,TCr,MTr);
+        if (type==1 and JEr.TeacherCode==TCr.TeacherCode) then begin
+          node = removenextnode(mpath);
+          JEEr.SerNr = StringToLongint(node);
+          if (ReadFirstMain(JEEr,1,true)) then begin
+            ShowRegistrationFields2(JEr,JEEr);
+          end;
+        end;
+      end else begin
+        if (JEr.RegFlag == 1 and nonblank(CurrentCust)) or (JEr.RegFlag == 0) then begin
+          ShowEventSubPage(JEr,node,rpath);
+        end;
       end;
     end;
   end else begin

@@ -605,14 +605,32 @@ window SMFreportsRClass:1
   wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
 begin
   real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
-integer cnt,pos,i;
-longint curt;;
+  integer cnt,pos,i;
+  longint curt;;
+  vs = 20;
+
   WindowBegin("Atskaite par SMU atskaitēm",SMFreportsRClass,CGRcW,RcType);
   SetWRect(80,80,500,120);
   PeriodField(h=100,v=6,"Periods");
   EditFieldTL(h,v+=vs,100,"SMU",M4Str,Normal,100,f1,false,SMFSClass);
   EndWindow;
 end;
+
+window SMUOrdersRClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+  integer cnt,pos,i;
+  longint curt;;
+  vs = 20;
+  WindowBegin("SMU pasūtījumi",SMUOrdersRClass,CGRcW,RcType);
+  SetWRect(80,80,500,120);
+  PeriodField(h=100,v=6,"Periods");
+  EditFieldTL(h,v+=vs,100,"SMU",M4Str,Normal,100,f1,false,SMFSClass);
+  EndWindow;
+end;
+
+
 
 window MentorRClass:1
   wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
@@ -793,6 +811,11 @@ longint curt;;
   EditField(h,v=v+vs,100,"Groza info sūtītājs",Normal,BasketSender,false,ConfSClass);
   EditField(h,v=v+vs,100,"Groza teksts SMU",Normal,SMUBasketText,false,LTxtSClass);
   EditField(h,v=v+vs,100,"Groza teksts klientiem",Normal,CustomerBasketText,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"Aktīvie mēneši",Normal,ActiveMonths,false,0);
+  EditField(h,v=v+vs,100,"Jauna prece (dienas)",Normal,NewTagDays,false,0);
+  EditField(h,v=v+vs,100,"Pupulāra prece (%)",Normal,PopularTagPrc,false,0);
+  EditField(h,v=v+vs,100,"Jaunas cenas dienas",Normal,NewPriceDays,false,0);
+
   CheckBox(h,v+=20,0,"Slēpt kataglogu",HideCatalog);
 
 
@@ -1550,6 +1573,8 @@ longint curt;;
   EditField(h,v+=vs,90,"Reģistrēšanās no",Normal,RegFrom,false,PasteCurDate);
   EditField(h2,v,90,"Reģistrēšanās līdz",Normal,RegUntil,false,PasteCurDate);
   EditField(h,v+=vs,290,"Saite",Normal,Link,false,0);
+  EditField(h,v+=vs,290,"Skolotājs",Normal,TeacherCode,false,TeacherSClass);
+  EditField(h,v+=vs,290,"Veikala saite",Normal,ShopNode,false,0);
   
   CheckBox(h-5,v+=vs,0,"Tikai reģistrētiem lietotājiem",RegFlag);
   HalPushButton(-300,v,-200,v+20,"NewJALEventTranslationDsm","Jauns tulkojums");
@@ -2990,7 +3015,7 @@ window SMFItemDClass:1
 begin
   real h,v,vs,v2,vs2,hm;
   WindowBegin("Prece",SMFItemDClass,CGview,-);
-  SetWRect(20,80,600,339);
+  SetWRect(20,80,600,639);
   UseView(SMFItemVc);
   vs=20; h=120; vs2=16; hm=-100;
   EditField(h,v=6,200,"SMU",Normal,SMFCode,false,SMFSClass);
@@ -2998,6 +3023,7 @@ begin
   EditField(h,v+=vs,100,"Secība",Normal,Order,false,0);
   EditField(h,v+=vs,100,"Cena",Normal,Price,false,0);
   EditField(h,v+=vs,100,"Datums",Normal,TransDate,false,PasteCurDate);
+  TextField(h-2,v+=vs,-28,-30,Math2,0);
   CheckBox(h+240,v=6,0,"Aktīvs",ActiveFlag);
   EndWindow;
 end;

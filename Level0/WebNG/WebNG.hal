@@ -62,7 +62,7 @@ external function string 255 ConvertXml(string);
 external procedure HansaWorldHALApp(record WebNGStructVc,string,string);
 //CUST-BEGIN
 external procedure ShowWebProfile();
-external outer procedure ShowSMUShopApp(record WebNGStructVc,string);
+external outer procedure ShowSMUShopApp(record WebNGStructVc,string,string);
 //CUST-END
 
 procedure SetCountryAndLanguage(var string path)
@@ -402,6 +402,56 @@ LCheckAndRedirectToSecurePage:;
   return;
 end;
 
+//CUST-BEGIN
+global
+procedure GetExternalShopStruct(var record WebNGStructVc WSr)
+begin
+  
+  WSr.SerNr = 1051;
+  if (ReadFirstMain(WSr,1,true)) then begin
+  
+  end;
+
+  return;
+end;
+
+global
+function string 255 GetLinkToExternalShop()
+begin
+  string 255 res;
+  record WebNGStructVc WSr;
+  
+  GetExternalShopStruct(WSr);
+  res = GetLinkToStruct(WSr.SerNr,true);
+
+  GetLinkToExternalShop = res;
+  return;
+end;
+
+
+function Boolean PathIsEventShop(string node,var record WebNGStructVc WSr)
+begin
+  record JALEventVc JEr;
+  Boolean res;
+
+  
+logtext(0,"PathIsEventShop1 " & node);
+  JEr.ShopNode = node;
+  if (ReadFirstKey("ShopNode",JEr,1,true)) then begin
+    if (JEr.ActiveFlag==1 and (DateInRange(CurrentDate,JEr.StartDate,JEr.EndDate) or DateInRange(CurrentDate,JEr.RegFrom,JEr.RegUntil))) then begin
+logtext(0,"PathIsEventShop1");
+      res = true;
+      GetExternalShopStruct(WSr);
+logtext(0,"PathIsEventShop3 " & WSr.Type);
+      //Hard code the structure
+    end;
+  end;
+
+  PathIsEventShop = res;
+  return;
+end;
+//CUST-END
+
 global
 procedure HandlePath(string path,longint mother)
 begin
@@ -494,7 +544,12 @@ begin
       LogText(0,"link too deep");
       goto LHandlePathOut;
     end;
+    if (PathIsEventShop(node,WSr)) then begin
+      lasttype = WSr.Type;
+      goto LHandlePath;
+    end;
   end;
+
   
 LHandlePath:;
 
@@ -531,7 +586,7 @@ LHandlePath:;
     case kStructTypeProductionPlan: ProdPlanApp(WSr,mpath);
     case kStructTypeAvailableApps: AvailableAppsOnWeb(WSr,mpath);
     case 55: EventAppHandler(WSr,mpath,path);//CUST
-    case 120: ShowSMUShopApp(WSr,mpath);//CUST
+    case 120: ShowSMUShopApp(WSr,mpath,node);//CUST
     otherwise
       RollbackOneRequestURL;
       ShowErrorPage(ToolWebNGTranslateText(25000)); //File not found

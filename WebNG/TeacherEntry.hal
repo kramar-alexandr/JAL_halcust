@@ -20,7 +20,8 @@ function string 255 FormatJSONString(string tstr)
 begin
   string 255 res;
   
-  res = StrReplace(tstr,"\"","\\\"");
+  res = StrReplace(tstr,"\\","\\\\");
+  res = StrReplace(res,"\"","\\\"");
   res = StrReplace(res,chr(13) & chr(10),"\\n");//chr(13) & 
   res = StrReplace(res,chr(10),"\\n");//chr(13) & 
   res = StrReplace(res,chr(9),"");//chr(13) & 
@@ -39,6 +40,20 @@ begin
   UnFormatJSONString = res;
   return;
 end;
+
+global
+function string 255 UnFormatJSONText(string tstr)
+begin
+  string 255 res;
+ 
+  res = StrReplace(tstr,"\\\"","\"");
+  res = StrReplace(res,"\\n",chr(13) & chr(10)); 
+
+  UnFormatJSONText = res;
+  return;
+end;
+
+
 
 global
 function string 50 GetEntryPersonName(record JALTeacherAccVc JTr)
@@ -572,8 +587,8 @@ begin
         WebOutStringFormatNL("\"SerNr\":\"" & JTr.SerNr & "\",");
         WebOutStringFormatNL("\"Statuss\":\"" & JTr.StatusFlag & "\",");
         WebOutStringFormatNL("\"Datums\":\"" & JTr.TransDate & "\",");
-        WebOutStringFormatNL("\"Klase\":\"" & CUr.ClassNum & CUr.ClassChar & "\",");
-        WebOutStringFormatNL("\"Skolens\":\"" & CUr.Name & "\"");
+        WebOutStringFormatNL("\"Klase\":\"" & FormatJSONString(CUr.ClassNum & CUr.ClassChar) & "\",");
+        WebOutStringFormatNL("\"Skolens\":\"" & FormatJSONString(CUr.Name) & "\"");
         WebOutStringFormatNL("}");
       end;
     end;
@@ -611,8 +626,8 @@ begin
           WebOutStringFormatNL("\"EventName\":\"" & JEr.Comment & "\",");
           WebOutStringFormatNL("\"Statuss\":\"" & JEEr.StatusFlag & "\",");
           WebOutStringFormatNL("\"Datums\":\"" & JEEr.TransDate & "\",");
-          WebOutStringFormatNL("\"Klase\":\"" & CUr.ClassNum & CUr.ClassChar & "\",");
-          WebOutStringFormatNL("\"Skolens\":\"" & CUr.Name & "\"");
+          WebOutStringFormatNL("\"Klase\":\"" & FormatJSONString(CUr.ClassNum & CUr.ClassChar) & "\",");
+          WebOutStringFormatNL("\"Skolens\":\"" & FormatJSONString(CUr.Name) & "\"");
           WebOutStringFormatNL("}");
         end;
       end;
@@ -662,6 +677,84 @@ begin
   end;
 */
   WebOutString("],");
+  return;
+end;
+
+function string 255 GetApplicationShopLink(record JALEventEntryVc JEEr,record JALEventVc JEr)
+begin
+  string 255 res;
+  record SMFVc SMFr;
+
+  SMFr.SMFCode = JEEr.AddCode;
+  if (ReadFirstMain(SMFr,1,true)) then begin
+    res = "/" & JEr.ShopNode & "/" & SMFr.WebShopUrl;
+  end;
+
+  GetApplicationShopLink = res;
+  return;
+end;
+
+function string 255 GetApplicationLink(record JALEventEntryVc JEEr,record JALEventVc JEr)
+begin
+  string 255 res;
+
+  res = "/kalendars/pasakumi/" & JEr.SerNr & "/pieteikumi/" & JEEr.SerNr;
+  
+  GetApplicationLink = res;
+  return;
+end;
+
+global
+procedure GetTeacherSMURegionalApplications(string code,Boolean printf)
+begin
+  record SMFVc SMFr;
+  record JALEventEntryVc JEEr;
+  Boolean TrHs,TrHs2,showf;
+  record JALEventVc JEr;
+  vector Integer vTeacher;
+  Integer cnt;
+  
+  WebOutStringFormatNL("\"regional_applications\":[");
+  TrHs = true;
+  JEr.RegFrom = AddMonth(CurrentDate,-3);
+  while (LoopKey("TeacherReg:" & code,JEr,1,TrHs)) begin
+    if (JEr.RegFrom>CurrentDate) then begin
+      TrHs = false;
+    end else begin
+      if (DateInRange(CurrentDate,JEr.RegFrom,JEr.RegUntil)) then begin
+        showf = true;
+        RecordClear(JEEr);
+        ResetLoop(JEEr);
+        TrHs2 = true;
+        JEEr.EventNr = JEr.SerNr;
+        while (LoopKey("Status",JEEr,1,TrHs2)) begin
+          if (JEEr.EventNr!=JEr.SerNr) then begin
+            TrHs2 = false;
+          end else begin
+              if(cnt>0)then begin
+                weboutstring(",");
+              end;
+              WebOutStringFormatNL("{");
+              WebOutStringFormatNL("\"serNr\":\"" & JEEr.SerNr & "\",");
+              WebOutStringFormatNL("\"smu\":\""  & JEEr.AddCode & "\",");
+              WebOutStringFormatNL("\"datums\":\""  & JEEr.TransDate & "\",");
+              WebOutStringFormatNL("\"name\":\""  & FormatJSONString(JEEr.SMFName) & "\",");
+              WebOutStringFormatNL("\"event\":\"" & JEEr.EventNr & "\",");
+              WebOutStringFormatNL("\"status\":" & JEEr.StatusFlag & ",");              
+              WebOutStringFormatNL("\"filled\":\"" & JEEr.OkFlag & "\",");
+              WebOutStringFormatNL("\"shoplink\":\"" & GetApplicationShopLink(JEEr,JEr) & "\",");
+              WebOutStringFormatNL("\"applink\":\"" & GetApplicationLink(JEEr,JEr) & "\"");
+              WebOutStringFormatNL("}"); 
+              cnt = cnt + 1;             
+          end;
+        end;
+      end;
+    end;
+  end;
+  WebOutStringFormatNL("],");
+  WebOutStringFormatNL("\"regional_appl_cnt\":" & cnt & ",");
+  WebOutStringFormatNL("\"regional_appl_show\":" & showf & ",");
+
   return;
 end;
 
@@ -774,8 +867,8 @@ begin
             WebOutStringFormatNL("\"SerNr\":\"" & JTr.SerNr & "\",");
             WebOutStringFormatNL("\"Statuss\":\"" & JTr.StatusFlag & "\",");
             WebOutStringFormatNL("\"Datums\":\"" & DateToString(JTr.TransDate,"YYYY/MM/DD") & "\",");
-            WebOutStringFormatNL("\"Klase\":\"" & CUr.ClassNum & CUr.ClassChar & "\",");
-            WebOutStringFormatNL("\"Klase2\":\"" & CUr.ClassNum & "\",");
+            WebOutStringFormatNL("\"Klase\":\"" & FormatJSONString(CUr.ClassNum & CUr.ClassChar) & "\",");
+            WebOutStringFormatNL("\"Klase2\":\"" & FormatJSONString(CUr.ClassNum) & "\",");
             WebOutStringFormatNL("\"Skolens\":\"" & FormatJSONString(CUr.Name) & "\",");
             WebOutStringFormatNL("\"Kods\":\"" & CUr.Code & "\",");
             WebOutStringFormatNL("\"CertFlag\":\"" & CUr.CertificateFlag & "\",");
@@ -830,8 +923,8 @@ begin
               WebOutStringFormatNL("\"SerNr\":\"" & A_JTr.SerNr & "\",");
               WebOutStringFormatNL("\"Statuss\":\"" & A_JTr.StatusFlag & "\",");
               WebOutStringFormatNL("\"Datums\":\"" & DateToString(A_JTr.TransDate,"YYYY/MM/DD") & "\",");
-              WebOutStringFormatNL("\"Klase\":\"" & A_SMFr.ClassNum & A_SMFr.ClassChar & "\",");
-              WebOutStringFormatNL("\"Klase2\":\"" & A_SMFr.ClassNum & "\",");
+              WebOutStringFormatNL("\"Klase\":\"" & FormatJSONString(A_SMFr.ClassNum & A_SMFr.ClassChar) & "\",");
+              WebOutStringFormatNL("\"Klase2\":\"" & FormatJSONString(A_SMFr.ClassNum) & "\",");
               WebOutStringFormatNL("\"Skolens\":\"" & FormatJSONString(CUr.Name) & "\",");
               WebOutStringFormatNL("\"Kods\":\"" & CUr.Code & "\",");
               WebOutStringFormatNL("\"CertFlag\":\"" & CUr.CertificateFlag & "\",");
@@ -870,6 +963,8 @@ begin
 
   end;
   WebOutStringFormatNL("],");  
+  GetTeacherSMURegionalApplications(code,false);
+
   WebOutStringFormatNL("\"totcnt\":" & totcnt);
   WebOutStringFormatNL(",\"application_cnt\":" & application_cnt & ",");
   ShowExtraCertFiles;
@@ -1430,6 +1525,43 @@ begin
 
 return;
 end;
+
+global webpublic
+updating procedure WebJALChangeEventEntryStat2()
+begin 
+  record JALEventEntryVc JEEr,oldJEEr;
+  record JALEventVc JEr;
+  record CUVc CUr;
+  record SMFVc SMFr;
+  record TeacherVc TCr;
+  record MentorVc MTr;
+  integer type,ttype;
+  string 20 code;
+
+
+  if nonblank(CurrentCust)then begin
+    CUr.Code = CurrentCust;
+    if (ReadFirstMain(CUr,1,true)) then begin
+      type = GetJAlCustType(CUr,SMFr,TCr,MTr);
+      if (type==1) then begin
+        JEEr.SerNr = StringToLongInt(WebGetArg("sernr"));
+        if (ReadFirstMain(JEEr,1,true)) then begin 
+          JEr.SerNr = JEEr.EventNr;
+          if (ReadFirstMain(JEr,1,true) and JEr.TeacherCode==TCr.TeacherCode) then begin
+            RecordCopy(oldJEEr,JEEr);
+            JEEr.StatusFlag = StringToInt(WebGetArg("status"));
+            if (RecordUpdate(oldJEEr,JEEr,true)) then begin end;
+          end;
+        end;
+      end;
+    end;
+  end;
+
+  //ShowRedirectHtml(FormatSimpleLink(webgetarg("path"),true),false);
+
+  return;
+end;
+
 
 global webpublic procedure WebGetSmuInfo()
 begin
@@ -2271,6 +2403,7 @@ begin
   return;
 end;
 
+global
 procedure FindCustEntry(Longint sernr,Integer type,string code,var record JALEventEntryVc JEEr)
 begin
   record JALEventEntryVc tJEEr;

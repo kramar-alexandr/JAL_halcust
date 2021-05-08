@@ -1,0 +1,59 @@
+
+
+global
+procedure SMUOrdersRn(record RcVc RepSpec)
+begin
+  record ORVc ORr;
+  row ORVc ORrw;
+  Integer i,rwcnt;
+  record SMFVc SMFr;
+  Boolean TrHs;
+
+  SetLangMode(LangLatvian,"LAT",2);
+  
+  StartReportJob("SMU pasūtījumi");
+
+  EndHeader;
+
+  SetRepCol(2,200);
+  SetRepCol(3,300);
+  SetRepCol(4,420);
+
+  StartFormat(15);
+  OutString(0,0,"SMU",false);
+  OutString(2,0,"Prece",false);
+  OutString(3,0,"E-pasts",false);
+  OutString(4,0,"Pilsēta",false);
+  EndFormat;
+
+  StartFormat(1);
+  Gray_Divider(0,1);
+  EndFormat;
+
+  TrHs = true;
+  ORr.OrdDate = RepSpec.sStartDate;
+  while (LoopKey("OrdDate",ORr,1,TrHs)) begin
+    if (ORr.OrdDate>RepSpec.sEndDate) then begin
+      TrHs = false;
+    end else begin
+      rwcnt = MatRowCnt(ORr);
+      for (i=0;i<rwcnt;i=i+1) begin
+        MatRowGet(ORr,i,ORrw);
+        if (blank(RepSpec.f1) or RepSpec.f1==ORrw.SMFCode) then begin
+          SMFr.SMFCode = ORrw.SMFCode;
+          ReadFirstMain(SMFr,1,true);
+          StartFormat(15);
+          OutStringID(0,"SMFDbl",left(SMFr.SMFName,25),false,SMFr.SMFCode);
+          OutString(2,0,ORrw.Spec,false);
+          OutString(3,0,ORr.Addr2,false);
+          OutString(4,0,ORr.Addr1,false);
+          EndFormat;
+        end;
+      end;
+    end;
+  end;
+
+  EndJob;
+
+  return;
+end;

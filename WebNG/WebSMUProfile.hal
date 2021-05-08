@@ -789,15 +789,22 @@ function Boolean ValidateSMUData(record SMFVc SMFr,record SMFVc oldSMFr,var Inte
 begin
   Boolean res;
   record SMFVc tSMFr;
+  record JALClassBlock JCb;
+  Integer months;
 
   res = true;
+  BlockLoad(JCb);
   
   if (CheckSMFDates(SMFr,oldSMFr)==false) then begin
     res = false;
     errtype = 1;
     goto lout;
   end;
-  if (MonthDiff(SMFr.ActDateStart,SMFr.ActDateEnd)<4) then begin
+  months = 4;
+  if (JCb.ActiveMonths>0) then begin
+    months = JCb.ActiveMonths;
+  end;
+  if (MonthDiff(SMFr.ActDateStart,SMFr.ActDateEnd)<months) then begin
     res = false;
     errtype = 4;
     goto lout;

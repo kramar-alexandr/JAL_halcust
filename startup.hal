@@ -89,6 +89,8 @@ begin
   Report("Pārskats par neesošiem failiem",ListLostAttachmentsRClass,ListLostAttachmentsRn,0,modJAL);
   Report("Studentu anomālijas",StudentAnomaliesRClass,StudentAnomaliesRn,0,modJAL);
   Report("Sertifikātu saraksts",CertificateListRClass,CertificateListRn,0,modJAL);
+  Report("SMU pasūtījumi",SMUOrdersRClass,SMUOrdersRn,0,modJAL);
+
 
   Import("Skolu ievietošana (vecs)",SchoolIn,SchoolIn,modJAL);
 

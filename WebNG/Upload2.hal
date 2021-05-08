@@ -9,6 +9,7 @@ external function Boolean FindSMURecord(string,var record SMFVc);
 external updating procedure FinishSMUFileUpload(string,string,string,string,Integer);
 external updating procedure FinishSMUFileUpload2(string,string,string,string,Integer);
 external updating procedure FinishSMUItemFileUpload(string,string,string,string);
+external updating procedure FinishSMUEmployeeFileUpload(string,string,string,string);
 
 
 function Boolean UploadFilePart(string sess,var Integer err)
@@ -87,6 +88,8 @@ begin
       qupdating.FinishSMUFileUpload2(sess,filename,id,tag,0);
     case "smuitem":
       qupdating.FinishSMUItemFileUpload(sess,filename,id,tag);
+    case "smuemp":
+      qupdating.FinishSMUEmployeeFileUpload(sess,filename,id,tag);
   end;
 
   path = "tmp/" & tag & "/" & sess;
@@ -113,6 +116,31 @@ begin
   return;
 end;
 
+function Boolean CanUploadToSMUCust(string id)
+begin
+  record CUVc CUr,tCUr;
+  Boolean res;
+  record RLinkVc RLr;
+  record SMFVc SMFr,tSMFr;
+
+  CUr.Code = CurrentCust;
+  if (ReadFirstMain(CUr,1,true)) then begin
+    if (ReadRecordLink(CUr,1,SMFr,RLr) or FindSMURecord(CUr.Code,SMFr)) then begin
+      tCUr.UUID = StringToUUID(id);
+      if (ReadFirstKey("UUID",tCUr,1,true)) then begin
+        if (ReadRecordLink(tCUr,1,tSMFr,RLr)) then begin
+          if (tSMFr.SMFCode==SMFr.SMFCode) then begin
+            res = true;
+          end;
+        end;
+      end;
+    end;
+  end;
+
+  CanUploadToSMUCust = res;
+  return;
+end;
+
 function Boolean FileCanBeUploaded(string sess)
 begin
   Boolean res;
@@ -124,6 +152,7 @@ begin
     GetWebUploadSessionVars(sess,filename,id,tag);
   end else begin
     tag = WebGetArg("tag");
+    id = WebGetArg("id");
     initf = true;
   end;
   
@@ -136,6 +165,8 @@ begin
       res = CanUploadToSMU;
     case "smuitem":
       res = CanUploadToSMU;
+    case "smuemp":
+      res = CanUploadToSMUCust(id);
   end;
 
   FileCanBeUploaded = res;

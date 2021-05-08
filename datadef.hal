@@ -72,6 +72,7 @@ begin
   RecordField(WebApprovedDate,M4Date,0,0);
   RecordField(ContactEmail,M4Str,255,0);
   RecordField(District,M4Str,255,0);
+  RecordField(Youtube,M4Str,255,0);
 
   ArrayBegin(Math,-,1);
   ArrayField(Type,M4Set,1005,0);
@@ -457,6 +458,10 @@ begin
   KeySegment(WebApprovedDate);
   KeySegment(SMFCode);
 
+  KeyBegin(ProdSpecWebStat);
+  KeySegment(ProdSpec);
+  KeySegment(WebStatus);
+  KeySegment(SMFCode);
   EndRecord;
 
   RecordBegin(ArchiveSMFVc,-,"");
@@ -767,6 +772,11 @@ begin
   RecordField(SMUBasketText,M4Code,20,0);
   RecordField(BasketSender,M4Str,255,0);
   RecordField(CustomerBasketText,M4Code,20,0);
+  RecordField(ActiveMonths,M4Long,0,0);
+  RecordField(NewTagDays,M4Long,0,0);
+  RecordField(PopularTagPrc,M4Long,0,0);
+  RecordField(NewPriceDays,M4Long,0,0);
+  
   EndBlock;
   
 
@@ -943,6 +953,8 @@ begin
   RecordField(Link,M4Str,255,0);
   RecordField(Type,M4Int,0,0);
   RecordField(Mother,M4Long,0,0);
+  RecordField(TeacherCode,M4Code,20,0);
+  RecordField(ShopNode,M4Str,255,0);
   ArrayBegin(Math,-,1);
   ArrayField(Field,M4Long,0,0);
   ArrayField(Comment,M4Str,60,0);
@@ -977,6 +989,15 @@ begin
   KeyBegin(TypeMother);
   KeySegment(Type);
   KeySegment(Mother);
+  KeySegment(SerNr);
+
+  SubSetKeyBegin2(TeacherReg);
+  AppendFieldToKeyName(TeacherCode);
+  KeySegment(RegFrom);
+  KeySegment(SerNr);
+
+  KeyBegin(ShopNode);
+  KeySegment(ShopNode);
   KeySegment(SerNr);
 
   EndRecord;
@@ -1274,6 +1295,17 @@ begin
   RecordField(District,M4Str,255,0);
   RecordField(SMFName,M4Str,255,0);
   RecordField(SortString,M4Str,255,0);
+  RecordField(Math,M4Matrix,0,0);
+  RecordField(SizeList,M4Str,255,0);
+  RecordField(Math2,M4TextField,0,0);
+  RecordField(NotInStock,M4Int,0,0);
+  RecordField(ShortDesc,M4Str,255,0);
+  RecordField(NewPrice,M4Val,0,0);
+  RecordField(NewPriceDate,M4Date,0,0);
+  ArrayBegin(Math,-,1);
+  ArrayField(ColorCode,M4Str,20,0);
+  ArrayField(ColorName,M4Str,50,0);
+  EndArray;
   MainKeyBegin(MainKey,0);
   KeySegment(UUID);
   KeyBegin(SMFCode);
@@ -1282,5 +1314,9 @@ begin
   KeySegment(UUID);
   EndRecord;
   
+  RecordAddBegin(ORVc,"ORVc_JAL");
+  ArrayField(SMFCode,M4Str,255,0);
+  EndRecordAdd;
+
   return;
 end;
