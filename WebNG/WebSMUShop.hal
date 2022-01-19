@@ -22,6 +22,11 @@ external function string 60 AddObjectToObjectList(string,string);
 external procedure ShowWebElement(string);
 external procedure FindCustEntry(Longint,Integer,string,var record JALEventEntryVc);
 external function LongInt DateDiff(Date,Date);
+external procedure ORVc_PastePayDeal(var record ORVc);
+external function Boolean ORVc_PasteArtCode(var record ORVc,Integer,var string,var string,Boolean);
+external procedure ORDchsum(var record ORVc,Integer);
+external procedure ORSumup(var record ORVc);
+external procedure ORVc_PastePrice(var record ORVc,Integer,var Boolean);
 
 function Boolean FindItemImage(record SMFItemVc SIr,var string link,var string name,Boolean thumbf)
 begin
@@ -64,7 +69,22 @@ begin
   return;
 end;
 
+global
+function string 255 GetSMFItemImageLink(uuid itemuuid,Boolean thumbf)
+begin
+  record SMFItemVc SIr;
+  string 255 res,tstr;
 
+  SIr.UUID = itemuuid;
+  if (ReadFirstMain(SIr,1,true)) then begin
+    if (FindItemImage(SIr,res,tstr,thumbf)==false) then begin
+      res = DefaultItemImage;
+    end;
+  end;
+
+  GetSMFItemImageLink = res;
+  return;
+end;
 
 function string 255 GetSMFShopUrl(record SMFVc SMFr)
 begin
@@ -113,13 +133,14 @@ begin
   record Attach2Vc Attachr,tAttachr;
   record RLinkVc RLr;
   string 255 ext,name;
-  Boolean thumbf,foundf;
+  Boolean foundf,testf;
   Integer i;
   
   name = WebGetArg("name");
   SIr.UUID = StringToUUID(WebGetArg("id"));
   if (ReadFirstMain(SIr,1,true)) then begin
     if (SIr.SMFCode==WebGetArg("smf")) then begin
+LWebShowSMUShopItemImage_repeat:;  
       i = 1;
       while (ReadRecordLink(SIr,i,Attachr,RLr) and foundf==false) begin
         if (name==Attachr.FileName) then begin
@@ -130,6 +151,15 @@ begin
           foundf = true;
         end;
         i = i + 1;
+      end;
+      if (foundf==false and testf==false) then begin
+        testf = true;
+        if (left(name,6)=="thumb_") then begin
+          name = right(name,len(name)-6);
+        end else begin
+          name = "thumb_" & name;
+        end;
+        goto LWebShowSMUShopItemImage_repeat;
       end;
     end;
   end;
@@ -203,10 +233,36 @@ LGetItemTag:;
   return;
 end;
 
+function Boolean DiscountExpired(record JALClassBlock JCb,record SMFItemVc SIr)
+begin
+  Boolean res;
+  
+  if (SIr.NewPrice>0 and DateDiff(CurrentDate,SIr.NewPriceDate)>JCb.NewPriceDays) then begin
+    res = true;
+  end;
+
+  DiscountExpired = res;
+  return;
+end;
+
+function val GetSMUItemPrice(record JALClassBlock JCb,record SMFItemVc SIr)
+begin
+  val res;
+  
+  res = SIr.Price;
+  if (SIr.NewPrice>0 and DiscountExpired(JCb,SIr)==false) then begin
+    res = SIr.NewPrice;
+  end;
+
+  GetSMUItemPrice = res;
+  return;
+end;
+
 procedure ShowSingleSMUShopItem(record JALClassBlock JCbl,record SMFItemVc SIr,Boolean likedf,Boolean basketf,string baseurl)
 begin
   string 255 link,link2,likedcls,basketcls;
   string 255 itemtag,itemcolor,imgname,itemname;
+  val price;
   
   
   GetItemTag(JCbl,SIr,itemtag,itemcolor);
@@ -236,7 +292,13 @@ begin
 
   WebOutstring("<div class='smu_shop_item_details'>");
   WebOutString("<div class='smu_shop_single_item_title' >" & itemname & "<div class='item_name_hover'>" & SIr.Name & "</div></div>");
-  WebOutString("<div class='smu_shop_item_price'>" & SIr.Price & "</div>");
+  price = GetSMUItemPrice(JCbl,SIr);
+  if (price!=SIr.Price) then begin
+    WebOutString("<div class='smu_shop_item_price old'>" & SIr.Price & " EUR</div>");
+    WebOutString("<div class='smu_shop_item_price new'>" & price & " EUR</div>");
+  end else begin
+    WebOutString("<div class='smu_shop_item_price'>" & SIr.Price & " EUR</div>");
+  end;
   WebOutString("<div class='smu_shop_item_liked" & likedcls & "' uuid='" & SIr.UUID & "'></div>");
   WebOutString("<div class='smu_shop_item_basket" & basketcls & "' uuid='" & SIr.UUID & "'></div>");
   WebOutString("</div>");//smu_shop_item_details
@@ -693,6 +755,36 @@ begin
   return;
 end;
 
+function string 255 GetSMUSchoolList(record SMFVc SMFr)
+begin
+  record TeacherVc TCr;
+  Integer i,rwcnt;
+  row SMFVc SMFrw;
+  row TeacherVc TCrw;
+  string 255 res;
+  
+  rwcnt = MatRowCnt(SMFr);
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(SMFr,i,SMFrw);
+    if (SMFrw.Type==0) then begin
+      TCr.TeacherCode = SMFrw.Code;
+      if (ReadFirstMain(TCr,1,true)) then begin
+        MatRowGet(TCr,0,TCrw);
+        if (nonblank(res)) then begin
+          res = res & ", ";
+        end;
+        res = res & TCrw.SchoolName;
+      end;
+    end;
+  end;
+  if (blank(res)) then begin
+    res = SMFr.SchoolName;
+  end;
+
+  GetSMUSchoolList = res;
+  return;
+end;
+
 procedure ShowSingleSMUWebShop(record SMFVc SMFr)
 begin
   string 255 logolink,bglink,addclass,youtubeid,baseurl;
@@ -716,7 +808,7 @@ begin
     WebOutString("<style>#banner{background-image:url(" & bglink & ") !important; height:500px;}</style>");
   end;
   
-  WebOutString("<div class='smu_shop_school'>" & SMFr.SchoolName & "</div>");
+  WebOutString("<div class='smu_shop_school'>" & GetSMUSchoolList(SMFr) & "</div>");
   WebOutString("<div class='smu_shop_title'>" & SMFr.SMFName & "</div>");
   WebOutString("<div class='smu_shop_prodspec'>" & SMFr.ProdSpec & "</div>");
   
@@ -756,7 +848,7 @@ begin
   //http://img.youtube.com/vi/[video-id]/[thumbnail-number].jpg
     youtubeid = ExtractYoutubeId(SMFr.Youtube);
     WebOutString("<div class='youtube_section'>");
-    WebOutString("<a data-fancybox href='" & SMFr.Youtube & "'><img src='http://img.youtube.com/vi/" & youtubeid & "/hqdefault.jpg'></a>");
+    WebOutString("<a data-fancybox href='" & SMFr.Youtube & "'><img src='http://img.youtube.com/vi/" & youtubeid & "/hq720.jpg'></a>");
     WebOutString("<a data-fancybox  class='play_button' href='" & SMFr.Youtube & "'><img src='/images/play-button-white.svg'></a>");
     WebOutString("</div>");
   end;
@@ -830,13 +922,22 @@ begin
   string 255 tstr;
   record NotePadVc Noter;
   Boolean dividerf;
-  
+  val price;
+  record JALClassBlock JCb;
+
+  BlockLoad(JCb);
   WebOutString("<div class='item_details'>");
   WebOutString("<div class='item_title'>" & SIr.Name & "</div>");
   if (nonblank(SIr.ShortDesc)) then begin
     WebOutString("<div class='item_short_desc'>" & SIr.ShortDesc & "</div>");
   end;
-  WebOutString("<div class='item_price'>" & SIr.Price & " Eur</div>");
+  price = GetSMUItemPrice(JCb,SIr);
+  if (price!=SIr.Price) then begin
+    WebOutString("<div class='item_price old'>" & SIr.Price & " Eur</div>");
+    WebOutString("<div class='item_price new'>" & price & " Eur</div>");
+  end else begin
+    WebOutString("<div class='item_price'>" & SIr.Price & " Eur</div>");
+  end;
   rwcnt = MatRowCnt(SIr);
   dividerf = false;
   if (rwcnt>0 or nonblank(SIr.SizeList)) then begin
@@ -883,6 +984,47 @@ begin
     WebOutText(SIr,true,"");
     WebOutString("</div>");
     WebOutString("</div>");
+  end;
+
+  return;
+end;
+
+procedure ShowSameSMUProducts(record SMFVc SMFr,string baseurl)
+begin
+  record JALClassBlock JCbl;
+  record SMFVc tSMFr;
+  Boolean TrHs,TrHs2;
+  record SMFItemVc SIr;
+  array record SMFItemVc arrSIr;
+  Integer cnt,ipos,i;
+  string 255 likeditems,basketitems,tstr;
+  
+  BlockLoad(JCbl);
+  TrHs = true;
+  SIr.SMFCode = SMFr.SMFCode;
+  while (LoopKey("SMFCode",SIr,1,TrHs)) begin
+    if (SIr.SMFCode!=SMFr.SMFCode) then begin
+      TrHs = false;
+    end else begin
+      arrSIr[arrSIr.length] = SIr;
+    end;
+  end;
+
+  likeditems = GetLikedItems;
+  basketitems = GetBasketItems;  
+  cnt = 0;
+  if (arrSIr.length>0) then begin
+    WebOutString("<div class='similar_products_frame'>");
+    WebOutString("<div class='similar_products_title'>" & ToolWebNGTranslateText2(89257) & "</div>");
+    WebOutString("<div class='similar_products_list'>");
+    for (i=0;i<arrSIr.length and i<10;i=i+1) begin
+      SIr = arrSIr[i];
+      tstr = baseurl & "/" & SMFr.WebShopUrl;
+      ShowSingleSMUShopItem(JCbl,SIr,IsItemLiked(likeditems,SIr.UUID),IsItemInBasket(basketitems,SIr.UUID),tstr);
+    end;
+    WebOutString("</div>");
+    WebOutString("</div>");
+    ItemDivider;
   end;
 
   return;
@@ -964,6 +1106,7 @@ begin
     WebOutString("</div>");
     DisplayItemDescription(SIr);
     ItemDivider;
+    ShowSameSMUProducts(SMFr,baseurl);
     ShowSimilarProducts(SMFr,baseurl);
   end;
 
@@ -995,6 +1138,7 @@ procedure ShowSingleSMUShopItem2(record JALClassBlock JCb,record SMFItemVc SIr,B
 begin
   string 255 link,likedcls,basketcls,imgname,tstr,itemtag,itemcolor;
   record SMFVc SMFr;
+  val price;
 
   SMFr.SMFCode = SIr.SMFCode;
   ReadFirstMain(SMFr,1,true);
@@ -1018,6 +1162,7 @@ begin
   WebOutString("<img src='" & link & "'>");
   WebOutString("</div>");//smu_shop_item_image
   WebOutstring("<div class='smu_shop_item_details'>");
+  price = GetSMUItemPrice(JCb,SIr);
   if (step>0) then begin
     WebOutString("<div class='smu_shop_fav_main_det'><div class='smu_shop_item_smfname'>" & SMFr.SMFName & "</div>");
     WebOutString("<div class='smu_shop_single_item_title' title='" & SIr.Name & "'>" & SIr.Name & "</div>");
@@ -1034,13 +1179,24 @@ begin
     end else begin
       WebOutString("<div class='smu_shop_single_item_qty'>" & qty & " " & ToolWebNGTranslateText2(89233) & "</div>");
     end;
-    WebOutString("<div class='smu_shop_item_price'>" & SIr.Price & " EUR</div></div>");
+    if (price!=SIr.Price) then begin
+      WebOutString("<div class='smu_shop_item_price old'>" & SIr.Price & " EUR</div>");
+      WebOutString("<div class='smu_shop_item_price new'>" & price & " EUR</div>");
+    end else begin
+      WebOutString("<div class='smu_shop_item_price'>" & SIr.Price & " EUR</div>");
+    end;
+    WebOutString("</div>");
   end else begin
     WebOutString("<div class='smu_shop_fav_main_det'><div class='smu_shop_item_district'>" & SMFr.District & "</div>");
     WebOutString("<div class='smu_shop_single_item_title'>" & SIr.Name & "</div></div>");
     WebOutString("<div class='smu_shop_item_smfdetails'><div class='smu_shop_item_smfname'>" & SMFr.SMFName & "</div>");
     WebOutString("<a class='smu_shop_item_contactemail' href='mailto:" & SMFr.ContactEmail & "'>" & SMFr.ContactEmail & "</a></div>");
-    WebOutString("<div class='smu_shop_item_price'>" & SIr.Price & " EUR</div>");
+    if (price!=SIr.Price) then begin
+      WebOutString("<div class='smu_shop_item_price old'>" & SIr.Price & " EUR</div>");
+      WebOutString("<div class='smu_shop_item_price new'>" & price & " EUR</div>");
+    end else begin
+      WebOutString("<div class='smu_shop_item_price'>" & SIr.Price & " EUR</div>");
+    end;
     WebOutString("<div class='smu_shop_item_liked" & likedcls & "' uuid='" & SIr.UUID & "'></div>");
     WebOutString("<div class='smu_shop_item_basket" & basketcls & "' uuid='" & SIr.UUID & "'></div>");
   end;
@@ -1122,6 +1278,7 @@ begin
   WebOutString("body #banner{");
   WebOutString("  background-image:url(/images/grozs_banner.png) !important;");
   WebOutString("  filter:brightness(40%);");
+  WebOutString("  height: 500px;");
   WebOutString("}");
 
   WebOutString("</style>");
@@ -1196,6 +1353,7 @@ begin
   WebOutString("body #banner{");
   WebOutString("  background-image:url(/images/fav_banner.png) !important;");
   WebOutString("  filter:brightness(40%);");
+  WebOutString("  height: 500px;");
   WebOutString("}");
 
   WebOutString("</style>");
@@ -1396,33 +1554,41 @@ begin
   WebOutString("</div>");
 
   WebOutString("</div>");
-  
+  WebOutString("<div class='filter_toggle'></div>");
+
   return;
 end;
 
-procedure DisplaySearchExternal()
+procedure DisplaySearchExternal(Boolean extf)
 begin
   
   WebOutString("<div class='smu_shop_nav'>");
   WebOutString("<div class='smu_shop_type_filter'>");
-  WebOutString("<div class='smu_type_filter_button' tag='products'>" & ToolWebNGTranslateText2(89214) & "</div><div class='smu_type_filter_button' tag='smus'>" & ToolWebNGTranslateText2(89215) & "</div>");
-  WebOutString("</div>");
-  WebOutString("<div class='smu_shop_mainsearch'><input type='text' p1='" & ToolWebNGTranslateText2(89216) & "' p2='" & ToolWebNGTranslateText2(89241) & "' placeholder='" & ToolWebNGTranslateText2(89216) & "'></div>");
+  if (extf) then begin
+    WebOutString("<div class='smu_type_filter_button' tag='products'>" & ToolWebNGTranslateText2(89214) & "</div><div class='smu_type_filter_button' tag='smus'>" & ToolWebNGTranslateText2(89215) & "</div>");
+    WebOutString("</div>");
+    WebOutString("<div class='smu_shop_mainsearch'><input type='text' p1='" & ToolWebNGTranslateText2(89216) & "' p2='" & ToolWebNGTranslateText2(89241) & "' placeholder='" & ToolWebNGTranslateText2(89216) & "'></div>");
+  end else begin
+    WebOutString("<div class='orders_back' onclick='history.back()'>" & ToolWebNGTranslateText2(89220) & "</div>");
+    WebOutString("<div class='smu_shop_filter_title'>" & ToolWebNGTranslateText2(89258) & "</div>");
+    WebOutString("</div>");
+    WebOutString("<div class='smu_shop_mainsearch'><input type='text' placeholder='" & ToolWebNGTranslateText2(89241) & "'></div>");
+  end;
   WebOutString("</div>");
 
   return;
 end;
 
-procedure ShowSMUShopListExternal(Boolean allf,string node)
+procedure ShowSMUShopListExternal(Boolean allf,string node,Boolean extf)
 begin
   record SMFVc SMFr;
   Boolean TrHs;
   record JALClassBlock JCb;
-  string 255 filter;
+  string 255 filter,cls;
   record JALEventVc JEr;
 
   BlockLoad(JCb);
-  if (JCb.HideCatalog==1) then begin
+  if (JCb.HideCatalog==1 and extf) then begin
     ShowHiddenBanner;
   end;
 
@@ -1432,12 +1598,17 @@ begin
       filter = JEr.SerNr;
     end;
   end;
+  
+  if (extf==false) then begin
+    cls = " smu_shop";
+  end;
 
-  WebOutString("<div class='smu_external_frame'>")
+  WebOutString("<div class='smu_external_frame" & cls & "'>")
   DisplayFiltersExternal;
   WebOutString("<div class='smu_shoplist_frame'>");
-  DisplaySearchExternal;
+  DisplaySearchExternal(extf);
   WebOutString("<div class='filter_data' text='" & ToolWebNGTranslateText2(89219) & "' filter='" & filter & "'></div>");
+  
   WebOutString("<div class='smu_shoplist'>");
   WebOutString("</div>");//smu_shoplist
   WebOutString("<div id='pagenave'></div>");
@@ -1492,17 +1663,26 @@ procedure ShowSMUShopApp(record WebNGStructVc WSr,string mpath,string pathnode)
 begin
   string 255 path,node;
   record SMFVc SMFr;
-  Boolean showf;
+  Boolean showf,skipf;
   record WebNGPageVc WPr;
-
+  record JALClassBlock JCb;
 
   path = mpath;
   node = removenextnode(path);
-
-  if (node=="") then begin
-    WPr.Code = WSr.HALFunc;
-  end else begin
-    WPr.Code = WSr.WebPage;
+  
+  BlockLoad(JCb);
+  if (JCb.HideCatalog==1) then begin
+    if (nonblank(JCb.OverridePage)) then begin
+      WPr.Code = JCb.OverridePage;
+      skipf = true;
+    end;
+  end;
+  if (blank(WPr.Code)) then begin
+    if (node=="") then begin
+      WPr.Code = WSr.HALFunc;
+    end else begin
+      WPr.Code = WSr.WebPage;
+    end;
   end;
 
   if (nonblank(WPr.Code)) then begin
@@ -1510,39 +1690,41 @@ begin
   end;
   ShowWebAppPageStart(WPr,"");
 
-  switch (node) begin
-    case "grozs":
-      ShowBasketPage(path);
-      showf = true;
-    case "favoriti":
-      ShowFavouritesPage;
-      showf = true;
-    otherwise
-      if (nonblank(node)) then begin
-        SMFr.WebShopUrl = node;
-        if (ReadFirstKey("WebShopUrl",SMFr,1,true)) then begin
-          if (SMUAllowedToShow(SMFr)) then begin
-            node = removenextnode(path);
-            if (nonblank(node)) then begin
-              ShowSingleSMUItemPage(SMFr,node); 
-              showf = true;
-            end else begin
-              ShowSingleSMUWebShop(SMFr);
-              showf = true;
+  if (!skipf) then begin
+    switch (node) begin
+      case "grozs":
+        ShowBasketPage(path);
+        showf = true;
+      case "favoriti":
+        ShowFavouritesPage;
+        showf = true;
+      otherwise
+        if (nonblank(node)) then begin
+          SMFr.WebShopUrl = node;
+          if (ReadFirstKey("WebShopUrl",SMFr,1,true)) then begin
+            if (SMUAllowedToShow(SMFr)) then begin
+              node = removenextnode(path);
+              if (nonblank(node)) then begin
+                ShowSingleSMUItemPage(SMFr,node); 
+                showf = true;
+              end else begin
+                ShowSingleSMUWebShop(SMFr);
+                showf = true;
+              end;
             end;
           end;
+          if (showf==false) then begin
+            WebOutString("SMU nav atrasts");
+          end;
         end;
-        if (showf==false) then begin
-          WebOutString("SMU nav atrasts");
-        end;
-      end;
-  end;
+    end;
 
-  if (showf==false and blank(node)) then begin
-    if (WSr.Name=="katalogs") then begin
-      ShowSMUShopListExternal(pathnode==WSr.Name,pathnode);
-    end else begin
-      ShowSMUShopList;
+    if (showf==false and blank(node)) then begin
+      //if () then begin
+        ShowSMUShopListExternal(pathnode==WSr.Name,pathnode,WSr.Name=="katalogs");
+      //end else begin
+      //  ShowSMUShopList;
+      //end;
     end;
   end;
 
@@ -1681,6 +1863,7 @@ begin
   WebOutString("<div class=""smu_top""><div class=""profile_header"">" & ToolWebNGTranslateText2(80124) & "</div></div>");
 
   ShowMediaEdit("contactemail",ToolWebNGTranslateText2(80134),ToolWebNGTranslateText2(80125));
+  ShowMediaEdit("contactphone",ToolWebNGTranslateText2(80155),ToolWebNGTranslateText2(80156));
 
   WebOutString("</div>");
  
@@ -1704,18 +1887,6 @@ begin
   WebOutString("<div class='smu_submit'><a class='spbutton save_submit' href='#'>" & ToolWebNGTranslateText2(80043) & "</a></div>");
   WebOutString("</div>")
 
-  return;
-end;
-
-function Boolean DiscountExpired(record JALClassBlock JCb,record SMFItemVc SIr)
-begin
-  Boolean res;
-  
-  if (SIr.NewPrice>0 and DateDiff(CurrentDate,SIr.NewPriceDate)>JCb.NewPriceDays) then begin
-    res = true;
-  end;
-
-  DiscountExpired = res;
   return;
 end;
 
@@ -1744,6 +1915,7 @@ begin
   record Attach2Vc Attachr;
   record RLinkVc RLr;
   record JALClassBlock JCb;
+  val price;
 
   BlockLoad(JCb);
   WebOutString("""items"":[");
@@ -1759,12 +1931,13 @@ begin
       if (DiscountExpired(JCb,SIr)) then begin
         qupdating.ResetSMFItemDiscountPrice(SIr);
       end;
+      price = GetSMUItemPrice(JCb,SIr);
       FindItemImage(SIr,background,imgname,true);	
       WebOutString("{""Name"":""" & FormatJSONString(SIr.Name) & """,""Price"":""" & FormatJSONString(SIr.Price) & """,""UUID"":""" & FormatJSONString(SIr.UUID) & """,");
-      WebOutString("\"Short\": \"" & SIr.ShortDesc & "\",");
+      WebOutString("\"Short\": \"" & FormatJSONString(SIr.ShortDesc) & "\",");
       WebOutString("\"SizeList\": \"" & SIr.SizeList & "\",");
       WebOutString("\"NotInStock\": \"" & SIr.NotInStock & "\",");
-      WebOutString("\"NewPrice\": \"" & SIr.NewPrice & "\",");
+      WebOutString("\"NewPrice\": \"" & price & "\",");
       WebOutString("\"Colors\": [");
       rwcnt = MatRowCnt(SIr);
       for (i=0;i<rwcnt;i=i+1) begin
@@ -1772,7 +1945,7 @@ begin
         if (i>0) then begin
           WebOutString(",");
         end;
-        WebOutString("{\"Code\": \"" & SIrw.ColorCode & "\",\"Name\": \"" & SIrw.ColorName & "\"}");
+        WebOutString("{\"Code\": \"" & SIrw.ColorCode & "\",\"Name\": \"" & FormatJSONString(SIrw.ColorName) & "\"}");
       end;
       WebOutString("],");
       WebOutString("\"images\": [");
@@ -1873,6 +2046,7 @@ begin
     WebOutString("""Background"":""" & FormatJSONString(background) & """,");
     WebOutString("""Logo"":""" & FormatJSONString(logo) & """,");
     WebOutString("""ContactEmail"":""" & FormatJSONString(SMFr.ContactEmail) & """,");
+    WebOutString("""PhoneNo"":""" & FormatJSONString(SMFr.PhoneNo) & """,");
     WebOutString("""Text"":""");
     for (i=0;i<SizeTextCnt(SMFr);i=i+200) begin
       tstr = FormatJSONString(StringFromText(SMFr,i,200));
@@ -2140,6 +2314,7 @@ begin
       SMFr.ExtWebPage = UnFormatJSONString(JSONGet(js,"ExtWebPage"));
       SMFr.Youtube = UnFormatJSONString(JSONGet(js,"Youtube"));
       SMFr.ContactEmail = UnFormatJSONString(JSONGet(js,"ContactEmail"));
+      SMFr.PhoneNo = UnFormatJSONString(JSONGet(js,"PhoneNo"));
       SMFr.WebShopUrl = UnFormatJSONString(JSONGet(js,"ShopUrl"));
       if (JSONGet(js,"SendForApproval")=="1") then begin
         SMFr.WebStatus = 1;
@@ -2338,7 +2513,7 @@ begin
   res = true;
   if (eventnr>0) then begin
     FindCustEntry(eventnr,0,SMFr.SMFCode,JEEr)
-    if (JEEr.StatusFlag!=3) then begin
+    if (JEEr.StatusFlag!=1) then begin
       res = false;
       goto LOut;      
     end;
@@ -2434,6 +2609,7 @@ begin
   array record SMFItemVc arrSIr;
   Longint eventnr;
   record JALClassBlock JCbl;
+  val price;
 
   BlockLoad(JCbl);
   ReadFilterData(spos,epos,district,industry,filter,eventnr);
@@ -2488,11 +2664,13 @@ begin
       WebOutString(",");
     end;
     SIr = arrSIr[num];
+    price = GetSMUItemPrice(JCbl,SIr);
     GetItemTag(JCbl,SIr,itemtag,itemtagcolor);
     WebOutString("{""smfname"":""" & FormatJSONString(SIr.SMFName) & """,");
     WebOutString("""itemname"":""" & FormatJSONString(SIr.Name) & """,");
     WebOutString("""uuid"":""" & FormatJSONString(SIr.UUID) & """,");
     WebOutString("""price"":""" & FormatJSONString(SIr.Price) & """,");
+    WebOutString("""newprice"":""" & FormatJSONString(price) & """,");
     WebOutString("""district"":""" & FormatJSONString(SIr.District) & """,");
     WebOutString("""shopurl"":""" & FormatJSONString(SIr.ShopUrl) & """,");
     WebOutString("""liked"":""" & IsItemLiked(likeditems,SIr.UUID) & """,");
@@ -2756,7 +2934,7 @@ updating procedure SendSingleSMUBasketMail(record ORVc ORr,record SMFVc SMFr,rec
 begin
   record MailSettingsBlock MSr;
   record MailVc Mailr;
-  record JALClassBlock JCb;
+  record JALOrderSetBlock JOb;
   row ORVc ORrw;
   Integer i,rwcnt;
   record LTxtVc LTxtr;
@@ -2764,15 +2942,15 @@ begin
   string 255 table,style;
 
 //CustomerBasketText
-  BlockLoad(JCb);
-  LTxtr.Code = JCb.SMUBasketText;
+  BlockLoad(JOb);
+  LTxtr.Code = JOb.SMUBasketText;
   if (ReadFirstMain(LTxtr,1,true)) then begin
     RecordNew(Mailr);
     Mailr.Header = LTxtr.Comment;    
     BlockLoad(MSr);
     ClearRow(Mailr,Mailrw,1);
     Mailrw.RowTyp = kMailRowTypeFrom;
-    Mailrw.AddrCode = JCb.BasketSender;
+    Mailrw.AddrCode = JOb.MailSender;
     MatRowPut(Mailr,0,Mailrw);
     ClearRow(Mailr,Mailrw,1);
     Mailrw.RowTyp = kMailRowTypeTo;
@@ -2800,7 +2978,7 @@ begin
   record MailSettingsBlock MSr;
   record MailVc Mailr;
   record SMFVc SMFr;
-  record JALClassBlock JCb;
+  record JALOrderSetBlock JOb;
   row ORVc ORrw;
   Integer i,rwcnt;
   record LTxtVc LTxtr;
@@ -2809,14 +2987,14 @@ begin
 
   BlockLoad(MSr);
 //CustomerBasketText
-  BlockLoad(JCb);
-  LTxtr.Code = JCb.CustomerBasketText;
+  BlockLoad(JOb);
+  LTxtr.Code = JOb.CustomerBasketText;
   if (ReadFirstMain(LTxtr,1,true)) then begin
     RecordNew(Mailr);
     Mailr.Header = LTxtr.Comment;    
     ClearRow(Mailr,Mailrw,1);
     Mailrw.RowTyp = kMailRowTypeFrom;
-    Mailrw.AddrCode = JCb.BasketSender;
+    Mailrw.AddrCode = JOb.MailSender;
     MatRowPut(Mailr,0,Mailrw);
     ClearRow(Mailr,Mailrw,1);
     Mailrw.RowTyp = kMailRowTypeTo;
@@ -2832,7 +3010,7 @@ begin
       MatRowGet(ORr,i,ORrw);
       SMFr.SMFCode = ORrw.SMFCode;
       if (ReadFirstMain(SMFr,1,true)) then begin
-        table = table & "<tr><td style='" & style & "'>" & SMFr.SMFName & "</td><td style='" & style & "'>" & SMFr.ContactEmail & "</td><td style='" & style & "'>" & ORrw.Spec & "</td><td style='" & style & "'>" & ORrw.Quant & "</td><td style='" & style & "'>" & ORrw.Price & "</td></tr>";
+        table = table & "<tr><td style='" & style & "'>" & SMFr.SMFName & "</td><td style='" & style & "'>" & ORrw.Spec & "</td><td style='" & style & "'>" & ORrw.Quant & "</td><td style='" & style & "'>" & ORrw.Price & "</td></tr>";
       end;
     end;
 
@@ -2843,10 +3021,14 @@ begin
   return;
 end;
 
-procedure AddItemToOR(var record ORVc ORr,record SMFItemVc SIr,val qty,string size,string color)
+procedure AddItemToOR(record JALClassBlock JCb,record JALOrderSetBlock JOb,var record ORVc ORr,record SMFItemVc SIr,val qty,string size,string color,string rowsmfcode)
 begin
   row ORVc ORrw;
-  string 255 tstr;
+  string 255 tstr,inwarning,warning;
+  val res;
+  val price;
+  Integer num;
+  Boolean chsum;
 
   tstr = SIr.Name;
   if (nonblank(size)) then begin
@@ -2855,19 +3037,28 @@ begin
   if (nonblank(color)) then begin
     tstr = tstr & ", " & ToolWebNGTranslateText2(89246) & " " & size;
   end;
+  price = GetSMUItemPrice(JCb,SIr);
   
   ClearRow(ORr,ORrw,1);
-  ORrw.ArtCode = SIr.UUID;
+  ORrw.ArtCode = JOb.DefArtCode;
+  num = MatRowCnt(ORr);
+  MatRowPut(ORr,num,ORrw);
+  ORVc_PasteArtCode(ORr,num,inwarning,warning,false);
+  MatRowGet(ORr,num,ORrw);
+  ORrw.SMFItem = SIr.UUID;
   ORrw.Spec = tstr;
   ORrw.Quant = qty;
-  ORrw.Price = SIr.Price;
-  ORrw.SMFCode = SIr.SMFCode;
-  MatRowPut(ORr,MatRowCnt(ORr),ORrw);
+  ORrw.Price = price; 
+  ORrw.SMFCode = rowsmfcode;
+  MatRowPut(ORr,num,ORrw);
+  ORVc_PastePrice(ORr,num,chsum);
+  ORDchsum(ORr,num);
+  ORSumup(ORr);
 
   return;
 end;
 
-procedure AddItemToORArray(var array record ORVc arrORr,var record ORVc mainORr,record SMFItemVc SIr,val qty,string size,string color)
+procedure AddItemToORArray(record JALClassBlock JCb,record JALOrderSetBlock JOb,var array record ORVc arrORr,var record ORVc mainORr,record SMFItemVc SIr,val qty,string size,string color)
 begin
   record ORVc ORr;
   row ORVc ORrw;
@@ -2876,9 +3067,9 @@ begin
 
   for (i=0;i<arrORr.length;i=i+1) begin
     ORr = arrORr[i];
-    if (ORr.CustCode==SIr.SMFCode) then begin
+    if (ORr.SMFCodeHeader==SIr.SMFCode) then begin
       foundf = true;
-      AddItemToOR(ORr,SIr,qty,size,color);
+      AddItemToOR(JCb,JOb,ORr,SIr,qty,size,color,"");
       num = i;
       i = arrORr.length;
     end;
@@ -2886,13 +3077,15 @@ begin
 
   if (!foundf) then begin
     RecordNew(ORr);
-    ORr.CustCode = SIr.SMFCode;
-    AddItemToOR(ORr,SIr,qty,size,color);
+    ORr.SMFCodeHeader = SIr.SMFCode;
+    ORr.InclVAT = 1;
+    ORr.OrderClass = JOb.NewOrder;
+    AddItemToOR(JCb,JOb,ORr,SIr,qty,size,color,"");
     num = arrORr.length;
   end;
   arrORr[num] = ORr;
 
-  AddItemToOR(mainORr,SIr,qty,size,color);
+  AddItemToOR(JCb,JOb,mainORr,SIr,qty,size,color,SIr.SMFCode);
 
 
   return;
@@ -2911,7 +3104,11 @@ begin
   Integer i;
   record SMFVc SMFr;
   record NotePadVc Noter;
+  record JALClassBlock JCb;
+  record JALOrderSetBlock JOb;
   
+  BlockLoad(JCb);
+  BlockLoad(JOb);
   pos = -1;
   items = GetBasketItems;
   while (GetNextSubString(items,pos,",",tmp)) begin
@@ -2923,7 +3120,7 @@ begin
     nqty = StringToInt(qty);
     SIr.UUID = StringToUUID(item);
     if (ReadFirstMain(SIr,1,true)) then begin
-      AddItemToORArray(arrORr,mainORr,SIr,nqty,size,color);
+      AddItemToORArray(JCb,JOb,arrORr,mainORr,SIr,nqty,size,color);
     end;
   end;
 
@@ -2935,29 +3132,35 @@ begin
 
   for (i=0;i<arrORr.length;i=i+1) begin
     ORr = arrORr[i];
-    SMFr.SMFCode = ORr.CustCode;
+    SMFr.SMFCode = ORr.SMFCodeHeader;
     if (ReadFirstMain(SMFr,1,true)) then begin
       SendSingleSMUBasketMail(ORr,SMFr,RepSpec);
     end;
   end;
   SendBasketMailToCustomer(mainORr,RepSpec);
-  mainORr.Addr0 = RepSpec.f1;
-  mainORr.OrdDate = CurrentDate;
-  mainORr.SerNr = NextSerNr("ORVc",CurrentDate,-1,false,"");
 
-  mainORr.Addr1 = RepSpec.f4;
-  mainORr.Addr2 = RepSpec.f2;
-  mainORr.Addr3 = RepSpec.f3;
-  if (RecordInsert(mainORr,true)) then begin
-    RecordNew(Noter);
-    RecordClear(Noter);
-    SetTextField(Noter,RepSpec.f5);
-    Noter.SerNr = NextSerNr("NotepadVc",CurrentDate,-1,false,"");
-    if (RecordStore(Noter,false)) then begin
-      CreateRecordLink(mainORr,CurrentCompany,Noter,CurrentCompany);  
+  for (i=0;i<arrORr.length;i=i+1) begin
+    ORr = arrORr[i];
+    ORr.Addr0 = RepSpec.f1;
+    ORr.OrdDate = CurrentDate;
+    ORr.PayDeal = JOb.DefPayTerm;
+    //paste pay deal
+    ORVc_PastePayDeal(ORr);
+    ORr.SerNr = NextSerNr("ORVc",CurrentDate,-1,false,"");
+
+    ORr.Addr1 = RepSpec.f4;
+    ORr.Addr2 = RepSpec.f2;
+    ORr.Addr3 = RepSpec.f3;
+    if (RecordInsert(ORr,true)) then begin
+      RecordNew(Noter);
+      RecordClear(Noter);
+      SetTextField(Noter,RepSpec.f5);
+      Noter.SerNr = NextSerNr("NotepadVc",CurrentDate,-1,false,"");
+      if (RecordStore(Noter,false)) then begin
+        CreateRecordLink(ORr,CurrentCompany,Noter,CurrentCompany);  
+      end;
     end;
   end;
-
 
   PutSessionString("basket_items","");
   SetDetailedCookie("basket_items","","items","","/",15552000); //180days
@@ -2982,6 +3185,35 @@ begin
 
   BasketMailVcReplaceToken = res;
 end;
+
+function string 255 JALMessageField(record RcVc RepSpec,string token)
+begin
+  string 255 res;
+  
+  switch (token) begin
+    case "ordernr": res = RepSpec.long1;
+    case "messagelink": res = RepSpec.f1;
+    case "smuname": res = RepSpec.f2;
+    case "deldate": res = RepSpec.f3;
+    case "reason": res = RepSpec.f4;
+  end;
+
+  JALMessageField = res;
+  return;
+end;
+
+global
+function string 255 JALMessageLTxtReplaceToken(record LTxtVc LTxtr,record RcVc RepSpec,string token)
+begin
+  JALMessageLTxtReplaceToken = JALMessageField(RepSpec,token);
+end;
+
+global
+function string 255 JALMessageEMailQueVcReplaceToken(record MailVc Mailr,record RcVc RepSpec,string token)
+begin
+  JALMessageEMailQueVcReplaceToken = JALMessageField(RepSpec,token);
+end;
+
 /*
 global webpublic
 procedure WebGetItemImages()

@@ -5,6 +5,9 @@
 
 external function boolean FileNameIsImage(string);
 external function string 100 ChangeVideoName(string,string);
+external function string 255 FormatJSONString(string);
+external function Boolean FindMatchingContentTranslation(record WebNGContentVc,var record WebNGTranslateVc);
+external function string 50 GetFirstImage(string,string);
 
 
 global
@@ -114,4 +117,132 @@ begin
   RemoteUnPublishWC(WCr);
 
 return;
+end;
+
+function string 255 AddText(string tstr,string addtstr)
+begin
+  string 255 res;
+
+  res = tstr;
+  if (nonblank(tstr)) then begin
+    //res = res & ",";
+  end;
+  res = res & addtstr;
+
+  AddText = res;
+  return;
+end;
+
+procedure GetProjectText(record WebNGTranslateVc WTr,var string shorttext,var string extratext)
+begin
+  Integer i,j;  
+  Boolean firstf;
+  string 255 c,sentance,tstr;
+
+  firstf = true;
+  for (i=0;i<LineTextCnt2(WTr);i=i+1) begin
+    tstr = LineTextGet2(WTr,i);
+    for (j=0;j<len(tstr);j=j+1) begin
+      c = mid(tstr,j,1);
+      sentance = sentance & c;
+      if (c=="." and len(sentance)>40 and firstf) then begin
+        shorttext = sentance;
+        firstf = false;
+      end else begin
+        extratext = extratext & c;
+      end; 
+    end;
+    if (firstf==false) then begin
+      if (i>0) then begin
+        extratext = extratext & "<br>";
+      end;
+    end;
+  end;
+
+  return;
+end;
+
+function string 255 GetContentTranslation(record WebNGTranslateVc WTr)
+begin
+  string 255 res,piclink,shorttext,extratext;
+  Integer i;
+
+  piclink = GetFirstImage(WTr.Code,"");
+
+  res = res & "<div class='project_item_wrap'>";
+  res = res & "<div class='project_item'>";
+  res = res & "<div class='project_image'><img src='" & piclink & "'></div>";
+  res = res & "<div class='project_title'>" & WTr.Comment & "</div>";
+  res = res & "<div class='project_text'>";
+  GetProjectText(WTr,shorttext,extratext);
+  res = res & "<div class='short_text'>" & shorttext & "</div><div class='extra_text'>" & extratext & "</div>";
+  res = res & "</div>";
+  res = res & "</div>";
+  res = res & "<div class='project_item_hidden'>";
+  res = res & "<div class='project_image'><img src='" & piclink & "'></div>";
+  res = res & "<div class='project_title'>" & WTr.Comment & "</div>";
+  res = res & "<div class='project_text'>";
+  res = res & "<div class='short_text'>" & shorttext & "</div>";
+  res = res & "</div>";
+  res = res & "</div>";
+  res = res & "</div>";
+
+  GetContentTranslation = res;
+  return;
+end;
+
+global webpublic
+procedure WebGetProjectRecords()
+begin
+  record WebNGTranslateVc WTr;
+  record WebNGContentVc WCr;
+  Integer page,perpage,sp,keylen,maxcnt,curcol,cnt;
+  string 255 col1,col2,col3;
+  Boolean TrHs,testf,foundf;
+  
+  page = StringToInt(WebGetArg("page"));
+  perpage = StringToInt(WebGetArg("perpage"));
+  sp = page * perpage + 1;
+  maxcnt = sp + perpage;
+  WCr.ContentStyle = "PROJEKTI";
+  WCr.SpecDate = AddYear(CurrentDate,1);
+  curcol = 1;
+  cnt = 1;
+  foundf = true;
+  while (LoopBackKey("ContentStyle",WCr,2,foundf)) begin
+    if (cnt+1>maxcnt) then begin
+      foundf = false;
+    end;
+    if (WCr.ContentStyle!="PROJEKTI") then begin
+      foundf = false;
+    end;
+    testf = foundf;
+    if (FindMatchingContentTranslation(WCr,WTr)==false) then begin
+      testf = false;
+    end;
+    if (testf) then begin
+      if (cnt>=sp) then begin
+        switch (curcol) begin
+          case 1:
+            col1 = AddText(col1,FormatJSONString(GetContentTranslation(WTr)));        
+            curcol = 2;
+          case 2:
+            col2 = AddText(col2,FormatJSONString(GetContentTranslation(WTr)));        
+            curcol = 3;
+          case 3:
+            col3 = AddText(col3,FormatJSONString(GetContentTranslation(WTr)));        
+            curcol = 1;
+        end;
+      end;
+      cnt = cnt + 1;
+    end;
+  end;
+
+  WebOutString("{\"res\": {");
+    WebOutString("\"col1\":\"" & col1 & "\",");
+    WebOutString("\"col2\":\"" & col2 & "\",");
+    WebOutString("\"col3\":\"" & col3 & "\"");
+  WebOutString("}}");
+
+  return;
 end;

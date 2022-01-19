@@ -7,6 +7,7 @@ begin
   record SMFVc SMFr;
   record JALEventEntryVc JEEr;
   string 255 filename;
+  record RcVc RepSpec;
 
   inner.OnApplicationStartupComplete;
 
@@ -34,7 +35,8 @@ begin
       for (i=0;i<8;i=i+1) begin
         SetDocumentFilename(filename);
         SetMedia(mtPdf);
-        PrintDocument(JEEr,"CertificateForm",false);
+        RepSpec.long1 = JEEr.SerNr;
+        PrintDocument(RepSpec,"CertificateForm",false);
         SetDocumentFilename("");
         if (FileExists(filename)) then begin
           Delete_File(filename);

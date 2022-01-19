@@ -53,6 +53,7 @@ external procedure ShowSearchProductsForm();
 //CUST
 external function boolean FindMatchingTranslation(string,var record WebNGTranslateVc,string);
 external procedure WebOutContentTextFormat2(record WebNGContentVc,Boolean,string);
+external procedure CustMessagesApp();
 //CUST-END
 
 procedure ShowLanguageSelectElement()
@@ -1389,6 +1390,8 @@ begin
       ShowJALCalendarList(WEr);
     case 103:
       ShowContentList(WEr.HALFunc,"","",true,false);
+    case 2000:
+      CustMessagesApp;
 //CUST-END
     otherwise
       WebOutStringFormat("not implemented yet");

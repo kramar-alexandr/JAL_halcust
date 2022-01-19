@@ -739,7 +739,7 @@ begin
             end;
             WebOutStringFormatNL("</div>");
           end;
-          WebOutStringFormatNL("<input class=""loginbutton spbutton grey"" type=""submit"" value=""APSTIPRINT"" >");
+          WebOutStringFormatNL("<input class=""loginbutton spbutton grey"" type=""submit"" value=""APSTIPRINT"" >");
           WebOutStringFormatNL("</form>");
         end else begin
           ShowRedirectHTML(FormatSimpleLink(GetLinkToStruct(JCbl.ProfileCorrectionStruct,true),true),false);
@@ -925,7 +925,8 @@ begin
   row TeacherVc TCrw;
   integer i,rwcnt;
 
-  Schoolr.SchoolCode = TCr.SchoolCode;
+  MatRowGet(TCr,0,TCrw);
+  Schoolr.SchoolCode = TCrw.SchoolCode;
   readfirstmain(Schoolr,1,true);
   CUr.Code = TCr.CustCode;
   readfirstmain(CUr,1,true);
@@ -1164,7 +1165,7 @@ begin
   WebOutStringFormatNL("<div id=""passw"" class=""smallinput""><div class=""addinput"" id=""oldpassword""><span>Vec‚ parole :</span><input class=""spinputa"" type=""password"" name=""oldpassword""></div><div class=""addinput"" id=""pass1""><span>Jaun‚ parole :</span><input class=""spinputa"" type=""password"" name=""password1""></div>");
   WebOutStringFormatNL("<div  class=""addinput"" id=""passw2""><span>Jaun‚ parole atk‚rtoti :</span><input class=""spinputa"" type=""password"" name=""password2""></div></div>");
   WebOutStringFormatNL("<div  class=""addinput"" id=""errormsg""><div id=""epassword""></div></div>");
-  WebOutStringFormatNL("<input class=""spbutton grey"" type=""submit"" value=""APSTIPRINT"">");
+  WebOutStringFormatNL("<input class=""spbutton grey"" type=""submit"" value=""APSTIPRINT"">");
   WebOutStringFormatNL("</form>");
 
 return;

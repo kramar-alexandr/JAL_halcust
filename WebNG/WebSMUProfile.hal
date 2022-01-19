@@ -998,7 +998,7 @@ begin
           SetFieldValueByName(FCr,"contact" & (j+1),JSONGet(js,root & "[" & i & "]/emps/[" & j & "]/custcode"),-1);
           SetFieldValueByName(FCr,"salary" & (j+1),StringToVal(JSONGet(js,root & "[" & i & "]/emps/[" & j & "]/salary"),M4Val),-1);
           j = j + 1;
-          if (j>3) then begin
+          if (j>5) then begin
             goto l33;
           end;
         end;

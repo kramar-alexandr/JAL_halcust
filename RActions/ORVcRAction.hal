@@ -1,0 +1,129 @@
+external inner function string 255 GetJALOrderStatusType(record JALOrderSetBlock,string);
+
+function string 255 GetTranslatedHeader(record RcVc RepSpec,string tstr)
+begin
+  string 255 res;
+  record LTxtVc LTxtr;
+  area a;
+  
+  LineTextPut2(LTxtr,0,tstr);
+  ParseTextField(a,LTxtr,RepSpec,"JALMessageLTxtReplaceToken");
+  res = GetStringFromArea(a,0,255);
+
+  GetTranslatedHeader = res;
+  return;
+end;
+
+global
+updating procedure SendCustomerLetterWithText(record RcVc RepSpec,string sender,string text,string email)
+begin
+  record LTxtVc LTxtr;
+  Longint l,pos;
+  string 255 tstr;
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+  record MailSettingsBlock MSb;
+  area a;
+  record EMailQueVc emqrp;
+  row EMailQueVc emarw;
+  record RcVc tRepSpec;
+
+  if (nonblank(text)) then begin
+    LTxtr.Code = text;
+    if (ReadFirstMain(LTxtr,1,true)) then begin
+      RecordNew(emqrp);
+      emqrp.Header = GetTranslatedHeader(RepSpec,LTxtr.Comment);    
+      if (nonblank(sender)) then begin
+        ClearRow(emqrp,emarw,0);
+        emarw.RowTyp = 1;
+        emarw.AddrCode = sender;
+        MatRowPut(emqrp,0,emarw);
+      end else begin
+        BlockLoad(MSb);
+        ClearRow(emqrp,emarw,0);
+        emarw.RowTyp = 1;
+        emarw.AddrCode = MSb.FromSystem;
+        MatRowPut(emqrp,0,emarw);
+      end;
+      
+      ClearRow(emqrp,emarw,1);
+      emarw.RowTyp = kMailRowTypeTo;
+      emarw.AddrCode = email;
+      MatRowPut(emqrp,1,emarw);
+
+      if (LTxtr.HtmlFlag==0) then begin
+        ParseTextField(a,LTxtr,RepSpec,"JALMessageLTxtReplaceToken");
+        l = GetAreaLength(a);
+        pos = 0;
+        while (pos<l) begin
+          tstr = GetStringFromArea(a,pos,255);
+          AddToText(tstr,emqrp); 
+          pos = pos+255;
+        end;
+      end else begin
+        emqrp.HtmlFlag = 1;
+      end;
+
+      //if (CheckAttachedFilesSizeToLetter(LTxtr)) then begin
+        if (RecordInsert(emqrp,true)) then begin
+          /*
+          if (ReadRecordLink(Mailr,1,Attachr,RLr)) begin
+            RecordRemove(RLr);
+          end;    
+          CopyRecordLinks(LTxtr,emqrp);
+          */
+          CopyRecordLinks(LTxtr,emqrp);
+          if (emqrp.HtmlFlag==1) then begin
+            ParseHtmlField(emqrp,RepSpec,"JALMessageEMailQueVcReplaceToken");
+          end;
+        end;
+      //end;
+    end;
+  end;
+
+  return;
+end;
+
+global
+updating function LongInt ORVcRecordUpdateAfter(record ORVc ORr,record ORVc OR2r,LongInt long3,LongInt check)
+begin
+  Longint res;
+  string 255 stat,stat2;
+  record RcVc RepSpec;
+  record JALOrderSetBlock JOb;
+  record ORMessageVc OMr;
+  record SMFVc SMFr;
+
+  res = inner.ORVcRecordUpdateAfter(ORr,OR2r,long3,check);
+
+  BlockLoad(JOb);
+  stat = GetJALOrderStatusType(JOb,ORr.OrderClass);
+  stat2 = GetJALOrderStatusType(JOb,OR2r.OrderClass);
+
+  SMFr.SMFCode = ORr.SMFCodeHeader;
+  if (ReadFirstMain(SMFr,1,true)) then begin
+    RepSpec.f2 = SMFr.SMFName;
+  end;
+  RepSpec.long1 = ORr.SerNr;
+  RepSpec.f1 =  "https://" & PublicHostName & ":" & ServerHTTPSPort & "/" & GetEncryptedLink("/klientuzinas?smfcode=" & ORr.SMFCodeHeader & "&ordernr=" & ORr.SerNr & "&email=" & ORr.Addr2);
+  RepSpec.f3 = ORr.PlanShip;
+  if (stat2=="new" and stat=="received") then begin
+    OMr.OrderNr = ORr.SerNr;
+    //if (ReadFirstKey("OrderDate",OMr,1,true)) then begin
+      SendCustomerLetterWithText(RepSpec,JOb.MailSender,JOb.ReceivedText,ORr.Addr2);
+    //end;
+  end;
+  if (stat2!="rejected" and stat=="rejected") then begin
+    RepSpec.f4 = ORr.Comment;
+    SendCustomerLetterWithText(RepSpec,JOb.MailSender,JOb.RejectedText,ORr.Addr2);
+  end;
+  if (stat2=="received" and stat=="sent") then begin
+    SendCustomerLetterWithText(RepSpec,JOb.MailSender,JOb.SentText,ORr.Addr2);
+  end;
+  if (stat2=="sent" and stat=="done") then begin
+    SendCustomerLetterWithText(RepSpec,JOb.MailSender,JOb.DoneText,ORr.Addr2);
+  end;
+
+  ORVcRecordUpdateAfter = res;
+  return;
+end;

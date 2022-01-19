@@ -73,6 +73,7 @@ begin
   RecordField(ContactEmail,M4Str,255,0);
   RecordField(District,M4Str,255,0);
   RecordField(Youtube,M4Str,255,0);
+  RecordField(PhoneNo,M4Str,255,0);
 
   ArrayBegin(Math,-,1);
   ArrayField(Type,M4Set,1005,0);
@@ -174,6 +175,36 @@ begin
   ArrayField(Income,M4Val,0,0);
   ArrayField(Costs,M4Val,0,0);
   ArrayField(Profit,M4Val,0,0);
+  EndArray;
+
+  return;
+end;
+
+procedure SMFItemVcDefinition()
+begin
+
+  NewAutosyncRegister(kSyncDirectionToClient,true);
+  RecordField(SMFCode,M4Code,40,0);
+  RecordField(Name,M4Str,250,0);
+  RecordField(Order,M4Int,0,0);
+  RecordField(Price,M4Val,0,0);
+  RecordField(ActiveFlag,M4Int,0,0);
+  RecordField(TransDate,M4Date,0,0);
+  RecordField(DummyStr,M4Str,255,0);
+  RecordField(ShopUrl,M4Str,255,0);
+  RecordField(District,M4Str,255,0);
+  RecordField(SMFName,M4Str,255,0);
+  RecordField(SortString,M4Str,255,0);
+  RecordField(Math,M4Matrix,0,0);
+  RecordField(SizeList,M4Str,255,0);
+  RecordField(Math2,M4TextField,0,0);
+  RecordField(NotInStock,M4Int,0,0);
+  RecordField(ShortDesc,M4Str,255,0);
+  RecordField(NewPrice,M4Val,0,0);
+  RecordField(NewPriceDate,M4Date,0,0);
+  ArrayBegin(Math,-,1);
+  ArrayField(ColorCode,M4Str,20,0);
+  ArrayField(ColorName,M4Str,50,0);
   EndArray;
 
   return;
@@ -776,6 +807,7 @@ begin
   RecordField(NewTagDays,M4Long,0,0);
   RecordField(PopularTagPrc,M4Long,0,0);
   RecordField(NewPriceDays,M4Long,0,0);
+  RecordField(OverridePage,M4Code,60,0);
   
   EndBlock;
   
@@ -1283,29 +1315,7 @@ begin
   EndRecord;
   
   RecordBegin(SMFItemVc,-,"");
-  NewAutosyncRegister(kSyncDirectionToClient,true);
-  RecordField(SMFCode,M4Code,40,0);
-  RecordField(Name,M4Str,250,0);
-  RecordField(Order,M4Int,0,0);
-  RecordField(Price,M4Val,0,0);
-  RecordField(ActiveFlag,M4Int,0,0);
-  RecordField(TransDate,M4Date,0,0);
-  RecordField(DummyStr,M4Str,255,0);
-  RecordField(ShopUrl,M4Str,255,0);
-  RecordField(District,M4Str,255,0);
-  RecordField(SMFName,M4Str,255,0);
-  RecordField(SortString,M4Str,255,0);
-  RecordField(Math,M4Matrix,0,0);
-  RecordField(SizeList,M4Str,255,0);
-  RecordField(Math2,M4TextField,0,0);
-  RecordField(NotInStock,M4Int,0,0);
-  RecordField(ShortDesc,M4Str,255,0);
-  RecordField(NewPrice,M4Val,0,0);
-  RecordField(NewPriceDate,M4Date,0,0);
-  ArrayBegin(Math,-,1);
-  ArrayField(ColorCode,M4Str,20,0);
-  ArrayField(ColorName,M4Str,50,0);
-  EndArray;
+  SMFItemVcDefinition;
   MainKeyBegin(MainKey,0);
   KeySegment(UUID);
   KeyBegin(SMFCode);
@@ -1313,10 +1323,64 @@ begin
   KeySegment(Order);
   KeySegment(UUID);
   EndRecord;
+
+  RecordBegin(ArchiveSMFItemVc,-,"");
+  RecordField(Semester,M4Str,255,0);//added in front, cause we can have new fields in SMFDefinition
+  SMFItemVcDefinition;
+  MainKeyBegin(MainKey,0);
+  KeySegment(UUID);
+  EndRecord;
   
   RecordAddBegin(ORVc,"ORVc_JAL");
   ArrayField(SMFCode,M4Str,255,0);
+  ArrayField(SMFItem,M4UUID,0,0);
+  RecordField(SMFCodeHeader,M4Str,255,0);
+  KeyBegin(SMFOrderClass);
+  KeySegment(SMFCodeHeader);
+  KeySegment(OrderClass);
+  KeySegment(SerNr);
   EndRecordAdd;
+
+  BlockBegin(JALOrderSetBlock,-,"");
+  RecordField(NewOrder,M4Code,20,0);
+  RecordField(ReceivedOrder,M4Code,20,0);
+  RecordField(SentOrder,M4Code,20,0);
+  RecordField(DoneOrder,M4Code,20,0);
+  RecordField(RejectedOrder,M4Code,20,0);
+  RecordField(DefPayTerm,M4Code,20,PDVc);
+  RecordField(DefArtCode,M4Code,20,INVc);
+  RecordField(RejectedText,M4Code,20,0);
+  RecordField(ReceivedText,M4Code,20,0);
+  RecordField(SentText,M4Code,20,0);
+  RecordField(DoneText,M4Code,20,0);
+  RecordField(MailSender,M4Str,200,0);
+  RecordField(MessageText,M4Code,20,0);
+  RecordField(SMUBasketText,M4Code,20,0);
+  RecordField(CustomerBasketText,M4Code,20,0);
+  EndBlock;
+
+  RecordBegin(ORMessageVc,-,"");
+  RecordField(SerNr,M4Long,0,0);
+  RecordField(OrderNr,M4Long,0,ORVc);
+  RecordField(TransDate,M4Date,0,0);
+  RecordField(TransTime,M4Time,0,0);
+  RecordField(Text,M4TextField,0,0);
+  RecordField(Type,M4Int,0,0);//0 - smu, 1 - customer
+  RecordField(Read,M4Int,0,0);
+  RecordField(SMFCode,M4Code,50,0);
+  MainKeyBegin(SerNr,0);
+  KeySegment(SerNr);
+  KeyBegin(OrderDate);
+  KeySegment(OrderNr);
+  KeySegment(TransDate);
+  KeySegment(TransTime);
+  KeySegment(SerNr);
+  KeyBegin(SMFRead);
+  KeySegment(SMFCode);
+  KeySegment(Read);
+  KeySegment(Type);
+  KeySegment(SerNr);
+  EndRecord;
 
   return;
 end;

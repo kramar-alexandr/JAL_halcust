@@ -487,7 +487,7 @@ begin
       WSr.Type==kStructTypeMyAccountApp or
       WSr.Type==kStructTypeSubscriptionsApp or
       WSr.Type==kStructTypeProductionPlan
-      or WSr.Type==55 or WSr.Type==120//CUST  
+      or WSr.Type==55 or WSr.Type==120 or WSr.Type==121//CUST  
       ) then begin
     res = true;
   end;
@@ -1109,6 +1109,7 @@ begin
     case "xsl" : WebSetContentType("text/xsl");
     case "htm" : WebSetContentType("text/html");
     case "html" : WebSetContentType("text/html");
+    case "svg" : WebSetContentType("image/svg+xml");//cust
     otherwise
       WebSetContentType("application/binary");
   end;
@@ -1370,38 +1371,38 @@ begin
         if (printoverview) then begin
           piclink = GetFirstImage(WebNGTranslater.Code,linkstr);
           rwcnt = MatRowCnt(WebNGTranslater);
-          if (WCSr.ListViewFlag==0) then begin
-            if piclink <> "" then begin 
-              //WebOutStringFormatNL("<div id=""contlistimg""><a href=""" & linkstr & """><img src=""" & piclink & """ onerror=""changepicture(this);""></a></div>");
-            end;
-            WebOutString("<div id=""content-detail"">");
-            if (WCSr.PrintDate!=0) then begin
-              WebOutString("<div id=""content-date"">");//jzs
-              WebOutString("<a href=""" & linkstr & """>" & outdate1 & " </a>");
+          switch (WCSr.ListViewFlag) begin
+            case 0:
+              if piclink <> "" then begin 
+                //WebOutStringFormatNL("<div id=""contlistimg""><a href=""" & linkstr & """><img src=""" & piclink & """ onerror=""changepicture(this);""></a></div>");
+              end;
+              WebOutString("<div id=""content-detail"">");
+              if (WCSr.PrintDate!=0) then begin
+                WebOutString("<div id=""content-date"">");//jzs
+                WebOutString("<a href=""" & linkstr & """>" & outdate1 & " </a>");
+                WebOutString("</div>");//jzs
+              end;
+              WebOutString("<div id=""content-head"">");//jzs
+              if linkstr <>"" then begin
+                WebOutStringFormat("<a href=""" & linkstr & """>");
+              end;
+              WebOutStringFormatNL("<div class='cont_head'>" & WebNGTranslater.Comment & "</div>");
+              WebOutStringFormatNL("<div class='cont_text'>");
+              for (i=0;i<rwcnt;i=i+1) begin
+                MatRowGet(WebNGTranslater,i,WebNGTranslaterw);
+                WebOutString(WebNGTranslaterw.OverviewText);
+              end;
+              WebOutStringFormatNL("</div>");
+              if linkstr <>"" then begin
+                WebOutStringFormat("</a>");
+              end;
+              if WebNGTranslater.FileName==1 then begin
+                //stopalert("lists");
+                //WebOutStringFormatNL("<div id=""blog-head-item"">" & "<a href=""" & FormatSimpleLink(WebGetArg("path") & "/" &  WebNGTranslater.Code,true) & "?sernr=" & WebNGTranslater.Code & "&detlevel=2"" id=""comment""> " & toolwebngtranslatetext(21040) & " (" & RecordsInIndex("WebNGBlogCommentVc","ContActSerNr:" & WebNGTranslater.Code) & ")</a></div>");
+              end;
               WebOutString("</div>");//jzs
-            end;
-            WebOutString("<div id=""content-head"">");//jzs
-            if linkstr <>"" then begin
-              WebOutStringFormat("<a href=""" & linkstr & """>");
-            end;
-            WebOutStringFormatNL("<div class='cont_head'>" & WebNGTranslater.Comment & "</div>");
-            WebOutStringFormatNL("<div class='cont_text'>");
-            for (i=0;i<rwcnt;i=i+1) begin
-              MatRowGet(WebNGTranslater,i,WebNGTranslaterw);
-              WebOutString(WebNGTranslaterw.OverviewText);
-            end;
-            WebOutStringFormatNL("</div>");
-            if linkstr <>"" then begin
-              WebOutStringFormat("</a>");
-            end;
-            if WebNGTranslater.FileName==1 then begin
-              //stopalert("lists");
-              //WebOutStringFormatNL("<div id=""blog-head-item"">" & "<a href=""" & FormatSimpleLink(WebGetArg("path") & "/" &  WebNGTranslater.Code,true) & "?sernr=" & WebNGTranslater.Code & "&detlevel=2"" id=""comment""> " & toolwebngtranslatetext(21040) & " (" & RecordsInIndex("WebNGBlogCommentVc","ContActSerNr:" & WebNGTranslater.Code) & ")</a></div>");
-            end;
-            WebOutString("</div>");//jzs
-            WebOutString("</div>");
-          end else begin
-            if (WCSr.ListViewFlag==1) then begin
+              WebOutString("</div>");
+            case 1:
               if piclink <> "" then begin 
                // WebOutStringFormatNL("<div id=""contlistimg""><img src=""" & piclink & """ onerror=""changepicture(this);""></div>");
               end;
@@ -1419,8 +1420,7 @@ begin
               MatRowGet(WebNGTranslater,i,WebNGTranslaterw);
               WebOutString(WebNGTranslaterw.OverviewText);
               WebOutString("</div>");
-            end else begin
-              if (WCSr.ListViewFlag==2) then begin
+            case 2:
                 if piclink <> "" then begin 
                   WebOutStringFormatNL("<div id=""gallistimg"">");
                   if linkstr <>"" then begin
@@ -1451,7 +1451,7 @@ begin
                 
                 WebOutString("</div>");
                 WebOutString("</div>");
-              end else begin //pas�kumiem
+            case 3: //pas�kumiem
                 //if piclink <> "" then begin 
                 //  WebOutStringFormatNL("<div id=""gallistimg""><img src=""" & piclink & """></div>");
                 //end;    
@@ -1486,9 +1486,12 @@ begin
         WebOutString("</div>");
                 WebOutString("</div>");
                 WebOutString("</div>");
-              end;
-                
-            end;
+            case 4:  
+              WebOutString("<div class='project_image'><img src='" & piclink & "'></div>");
+              WebOutString("<div class='project_title'>" & WebNGTranslater.Comment & "</div>");
+              WebOutString("<div class='project_text'>");
+              WebOutText(WebNGTranslater,WebNGTranslater.HtmlTranslation==1,"");
+              WebOutString("</div>");
           end;
         end else begin
           

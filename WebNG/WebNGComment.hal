@@ -39,20 +39,17 @@ begin
   WCr.SerNr = sernr;
   if readfirstmain(WCr,1,true) then begin 
     while (ReadRecordLink(WCr,i,Attachr,RLr)and res == "") begin
-      if (FileNameIsImage(Attachr.FileName)) then begin
-		link = "/WebShowImg.hal?sernr=" & WCr.SerNr & "&num=" & i;
-		
+      if (FileNameIsImage(Attachr.FileName) or right(Attachr.FileName,4)==".svg") then begin
+		    link = "/WebShowImg.hal?sernr=" & WCr.SerNr & "&num=" & i;
         res = link;
       end else begin 
-	   
         if (FileNameIsVideo(Attachr.FileName)) then begin
           FName =  ChangeVideoName(Attachr.FileName,"jpg");
-		  
           link = "/gallery/news/" & WCr.SerNr & "-" & FName;
           if FileExists("webcust" & link) then begin
-			res = link;
-		  end;
-        end;
+    			res = link;
+		    end;
+      end;
 	  end;
       i = i + 1;
     end;

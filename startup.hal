@@ -46,12 +46,19 @@ begin
   Setting("Sertifikāta teksts",CertificateTextWClass,modJAL);
   Setting("Sertifikāta augstskolas",CertificateSchoolLClass,modJAL);
 
+
+
+  Setting("Kataloga / pasūtījumu konstantes",JALOrderSetTClass,modSO);
+  Setting("Klientu ziņas",ORMessageLClass,modSO);
+
+
 //archive settings
   Setting("Pasākumu pieteikumu arhīvs",ArchiveJALEventEntryLClass,modJAL);
 	Setting("Finanšu aprēķinu arhīvs",ArchiveFCSMULClass,modJAL);
 	Setting("Pasākumu ienākumu arhīvs",ArchiveEventTurnoverLClass,modJAL);
   Setting("Pasākumu pieprasījumu arhīvs",ArchiveJALEventRequestLClass,modJAL);
   Setting("Pieteikumi skolotājiem/mentoriem arhīvs",ArchiveJALTeacherAccLClass,modJAL);
+  Setting("SMU preču arhīvs",ArchiveSMFItemLClass,modJAL);
 
 
   Maintenance("Dzēst datus",ClearDBVClass,ClearDBMn,modJAL);

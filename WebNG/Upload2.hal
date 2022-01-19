@@ -10,6 +10,8 @@ external updating procedure FinishSMUFileUpload(string,string,string,string,Inte
 external updating procedure FinishSMUFileUpload2(string,string,string,string,Integer);
 external updating procedure FinishSMUItemFileUpload(string,string,string,string);
 external updating procedure FinishSMUEmployeeFileUpload(string,string,string,string);
+external procedure FinishJALMessageUpload(string,string,string,string);
+external function Boolean CanUploadMessageFile(string);
 
 
 function Boolean UploadFilePart(string sess,var Integer err)
@@ -90,6 +92,8 @@ begin
       qupdating.FinishSMUItemFileUpload(sess,filename,id,tag);
     case "smuemp":
       qupdating.FinishSMUEmployeeFileUpload(sess,filename,id,tag);
+    case "messages":
+      qupdating.FinishJALMessageUpload(sess,filename,id,tag);
   end;
 
   path = "tmp/" & tag & "/" & sess;
@@ -167,6 +171,8 @@ begin
       res = CanUploadToSMU;
     case "smuemp":
       res = CanUploadToSMUCust(id);
+    case "messages":
+      res = CanUploadMessageFile(id);
   end;
 
   FileCanBeUploaded = res;

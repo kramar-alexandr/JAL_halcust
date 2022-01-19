@@ -54,6 +54,8 @@ begin
 	EditField(h,v+=vs,220,"Mērķauditorija",Normal,TargetAud,false,0);
 	EditField(h,v+=vs,220,"Nozare",Normal,ProdSpec,false,JALIndustrySClass);
   EditField(h,v+=vs,220,"E-pasts",Normal,Email,false,0);
+  EditField(h,v+=vs,220,"Tālrunis",Normal,PhoneNo,false,0);
+  
   EditField(h,v+=vs,50,"Skolēna lietot. kods",Normal,CustCode,false,0);
   EditField(h2,v, 90,"Reģions",Normal,Region,false,JALRegionSClass);
   EditField(h,v+=vs,50,"Serveris",ViewOnly,ServerCode,false,0);
@@ -140,6 +142,7 @@ begin
 
   EditField(h3+100,v+=vs,200,"Instragram lapa",Normal,Instagram,false,0);
   EditField(h3+100,v+=vs,200,"Twitter lapa",Normal,Twitter,false,0);
+  EditField(h3+100,v+=vs,200,"Youtube video",Normal,Youtube,false,0);
   EndFrame;
   v = vm;
   ButtonFrame(h3=h3+320,v+=60,400,4,"Veikala statuss");

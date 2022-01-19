@@ -1,0 +1,1100 @@
+external function string 255 StrReplace(string,string,string);
+external function Date DateFromString(string,string);
+external function string 255 GetSMFItemImageLink(uuid,Boolean);
+external function string 255 GetLinkToStruct(LongInt,boolean);
+external function integer GetJAlCustType(record CUVc,var record SMFVc,var record TeacherVc,var record MentorVc);
+external function string 255 removenextnode(var string);
+external function string 255 FormatSimpleLink(string,boolean);
+external procedure ShowWebAppPageStart(record WebNGPageVc,string);
+external procedure ShowWebAppPageEnd(record WebNGPageVc);
+external procedure SetContentTypeForExtension(string);
+external function string 255 ToolWebNGTranslateText2(Longint);
+external outer updating procedure SendCustomerLetterWithText(record RcVc,string,string,string);
+
+
+global
+function string 255 GetJALOrderStatusType(record JALOrderSetBlock JOb,string code)
+begin
+  string 255 res;
+  
+  if (JOb.NewOrder==code) then begin
+    res = "new";
+    goto LGetStatusType;
+  end;
+  if (JOb.ReceivedOrder==code) then begin
+    res = "received";
+    goto LGetStatusType;
+  end;
+  if (JOb.SentOrder==code) then begin
+    res = "sent";
+    goto LGetStatusType;
+  end;
+  if (JOb.DoneOrder==code) then begin
+    res = "done";
+    goto LGetStatusType;
+  end;
+  if (JOb.RejectedOrder==code) then begin
+    res = "rejected";
+    goto LGetStatusType;
+  end;
+
+LGetStatusType:;
+  GetJALOrderStatusType = res;
+  return;
+end;
+
+procedure ShowOrderListRow(string cls,Date td,string link,string name,val totsum,string status,string statustype)
+begin
+
+  WebOutString("<div class='order_list_row " & cls & "'>");
+  WebOutString("<div class='order_list_col orddate'>" & DateToString(td,"DD.MM.YYYY") & "</div>");
+  WebOutString("<div class='order_list_col link'>" & link & "</div>");
+  WebOutString("<div class='order_list_col name'>" & name & "</div>");
+  WebOutString("<div class='order_list_col totsum'>" & ValToString(totsum,M4Val,"",".",0) & "</div>");
+  WebOutString("<div class='order_list_col status " & statustype & "'>" & status & "</div>");
+
+
+  WebOutString("</div>");
+
+  return;
+end;
+
+procedure ShowOrderTableHeader()
+begin
+
+  WebOutString("<div class='order_list_row header'>");
+  WebOutString("<div class='order_list_col orddate'>" & ToolWebNGTranslateText2(89261) & "</div>");
+  WebOutString("<div class='order_list_col link'>" & ToolWebNGTranslateText2(89262) & "</div>");
+  WebOutString("<div class='order_list_col name'>" & ToolWebNGTranslateText2(89263) & "</div>");
+  WebOutString("<div class='order_list_col totsum'>" & ToolWebNGTranslateText2(89264) & "</div>");
+  WebOutString("<div class='order_list_col status'>" & ToolWebNGTranslateText2(89265) & "</div>");
+  WebOutString("</div>");
+
+
+  return;
+end;
+procedure ShowOrderTableHeader2()
+begin
+
+  WebOutString("<div class='order_list_row header'>");
+  WebOutString("<div class='message_name'>" & ToolWebNGTranslateText2(89310) & "</div>");
+  WebOutString("<div class='message_order'>" & ToolWebNGTranslateText2(89262) & "</div>");
+  WebOutString("<div class='message_date'>" & ToolWebNGTranslateText2(89261) & "</div>");
+  WebOutString("</div>");
+
+
+  return;
+end;
+
+function string 255 CreateOrderLink(string base,Longint sernr,Boolean custf,string label)
+begin
+  string 255 res;
+
+  if (custf) then begin
+    res = "#" & sernr;
+  end else begin
+    res = "<a href='" & base & "pasutijums/" & sernr & "'>" & label & "</a>";
+  end;
+  CreateOrderLink = res;
+  return;
+end;
+
+function val GetOrderAmountSMU(record ORVc ORr,string smfcode)
+begin
+  val res;
+  Integer rw,rwcnt,i;
+  row ORVc ORrw;
+  record ORVc tORr;
+/*
+  rwcnt = MatRowCnt(ORr);
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(ORr,i,ORrw);
+    if (ORrw.SMFCode==smfcode) then begin
+
+      MatRowPut(tORr,rw,ORrw);
+      ORDchsum(tORr,rw);
+      rw = rw + 1;
+    end;
+  end;
+  ORSumup(tORr);
+*/
+  res = ORr.Sum4;
+
+  GetOrderAmountSMU = res;
+  return;
+end;
+
+procedure LoadOrderClasses(var vector string vClass)
+begin
+  record OrderClassVc OCr;
+  
+  while (LoopMain(OCr,1,true)) begin
+    vClass[OCr.Code] = OCr.Comment;
+  end;
+
+  return;
+end;
+
+procedure ShowOrderList(record JALOrderSetBlock JOb,string base,record SMFVc SMFr,string oc)
+begin
+  record ORVc ORr;
+  vector string 255 vClass;
+  Boolean TrHs;
+
+  LoadOrderClasses(vClass);
+
+  TrHs = true;
+  ORr.OrderClass = oc;
+  ORr.SMFCodeHeader = SMFr.SMFCode;
+  while (LoopKey("SMFOrderClass",ORr,2,TrHs)) begin
+    if (ORr.OrderClass!=oc or ORr.SMFCodeHeader!=SMFr.SMFCode) then begin
+      TrHs = false;
+    end else begin
+      ShowOrderListRow("",ORr.OrdDate,CreateOrderLink(base,ORr.SerNr,false,"#" & ORr.SerNr),ORr.Addr0,GetOrderAmountSMU(ORr,SMFr.SMFCode),vClass[oc],GetJALOrderStatusType(JOb,oc));
+    end;
+  end;
+
+  return;
+end;
+
+function string 255 GetLinkToOrders()
+begin
+  record WebNGStructVc WSr;
+  string 255 res;
+
+  WSr.Type = 121;
+  if (ReadFirstKey("Type",WSr,1,true)) then begin
+    res = GetLinkToStruct(WSr.SerNr,WebSecureMode);
+  end;
+
+  GetLinkToOrders = res;
+  return;
+end;
+
+function string 255 GetOrderClass(record JALOrderSetBlock JOb,string tstr)
+begin
+  string 255 res;
+
+  switch (tstr) begin
+    case "new":       res = JOb.NewOrder;
+    case "received":  res = JOb.ReceivedOrder;
+    case "sent":      res = JOb.SentOrder;
+    case "done":      res = JOb.DoneOrder;
+    case "rejected":  res = JOb.RejectedOrder;
+  end;
+
+  GetOrderClass = res;
+  return;
+end;
+
+procedure ShowMenuItem(string base,string tstr,string path,string curpath)
+begin
+  string 255 cls;
+  
+  if (path==curpath or (path=="" and curpath=="pasutijums")) then begin
+    cls = "active_tab";
+  end;
+
+  WebOutString("<div class='order_menu_item " & cls & "'><a href='" & base & path & "'>" & tstr & "</a></div>");
+
+  return;
+end;
+
+procedure ShowOrdersMenu(string base,string path)
+begin
+
+  WebOutString("<div class='order_menu'>");
+  ShowMenuItem(base,ToolWebNGTranslateText2(89273),"",path);
+  ShowMenuItem(base,ToolWebNGTranslateText2(89274),"jauni",path);
+  ShowMenuItem(base,ToolWebNGTranslateText2(89275),"sanemti",path);
+  ShowMenuItem(base,ToolWebNGTranslateText2(89276),"izsutiti",path);
+  ShowMenuItem(base,ToolWebNGTranslateText2(89277),"izpilditi",path);
+  ShowMenuItem(base,ToolWebNGTranslateText2(89278),"noraiditi",path);
+  ShowMenuItem(base,ToolWebNGTranslateText2(89279),"pazinojumi",path);
+
+  WebOutString("</div>");
+
+  return;
+end;
+
+procedure ShowAllOrders(string base,record SMFVc SMFr,string path,string node)
+begin
+  record JALOrderSetBlock JOb;
+
+  BlockLoad(JOb);
+  WebOutString("<div class='orderlist'>");
+  WebOutString("<div class='order_title'>" & ToolWebNGTranslateText2(89260) & "</div>");
+  WebOutString("<div class='order_search_wrap'><input type='text' class='order_search' placeholder='" & ToolWebNGTranslateText2(89314) & "'></div>");
+  WebOutString("<div class='order_table'>");
+  ShowOrderTableHeader;
+  WebOutString("<div class='smu_orderlist_hidden'>");
+  if (path=="all") then begin
+    ShowOrderList(JOb,base,SMFr,GetOrderClass(JOb,"new"));
+    ShowOrderList(JOb,base,SMFr,GetOrderClass(JOb,"received"));
+    ShowOrderList(JOb,base,SMFr,GetOrderClass(JOb,"sent"));
+    ShowOrderList(JOb,base,SMFr,GetOrderClass(JOb,"done"));
+    ShowOrderList(JOb,base,SMFr,GetOrderClass(JOb,"rejected"));
+  end else begin
+    ShowOrderList(JOb,base,SMFr,GetOrderClass(JOb,path));
+  end;
+  WebOutString("</div>");
+  WebOutString("<div class='order_table_list'></div>");
+  WebOutString("<div id='pagenave'></div>");
+  WebOutString("</div>");
+  WebOutString("</div>");
+  WebOutString("</div>");
+
+  return;
+end;
+
+procedure ShowOrderTitle(record JALOrderSetBlock JOb,record ORVc ORr)
+begin
+  record OrderClassVc OCr;
+
+  OCr.Code = ORr.OrderClass;
+  ReadFirstMain(OCr,1,true);
+  WebOutString("<div class='order_head'>");
+  WebOutString("<div class='line'><div class='order_title'>" & ToolWebNGTranslateText2(89270) & " #" & ORr.SerNr & "</div><div class='order_status " & GetJALOrderStatusType(JOb,ORr.OrderClass) & "'>" & OCr.Comment & "</div></div>");
+  if (GetJALOrderStatusType(JOb,ORr.OrderClass)!="rejected") then begin
+    WebOutString("<div class='line'><div class='order_small_title'>" & ToolWebNGTranslateText2(89271) & "</div><div class='send_message_link'>" & ToolWebNGTranslateText2(89272) & "</div></div>");
+  end;
+  WebOutString("</div>");
+  return;
+end;
+
+procedure ShowOrderItems(record ORVc ORr)
+begin
+  Integer i,rwcnt;
+  row ORVc ORrw;
+  string 255 imglink;
+  
+  WebOutString("<div class='order_rows'>");
+  rwcnt = MatRowCnt(ORr);
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(ORr,i,ORrw);
+    imglink = GetSMFItemImageLink(ORrw.SMFItem,true);
+
+    WebOutString("<div class='order_row'>");
+    WebOutString("<div class='order_row_image'><img src='" & imglink & "'></div>");
+    WebOutString("<div class='order_row_name'>" & ORrw.Spec & "</div>");
+    WebOutString("<div class='order_row_dims'><div class='order_pcs'>" & ValToString(ORrw.Quant,M4Val,"",".",1) & " " & ToolWebNGTranslateText2(89280) & "</div><div class='order_sum'>" & ORrw.Sum & " &euro;</div></div>");
+    WebOutString("</div>");
+  end;
+  WebOutString("</div>");
+
+  return;
+end;
+
+procedure ShowOrderTimeLine(record JALOrderSetBlock JOb,record ORVc ORr)
+begin
+  string 255 stat,cls;
+  Integer step,i;
+  val w,w2;
+  
+  stat = GetJALOrderStatusType(JOb,ORr.OrderClass);
+  switch (stat) begin
+    case "new": step = 0;
+    case "received": step = 1;
+    case "sent": step = 2;
+    case "done": step = 3;
+    case "rejected": goto LShowOrderTimeLine;
+  end;
+
+  w = 100/3*step + 10;
+  if (step==3) then begin
+    w = 100;
+  end;
+  WebOutString("<div class='timeline_wrap'>");
+  WebOutString("<div class='order_title'>" & ToolWebNGTranslateText2(89281) & "</div>");
+  WebOutString("<div class='timeline_content'>");
+  WebOutString("<div class='timeline_def'></div>");
+  WebOutString("<div class='timeline_done' style='width: " & w & "%'></div>");
+  for (i=0;i<4;i=i+1) begin
+    cls = "";
+    if (i<=step) then begin
+      cls = "active";
+    end;
+    w2 = 100/3*(i);
+    WebOutString("<div class='timeline_dot " & cls & "' style='left: " & w2 & "%'></div>");
+  end;
+  WebOutString("</div>");
+  WebOutString("</div>");
+
+LShowOrderTimeLine:;
+  return;
+end;
+
+procedure ShowOrderExtraInfo(record ORVc ORr)
+begin
+  
+  
+
+  return;
+end;
+
+procedure ShowOrderSellerMessages(record ORVc ORr)
+begin
+  
+  
+
+  return;
+end;
+
+procedure ShowSingleButton(string btn)
+begin
+  string 255 cls,tstr;
+  
+  if (btn=="rejected") then begin
+    cls = "red";
+  end;
+  switch (btn) begin
+    case "received":  tstr = ToolWebNGTranslateText2(89283);
+    case "sent":      tstr = ToolWebNGTranslateText2(89284);
+    case "done":      tstr = ToolWebNGTranslateText2(89285);
+    case "rejected":  tstr = ToolWebNGTranslateText2(89286);
+  end;
+  WebOutString("<div class='order_action_button " & cls & "' data-type='" & btn & "'>" & tstr & "</div>");
+
+
+  return;
+end;
+
+procedure ShowActionButtons(string btn1,string btn2)
+begin
+
+  WebOutString("<div class='order_action_title'>" & ToolWebNGTranslateText2(89282) & "</div>");
+  WebOutString("<div class='order_action_buttons'>");
+  if (nonblank(btn1)) then begin
+    ShowSingleButton(btn1);
+  end;
+  if (nonblank(btn2)) then begin
+    ShowSingleButton(btn2);
+  end;
+  WebOutString("</div>");//order_action_buttons
+  WebOutString("<script>");
+  WebOutString(" action_text['rec_step2'] = '" & ToolWebNGTranslateText2(89287) & "';");
+  WebOutString(" action_text['rec_date'] = '" & ToolWebNGTranslateText2(89288) & "';");
+  WebOutString(" action_text['continue'] = '" & ToolWebNGTranslateText2(89289) & "';");
+  WebOutString(" action_text['send'] = '" & ToolWebNGTranslateText2(89290) & "';");
+  WebOutString(" action_text['rec_step3'] = '" & ToolWebNGTranslateText2(89291) & "';");
+  WebOutString(" action_text['rec_upl'] = '" & ToolWebNGTranslateText2(89292) & "';");
+  WebOutString(" action_text['rec_upl2'] = '" & ToolWebNGTranslateText2(89293) & "';");
+  WebOutString(" action_text['rec_step4'] = '" & ToolWebNGTranslateText2(89294) & "';");
+  WebOutString(" action_text['rec_summary1'] = '" & ToolWebNGTranslateText2(89295) & "';");
+  WebOutString(" action_text['rec_summary2'] = '" & ToolWebNGTranslateText2(89296) & "';");
+  WebOutString(" action_text['rec_summary3'] = '" & ToolWebNGTranslateText2(89297) & "';");
+  WebOutString(" action_text['rec_final1'] = '" & ToolWebNGTranslateText2(89311) & "';");
+  WebOutString(" action_text['rec_final2'] = '" & ToolWebNGTranslateText2(89312) & "';");
+  WebOutString(" action_text['rec_final3'] = '" & ToolWebNGTranslateText2(89313) & "';");
+
+  WebOutString(" action_text['rej_step2'] = '" & ToolWebNGTranslateText2(89298) & "';");
+  WebOutString(" action_text['rej_opt1'] = '" & ToolWebNGTranslateText2(89299) & "';");
+  WebOutString(" action_text['rej_opt2'] = '" & ToolWebNGTranslateText2(89300) & "';");
+  WebOutString(" action_text['rej_opt3'] = '" & ToolWebNGTranslateText2(89301) & "';");
+  WebOutString(" action_text['rej_step3'] = '" & ToolWebNGTranslateText2(89302) & "';");
+  WebOutString(" action_text['rej_summary1'] = '" & ToolWebNGTranslateText2(89303) & "';");
+  WebOutString(" action_text['rej_summary2'] = '" & ToolWebNGTranslateText2(89304) & "';");
+  WebOutString(" action_text['other'] = '" & ToolWebNGTranslateText2(89305) & "';");
+  WebOutString("</script>");
+
+  //WebOutString("</div>");
+
+  return;
+end;
+
+procedure ShowOrderActions(record JALOrderSetBlock JOb,record ORVc ORr)
+begin
+  string 255 stat;
+  
+  stat = GetJALOrderStatusType(JOb,ORr.OrderClass);
+  if (stat=="rejected") then begin
+    goto LShowOrderActions;
+  end;
+  if (stat=="done") then begin
+    goto LShowOrderActions;
+  end;
+
+  WebOutString("<div class='order_action_wrap'>");
+  WebOutString("<div class='order_action_button_wrap' ordernr='" & ORr.SerNr & "'>");
+  
+  switch (stat) begin
+    case "new":
+      ShowActionButtons("rejected","received");
+    case "received":
+      ShowActionButtons("rejected","sent");
+    case "sent":
+      ShowActionButtons("","done");
+  end;
+  WebOutString("</div>");//order_action_buttons
+  WebOutString("</div>");//order_action_wrap
+
+
+LShowOrderActions:;
+  return;
+end;
+
+procedure ShowNewMessageFrame(record ORVc ORr)
+begin
+  
+  WebOutString("<div class='new_message_wrap' ordernr='" & ORr.SerNr & "'></div>")
+
+  return;
+end;
+
+procedure ShowSingleOrder(string path)
+begin
+  record SMFVc SMFr;
+  record TeacherVc TCr;
+  record MentorVc MTr;
+  Integer type;
+  record CUVc CUr;
+  record ORVc ORr;
+  record JALOrderSetBlock JOb;
+  
+  if nonblank(CurrentCust) then begin
+    CUr.Code = CurrentCust;
+    type = GetJAlCustType(CUr,SMFr,TCr,MTr);
+    if (type==0) then begin
+      ORr.SerNr = StringToLongint(path);
+      if (ReadFirstMain(ORr,1,true)) then begin
+        if (ORr.SMFCodeHeader==SMFr.SMFCode) then begin
+          BlockLoad(JOb);
+          ShowOrderTitle(JOb,ORr);
+          ShowOrderItems(ORr);
+
+          ShowOrderTimeLine(JOb,ORr);
+          ShowOrderExtraInfo(ORr);
+          //ShowOrderSellerMessages(ORr);
+          ShowOrderActions(JOb,ORr);
+          ShowNewMessageFrame(ORr);
+        end;
+      end;
+    end;
+  end;
+  return;
+end;
+
+function string 255 GetMessageDate(record ORMessageVc OMr)
+begin
+  string 255 res;
+
+  if (OMr.TransDate==CurrentDate) then begin
+    res = left(OMr.TransTime,5);
+  end else begin
+    res = left(USetStr(2780+GetMonth(OMr.TransDate)),3) & " " & GetDay(OMr.TransDate);
+  end;
+  
+  GetMessageDate = res;
+  return;
+end;
+
+procedure ShowSingleOrderMessage(string base,record ORMessageVc OMr,Boolean custf,record SMFVc SMFr)
+begin
+  record ORVc ORr;
+  string 255 link,link2,name;
+  
+  ORr.SerNr = OMr.OrderNr;
+  if (ReadFirstMain(ORr,1,true)) then begin
+    if (custf) then begin
+      link = "/WebGetOrderMessage.hal?smfcode=" & ORr.SMFCodeHeader & "&ordernr=" & ORr.SerNr & "&email=" & ORr.Addr2;
+      link = "/" & GetEncryptedLink(link);
+      link2 = "/WebStoreCustMessage.hal?smfcode=" & ORr.SMFCodeHeader & "&ordernr=" & ORr.SerNr & "&email=" & ORr.Addr2;
+      link2 = "/" & GetEncryptedLink(link2);
+    end;
+    if (custf) then begin
+      name = SMFr.SMFName;
+    end else begin
+      name = ORr.Addr0;
+    end;
+
+    WebOutString("<div class='message_line readstatus" & OMr.Read & "' ordernr='" & OMr.OrderNr & "' messagelink='" & link & "' newlink='" & link2 & "'><div class='message_info'><div class='message_name'>" & name & "</div><div class='message_order'>" & CreateOrderLink(base,ORr.SerNr,true,"") & "</div>");
+    if (custf==false) then begin
+      WebOutString("<div class='message_link'>" & CreateOrderLink(base,ORr.SerNr,false,ToolWebNGTranslateText2(89266)) & "</div>");
+    end;
+    WebOutString("<div class='message_date'>" & GetMessageDate(OMr) & "</div></div></div>");
+  end;
+
+
+  return;
+end;
+
+procedure ShowOrderMessages(string base,record SMFVc SMFr,string path)
+begin
+  record ORMessageVc OMr;
+  Boolean TrHs;
+  vector Boolean vOrder;
+
+  WebOutString("<div class='order_messages_wrap'>");
+
+  WebOutString("<div class='order_title'>" & ToolWebNGTranslateText2(89306) & "</div>");
+  WebOutString("<div class='order_search_wrap'><input type='text' class='order_search' placeholder='" & ToolWebNGTranslateText2(89315) & "'></div>");
+
+  WebOutString("<div class='message_line header'><div class='message_info'><div class='message_name'>" & ToolWebNGTranslateText2(89307) & "</div><div class='message_order'>" & ToolWebNGTranslateText2(89308) & "</div><div class='message_link'>&nbsp;</div><div class='message_date'>" & ToolWebNGTranslateText2(89309) & "</div></div></div>");
+
+
+
+  WebOutString("<div class='smu_messagelist_hidden'>");
+  TrHs = true;
+  OMr.SMFCode = SMFr.SMFCode;
+  OMr.Read = 0;
+  OMr.Type = 1;
+  while (LoopBackKey("SMFRead",OMr,3,TrHs)) begin
+    if (OMr.SMFCode!=SMFr.SMFCode or OMr.Type!=1 or OMr.Read!=0) then begin
+      TrHs = false;
+    end else begin
+      if (vOrder[OMr.OrderNr]==false) then begin
+        ShowSingleOrderMessage(base,OMr,false,SMFr);
+        vOrder[OMr.OrderNr] = true;
+      end;
+    end;
+  end;
+
+  ResetLoop(OMr);
+  RecordClear(OMr);
+  TrHs = true;
+  OMr.SMFCode = SMFr.SMFCode;
+  OMr.Read = 1;
+  while (LoopBackKey("SMFRead",OMr,2,TrHs)) begin
+    if (OMr.SMFCode!=SMFr.SMFCode or OMr.Read!=1) then begin
+      TrHs = false;
+    end else begin
+      if (vOrder[OMr.OrderNr]==false) then begin
+        ShowSingleOrderMessage(base,OMr,false,SMFr);
+        vOrder[OMr.OrderNr] = true;
+      end;
+    end;
+  end;
+  WebOutString("</div>");
+  WebOutString("<div class='message_table_list'></div>");
+  WebOutString("<div id='pagenave'></div>");
+
+  WebOutString("</div>");
+
+  return;
+end;
+
+procedure ShowBackButton()
+begin
+  
+  WebOutString("<div class='orders_back' onclick='history.back()'>" & ToolWebNGTranslateText2(89220) & "</div>");
+
+  return;
+end;
+
+global
+procedure SMUOrderApp(record WebNGStructVc WSr,string mpath)
+begin
+  record WebNGPageVc WPr;
+  string 255 path,node;
+  record SMFVc SMFr;
+  record TeacherVc TCr;
+  record MentorVc MTr;
+  Integer type;
+  record CUVc CUr;
+  string 255 base,cls;
+
+  path = mpath;
+  node = removenextnode(path);
+  
+  WPr.Code = WSr.WebPage;
+  ReadFirstMain(WPr,1,true);
+
+  ShowWebAppPageStart(WPr,"");
+
+  if nonblank(CurrentCust) then begin
+    CUr.Code = CurrentCust;
+    type = GetJAlCustType(CUr,SMFr,TCr,MTr);
+    if (type==0) then begin
+      base = GetLinkToOrders;
+      if (left(node,10)=="pasutijums") then begin
+        cls = " isorder";
+      end;
+
+      WebOutString("<div class='orders_page" & cls & "'>");
+      ShowOrdersMenu(base,node);
+      ShowBackButton;
+  
+      WebOutString("<div class='order_page_content'>");
+      switch (node) begin
+        case "pasutijums":
+          ShowSingleOrder(path); 
+        case "pazinojumi":
+          ShowOrderMessages(base,SMFr,path);
+        case "jauni":
+          ShowAllOrders(base,SMFr,"new",node);
+        case "sanemti":
+          ShowAllOrders(base,SMFr,"received",node);
+        case "izsutiti":
+          ShowAllOrders(base,SMFr,"sent",node);
+        case "izpilditi":
+          ShowAllOrders(base,SMFr,"done",node);
+        case "noraiditi":
+          ShowAllOrders(base,SMFr,"rejected",node);
+        otherwise
+          ShowAllOrders(base,SMFr,"all",node);
+      end;
+      WebOutString("</div>");
+    end;
+  end;
+
+  ShowWebAppPageEnd(WPr);
+
+  return;
+end;
+
+global webpublic
+updating procedure WebOrdersSetStatus()
+begin
+  record SMFVc SMFr;
+  record TeacherVc TCr;
+  record MentorVc MTr;
+  Integer type;
+  record CUVc CUr;
+  record ORVc ORr,oldORr;
+  string 255 status;
+  record JALOrderSetBlock JOb;
+
+  if nonblank(CurrentCust) then begin
+    CUr.Code = CurrentCust;
+    type = GetJAlCustType(CUr,SMFr,TCr,MTr);
+    if (type==0) then begin
+      ORr.SerNr = StringToLongint(WebGetArg("order"));
+      if (ReadFirstMain(ORr,1,true)) then begin
+        if (ORr.SMFCodeHeader==SMFr.SMFCode) then begin
+          status = WebGetArg("status");
+          if (nonblank(status)) then begin
+            BlockLoad(JOb);
+            RecordCopy(oldORr,ORr);
+            ORr.OrderClass = GetOrderClass(JOb,status);
+            if (status=="rejected") then begin
+              ORr.Comment = WebGetArg("reason");
+            end;
+            if (nonblank(WebGetArg("deldate"))) then begin
+              ORr.PlanShip = DateFromString(WebGetArg("deldate"),"YYYY-MM-DD");
+            end;
+            RecordUpdate(oldORr,ORr,true);
+            WebOutString("<res stat='1'></res>");
+          end;
+        end;
+      end;
+    end;
+  end;
+
+  return;
+end;
+
+updating procedure StoreOrderMessage(record ORVc ORr,Integer type,Integer read,string initf,string overridetext)
+begin
+  record ORMessageVc OMr;
+  record RcVc RepSpec;
+  record JALOrderSetBlock JOb;
+  record SMFVc SMFr;
+  
+  RecordNew(OMr);
+  OMr.SerNr = NextSerNr("ORMessageVc",CurrentDate,-1,false,"");
+  OMr.TransDate = CurrentDate;
+  OMr.TransTime = CurrentTime;
+  OMr.OrderNr = ORr.SerNr;
+  OMr.Type = type;
+  OMr.Read = read;
+  OMr.SMFCode = ORr.SMFCodeHeader;
+  if (nonblank(overridetext)) then begin
+    SetTextField(OMr,overridetext);
+  end else begin
+    WebGetText("text",OMr);
+  end;
+
+  if (RecordInsert(OMr,true)) then begin
+    WebOutString("<res sernr='" & OMr.SerNr & "'></res>");
+    if (initf!="1" and type==0) then begin
+      //send email to customer
+      BlockLoad(JOb);
+      SMFr.SMFCode = ORr.SMFCodeHeader;
+      if (ReadFirstMain(SMFr,1,true)) then begin
+        RepSpec.f2 = SMFr.SMFName;
+      end;
+      RepSpec.long1 = ORr.SerNr;
+      RepSpec.f1 =  "https://" & PublicHostName & ":" & ServerHTTPSPort & "/" & GetEncryptedLink("/klientuzinas?smfcode=" & ORr.SMFCodeHeader & "&ordernr=" & ORr.SerNr & "&email=" & ORr.Addr2);
+      SendCustomerLetterWithText(RepSpec,JOb.MailSender,JOb.MessageText,ORr.Addr2);
+    end;
+  end;
+
+  return;
+end;
+
+global webpublic
+updating procedure WebOrdersStoreTextSMU()
+begin
+  record SMFVc SMFr;
+  record TeacherVc TCr;
+  record MentorVc MTr;
+  Integer type;
+  record CUVc CUr;
+  record ORVc ORr;
+  string 255 initf;
+
+  if nonblank(CurrentCust) then begin
+    CUr.Code = CurrentCust;
+    type = GetJAlCustType(CUr,SMFr,TCr,MTr);
+    if (type==0) then begin
+      ORr.SerNr = StringToLongint(WebGetArg("ordernr"));
+      initf = WebGetArg("initf");
+      if (ReadFirstMain(ORr,1,true)) then begin
+        if (ORr.SMFCodeHeader==SMFr.SMFCode) then begin
+          StoreOrderMessage(ORr,0,1,initf,"");
+        end;
+      end;
+    end;
+  end;
+
+  return;
+end;
+
+global
+function Boolean CanUploadMessageFile(string id)
+begin
+  record SMFVc SMFr;
+  record TeacherVc TCr;
+  record MentorVc MTr;
+  Integer type;
+  record CUVc CUr;
+  record ORVc ORr;
+  Boolean res;
+  record ORMessageVc OMr;
+  
+  if (nonblank(GetSessionString("authemail"))) then begin
+    OMr.SerNr = StringToLongint(id);
+    if (ReadFIrstMain(OMr,1,true)) then begin
+      ORr.SerNr = OMr.OrderNr;
+      if (ReadFirstMain(ORr,1,true)) then begin
+        res = ORr.Addr2==GetSessionString("authemail");
+      end;
+    end;
+  end;
+
+  if (!res) then begin
+    if nonblank(CurrentCust) then begin
+      CUr.Code = CurrentCust;
+      type = GetJAlCustType(CUr,SMFr,TCr,MTr);
+      if (type==0) then begin
+        OMr.SerNr = StringToLongint(id);
+        if (ReadFIrstMain(OMr,1,true)) then begin
+          ORr.SerNr = OMr.OrderNr;
+          if (ReadFirstMain(ORr,1,true)) then begin
+            if (ORr.SMFCodeHeader==SMFr.SMFCode) then begin
+              res = true;
+            end;
+          end;
+        end;
+      end;
+    end;
+  end;
+
+  CanUploadMessageFile = res;
+  return;
+end;
+
+global
+updating procedure FinishJALMessageUpload(string sess,string filename,string id,string tag)
+begin
+  record ORMessageVc OMr;
+
+  OMr.SerNr = StringToLongInt(id);
+  if (ReadFirstMain(OMr,1,true)) then begin
+    if (FileExists("tmp/" & tag & "/" & sess)) then begin
+      RenameFile("tmp/" & tag & "/" & sess,"tmp/" & tag & "/" & filename);
+      RecordLinkFile("tmp/" & tag & "/" & filename,0,OMr,CurrentCompany);
+      Delete_File("tmp/" & tag & "/" & filename);
+    end;
+  end;
+
+  return;
+end;
+
+global
+updating procedure SetOrderMessageRead(record ORMessageVc OMr,Integer read)
+begin
+  record ORMessageVc oldOMr;
+  
+  if (ReadFirstMain(OMr,1,true)) then begin
+    RecordCopy(oldOMr,OMr);
+    OMr.Read = read;
+    RecordUpdate(oldOMr,OMr,true);
+  end;
+
+  return;
+end;
+
+function string 255 CreateMessageAttachLink(record ORMessageVc OMr,record Attach2Vc Attachr)
+begin
+  string 255 res; 
+
+  res = "/WebDownloadMessageAttach.hal?sernr=" & OMr.SerNr & "&uuid=" & Attachr.UUID;
+  res = "/" & GetEncryptedLink(res);
+
+  CreateMessageAttachLink = res;
+  return;
+end;
+
+procedure SetContentTypeForExtension(string ext)
+begin
+  switch (ext) begin
+    case "css" : WebSetContentType("text/css");
+    case "jpg" : WebSetContentType("image/jpeg");
+    case "jpeg" : WebSetContentType("image/jpeg");
+    case "png" : WebSetContentType("image/png");
+    case "gif" : WebSetContentType("image/gif");
+    case "htc" : WebSetContentType("text/x-component");
+    case "exe" : WebSetContentType("application/binary");
+    case "bin" : WebSetContentType("application/binary");
+    case "obj" : WebSetContentType("application/binary");
+    case "hpf" : WebSetContentType("application/binary");
+    case "hob" : WebSetContentType("application/binary");
+    case "dat" : WebSetContentType("application/binary");
+    case "swf" : WebSetContentType("application/x-shockwave-flash");
+    case "pdf" : WebSetContentType("application/pdf");
+    case "zip" : WebSetContentType("application/zip");
+    case "txt" : WebSetContentType("text/plain");
+    case "xml" : WebSetContentType("text/xml");
+    case "xsl" : WebSetContentType("text/xsl");
+    case "htm" : WebSetContentType("text/html");
+    case "html" : WebSetContentType("text/html");
+    otherwise
+      WebSetContentType("application/binary");
+  end;
+  return;
+end;
+
+
+global webpublic
+procedure WebDownloadMessageAttach()
+begin
+  record ORMessageVc OMr;
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+  string 255 ext;
+  UUID tuuid;
+  Integer i;
+  
+  OMr.SerNr = WebGetArg("sernr");
+  if (ReadFirstMain(OMr,1,true)) then begin
+    i = 1;
+    tuuid = StringToUUID(WebGetArg("uuid"));
+    while (ReadRecordLink(OMr,i,Attachr,RLr)) begin
+      if (Attachr.UUID==tuuid) then begin
+        ext = right(Attachr.FileName,4);
+        SetContentTypeForExtension(ext);
+        WebSetContentDisposition("inline; filename=" & Attachr.FileName);
+        WebOutAttachment(Attachr.SerNr);
+        goto LWebDownloadMessageAttach;
+      end;
+      i = i + 1;
+    end;
+  end;
+LWebDownloadMessageAttach:;
+  return;
+end;
+
+global webpublic
+procedure WebGetOrderMessage()
+begin
+  record SMFVc SMFr;
+  record TeacherVc TCr;
+  record MentorVc MTr;
+  Integer type;
+  record CUVc CUr;
+  record ORVc ORr,oldORr;
+  record ORMessageVc OMr;
+  Boolean TrHs,foundf;
+  string 255 email,smfcode;
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+  Integer i;
+
+  if (nonblank(CurrentCust)) then begin
+    CUr.Code = CurrentCust;
+    type = GetJAlCustType(CUr,SMFr,TCr,MTr);
+    if (type==0) then begin
+      ORr.SerNr = StringToLongint(WebGetArg("ordernr"));
+      if (ReadFirstMain(ORr,1,true)) then begin
+        if (ORr.SMFCodeHeader==SMFr.SMFCode) then begin
+          foundf = true;
+        end;
+      end;
+    end;
+  end;
+  if (!foundf) then begin
+    ORr.SerNr = StringToLongint(WebGetArg("ordernr"));
+    email = WebGetArg("email");
+    smfcode = WebGetArg("smfcode");
+    if (ReadFirstMain(ORr,1,true)) then begin
+      if (ORr.Addr2==email and ORr.SMFCodeHeader==smfcode) then begin
+        foundf = true;
+      end;
+    end;
+  end;
+  WebOutString("<messages>");
+  if (foundf) then begin
+    OMr.OrderNr = ORr.SerNr;
+    TrHs = true;
+    WebOutString("<info deldate='" & ORr.PlanShip & "'></info>");
+    while (LoopKey("OrderDate",OMr,1,TrHs)) begin
+      if (OMr.OrderNr!=ORr.SerNr) then begin
+        TrHs = false;
+      end else begin
+        WebOutString("<message date='" & GetMessageDate(OMr) & "'><text>");
+        WebOutText(OMr,true,"<br>");
+        WebOutString("</text>");
+        i = 1;
+        while (ReadRecordLink(OMr,i,Attachr,RLr)) begin
+          WebOutString("<attachment name='" & Attachr.FileName & "' link='" & CreateMessageAttachLink(OMr,Attachr) & "' pdf='" & (right(Attachr.FileName,3)=="pdf") & "'></attachment>");
+          i = i + 1;
+        end;
+        WebOutString("</message>");
+        if (OMr.Read==0 and OMr.Type==1 and nonblank(SMFr.SMFCode)) then begin
+          qupdating.SetOrderMessageRead(OMr,1);
+        end;
+      end;
+    end;
+  end;
+  WebOutString("</messages>");
+
+  return;
+end;
+
+global
+procedure CustMessagesApp()
+begin
+  record ORVc ORr;
+  string 255 email,smfcode;
+  record ORMessageVc OMr;
+  string 255 base;
+  record SMFVc SMFr;
+  
+  email = WebGetArg("email");
+  smfcode = WebGetArg("smfcode");
+  ORr.SerNr = StringToLongint(WebGetArg("ordernr"));
+  if (ReadFirstMain(ORr,1,true)) then begin
+    if (ORr.Addr2==email and ORr.SMFCodeHeader==smfcode) then begin
+      base = GetLinkToOrders;
+      OMr.OrderNr = ORr.SerNr;
+      ShowOrderTableHeader2;
+      SMFr.SMFCode = ORr.SMFCodeHeader;
+      ReadFirstMain(SMFr,1,true);
+      PutSessionString("authemail",ORr.Addr2);
+      if (ReadFirstKey("OrderDate",OMr,1,true)) then begin
+        ShowSingleOrderMessage(base,OMr,true,SMFr);
+      end else begin
+        OMr.OrderNr = ORr.SerNr;
+        OMr.TransDate = ORr.OrdDate;
+        OMr.TransTime = ORr.RegTime;
+        ShowSingleOrderMessage(base,OMr,true,SMFr);
+      end;
+    end;
+  end;
+
+  return;
+end;
+
+global webpublic
+updating procedure WebStoreCustMessage()
+begin
+  record ORVc ORr;
+  string 255 email,smfcode;
+  record ORMessageVc OMr;
+  string 255 base;
+  Integer i;
+  string 255 tstr;
+  area ta;
+  
+  email = WebGetArg("email");
+  smfcode = WebGetArg("smfcode");
+  ORr.SerNr = StringToLongint(WebGetArg("ordernr"));
+  if (ReadFirstMain(ORr,1,true)) then begin
+    if (ORr.Addr2==email and ORr.SMFCodeHeader==smfcode and ORr.Addr2==GetSessionString("authemail")) then begin
+      WebGetRawPostData(ta);
+      tstr = URLDecode(GetStringFromArea(ta,0,255));
+      tstr = right(tstr,len(tstr)-5);
+      tstr = StrReplace(tstr,chr(43)," ");
+      tstr = StrReplace(tstr,chr(10),chr(13) & chr(10));
+      StoreOrderMessage(ORr,1,0,"",tstr);
+    end;
+  end;
+
+  return;
+end;
+
+function Integer GetNewMessageCount(string smfcode)
+begin
+  record ORMessageVc OMr;
+  Boolean TrHs;
+  vector Boolean vOrder;
+  Integer res;
+
+  TrHs = true;
+  OMr.SMFCode = smfcode;
+  OMr.Read = 0;
+  OMr.Type = 1;
+  while (LoopKey("SMFRead",OMr,3,TrHs)) begin
+    if (OMr.SMFCode!=smfcode or OMr.Type!=1 or OMr.Read!=0) then begin
+      TrHs = false;
+    end else begin
+      if (vOrder[OMr.OrderNr]==false) then begin
+        res = res + 1;
+        vOrder[OMr.OrderNr] = true;
+      end;
+    end;
+  end;
+
+  GetNewMessageCount = res;
+  return;
+end;
+
+function Integer GetOrderCount(string smfcode,string oc)
+begin
+  Integer res;
+  Boolean TrHs;
+  record ORVc ORr;
+
+  TrHs = true;
+  ORr.OrderClass = oc;
+  ORr.SMFCodeHeader = smfcode;
+  while (LoopKey("SMFOrderClass",ORr,2,TrHs)) begin
+    if (ORr.OrderClass!=oc or ORr.SMFCodeHeader!=smfcode) then begin
+      TrHs = false;
+    end else begin
+      res = res + 1;
+    end;
+  end;
+
+  GetOrderCount = res;
+  return;
+end;
+
+global webpublic
+procedure WebGetOrderBadges()
+begin
+  record JALOrderSetBlock JOb;
+  record SMFVc SMFr;
+  record TeacherVc TCr;
+  record MentorVc MTr;
+  Integer type;
+  record CUVc CUr;
+  Integer newmess,neworders,recorders,tot;
+ 
+  if (nonblank(CurrentCust)) then begin
+    CUr.Code = CurrentCust;
+    type = GetJAlCustType(CUr,SMFr,TCr,MTr);
+    if (type==0) then begin
+      BlockLoad(JOb);
+      newmess = GetNewMessageCount(SMFr.SMFCode);
+      neworders = GetOrderCount(SMFr.SMFCode,JOb.NewOrder);
+      recorders = GetOrderCount(SMFr.SMFCode,JOb.ReceivedOrder);
+      tot = newmess + neworders + recorders;
+      WebOutString("{\"new\":\"" & neworders & "\",\"mess\":\"" & newmess & "\",\"tot\":\"" & tot & "\"}");
+    end;
+  end;
+
+
+  return;
+end;

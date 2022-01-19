@@ -14,6 +14,7 @@ begin
   string 255 tstr,tmp,t;
   Longint pos,tpos,cnt,lastspace,chrcnt,rowcnt;
   record TeacherVc TCr;
+  row TeacherVc TCrw;
   vector Boolean vSCr;
 
   OutFormField("F_SMFCODE",SMFr.SMFCode);
@@ -26,10 +27,11 @@ begin
     MatRowGet(SMFr,i,SMFrw);
     TCr.TeacherCode = SMFrw.Code;
     if (ReadFirstMain(TCr,1,true)) then begin
+      MatRowGet(TCr,0,TCrw);
       OutFormField("F_TEACHERNAME",TCr.TeacherName);
-      if (vSCr[TCr.SchoolCode]==false) then begin
-        vSCr[TCr.SchoolCode] = true;
-        SCr.SchoolCode = TCr.SchoolCode;
+      if (vSCr[TCrw.SchoolCode]==false) then begin
+        vSCr[TCrw.SchoolCode] = true;
+        SCr.SchoolCode = TCrw.SchoolCode;
         if (ReadFirstMain(SCr,1,true)) then begin
           OutputMultiLineWordBreak(SCr.SchoolName,"F_SCHOOLNAME",60);
           OutFormField("F_SCHOOLADDR",SCr.Address);

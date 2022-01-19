@@ -63,6 +63,8 @@ external procedure HansaWorldHALApp(record WebNGStructVc,string,string);
 //CUST-BEGIN
 external procedure ShowWebProfile();
 external outer procedure ShowSMUShopApp(record WebNGStructVc,string,string);
+external outer procedure SMUOrderApp(record WebNGStructVc,string);
+
 //CUST-END
 
 procedure SetCountryAndLanguage(var string path)
@@ -587,6 +589,8 @@ LHandlePath:;
     case kStructTypeAvailableApps: AvailableAppsOnWeb(WSr,mpath);
     case 55: EventAppHandler(WSr,mpath,path);//CUST
     case 120: ShowSMUShopApp(WSr,mpath,node);//CUST
+    case 121: SMUOrderApp(WSr,mpath);
+
     otherwise
       RollbackOneRequestURL;
       ShowErrorPage(ToolWebNGTranslateText(25000)); //File not found

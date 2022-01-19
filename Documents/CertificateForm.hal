@@ -27,7 +27,11 @@ begin
     if (ReadFirstMain(SMFr,1,true)) then begin
       OutFormField("F_SMFCODE",SMFr.SMFCode);
       OutFormField("F_SMFNAME",SMFr.SMFName);
-      CUr.Code = JEEr.CustCode;
+      if (nonblank(RepSpec.f1)) then begin
+        CUr.Code = RepSpec.f1;
+      end else begin
+        CUr.Code = JEEr.CustCode;
+      end;
       if (ReadFirstMain(CUr,1,true)) then begin
         OutFormField("F_STUDENTNAME",CUr.Name);
         OutFormField("F_PERSONID",CUr.Name);
@@ -142,6 +146,7 @@ BEGIN
   Boolean tmpf;
   
   RepSpec2.long1 = RepSpec.long1;
+  RepSpec2.f1 = RepSpec.f1;
   tmpf = PrintDocument(RepSpec2,"CertificateForm",false);    
   
   RETURN;

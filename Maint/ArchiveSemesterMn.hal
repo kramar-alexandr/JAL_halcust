@@ -205,11 +205,55 @@ begin
   return;
 end;
 
+procedure CopySMFItemFields(record SMFItemVc SIr,var record ArchiveSMFItemVc aSIr)
+begin
+  Integer rwcnt,i;
+  row SMFItemVc SIrw;
+  row ArchiveSMFItemVc aSIrw;
+  string 255 tstr;
+  
+  aSIr.UUID = MakeUUID;
+  aSIr.SMFCode = SIr.SMFCode;
+  aSIr.Name = SIr.Name;
+  aSIr.Order = SIr.Order;
+  aSIr.Price = SIr.Price;
+  aSIr.ActiveFlag = SIr.ActiveFlag;
+  aSIr.TransDate = SIr.TransDate;
+  aSIr.DummyStr = SIr.DummyStr;
+  aSIr.ShopUrl = SIr.ShopUrl;
+  aSIr.District = SIr.District;
+  aSIr.SMFName = SIr.SMFName;
+  aSIr.SortString = SIr.SortString;
+  aSIr.SizeList = SIr.SizeList;
+  aSIr.NotInStock = SIr.NotInStock;
+  aSIr.ShortDesc = SIr.ShortDesc;
+  aSIr.NewPrice = SIr.NewPrice;
+  aSIr.NewPriceDate = SIr.NewPriceDate;
+  for (i=0;i<LineTextCnt2(SIr);i=i+1) begin
+    tstr = tstr & LineTextGet2(SIr,i);
+  end;
+  SetTextField(aSIr,tstr);
+
+  rwcnt = MatRowCnt(SIr);
+  for (i=0;i<rwcnt;i=i+1) begin
+    MatRowGet(SIr,i,SIrw);
+    ClearRow(aSIr,aSIrw,1);
+  
+    aSIrw.ColorCode = SIrw.ColorCode;
+    aSIrw.ColorName = SIrw.ColorName;
+    MatRowPut(aSIr,i,aSIrw);
+  end;
+
+  return;
+end;
+
 global
 updating procedure ArchiveSemesterMn(record RcVc RepSpec)
 begin
   record SMFVc SMFr;
   record ArchiveSMFVc aSMFr;
+  record SMFItemVc SIr;
+  record ArchiveSMFItemVc aSIr;
   record JALEventEntryVc JEEr;
   record ArchiveJALEventEntryVc aJEEr;
   record FCSMUVc FCSr;
@@ -288,7 +332,14 @@ begin
     end;
   end;
 
-
+  while (LoopMain(SIr,1,true)) begin
+    CopySMFItemFields(SIr,aSIr);
+    aSIr.Semester = RepSpec.f1;
+    if (RecordStore(aSIr,true)) then begin
+      RecordRemove(SIr);
+      StepBack(SIr);
+    end;
+  end;
 
 LArchiveSemesterMn:;
   return;

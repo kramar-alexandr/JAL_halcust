@@ -24,6 +24,7 @@ begin
   res = StrReplace(res,"\"","\\\"");
   res = StrReplace(res,chr(13) & chr(10),"\\n");//chr(13) & 
   res = StrReplace(res,chr(10),"\\n");//chr(13) & 
+  res = StrReplace(res,chr(13),"\\n");//chr(13) & 
   res = StrReplace(res,chr(9),"");//chr(13) & 
 
   FormatJSONString = res;
@@ -2573,6 +2574,7 @@ begin
         SetDocumentFilename(filename);
         SetMedia(mtPdf);
         RepSpec.long1 = JEEr.SerNr;
+        RepSpec.f1 = CurrentCust;
         PrintDocument(RepSpec,"CertificateForm",false);
         SetDocumentFilename("");
         if (FileExists(filename)) then begin

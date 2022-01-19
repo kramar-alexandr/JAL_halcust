@@ -808,15 +808,13 @@ longint curt;;
   EditField(h,v=v+vs,100,"Lejuplādes stat",Normal,DownloadReqStat,false,0);
   EditField(h,v=v+vs,100,"Sertifikātu failu konference",Normal,CertFileConf,false,ConfSClass);
 
-  EditField(h,v=v+vs,100,"Groza info sūtītājs",Normal,BasketSender,false,ConfSClass);
-  EditField(h,v=v+vs,100,"Groza teksts SMU",Normal,SMUBasketText,false,LTxtSClass);
-  EditField(h,v=v+vs,100,"Groza teksts klientiem",Normal,CustomerBasketText,false,LTxtSClass);
   EditField(h,v=v+vs,100,"Aktīvie mēneši",Normal,ActiveMonths,false,0);
   EditField(h,v=v+vs,100,"Jauna prece (dienas)",Normal,NewTagDays,false,0);
   EditField(h,v=v+vs,100,"Pupulāra prece (%)",Normal,PopularTagPrc,false,0);
   EditField(h,v=v+vs,100,"Jaunas cenas dienas",Normal,NewPriceDays,false,0);
-
-  CheckBox(h,v+=20,0,"Slēpt kataglogu",HideCatalog);
+  EditField(h,v=v+vs,100,"Vizuālis",Normal,OverridePage,false,WebNGPageSClass);
+  
+  CheckBox(h,v+=20,0,"Slēpt katalogu",HideCatalog);
 
 
   Tile(tilenr,250,false,"3",Schoolar); tilenr = tilenr + 1;  
@@ -1139,11 +1137,12 @@ longint curt;;
   CheckBox(h,v+=16,0,"Neiesiet <div>",NoDiv);
   CheckBox(h,v+=16,0,"Grupu saraksts pēc valsts",GroupByCountry);
   CheckBox(h,v+=16,0,"Grupu saraksts pēc kategorijas",GroupByCategory);
-  ButtonFrame(h=270,v=vm,150,3,"Saraksta skata teksts");
+  ButtonFrame(h=270,v=vm,150,5,"Saraksta skata teksts");
   RadioButton(h,v,0,0,"Rādīt visas rindas",ListViewFlag);
   RadioButton(h,v+=16,1,0,"Rādīt vienu nejaušu rindu",ListViewFlag);
   RadioButton(h,v+=16,2,0,"Rādīt galerijas",ListViewFlag);
   RadioButton(h,v+=16,3,0,"Rādīt pasākumus",ListViewFlag);
+  RadioButton(h,v+=16,4,0,"Rādīt projektus",ListViewFlag);
   ButtonFrame(h,v+=45,150,2,"Tulkojuma komentārs");
   RadioButton(h,v,0,0,"Nedrukāt",CommentFlag);
   RadioButton(h,v+=16,1,0,"Rādīt kā galveni",CommentFlag);
@@ -2109,7 +2108,7 @@ longint curt;;
   WindowBegin("JAL nozares",JALIndustryTClass,CGHBl,-);
   SetWRect(80,80,400,280);
   SetBlid(JALIndustryBlock);
-  MatrixBegin(10,20,-30,-10,-,10);
+  MatrixBegin(10,20,-30,-10,-,40);
   MatCol(1,25,"Nozare",0,Industry,false,0);
   EndMatrix;
   EndWindow;
@@ -3023,7 +3022,81 @@ begin
   EditField(h,v+=vs,100,"Secība",Normal,Order,false,0);
   EditField(h,v+=vs,100,"Cena",Normal,Price,false,0);
   EditField(h,v+=vs,100,"Datums",Normal,TransDate,false,PasteCurDate);
+  EditField(h,v+=vs,100,"Jaunā cena",Normal,NewPrice,false,0);
+  EditField(h,v+=vs,100,"Cenas datums",Normal,NewPriceDate,false,PasteCurDate);
   TextField(h-2,v+=vs,-28,-30,Math2,0);
   CheckBox(h+240,v=6,0,"Aktīvs",ActiveFlag);
+  EndWindow;
+end;
+
+
+window JALOrderSetTClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,h2,h3,v2,tilenr,vm,hc,fs;
+  Integer cnt,pos,i;
+  Longint curt;;
+
+  WindowBegin("Kataloga / pasūtījumu konstantes",JALOrderSetTClass,CGSbl,SRType);
+  SetWRect(64,80,509,333);
+  SetBlid(JALOrderSetBlock);
+  vs = 20; h=130;
+  EditField(h,v=6,100,"Jauns",Normal,NewOrder,false,OrderClassSClass);
+  EditField(h,v+=vs,100,"Saņemts",Normal,ReceivedOrder,false,OrderClassSClass);
+  EditField(h,v+=vs,100,"Izsūtīts",Normal,SentOrder,false,OrderClassSClass);
+  EditField(h,v+=vs,100,"Izpildīts",Normal,DoneOrder,false,OrderClassSClass);
+  EditField(h,v+=vs,100,"Noraidīts",Normal,RejectedOrder,false,OrderClassSClass);
+  EditField(h,v+=vs,100,"Nokl. sam. termiņš",Normal,DefPayTerm,false,PDSClass);
+  EditField(h,v+=vs,100,"Nokl. artikuls",Normal,DefArtCode,false,INSClassp);
+  EditField(h,v+=vs,100,"E-pastu sūtītājs",Normal,MailSender,false,0);
+  EditField(h,v=v+vs,100,"Groza teksts SMU",Normal,SMUBasketText,false,LTxtSClass);
+  EditField(h,v=v+vs,100,"Groza teksts klientiem",Normal,CustomerBasketText,false,LTxtSClass);
+  ButtonFrame(h-90,v+=50,200,6,"Teksti pasūtījumiem");
+  EditField(h,v,100,"Saņemts",Normal,ReceivedText,false,LtxtSClass);
+  EditField(h,v+=vs,100,"Izsūtīts",Normal,SentText,false,LtxtSClass);
+  EditField(h,v+=vs,100,"Izpildīts",Normal,DoneText,false,LtxtSClass);
+  EditField(h,v+=vs,100,"Atteikts",Normal,RejectedText,false,LtxtSClass);
+  EditField(h,v+=vs,100,"Ziņa",Normal,MessageText,false,LtxtSClass);
+
+  EndWindow;
+  return;
+end;
+
+window ORMessageLClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  WindowBegin("Klientu ziņas",ORMessageLClass,CGmlist,-);
+  SetWRect(20,80,660,298);
+  Sizeable(-1,-1,0,0);
+  SpawnClass(ORMessageDClass);
+  UseView(ORMessageVc);
+  RecordList(4,17,-21,-39);
+  RlColKey(4,4,"Nr.",SerNr,false,SerNr);
+  RlCol(100,100,"Pasūtījums",OrderNr,false);
+  RlCol(196,196,"Datums",TransDate,false);
+  RlCol(266,266,"Laiks",TransTime,false);
+  RlCol(344,344,"SMU",SMFCode,false);
+  SearchField("Meklēt");
+  EndWindow;
+end;
+
+window ORMessageDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,v,vs,v2,vs2,hm;
+  WindowBegin("Klientu ziņa",ORMessageDClass,CGview,-);
+  SetWRect(20,80,600,339);
+  Sizeable(-1,-1,0,0);
+  UseView(ORMessageVc);
+  vs=20; h=120; vs2=16; hm=-100;
+  EditField(h,v=6,100,"Numurs",Normal,SerNr,false,);
+  CheckBox(h+130,v,0,"Izlasīts",Read);
+  EditField(h,v+=vs,100,"Pasūtījums",Normal,OrderNr,false,0);
+  EditField(h,v+=vs,100,"Datums",Normal,TransDate,false,0);
+  EditField(h,v+=vs,100,"Laiks",Normal,TransTime,false,0);
+  EditField(h,v+=vs,100,"Tips",Normal,Type,false,0);
+  EditField(h,v+=vs,200,"SMU",Normal,SMFCode,false,0);
+  TextField(h-2,v+=vs,-28,-30,Text,0);
+
   EndWindow;
 end;
