@@ -1,0 +1,38 @@
+global
+updating procedure OrderFixImportIn(record RcVc RepSpec)
+begin
+  string 255 tstr;
+  record ORVc ORr,oldORr;
+  integer i;
+  
+  
+  while (NextImportLine(true)) begin
+    ImportField;
+    ImportField;
+    ImportField;
+    ORr.SerNr = StringToLongint(ImportField);
+    if (ReadFirstMain(ORr,1,true)) then begin
+      if (blank(ORr.SMFCodeHeader)) then begin
+        i = 0;
+        while (NextImportLine(false)) begin
+          tstr = ImportField;
+          if (tstr=="$%^!:" and i==1) then begin
+            tstr = ImportField;
+            if (tstr=="ORVc_JAL") then begin
+              tstr = ImportField;
+              if (nonblank(tstr)) then begin
+                RecordCopy(oldORr,ORr);
+                ORr.SMFCodeHeader = tstr;
+                RecordUpdate(oldORr,ORr,true);
+              end;
+            end;
+          end;
+          i = i + 1;
+        end;
+      end;
+    end;
+  end;
+  return;
+end;
+
+

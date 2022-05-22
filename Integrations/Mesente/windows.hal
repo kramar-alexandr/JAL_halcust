@@ -1,0 +1,45 @@
+event startup
+begin
+  
+  SetLangMode(LangLatvian,"LAT",2);
+
+  Setting("Mesente SMS",MesenteSMSTClass,modInteg);
+
+end;
+
+event DefineWindows
+begin
+  real h,v,vs,h2;
+
+  vs = 20; h2 = 330;
+
+  SetLangMode(LangLatvian,"LAT",2);
+
+  WindowBegin("Mesente SMS",MesenteSMSTClass,CGSbl,SRType);
+  SetBlid(MesenteSMSBlock);
+  SetWRect(20,80,570,298);
+  Sizeable(-1,-1,0,0);
+  EditField(h=150,v=6,200,"Sūtītājs (nav obl.)",Normal,SMSSender,false,0);
+  EditField(h,v+=vs,200,"API Url",Normal,APIUrl,false,0);
+  EditField(h,v+=vs,200,"API Lietotājs",Normal,APIUser,false,0);
+  EditField(h,v+=vs,200,"API Parole",Normal,APIPassword,false,0);
+  ButtonFrame(h,v=v+40,320,4,"Neizdevušās SMS");
+  CheckBox(h,v,0,"Veidot aktivitāti",CreateActivity);
+  EditField(h+50,v+=vs,70,"Persona",Normal,ActPerson,false,UserSClass);
+  EditField(h2,v,70,"Tips",Normal,ActType,false,ActTypeSClass);
+  EditField(h+50,v+=vs,250,"Teksts",Normal,ActText,false,0);
+  SpecialMenu("Sūtīt SMS",'',1,"SendMesentaSMS");  
+  EndWindow;
+
+  WindowBegin("Sūtīt SMS",SendSMSWClass,CGother,RcType);
+  UseView(RcVc);
+  SetWRect(20,80,400,180);
+  AutoSizeWindow(false);  
+  h = 150;
+  EditFieldTL(h,v=6,120,"Kam",M4Str,Normal,255,f1,false,0);
+  EditFieldTL(h,v+=vs,120,"Teksts",M4Str,Normal,255,f2,false,0);
+  HalPushButton(h,v+=vs,h+120,v+20,"SendSMSWClassSend","Sūtīt");
+  EndWindow;
+
+  return;
+end;

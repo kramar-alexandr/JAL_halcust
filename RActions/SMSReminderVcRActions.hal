@@ -1,0 +1,82 @@
+//<halrule>server-only</halrule>
+
+function Boolean CheckTime(record SMSReminderVc SMSReminder,Integer num)
+begin
+  Boolean res;
+  string 255 tstr;
+
+  res = true;
+  tstr = GetFieldValueByName(SMSReminder,"Day" & num,-1);
+  if (tstr=="1") then begin
+    tstr = GetFieldValueByName(SMSReminder,"Time" & num,-1);
+    if (tstr=="") then begin
+      res = false;
+    end;
+  end;
+
+  CheckTime = res;
+  return;
+end;
+
+global
+function LongInt SMSReminderVcRecordDuplicate(var record SMSReminderVc SMSReminder,record SMSRemindeVc SMSReminde2r,LongInt stat,LongInt long4)
+BEGIN
+  LongInt res;
+  record CUVc CUr;
+
+  res = 0;
+  
+  SMSReminder.SerNr = -1;
+
+  SMSReminderVcRecordDuplicate = res;
+  return;
+END;
+
+global
+function LongInt SMSReminderVcRecordCheck(var record SMSReminderVc SMSReminder,record SMSRemindeVc SMSReminde2r,LongInt stat,LongInt long4)
+BEGIN
+  LongInt res;
+  record CUVc CUr;
+  Integer i;
+
+  res = 0;
+  
+  if (SMSReminder.SerNr==-1) then begin
+    SMSReminder.SerNr = NextSerNr("SMSReminderVc",CurrentDate,-1,false,"");
+  end;
+
+  for (i=1;i<8;i=i+1) begin
+    if (CheckTime(SMSReminder,i)==false) then begin
+      RecordCheckError(1058,"",-1,"Time" & i);
+      res = -1;
+      goto LSMSReminderVcRecordCheck;    
+    end;
+  end;
+
+  if (SMSReminder.Days<0) then begin
+    RecordCheckError(1058,"",-1,"Days");
+    res = -1;
+    goto LSMSReminderVcRecordCheck;    
+  end;
+  if (SMSReminder.CreateActivity==1) then begin
+    if (blank(SMSReminder.ActPerson)) then begin
+      RecordCheckError(1058,"",-1,"ActPerson");
+      res = -1;
+      goto LSMSReminderVcRecordCheck;    
+    end;
+    if (blank(SMSReminder.ActType)) then begin
+      RecordCheckError(1058,"",-1,"ActType");
+      res = -1;
+      goto LSMSReminderVcRecordCheck;    
+    end;
+    if (blank(SMSReminder.ActText)) then begin
+      RecordCheckError(1058,"",-1,"ActText");
+      res = -1;
+      goto LSMSReminderVcRecordCheck;    
+    end;
+  end;
+
+LSMSReminderVcRecordCheck:;
+  SMSReminderVcRecordCheck = res;
+  return;
+END;

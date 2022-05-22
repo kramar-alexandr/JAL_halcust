@@ -258,6 +258,47 @@ begin
   return;
 end;
 
+function string 255 ConvertWebString(string tstr)
+begin
+  string 255 res,c;
+  Integer i;
+  Boolean otherf;
+  
+  //for (i=0;i<SizeTextCnt(SMFr);i=i+1) begin
+    //WebOutText(SMFr,true,"");
+    /*
+    res = StrReplace(tstr,"<","&lt;");
+    res = StrReplace(res,">","&gt;");
+    res = StrReplace(res,chr(13),"<br>");
+    */
+    for (i=len(tstr)-1;i>=0;i=i-1) begin
+      c = mid(tstr,i,1);
+      switch (c) begin
+        case "<":
+          res = "&lt;" & res;
+          otherf = true;
+        case ">":
+          res = "&gt;" & res;
+          otherf = true;
+        otherwise
+          if (c==chr(13)) then begin
+            if (otherf) then begin
+              res = "<br>" & res;
+            end;
+          end else begin
+            res = c & res;
+            otherf = true;
+          end;
+      end;
+    end;
+    
+    //tstr = tstr & c;
+  //end;
+
+  ConvertWebString = res;
+  return;
+end;
+
 procedure ShowSingleSMUShopItem(record JALClassBlock JCbl,record SMFItemVc SIr,Boolean likedf,Boolean basketf,string baseurl)
 begin
   string 255 link,link2,likedcls,basketcls;
@@ -291,7 +332,7 @@ begin
   end;
 
   WebOutstring("<div class='smu_shop_item_details'>");
-  WebOutString("<div class='smu_shop_single_item_title' >" & itemname & "<div class='item_name_hover'>" & SIr.Name & "</div></div>");
+  WebOutString("<div class='smu_shop_single_item_title' >" & ConvertWebString(itemname) & "<div class='item_name_hover'>" & SIr.Name & "</div></div>");
   price = GetSMUItemPrice(JCbl,SIr);
   if (price!=SIr.Price) then begin
     WebOutString("<div class='smu_shop_item_price old'>" & SIr.Price & " EUR</div>");
@@ -609,8 +650,8 @@ begin
   WebOutString("<img src='" & link & "'>");
   WebOutString("</div>");
   WebOutstring("<div class='smu_shop_item_details'>");
-  WebOutString("<div class='smu_shop_single_emp_name'>" & CUr.Name & "</div>");
-  WebOutString("<div class='smu_shop_emp_title'>" & CUr.JobDesc & "</div>");
+  WebOutString("<div class='smu_shop_single_emp_name'>" & ConvertWebString(CUr.Name) & "</div>");
+  WebOutString("<div class='smu_shop_emp_title'>" & ConvertWebString(CUr.JobDesc) & "</div>");
   WebOutString("</div>");//smu_shop_item_details
 
   WebOutString("</div>");//smu_shop_single_employee
@@ -787,9 +828,10 @@ end;
 
 procedure ShowSingleSMUWebShop(record SMFVc SMFr)
 begin
-  string 255 logolink,bglink,addclass,youtubeid,baseurl;
+  string 255 logolink,bglink,addclass,youtubeid,baseurl,tstr;
   record NotepadVc Noter;
   Boolean shippingf;
+  area ta;
 
   if (GetCompanyLogo(SMFr,logolink)==false) then begin
     logolink = DefaultLogo;
@@ -855,7 +897,10 @@ begin
 
   WebOutString("<div class='smu_shop_aboutus'>");
   WebOutString("<div class='smu_shop_aboutus_title'>" & ToolWebNGTranslateText2(89200) & "</div><div class='smu_shop_aboutus_text'>");
-  WebOutText(SMFr,true,"");
+  GetAreaFromTextField(SMFr,ta);
+  tstr = GetStringFromArea(ta,0,GetAreaLength(ta));
+  WebOutString(ConvertWebString(tstr));
+  //WebOutText(SMFr,true,"");
   WebOutString("</div>");
   WebOutString("</div>");//smu_shop_aboutus_frame
   /*
@@ -914,6 +959,19 @@ begin
   return;
 end;
 
+function val MAX(val tval,val nval)
+begin
+  val res;
+
+  res = tval;
+  if (nval>tval) then begin
+    res = nval;
+  end;
+  
+  MAX = res;
+  return;
+end;
+
 procedure DisplayItemDetails(record SMFVc SMFr,record SMFItemVc SIr)
 begin
   Integer rwcnt,i;
@@ -924,12 +982,13 @@ begin
   Boolean dividerf;
   val price;
   record JALClassBlock JCb;
+  val maxlen;
 
   BlockLoad(JCb);
   WebOutString("<div class='item_details'>");
-  WebOutString("<div class='item_title'>" & SIr.Name & "</div>");
+  WebOutString("<div class='item_title'>" & ConvertWebString(SIr.Name) & "</div>");
   if (nonblank(SIr.ShortDesc)) then begin
-    WebOutString("<div class='item_short_desc'>" & SIr.ShortDesc & "</div>");
+    WebOutString("<div class='item_short_desc'>" & ConvertWebString(SIr.ShortDesc) & "</div>");
   end;
   price = GetSMUItemPrice(JCb,SIr);
   if (price!=SIr.Price) then begin
@@ -955,8 +1014,17 @@ begin
       WebOutString("<div class='item_dimension size'><div class='item_dim_label'>" & ToolWebNGTranslateText2(89246) & "</div><div class='item_dim_values'><select>");
       while (GetNextSubString(SIr.SizeList,pos,",",tstr)) begin
         WebOutString("<option value='" & tstr & "'>" & tstr & "</option>");
+        maxlen = MAX(maxlen,len(tstr));
       end;
       WebOutString("</select></div></div>");
+      maxlen = maxlen*15;
+      if (maxlen>400) then begin
+        maxlen = 400;
+      end;
+      if (maxlen<80) then begin
+        maxlen = 80;
+      end;
+      WebOutString("<script> $('.item_dimension.size select').css('width','" & maxlen & "px');</script>");
       dividerf = true;
     end;
   end;
@@ -978,10 +1046,16 @@ end;
 
 procedure DisplayItemDescription(record SMFItemVc SIr)
 begin
+  area ta;
+  string 255 tstr;
   
   if (SizeTextCnt(SIr)>0) then begin
     WebOutString("<div class='item_full_desc'><div class='item_full_desc_label'>" & ToolWebNGTranslateText2(89248) & "</div><div class='item_full_desc_val'>");
-    WebOutText(SIr,true,"");
+    //WebOutText(SIr,true,"");
+    GetAreaFromTextField(SIr,ta);
+    tstr = GetStringFromArea(ta,0,GetAreaLength(ta));
+    WebOutString(ConvertWebString(tstr));
+
     WebOutString("</div>");
     WebOutString("</div>");
   end;
@@ -1165,7 +1239,7 @@ begin
   price = GetSMUItemPrice(JCb,SIr);
   if (step>0) then begin
     WebOutString("<div class='smu_shop_fav_main_det'><div class='smu_shop_item_smfname'>" & SMFr.SMFName & "</div>");
-    WebOutString("<div class='smu_shop_single_item_title' title='" & SIr.Name & "'>" & SIr.Name & "</div>");
+    WebOutString("<div class='smu_shop_single_item_title' title='" & ConvertWebString(SIr.Name) & "'>" & ConvertWebString(SIr.Name) & "</div>");
     if (nonblank(color)) then begin
       WebOutString("<div class='basket_dim'>" & ToolWebNGTranslateText2(89245) & " " & GetColorName(SIr,color) & "</div>");
     end;
@@ -1188,7 +1262,7 @@ begin
     WebOutString("</div>");
   end else begin
     WebOutString("<div class='smu_shop_fav_main_det'><div class='smu_shop_item_district'>" & SMFr.District & "</div>");
-    WebOutString("<div class='smu_shop_single_item_title'>" & SIr.Name & "</div></div>");
+    WebOutString("<div class='smu_shop_single_item_title'>" & ConvertWebString(SIr.Name) & "</div></div>");
     WebOutString("<div class='smu_shop_item_smfdetails'><div class='smu_shop_item_smfname'>" & SMFr.SMFName & "</div>");
     WebOutString("<a class='smu_shop_item_contactemail' href='mailto:" & SMFr.ContactEmail & "'>" & SMFr.ContactEmail & "</a></div>");
     if (price!=SIr.Price) then begin
@@ -1297,6 +1371,7 @@ begin
       WebOutString("<div class='smu_shop_item_title'>" & ToolWebNGTranslateText2(89221) & "</div>");
       ShowSMUEditField(ToolWebNGTranslateText2(89222),"name","","");
       ShowSMUEditField(ToolWebNGTranslateText2(89223),"email","","");
+      ShowSMUEditField(ToolWebNGTranslateText2(89259),"email_repeat","","");
       ShowSMUEditField(ToolWebNGTranslateText2(89224),"phone","","");
       ShowSMUEditField(ToolWebNGTranslateText2(89225),"shipaddr","","");
       ShowSMUTextArea(ToolWebNGTranslateText2(89226),"comment","","");
@@ -1905,6 +1980,30 @@ begin
   return;
 end;
 
+function Boolean ThumbAlone(record SMFItemVc SIr,string fn)
+begin
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+  Boolean res;
+  string 255 tstr;
+  Integer i;
+
+  res = true;
+  if (left(fn,6)=="thumb_") then begin
+    tstr = right(fn,len(fn)-6);
+    i = 1;
+    while (ReadRecordLink(SIr,i,Attachr,RLr) and res) begin
+      if (Attachr.FileName==tstr) then begin
+        res = false;
+      end;
+      i = i + 1;
+    end;
+  end;
+
+  ThumbAlone = res;
+  return;
+end;
+
 procedure GetItemList(string smfcode)
 begin
   string 255 background,imgname,tstr;
@@ -1952,7 +2051,7 @@ begin
       i = 1;
       cnt2 = 0;
       while (ReadRecordLink(SIr,i,Attachr,RLr)) begin
-        if (left(Attachr.FileName,6)!="thumb_") then begin
+        if (left(Attachr.FileName,6)!="thumb_" or ThumbAlone(SIr,Attachr.FileName)) then begin
           if (cnt2>0) then begin
             WebOutString(",");
           end;

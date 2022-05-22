@@ -1,6 +1,6 @@
 event startup
 begin
-  SetLangMode(LangLatvian,"LAT",2);
+  SetLangMode(LangEnglish,"ENG",2);
   
 //  JAL modulis
   Module("JAL","JAL",730,modJAL);
@@ -45,8 +45,6 @@ begin
 	Setting("SMU likvidācija",JALLiquidationTCLass,modJAL);
   Setting("Sertifikāta teksts",CertificateTextWClass,modJAL);
   Setting("Sertifikāta augstskolas",CertificateSchoolLClass,modJAL);
-  Setting("Atgādinājumu rinda",SMSReminderQueueLClass,modJAL);
-  Setting("Atgādinājumi",SMSReminderLClass,modJAL);
 
 
 
@@ -469,16 +467,6 @@ begin
   SetText(2,"Apstiprināts");
   SetText(3,"Noraidīts");
   EndSet;
-
-  SetBegin(3003);
-  SetText(0,"SMS");
-  SetText(1,"E-pasts");
-  EndSet;
-
-  SetBegin(3004);
-  SetText(0,"Pasūtījumi");
-  EndSet;
-
 
   return;
 end;

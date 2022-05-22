@@ -226,6 +226,9 @@ SourceFile("halcust\\Level0/Documents", 0);
 SourceFile("halcust\\Level0/WebNG", 0);
 SourceFile("halcust\\Level0/RActions", 0);
 
+Exec_file("halcust\\Integrations\\Mesente\\datadef.hal");
+SourceFile("halcust\\Integrations\\Mesente", 0);
+
 //----------------------------
 //
 begin
@@ -1332,9 +1335,10 @@ begin
   EndRecord;
   
   RecordAddBegin(ORVc,"ORVc_JAL");
+  RecordField(ClassChangeDate,M4Date,0,0);
+  RecordField(SMFCodeHeader,M4Str,255,0);
   ArrayField(SMFCode,M4Str,255,0);
   ArrayField(SMFItem,M4UUID,0,0);
-  RecordField(SMFCodeHeader,M4Str,255,0);
   KeyBegin(SMFOrderClass);
   KeySegment(SMFCodeHeader);
   KeySegment(OrderClass);
@@ -1379,6 +1383,81 @@ begin
   KeySegment(SMFCode);
   KeySegment(Read);
   KeySegment(Type);
+  KeySegment(SerNr);
+  EndRecord;
+
+  RecordBegin(SMSReminderVc,-,"");//this should be called MessageReminderVc
+  RecordField(SerNr,M4Long,0,0);
+  RecordField(Comment,M4Str,255,0);
+  RecordField(ReminderType,M4Set,3003,0);
+  RecordField(Type,M4Set,3004,0);
+  RecordField(Days,M4Long,0,0);
+  RecordField(Day1,M4Int,0,0);
+  RecordField(Day2,M4Int,0,0);
+  RecordField(Day3,M4Int,0,0);
+  RecordField(Day4,M4Int,0,0);
+  RecordField(Day5,M4Int,0,0);
+  RecordField(Day6,M4Int,0,0);
+  RecordField(Day7,M4Int,0,0);
+  RecordField(Time1,M4Time,0,0);
+  RecordField(Time2,M4Time,0,0);
+  RecordField(Time3,M4Time,0,0);
+  RecordField(Time4,M4Time,0,0);
+  RecordField(Time5,M4Time,0,0);
+  RecordField(Time6,M4Time,0,0);
+  RecordField(Time7,M4Time,0,0);
+  RecordField(BankHolidays,M4Int,0,0);
+  RecordFIeld(ActiveFlag,M4Int,0,0);
+  RecordField(LastSentDate,M4Date,0,0);
+  RecordField(Message,M4TextField,0,0);
+  RecordField(Subject,M4Str,255,0);
+  RecordField(CustCode,M4Code,20,CUVc);
+  RecordField(MinAmount,M4Val,0,0);
+  RecordField(CreateActivity,M4Int,0,0);
+  RecordField(ActPerson,M4Code,20,0);
+  RecordField(ActType,M4Code,20,0);
+  RecordField(ActText,M4Str,255,0);
+  RecordField(StdText,M4Code,10,0);
+  RecordField(LangCode,M4Code,20,0);
+  RecordField(PerBankAcc,M4Int,0,0);
+  RecordField(OnlyOverdueInvoices,M4Int,0,0);
+  RecordField(FilterString,M4Code,20,0);
+  MainKeyBegin(SerNr,0);
+  KeySegment(SerNr);
+  KeyBegin(ActiveFlag);
+  KeySegment(ActiveFlag);
+  KeySegment(SerNr);
+  EndRecord;
+
+  RecordBegin(SMSReminderQueueVc,-,"");
+  RecordField(SerNr,M4Long,0,0);
+  RecordField(InvoiceNr,M4Long,0,0);
+  RecordField(SentFlag,M4Int,0,0);
+  RecordField(InvDate,M4Date,0,0);//Actually due date
+  RecordField(ReminderNr,M4Long,0,0);
+  RecordField(InvoiceList,M4Str,255,0);
+  RecordField(CheckDays,M4Int,0,0);
+  RecordField(StartDate,M4Date,0,0);
+  RecordField(EndDate,M4Date,0,0);
+
+  MainKeyBegin(SerNr,0);
+  KeySegment(SerNr);
+  KeyBegin(SentFlag);
+  KeySegment(SentFlag);
+  KeySegment(InvDate);
+  KeySegment(SerNr);
+  KeyBegin(InvoiceNr);
+  KeySegment(InvoiceNr);
+  KeySegment(SerNr);
+  KeyBegin(ReminderInvoice);
+  KeySegment(ReminderNr);
+  KeySegment(InvoiceNr);
+  KeySegment(SerNr);
+
+  SubsetKeyBegin2(ReminderInvoiceList);
+  StoreInBaseKey;
+  AppendListFieldToKeyName(InvoiceList);
+  KeySegment(ReminderNr);
   KeySegment(SerNr);
   EndRecord;
 

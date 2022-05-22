@@ -1,0 +1,26 @@
+remote procedure SendMessenteMessage(string,string);
+
+global
+procedure SendMesentaSMS()
+begin
+  record RcVc RepSpec;
+  
+  OpenWindow("SendSMSWClass",0,0,"","",RepSpec);
+
+  return;
+end;
+
+global
+procedure SendSMSWClassSend()
+begin
+  record RcVc RepSpec;
+  Integer wn;
+  
+  wn = CurWindow;
+  DeselectWindow(wn,true);
+  GetWindowRecord(wn,RepSpec);
+  SendMessenteMessage(RepSpec.f1,RepSpec.f2);
+  CloseWindow(wn);
+
+  return;
+end;

@@ -435,7 +435,7 @@ begin
         WebOutString("""UCost"":""" & FCrw.UCost & """");
         WebOutString("}");
       end;
-      for (i=0;i<3;i=i+1) begin
+      for (i=0;i<5;i=i+1) begin
         c = GetFieldValueByName(FCr,"contact" & (i+1),-1);
         s = GetFieldValueByName(FCr,"salary" & (i+1),-1);
         if (nonblank(c)) then begin
@@ -889,8 +889,8 @@ begin
   testf = true;
   res = tstr;
   while (testf) begin
-    if (right(res,2)=="\\n") then begin
-      res = left(res,len(res)-2);
+    if (right(res,1)==chr(10)) then begin
+      res = left(res,len(res)-1);
     end else begin
       testf = false;
     end;

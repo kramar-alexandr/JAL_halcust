@@ -1,1 +1,155 @@
-external function string 255 FormatSimpleLink(string,boolean);//external procedure WebOutStringFormatNL(string);external function string 255 ToolWebNGtranslateText(integer);external procedure ShowRedirectHtml(string,boolean);globalprocedure DrawSignForNewsPage()begin  integer err;  //stopalert("izsauc zimeshanu");    WebOutStringFormatNL("<form method=""POST"" action=""/WebSignForNews.hal"">");  WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path") & """>");    err = StringToLongInt(GetSessionString("err"));  if (err>0) then begin    WebOutStringFormatNL("<div id=""errormsg"">" & ToolWebNGtranslateText(20083) & "</div>");  end;  PutSessionString("err","");  WebOutStringFormatNL(ToolWebNGtranslateText(21062) & "  <input class=""spinput""type=""text"" name=""email"" value=""" & GetSessionString("cemail") & """><br><br>");  WebOutStringFormatNL("<input class=""spbutton"" type=""submit"" value=""" & ToolWebNGtranslateText(21070) &""">");  WebOutStringFormatNL("</form>");return;end;globalfunction boolean CheckEmailStr(string email)begin  boolean res;  integer i,l,ppos,apos;  l = len(email);  apos = -1;  ppos = -1;  for (i = 0; i < l; i = i + 1) begin    if mid(email,i,1)=="@" then begin apos = i; end;    if mid(email,i,1)=="." then begin ppos = i; end;  end;   res = false;  if apos > 0 then begin    if ppos > apos and ppos <> l-1 then begin      res = true;    end;  end;CheckEmailStr = res;return;end;global webpublicupdating procedure WebSignForNews()begin  integer err,i,cnt;  record NewsEmailBlock NEr;  row NewsEmailBlock NErw;  string 150 email;  boolean Trhs,savef;  err = 0;  email = WebGetArg("email");  savef = false;  if email=="" then begin    err = err + 2;  end else begin    if CheckEmailStr(email)==false then begin	    err=err+4;    end;  end;    if err==0 then begin    BlockLoad(NEr);    cnt = MatRowCnt(NEr);    savef = true;    for (i = 0; i < cnt; i = i + 1) begin      MatRowGet(NEr,i,NErw);      if (NErw.Email == email) then begin        err = 2;        savef = false;      end;    end;  end;  if savef then begin    MatRowGet(NEr,cnt,NErw);    NErw.Email = email;    MatRowPut(NEr,cnt,NErw);    BlockStore(NEr);    PutSessionString("cemail","");              PutSessionString("err",err);        end else begin    PutSessionString("cemail",email);          PutSessionString("err",err);        end;  ShowRedirectHtml(FormatSimpleLink(WebGetArg("regpath"),true),false);return;end;global procedure DrawRemoveNewsForm()beginstopalert(WebGetArg("mail") & " nuuuuuu");WebOutStringFormatNL("<form id=""delnews"" method=""POST"" action=""/WebRemoveFromNews.hal"">");WebOutStringFormatNL("<input type=""hidden"" name=""mail"" value=""" & WebGetArg("mail") & """>");return;end;global webpublicupdating procedure WebRemoveFromNews()begin  record NewsEmailBlock NEbl;  row NewsEmailBlock NEblrw;  integer i,rwcnt;  string 50 mail;  boolean testf;  blockload(NEbl);    mail = WebGetArg("mail");  rwcnt = MatRowCnt(NEbl);  //stopalert("primais");  testf = false;  stopalert("aaa");  stopalert(rwcnt & " skaits");  for (i = 0; i < rwcnt; i = i + 1) begin    MatRowGet(NEbl,i,NEblrw);	stopalert("mekl•");	if NEblrw.Email == mail then begin	  stopalert("atrada");	  MatRowDelete(NEbl,i);	  testf = true;	end;  end;  BlockStore(NEbl);    if testf then begin    ShowRedirectHtml(FormatSimpleLink("/aftersucdel",true),false);  end else begin    ShowRedirectHtml(FormatSimpleLink("/afterbaddel",true),false);  end;  return;end;
+external function string 255 FormatSimpleLink(string,boolean);
+//external procedure WebOutStringFormatNL(string);
+external function string 255 ToolWebNGtranslateText(integer);
+external procedure ShowRedirectHtml(string,boolean);
+external function boolean CheckRecaptcha(area);
+
+
+global
+procedure DrawSignForNewsPage()
+begin
+  integer err;
+  //stopalert("izsauc zimeshanu");
+  
+  WebOutStringFormatNL("<form method=""POST"" action=""/WebSignForNews.hal"" id='newsform'>");
+  WebOutStringFormatNL("<input type=""hidden"" name=""regpath"" value=""" & WebGetArg("path") & """>");
+  
+  err = StringToLongInt(GetSessionString("err"));
+  if (err>0) then begin
+    WebOutStringFormatNL("<div id=""errormsg"">" & ToolWebNGtranslateText(20083) & "</div>");
+  end;
+  PutSessionString("err","");
+  WebOutStringFormatNL("<div class='form_label'>" & ToolWebNGtranslateText(21062) & ":</div>  <input class=""spinput""type=""text"" name=""email"" value=""" & GetSessionString("cemail") & """>");
+  WebOutStringFormatNL("<input class=""spbutton"" type=""button"" value=""" & ToolWebNGtranslateText(21070) &""">");
+  WebOutStringFormatNL("</form>");
+return;
+end;
+
+global
+function boolean CheckEmailStr(string email)
+begin
+  boolean res;
+  integer i,l,ppos,apos;
+  l = len(email);
+  apos = -1;
+  ppos = -1;
+  for (i = 0; i < l; i = i + 1) begin
+    if mid(email,i,1)=="@" then begin apos = i; end;
+    if mid(email,i,1)=="." then begin ppos = i; end;
+  end; 
+  res = false;
+  if apos > 0 then begin
+    if ppos > apos and ppos <> l-1 then begin
+      res = true;
+    end;
+  end;
+CheckEmailStr = res;
+return;
+end;
+
+
+global webpublic
+updating procedure WebSignForNews()
+begin
+  integer err,i,cnt;
+  record NewsEmailBlock NEr;
+  row NewsEmailBlock NErw;
+  string 150 email;
+  boolean Trhs,savef;
+  area WebPostArea;
+
+  err = 0;
+
+  WebGetPostData(WebPostArea);
+  if (CheckRecaptcha(WebPostArea)==false) then begin 
+    err = 64; 
+    logtext(0,"failed to verify CheckRecaptcha");
+  end else begin
+    logtext(0,"successfully verified CheckRecaptcha");
+  end;
+
+  email = WebGetArg("email");
+  savef = false;
+  if email=="" then begin
+    err = err + 2;
+  end else begin
+    if CheckEmailStr(email)==false then begin
+	    err=err+4;
+    end;
+  end;  
+  if err==0 then begin
+    BlockLoad(NEr);
+    cnt = MatRowCnt(NEr);
+    savef = true;
+    for (i = 0; i < cnt; i = i + 1) begin
+      MatRowGet(NEr,i,NErw);
+      if (NErw.Email == email) then begin
+        err = 2;
+        savef = false;
+      end;
+    end;
+  end;
+
+
+  if savef then begin
+    MatRowGet(NEr,cnt,NErw);
+    NErw.Email = email;
+    MatRowPut(NEr,cnt,NErw);
+    BlockStore(NEr);
+    PutSessionString("cemail","");          
+    PutSessionString("err",err);      
+  end else begin
+    PutSessionString("cemail",email);      
+    PutSessionString("err",err);      
+  end;
+  ShowRedirectHtml(FormatSimpleLink(WebGetArg("regpath"),true),false);
+
+return;
+end;
+
+
+global 
+procedure DrawRemoveNewsForm()
+begin
+stopalert(WebGetArg("mail") & " nuuuuuu");
+WebOutStringFormatNL("<form id=""delnews"" method=""POST"" action=""/WebRemoveFromNews.hal"">");
+WebOutStringFormatNL("<input type=""hidden"" name=""mail"" value=""" & WebGetArg("mail") & """>");
+
+return;
+end;
+
+global webpublic
+updating procedure WebRemoveFromNews()
+begin
+  record NewsEmailBlock NEbl;
+  row NewsEmailBlock NEblrw;
+  integer i,rwcnt;
+  string 50 mail;
+  boolean testf;
+
+  blockload(NEbl);
+  
+  mail = WebGetArg("mail");
+  rwcnt = MatRowCnt(NEbl);
+  //stopalert("primais");
+  testf = false;
+  stopalert("aaa");
+  stopalert(rwcnt & " skaits");
+  for (i = 0; i < rwcnt; i = i + 1) begin
+    MatRowGet(NEbl,i,NEblrw);
+	stopalert("mekl•");
+	if NEblrw.Email == mail then begin
+	  stopalert("atrada");
+	  MatRowDelete(NEbl,i);
+	  testf = true;
+	end;
+  end;
+  BlockStore(NEbl);
+  
+  if testf then begin
+    ShowRedirectHtml(FormatSimpleLink("/aftersucdel",true),false);
+  end else begin
+    ShowRedirectHtml(FormatSimpleLink("/afterbaddel",true),false);
+  end;
+  return;
+end;

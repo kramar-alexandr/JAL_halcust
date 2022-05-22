@@ -1,0 +1,80 @@
+//<halrule>server-only</halrule>
+external updating function Boolean MakeActSMS(record SMSVc,var record ActVc);
+external outer procedure HandleFailedSMSReminder(Integer,area);
+
+procedure DoSendMessage(string receiver,string text,var string messageid)
+begin
+  record MesenteSMSBlock MSb;
+  string 255 headertxt,url,path;
+  area request,reply;
+  Longint pos;
+  record SMSVc SMSr;
+  record ASTBlock ASTb;
+  record ActVc Actr;
+  Boolean res;
+
+  BlockLoad(MSb);
+
+  if (blank(MSb.APIUrl)) then begin
+    HandleFailedSMSReminder(1,reply);
+    goto LDoSendMessage;
+  end;
+
+  url = MSb.APIUrl;
+  //path = "/v1/omnimessage";
+  path = "/send_sms/";
+
+  AddTextToArea("username=" & MSb.APIUser,request);
+  AddTextToArea("&password=" & MSb.APIPassword,request);
+  //AddTextToArea("&text=" & UrlEncode(text),request);
+  AddTextToArea("&text=" & UrlEncode(text),request);
+  if (nonblank(MSb.SMSSender)) then begin
+    AddTextToArea("&from=" & MSb.SMSSender,request);//not required
+  end;
+  AddTextToArea("&to=" & receiver,request);
+
+  path = path & "?" & GetStringFromArea(request,0,GetAreaLength(request));
+  SetAreaZeroSize(request);
+
+  if (SendWebRequest(url,443,-1,true,"POST",path,"text/plain","",false,request,reply,10)) then begin
+    pos = FindStringInArea("OK",reply);
+    if (pos>=0) then begin
+      messageid = GetStringFromArea(reply,pos+15,GetAreaLength(reply)-pos-15);
+      LogText(0,"MessageID::" & messageid);;
+      BlockLoad(ASTb);
+      if (nonblank(ASTb.SMS)) then begin
+        RecordNew(SMSr);
+        SetTextField(SMSr,text);
+        SMSr.PhoneNo = receiver;
+        res = qupdating.MakeActSMS(SMSr,Actr);
+      end;
+    end else begin
+      WriteAreaToFile(reply,"sms_fail2.txt",0);
+      HandleFailedSMSReminder(0,reply);
+    end;
+  end else begin
+    WriteAreaToFile(request,"sms_fail.txt",0);
+    HandleFailedSMSReminder(1,reply);
+  end;
+LDoSendMessage:;
+  return;
+end;
+
+global
+procedure SendMessenteMessage(string receiver,string text)
+begin
+  string 255 messageid;
+
+  if (TestEnablerFile("EnNoSMS")) then begin
+    logtext(0,"skipping sms sending");
+    goto LSendMessenteMessage;
+  end;
+
+  DoSendMessage(receiver,text,messageid);
+  //if (MSb.CheckStatus==1) then begin
+  //  CheckMessageStatus(messageid);
+  //end;
+
+LSendMessenteMessage:;
+  return;
+end;

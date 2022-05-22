@@ -1,0 +1,14 @@
+remote procedure CallSingleSMSReminderRecord(record SMSReminderVc);
+
+
+global
+procedure SMSRemindersDoDsm()
+begin
+  record SMSReminderVc SMSReminder;
+
+  GetWindowRecord(CurWindow,SMSReminder);
+  
+  CallSingleSMSReminderRecord(SMSReminder);
+
+  return;
+end;

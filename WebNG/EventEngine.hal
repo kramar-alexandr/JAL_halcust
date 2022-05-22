@@ -593,8 +593,11 @@ begin
     ShowRegistrationFields(JEr,uplf,foundf,JEEr);
   
     //WebOutStringFormatNL("<div class='submit_line'><input type='button' onclick='location.href=""" & FormatSimpleLink(removelastnode("/" & path),true) & """' class='spbutton first' value='" & ToolWebNGTranslateText(26206) & "'><input type='submit' class='spbutton' value='" & ToolWebNGTranslateText(26207) & "'></div>");
-    WebOutStringFormatNL("<div class='submit_line'><input type='submit' class='spbutton' value='" & ToolWebNGTranslateText(26207) & "'></div>");
-
+    if (JEr.Type==2) then begin
+      WebOutStringFormatNL("<div class='submit_line'><input type='submit' class='spbutton' value='" & ToolWebNGTranslateText(26209) & "'></div>");
+    end else begin
+      WebOutStringFormatNL("<div class='submit_line'><input type='submit' class='spbutton' value='" & ToolWebNGTranslateText(26207) & "'></div>");
+    end;
     WebOutStringFormatNL("</form>");
   end;
 

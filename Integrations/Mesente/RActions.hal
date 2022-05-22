@@ -1,0 +1,30 @@
+global
+updating function LongInt MesenteSMSBlockCheck(var record MesenteSMSBlock MSb,record MesenteSMSBlock MS2b,LongInt stat,LongInt long4)
+BEGIN
+  Longint res;
+
+  res = 0;
+
+  if (MSb.CreateActivity==1) then begin
+    if (blank(MSb.ActPerson)) then begin
+      RecordCheckError(1058,"",-1,"ActPerson");
+      res = -1;
+      goto LMesenteSMSBlockCheck;    
+    end;
+    if (blank(MSb.ActType)) then begin
+      RecordCheckError(1058,"",-1,"ActType");
+      res = -1;
+      goto LMesenteSMSBlockCheck;    
+    end;
+    if (blank(MSb.ActText)) then begin
+      RecordCheckError(1058,"",-1,"ActText");
+      res = -1;
+      goto LMesenteSMSBlockCheck;    
+    end;
+  end;
+
+
+LMesenteSMSBlockCheck:;  
+  MesenteSMSBlockCheck = res;
+  return;
+end;

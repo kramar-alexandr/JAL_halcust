@@ -1,4 +1,4 @@
-
+external procedure InitSMSReminderTask();
 
 global
 updating procedure OnApplicationStartupComplete()
@@ -43,8 +43,42 @@ begin
         end;
       end;
     end;
-  end; 
+    InitSMSReminderTask;
+/*
+    begin
+      record ORVc ORr,oldORr;
+      while (LoopMain(ORr,1,true)) begin
+        if (ORr.ClassChangeDate>CurrentDate or blank(ORr.ClassChangeDate)) then begin
+          RecordCOpy(oldORr,ORr);
+          ORr.ClassChangeDate = CurrentDate;
+          RecordUpdate(oldORr,ORr,true);
+        end;
+      end;
+    end;
+*/
+/*
+    begin
+      record ORVc ORr,oldORr;
+      record ORMessageVc OMr;
 
+      while (LoopMain(ORr,1,true)) begin
+        if (blank(ORr.SMFCodeHeader)) then begin
+          ResetLoop(OMr);
+          RecordClear(OMr);
+          OMr.OrderNr = ORr.SerNr;
+          if (ReadFirstKey("OrderDate",OMr,1,true)) then begin
+            if (nonblank(OMr.SMFCode)) then begin
+              RecordCopy(oldORr,ORr);
+              ORr.SMFCodeHeader = OMr.SMFCode;
+              RecordUpdate(oldORr,ORr,true);
+            end;
+          end;
+        end;
+      end;
+    end;
+*/
+
+  end; 
 /*
   //one time thing
   begin
@@ -71,5 +105,7 @@ begin
     end;
   end;
 */
+
+
   return;
 end;

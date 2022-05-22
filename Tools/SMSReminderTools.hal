@@ -1,0 +1,719 @@
+external inner procedure SendMessenteMessage(string,string);
+external function string 255 NovitiGetEmailSender();
+external procedure CheckBuyOutAgreement(record CredManVc,var record RcVc);
+external inner function Boolean PasteCuInAct(var record ActVc,var string);
+external inner function Boolean PasteActTypeInAct2(string,var record ActVc,var string);
+external updating procedure Cust_SetReminderStatus(record SMSReminderQueueVc,Integer);
+external inner function string 255 CredManOwnBankAccount(Longint,var string,var string,var string);
+external inner function LongInt DateDiff(Date,Date);
+external inner function string 255 StrReplace(string,string,string);
+external function string 255 GetCredManNr(Longint);
+
+enum begin
+  kMaxCheckDays = 3
+end;
+
+function string 255 GetReminderTextToken(record RcVc RepSpec,string token)
+begin
+  string 255 res;
+  record CYBlock CYb;
+  record IVVc IVr;
+  record CredManVc CMr;
+  Longint pos;
+  string 255 recname,field;
+ 
+
+  if (InString(token,".")) then begin
+    GetNextSubString(token,pos,".",recname);
+    GetNextSubString(token,pos,".",field);
+    switch (recname) begin
+      case "CYb":
+        BlockLoad(CYb);
+        switch (field) begin
+          case "CompName":   res = CYb.CompName;
+          case "Bank1":      res = CYb.Bank1;
+          case "Bank2":      res = CYb.Bank2;
+          case "BankName":   res = CYb.BankName;
+          case "Phone":      res = CYb.Phone;
+          case "emailAddr":  res = CYb.emailAddr;
+        end;
+    end;    
+  end else begin
+    switch (token) begin
+      case "OrderNr":
+        res = RepSpec.long1;
+      case "OrderDate":
+        res = DateToString(RepSpec.d1,"YYYY/MM/DD");
+      case "PlanShipDate":
+        res = RepSpec.f2;
+      case "SMUName":
+        res = RepSpec.f3;
+      case "CustName":
+        res = RepSpec.f4;
+      case "link":
+        res = RepSpec.f5;
+      case "Total":
+        res = RepSpec.vals0;
+    end;
+  end;
+
+  GetReminderTextToken = res;
+  return;
+end;
+
+global
+function string 255 SMSReminderLTxtVcReplaceToken(record LTxtVc LTxtr,record RcVc RepSpec,string token)
+begin
+  string 255 res;
+
+  res = GetReminderTextToken(RepSpec,token);
+
+  SMSReminderLTxtVcReplaceToken = res;
+  return;
+end;
+
+global
+function string 255 SMSReminderEQueueVcReplaceToken(record EMailQueVc emqrp,record RcVc RepSpec,string token)
+begin
+  string 255 res;
+
+  res = GetReminderTextToken(RepSpec,token);
+
+  SMSReminderEQueueVcReplaceToken = res;
+  return;
+end;
+
+global
+function string 255 SMSReminderVcReplaceToken(record SMSReminderVc SMSReminder,record RcVc RepSpec,string token)
+begin
+  string 255 res;
+
+  res = GetReminderTextToken(RepSpec,token);
+
+  SMSReminderVcReplaceToken = res;
+  return;
+end;
+
+function val GetTotalPayableAmount(Longint sernr)
+begin
+  val res;
+  record RcVc RepSpec;
+  record CredManVc CredManr;
+  
+  CredManr.SerNr = sernr;
+  if (ReadFirstMain(CredManr,1,true)) then begin  
+    RepSpec.d1 = CurrentDate;
+    CheckBuyOutAgreement(CredManr,RepSpec);
+    res = RepSpec.vals4;
+    res = res + StringToVal(RepSpec.f12,M4Val);
+  end;
+
+  GetTotalPayableAmount = res;
+  return;
+end;
+
+global
+procedure FindFirstContactPerson(record CUVc CUr,var record CUVc ContactCUr)
+begin
+  record ContactRelVc CRr;
+  Boolean TrHs;
+
+  TrHs = true;
+  CRr.CustCode = CUr.Code;
+  while (LoopMain(CRr,1,TrHs)) begin
+    if (CRr.CustCode!=CUr.Code) then begin
+      TrHs = false;
+    end else begin
+      if (CRr.Invalid==0) then begin
+        TrHs = false;
+        ContactCUr.Code = CRr.ContactCode;
+        if (ReadFirstMain(ContactCUr,1,true)) then begin
+        end;
+      end;
+    end;
+  end;
+
+  return;
+end;
+
+function string 255 GetContactPhoneNumber(record CUVc CUr)
+begin
+  string 255 res;
+  record CUVc ContactCUr;
+
+  res = CUr.Mobile;
+  if (blank(res)) then begin
+    FindFirstContactPerson(CUr,ContactCUr);
+    res = ContactCUr.Mobile;
+  end;
+  if (blank(res)) then begin
+    res = CUr.Phone;
+  end;
+  if (blank(res)) then begin
+    res = ContactCUr.Phone;
+  end;
+
+  GetContactPhoneNumber = res;
+  return;
+end;
+
+function string 255 GetContactEmail(record CUVc CUr)
+begin
+  string 255 res;
+  record CUVc ContactCUr;
+
+  res = CUr.eMail;
+  if (blank(res)) then begin
+    FindFirstContactPerson(CUr,ContactCUr);
+    res = ContactCUr.eMail;
+  end;
+
+  GetContactEmail = res;
+  return;
+end;
+
+global
+procedure SendSMSReminderToService(string phoneno,string text,Longint queuenr)
+begin
+  transaction Longint gSMSQueueRecord;
+
+  gSMSQueueRecord = queuenr;
+  SendMessenteMessage(phoneno,text);
+
+  return;
+end;
+
+global
+updating procedure DoHandleFailedSMSReminder(Longint sernr,Integer type,area reply)
+begin
+  record SMSReminderQueueVc SRQr;
+  record NotePadVc Noter;
+  record RLinkVc RLr;
+  record MesenteSMSBlock MSb;
+  record ActVc Actr;
+  string 255 warning;
+
+  SRQr.SerNr = sernr;
+  if (ReadFirstMain(SRQr,1,true)) then begin
+    Cust_SetReminderStatus(SRQr,3);
+    RecordNew(Noter);
+    Noter.SerNr = NextSerNr("NotepadVc",CurrentDate,-1,false,"");
+    if (type==0) then begin
+      AddAreaToTextField(reply,Noter);
+    end else begin
+      SetTextField(Noter,"Failed to connect to server");
+    end;
+    if (RecordStore(Noter,false)) then begin
+      CreateRecordLink(SRQr,CurrentCompany,Noter,CurrentCompany);  
+      if (ReadRecordLink(SRQr,1,Noter,RLr)) then begin
+        RLr.Comment = "Error Message";
+        if (RecordStore(RLr,true)) then begin
+        end;
+      end;
+    end;
+    BlockLoad(MSb);
+    if (MSb.CreateActivity==1) then begin
+      RecordNew(Actr);
+      Actr.SerNr = NextSerNr("ActVc",CurrentDate,-1,false,"");
+      Actr.TransDate = CurrentDate;
+      Actr.ActType = MSb.ActType;
+      PasteActTypeInAct2("",Actr,warning);
+      Actr.MainPersons = MSb.ActPerson;
+      Actr.Comment = MSb.ActText;
+      Actr.TodoFlag = kTodoFlagTodo;
+      if (RecordInsert(Actr,true)) then begin
+        CreateRecordLink(Actr,CurrentCompany,SRQr,CurrentCompany);
+        CreateRecordLink(SRQr,CurrentCompany,Actr,CurrentCompany);
+      end;
+
+    end;
+
+  end;
+
+  return;
+end;
+
+global
+procedure HandleFailedSMSReminder(Integer errtype,area reply)
+begin
+  transaction Longint gSMSQueueRecord;
+
+  queued.DoHandleFailedSMSReminder(gSMSQueueRecord,errtype,reply);
+
+  return;
+end;
+
+function Boolean DoSendSMSReminder(record SMSReminderVc SMSReminder,record RcVc RepSpec,record SMFVc SMFr,Longint queuenr)
+begin
+  area a;
+  string 255 text,tstr,phoneno;
+  Integer i,lcnt;
+  record ARVc ARr;
+  Boolean res;
+  
+  phoneno = SMFr.PhoneNo;
+  if (blank(phoneno)) then begin
+    LogText(0,"Skipping SMS reminder for contact " & SMFr.SMFCode & " - " & SMFr.SMFName & ". No Mobile Phone specified");
+    goto LSendSMSReminder;
+  end;
+  res = true;
+  ParseTextField(a,SMSReminder,RepSpec,"SMSReminderVcReplaceToken");
+
+  lcnt = CountLinesInArea(a);
+  for (i=0;i<lcnt;i=i+1) begin
+    tstr = GetLineFromArea(a,i);
+    if (i>0) then begin
+      text = text & "\\n";
+    end;
+    text = text & tstr;
+  end;
+
+  threadasync.SendSMSReminderToService(phoneno,text,queuenr);
+
+LSendSMSReminder:;
+  DoSendSMSReminder = res;
+  return;
+end;
+
+global
+updating function Boolean DoSendEmailReminder(record SMSReminderVc SMSReminder,record RcVc RepSpec,record SMFVc SMFr)
+begin
+  area a;
+  string 255 text,tstr,email;
+  Integer i;
+  Longint l,pos;
+  record EMailQueVc emqrp;
+  row EMailQueVc emarw;
+  record CYBlock CYb;
+  record ARVc ARr;
+  record LTxtVc LTxtr,Ltxt2r;
+  Boolean res;
+  Boolean foundf;
+  area htmlarea,reshtml;
+  record Attach2Vc Attachr;
+  record RLinkVc RLr;
+  record MailSettingsBlock MSb;
+  
+  email = SMFr.Email;
+  if (blank(email)) then begin
+    LogText(0,"Skipping Email reminder for contact " & SMFr.SMFCode & " - " & SMFr.SMFName & ". No Email specified");
+    goto LSendSMSReminder;
+  end;
+
+  res = true;
+  BlockLoad(MSb);
+  emarw.RowTyp = 1;
+  emarw.AddrCode = MSb.FromSystem;
+  MatRowPut(emqrp,MatRowCnt(emqrp),emarw);
+
+  emarw.RowTyp = 0;
+  emarw.AddrCode = email;
+  MatRowPut(emqrp,MatRowCnt(emqrp),emarw);
+  emqrp.Header = SMSReminder.Subject;
+
+  if (nonblank(SMSReminder.StdText)) then begin
+    LTxtr.Code = SMSReminder.StdText;
+    if (ReadFirstMain(LTxtr,1,true)) then begin
+      foundf = true;
+      if (LTxtr.HtmlFlag==0) then begin
+        ParseTextField(a,LTxtr,RepSpec,"SMSReminderLTxtVcReplaceToken");
+      end;
+    end;
+  end;
+  if (foundf==false) then begin
+    ParseTextField(a,SMSReminder,RepSpec,"SMSReminderVcReplaceToken");
+  end;
+
+  l = GetAreaLength(a);
+  pos = 0;
+  while (pos<l) begin
+    tstr = GetStringFromArea(a,pos,255);
+    AddToText(tstr,emqrp); 
+    pos = pos+255;
+  end;
+
+  emqrp.SerNr = NextSerNr("EMailQueVc",CurrentDate,-1,false,"");
+  emqrp.OrgSerNr = -1;
+  emqrp.FileName = "";
+  emqrp.TransDate = CurrentDate;
+  emqrp.TransTime = CurrentTime;
+  emqrp.HasFileAtt = 0;
+  emqrp.HasRecAtt = 0;
+  emqrp.Priority = 1;
+  emqrp.EMailSent = 0;
+  emqrp.Lifespan = 0;
+  emqrp.QueDate = CurrentDate;
+  emqrp.QueTime = CurrentTime;
+  emqrp.HtmlFlag = LTxtr.HtmlFlag;
+
+  if (RecordInsert(emqrp,false)) then begin
+    if (foundf) then begin
+      CopyRecordLinks(LTxtr,emqrp);
+      if (LTxtr.HtmlFlag==1) then begin
+        ParseHtmlField(emqrp,RepSpec,"SMSReminderEQueueVcReplaceToken");
+      end;
+    end;
+  end;
+
+LSendSMSReminder:;
+  DoSendEmailReminder = res;
+  return;
+end;
+
+function Boolean ShouldTrigerSMSReminder(record SMSReminderVc SMSReminder)
+begin
+  Boolean res;
+  Integer day;
+  string 255 tstr;
+  Time t;
+  
+  if (SMSReminder.LastSentDate==CurrentDate) then begin
+    goto LShouldTrigerSMSReminder;
+  end;
+
+  day = GetDateID(CurrentDate);
+  tstr = GetFieldValueByName(SMSReminder,"Day" & day,-1);
+  if (tstr=="1") then begin
+    t = StringToTime(GetFieldValueByName(SMSReminder,"Time" & day,-1));
+    if (t<CurrentTime and AddMinutes(t,10)>CurrentTime) then begin
+      res = true;
+    end;
+  end;
+
+LShouldTrigerSMSReminder:;
+  ShouldTrigerSMSReminder = res;
+  return;
+end;
+
+global
+updating procedure UpdateReminderLastSentDate(record SMSReminderVc SMSReminder)
+begin
+  record SMSReminderVc oldSMSReminder;
+
+  if (ReadFirstMain(SMSReminder,1,true)) then begin
+    RecordCopy(oldSMSReminder,SMSReminder);
+    SMSReminder.LastSentDate = CurrentDate;
+    RecordUpdate(oldSMSReminder,SMSReminder,true);
+  end;
+
+  return;
+end;
+
+global updating
+procedure Cust_SetReminderStatus(record SMSReminderQueueVc SRQr,Integer status)
+begin
+  record SMSReminderQueueVc oldSRQr;
+  
+  RecordCopy(oldSRQr,SRQr);
+  SRQr.SentFlag = status;
+  RecordUpdate(oldSRQr,SRQr,true);
+
+  return;
+end;
+
+updating procedure CreateFailedReminderActivity(record SMSReminderVc SMSReminder,record SMFVc SMFr)
+begin
+  string 255 warning;
+  record ActVc Actr;
+
+  if (SMSReminder.CreateActivity==1) then begin
+    RecordNew(Actr);
+    Actr.SerNr = NextSerNr("ActVc",CurrentDate,-1,false,"");
+    Actr.TransDate = CurrentDate;
+    Actr.ActType = SMSReminder.ActType;
+    PasteActTypeInAct2("",Actr,warning);
+    Actr.MainPersons = SMSReminder.ActPerson;
+    Actr.Comment = SMSReminder.ActText & " " & SMFr.SMFCode & " " & SMFr.SMFName;
+    Actr.TodoFlag = kTodoFlagTodo;
+    RecordInsert(Actr,true);
+  end;
+
+  return;
+end; 
+
+function string 255 GetInvoiceNumber(record IVVc IVr)
+begin
+  string 255 res;
+
+  if (nonblank(IVr.OfficialSerNr)) then begin
+    res = IVr.OfficialSerNr;
+  end else begin
+    res = IVr.SerNr;
+  end;
+
+  GetInvoiceNumber = res;
+  return;
+end;
+
+global
+updating procedure SendSingleSMS4(record SMSReminderVc SMSReminder,record ORVc ORr,Integer days,Date sd,Date ed)
+begin
+  record SMSReminderQueueVc SRQr;
+  Boolean sentf;
+  Longint pos,l;
+  record RcVc RepSpec;
+  string 255 list,tablelist,agreementlist,bankfulltext,tstr,notetext;
+  record NotePadVc Noter;
+  record RLinkVc RLr;
+  Integer rwcnt,i;
+  row ORVc ORrw;
+  record SMFVc SMFr;
+  
+  SMFr.SMFCode = ORr.SMFCodeHeader;
+  if (ReadFirstMain(SMFr,1,true)) then begin
+    RecordNew(SRQr);
+    SRQr.SerNr = NextSerNr("SMSReminderQueueVc",CurrentDate,-1,false,"");
+
+    SRQr.InvoiceList = ORr.SerNr;
+    SRQr.InvDate = CurrentDate;
+    SRQr.ReminderNr = SMSReminder.SerNr;
+    SRQr.SentFlag = 1;
+    SRQr.CheckDays = days;
+    SRQr.StartDate = sd;
+    SRQr.EndDate = ed;
+    RecordInsert(SRQr,true);
+
+    RepSpec.long1 = ORr.SerNr;
+    RepSpec.d1 = ORr.OrdDate;
+    RepSpec.d2 = ORr.PlanShip;
+    RepSpec.f3 = SMFr.SMFName;
+    RepSpec.f4 = ORr.Addr0;
+    RepSpec.f5 = "https://jalatvia.lv/pasutijumi/pasutijums/" & ORr.SerNr;
+    RepSpec.vals0 = ORr.Sum4;
+
+    if (SMSReminder.ReminderType==0) then begin
+      sentf = DoSendSMSReminder(SMSReminder,RepSpec,SMFr,SRQr.SerNr);
+    end else begin
+      sentf = DoSendEmailReminder(SMSReminder,RepSpec,SMFr);
+    end;
+
+  end;
+  if (!sentf) then begin
+    SRQr.SentFlag = 3;
+    RecordStore(SRQr,true);
+    CreateFailedReminderActivity(SMSReminder,SMFr);
+  end;
+
+  return;
+end;
+
+function Boolean ReminderAlreadySent(Longint ivnr,Longint remnr)
+begin
+  record SMSReminderQueueVc SRQr;
+  Boolean res;
+
+  SRQr.InvoiceNr = ivnr;
+  SRQr.ReminderNr = remnr;
+  if (ReadFirstKey("ReminderInvoice",SRQr,2,true)) then begin
+    res = true;
+  end else begin
+    ResetLoop(SRQr);
+    SRQr.ReminderNr = remnr;
+    if (ReadFirstKey("ReminderInvoiceList:" & ivnr,SRQr,1,true)) then begin
+      res = true;
+    end;
+  end;
+
+  ReminderAlreadySent = res;
+  return;
+end;
+
+function Boolean SkipCustomerBalance(longint sernr,val minval)
+begin
+  Boolean res;
+
+  res = false;
+  if (GetTotalPayableAmount(sernr)<minval) then begin
+    res = true;
+  end;
+
+  SkipCustomerBalance = res;
+  return;
+end;
+
+procedure AddInvoiceToReminderArr(record ORVc ORr,var array record ORVc arrORr)
+begin
+  Integer i,rwcnt,rownum,num;
+  record ARVc ARr;
+  row ORVc ORrw;
+  record ORVc tORr;
+  string 255 bankacc,bankname,bankbic,bankcode;
+
+  for (i=0;i<arrORr.length;i=i+1) begin
+    tORr = arrORr[i];
+    if (tORr.SMFCodeHeader==ORr.SMFCodeHeader) then begin
+      num = i;   
+      goto LAddInvoiceToReminderArr;
+    end;
+  end;
+  num = arrORr.length;
+  RecordClear(tORr);
+  tORr.SMFCodeHeader = ORr.SMFCodeHeader;
+LAddInvoiceToReminderArr:;
+
+  tORr.Sum4 = tORr.Sum4 + ORr.Sum4;
+  if (nonblank(tORr.Addr1)) then begin
+    tORr.Addr1 = tORr.Addr1 & ",";
+  end;
+  tORr.Addr1 = tORr.Addr1 & ORr.SerNr;
+  arrORr[num] = tORr;
+
+  return;
+end;
+
+function Boolean MatchLanguage(string langcode,string custcode,vector Boolean vLang)
+begin
+  record CUVc CUr;
+  Boolean res;
+
+  CUr.Code = custcode;
+  if (ReadFirstMain(CUr,1,true)) then begin
+    if (CUr.LangCode==langcode or (blank(langcode) and vLang[CUr.LangCode]==false)) then begin
+      res = true;
+    end;
+  end;
+
+  MatchLanguage = res;
+  return;
+end;
+
+procedure FindAndSendInvoiceReminders(record SMSReminderVc SMSReminder,var vector Boolean vCust,vector Boolean vLang,Boolean autof)
+begin
+  record SMSReminderQueueVc SRQr;
+  record IVVc IVr;
+  Boolean TrHs,testf,oldestf;
+  record ARVc ARr;
+  Integer latedays,i;
+  Date td,ed;
+  array record ORVc arrORr;
+  record ORVc ORr;
+  
+  td = AddDay(CurrentDate,-SMSReminder.Days);
+  switch (SMSReminder.Type) begin
+    case 0://Sales Orders
+      TrHs = true;
+      ORr.OrderClass = SMSReminder.FilterString;
+      logtext(0,"chking " & SMSReminder.FilterString & ":" & td);
+      while (LoopKey("OrderClass",ORr,1,TrHs)) begin
+        if (ORr.OrderClass!=SMSReminder.FilterString) then begin 
+          TrHs = false;
+        end else begin
+          testf = true;
+          if (nonblank(SMSReminder.CustCode) and SMSReminder.CustCode!=ORr.SMFCodeHeader) then begin
+            testf = false;
+          end;
+      logtext(0,"chking2 " & ORr.SerNr & ":" & ORr.ClassChangeDate & ":" & td & ":" & SMSReminder.CustCode & ":" & ORr.SMFCodeHeader);
+          if (ORr.ClassChangeDate>td) then begin
+            testf = false;
+          end;
+          /*
+          if (MatchLanguage(SMSReminder.LangCode,IVr.CustCode,vLang)==false) then begin
+            testf = false;
+          end;
+          */
+          if (testf) then begin
+            if (ReminderAlreadySent(ORr.SerNr,SMSReminder.SerNr)==false) then begin
+              //queued.Cust_SendReminder2(SMSReminder,IVr);
+              //AddInvoiceToReminderArr(IVr,arrORr);
+              qupdating.SendSingleSMS4(SMSReminder,ORr,SMSReminder.Days,AddDay(td,-kMaxCheckDays),ed);
+            end;
+          end;
+        end;
+      end;
+  end;
+/*
+  for (i=0;i<arrORr.length;i=i+1) begin
+    ORr = arrORr[i];
+    queued.
+  end;
+*/
+  if (autof) then begin
+    qupdating.UpdateReminderLastSentDate(SMSReminder);
+  end;
+  return;
+end;
+
+procedure LoadLanguageVector(vector Boolean vLang)
+begin
+  Boolean TrHs;
+  record SMSReminderVc SMSReminder;
+  
+  TrHs = true;
+  SMSReminder.ActiveFlag = 1;
+  while (LoopKey("ActiveFlag",SMSReminder,1,TrHs)) begin
+    if (SMSReminder.ActiveFlag!=1) then begin
+      TrHs = false;
+    end else begin
+      vLang[SMSReminder.LangCode] = true;
+    end;
+  end;
+
+  return;
+end;
+
+procedure CheckSMSRemindersCompany()
+begin
+  Boolean TrHs;
+  record SMSReminderVc SMSReminder;
+  vector Boolean vCust;
+  vector Boolean vLang;
+  
+  LoadLanguageVector(vLang);
+  TrHs = true;
+  SMSReminder.ActiveFlag = 1;
+  while (LoopKey("ActiveFlag",SMSReminder,1,TrHs)) begin
+    if (SMSReminder.ActiveFlag!=1) then begin
+      TrHs = false;
+    end else begin
+      if (ShouldTrigerSMSReminder(SMSReminder)) then begin
+        FindAndSendInvoiceReminders(SMSReminder,vCust,vLang,true);
+      end;
+    end;
+  end;
+
+LCheckSMSRemindersCompany:;
+  return;
+end;
+
+global
+procedure CallSingleSMSReminderRecord(record SMSReminderVc SMSReminder)
+begin
+  vector Boolean vCust;
+  vector Boolean vLang;
+  
+  LoadLanguageVector(vLang);
+  FindAndSendInvoiceReminders(SMSReminder,vCust,vLang,false);
+
+  return;
+end;
+
+global
+procedure CheckSMSRemindersTask(string args)
+begin
+  Integer i,rwcnt,oldcomp;
+  record CompaniesBlock Compb;
+
+  oldcomp = CurrentCompany;
+  BlockLoad(Compb);
+  rwcnt = MatRowCnt(Compb);
+  for (i=0;i<rwcnt;i=i+1) begin
+    if (SetCompany(i+1,false)) then begin
+      CheckSMSRemindersCompany;
+    end;
+  end;
+
+  ResetCompany(oldcomp);
+
+  return;
+end;
+
+global
+procedure InitSMSReminderTask()
+begin
+  
+  NewPeriodicTask2("CheckSMSRemindersTask","CheckSMSRemindersTask","CheckSMSRemindersTask","",60,"");
+
+  return;
+end;
+
+

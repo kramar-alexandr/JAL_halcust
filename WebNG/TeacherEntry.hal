@@ -523,16 +523,20 @@ end;
 
 function Boolean GetEventHist(record SMFVc SMFr,Date sd,Date ed,Integer type,var Integer parttype)
 begin
-  Boolean res;
+  Boolean res,TrHs;
   record JALEventVc JEr;
   
   JEr.StatusFlag = type;
   JEr.StartDate = sd;
   parttype = -1;
-  if (ReadFirstKey("StatusFlag",JEr,2,false)) then begin
-    if (JEr.StatusFlag==type and DateInRange(JEr.StartDate,sd,ed)) then begin
+  TrHs = true;
+  while (LoopKey("StatusFlag",JEr,2,TrHs)) begin
+    if (JEr.StatusFlag!=type or DateInRange(JEr.StartDate,sd,ed)==false) then begin
+      TrHs = false;
+    end else begin
       if (SMUParticipatedInEvent(SMFr,JEr.SerNr,parttype)) then begin
         res = true;
+        TrHs = false;
       end;
     end;
   end;
@@ -688,7 +692,9 @@ begin
 
   SMFr.SMFCode = JEEr.AddCode;
   if (ReadFirstMain(SMFr,1,true)) then begin
-    res = "/" & JEr.ShopNode & "/" & SMFr.WebShopUrl;
+    if (nonblank(SMFr.WebShopUrl)) then begin
+      res = "/" & JEr.ShopNode & "/" & SMFr.WebShopUrl;
+    end;
   end;
 
   GetApplicationShopLink = res;
@@ -722,7 +728,7 @@ begin
     if (JEr.RegFrom>CurrentDate) then begin
       TrHs = false;
     end else begin
-      if (DateInRange(CurrentDate,JEr.RegFrom,JEr.RegUntil)) then begin
+      if (DateInRange(CurrentDate,JEr.RegFrom,JEr.StartDate)) then begin
         showf = true;
         RecordClear(JEEr);
         ResetLoop(JEEr);
@@ -732,21 +738,23 @@ begin
           if (JEEr.EventNr!=JEr.SerNr) then begin
             TrHs2 = false;
           end else begin
-              if(cnt>0)then begin
-                weboutstring(",");
-              end;
-              WebOutStringFormatNL("{");
-              WebOutStringFormatNL("\"serNr\":\"" & JEEr.SerNr & "\",");
-              WebOutStringFormatNL("\"smu\":\""  & JEEr.AddCode & "\",");
-              WebOutStringFormatNL("\"datums\":\""  & JEEr.TransDate & "\",");
-              WebOutStringFormatNL("\"name\":\""  & FormatJSONString(JEEr.SMFName) & "\",");
-              WebOutStringFormatNL("\"event\":\"" & JEEr.EventNr & "\",");
-              WebOutStringFormatNL("\"status\":" & JEEr.StatusFlag & ",");              
-              WebOutStringFormatNL("\"filled\":\"" & JEEr.OkFlag & "\",");
-              WebOutStringFormatNL("\"shoplink\":\"" & GetApplicationShopLink(JEEr,JEr) & "\",");
-              WebOutStringFormatNL("\"applink\":\"" & GetApplicationLink(JEEr,JEr) & "\"");
-              WebOutStringFormatNL("}"); 
-              cnt = cnt + 1;             
+            if(cnt>0)then begin
+              weboutstring(",");
+            end;
+            WebOutStringFormatNL("{");
+            WebOutStringFormatNL("\"serNr\":\"" & JEEr.SerNr & "\",");
+            WebOutStringFormatNL("\"smu\":\""  & JEEr.AddCode & "\",");
+            WebOutStringFormatNL("\"datums\":\""  & JEEr.TransDate & "\",");
+            WebOutStringFormatNL("\"name\":\""  & FormatJSONString(JEEr.SMFName) & "\",");
+            WebOutStringFormatNL("\"event\":\"" & JEEr.EventNr & "\",");
+            WebOutStringFormatNL("\"status\":" & JEEr.StatusFlag & ",");              
+            WebOutStringFormatNL("\"filled\":\"" & JEEr.OkFlag & "\",");
+            WebOutStringFormatNL("\"shoplink\":\"" & GetApplicationShopLink(JEEr,JEr) & "\",");
+            WebOutStringFormatNL("\"applink\":\"" & GetApplicationLink(JEEr,JEr) & "\"");
+            WebOutStringFormatNL("}"); 
+            if (JEEr.StatusFlag==0) then begin
+              cnt = cnt + 1;                           
+            end;
           end;
         end;
       end;

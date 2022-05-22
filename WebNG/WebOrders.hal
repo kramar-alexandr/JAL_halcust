@@ -43,7 +43,7 @@ LGetStatusType:;
   return;
 end;
 
-procedure ShowOrderListRow(string cls,Date td,string link,string name,val totsum,string status,string statustype)
+procedure ShowOrderListRow(string cls,Date td,string link,string name,val totsum,string status,string statustype,string messageval,string messagetext)
 begin
 
   WebOutString("<div class='order_list_row " & cls & "'>");
@@ -51,6 +51,7 @@ begin
   WebOutString("<div class='order_list_col link'>" & link & "</div>");
   WebOutString("<div class='order_list_col name'>" & name & "</div>");
   WebOutString("<div class='order_list_col totsum'>" & ValToString(totsum,M4Val,"",".",0) & "</div>");
+  WebOutString("<div class='order_list_col message' " & messageval & ">" & messagetext & "</div>");
   WebOutString("<div class='order_list_col status " & statustype & "'>" & status & "</div>");
 
 
@@ -67,6 +68,7 @@ begin
   WebOutString("<div class='order_list_col link'>" & ToolWebNGTranslateText2(89262) & "</div>");
   WebOutString("<div class='order_list_col name'>" & ToolWebNGTranslateText2(89263) & "</div>");
   WebOutString("<div class='order_list_col totsum'>" & ToolWebNGTranslateText2(89264) & "</div>");
+  WebOutString("<div class='order_list_col message'>" & ToolWebNGTranslateText2(89267) & "</div>");
   WebOutString("<div class='order_list_col status'>" & ToolWebNGTranslateText2(89265) & "</div>");
   WebOutString("</div>");
 
@@ -79,6 +81,7 @@ begin
   WebOutString("<div class='order_list_row header'>");
   WebOutString("<div class='message_name'>" & ToolWebNGTranslateText2(89310) & "</div>");
   WebOutString("<div class='message_order'>" & ToolWebNGTranslateText2(89262) & "</div>");
+  WebOutString("<div class='message_status'>" & ToolWebNGTranslateText2(89265) & "</div>");
   WebOutString("<div class='message_date'>" & ToolWebNGTranslateText2(89261) & "</div>");
   WebOutString("</div>");
 
@@ -135,11 +138,27 @@ begin
   return;
 end;
 
+procedure GetOrderChatStatus(record ORVc ORr,string base,var string messageval,var string messagetext)
+begin
+  record ORMessageVc OMr;
+
+  messageval = "";
+  messagetext = ToolWebNGTranslateText2(89268);
+  OMr.OrderNr = ORr.SerNr;
+  if (ReadFirstKey("OrderDate",OMr,1,true)) then begin
+    messageval = "show_message";
+    messagetext = "<a href='" & base & "pazinojumi?pasutijums=" & ORr.SerNr & "'>" & ToolWebNGTranslateText2(89269) & "</a>";
+  end;
+
+  return;
+end;
+
 procedure ShowOrderList(record JALOrderSetBlock JOb,string base,record SMFVc SMFr,string oc)
 begin
   record ORVc ORr;
   vector string 255 vClass;
   Boolean TrHs;
+  string 255 messageval,messagetext;
 
   LoadOrderClasses(vClass);
 
@@ -150,7 +169,8 @@ begin
     if (ORr.OrderClass!=oc or ORr.SMFCodeHeader!=SMFr.SMFCode) then begin
       TrHs = false;
     end else begin
-      ShowOrderListRow("",ORr.OrdDate,CreateOrderLink(base,ORr.SerNr,false,"#" & ORr.SerNr),ORr.Addr0,GetOrderAmountSMU(ORr,SMFr.SMFCode),vClass[oc],GetJALOrderStatusType(JOb,oc));
+      GetOrderChatStatus(ORr,base,messageval,messagetext);
+      ShowOrderListRow("",ORr.OrdDate,CreateOrderLink(base,ORr.SerNr,false,"#" & ORr.SerNr),ORr.Addr0,GetOrderAmountSMU(ORr,SMFr.SMFCode),vClass[oc],GetJALOrderStatusType(JOb,oc),messageval,messagetext);
     end;
   end;
 
@@ -488,7 +508,7 @@ begin
   return;
 end;
 
-procedure ShowSingleOrderMessage(string base,record ORMessageVc OMr,Boolean custf,record SMFVc SMFr)
+procedure ShowSingleOrderMessage(string base,record ORMessageVc OMr,Boolean custf,record SMFVc SMFr,record JALOrderSetBlock JOb,string status)
 begin
   record ORVc ORr;
   string 255 link,link2,name;
@@ -511,6 +531,7 @@ begin
     if (custf==false) then begin
       WebOutString("<div class='message_link'>" & CreateOrderLink(base,ORr.SerNr,false,ToolWebNGTranslateText2(89266)) & "</div>");
     end;
+    WebOutString("<div class='message_status " & GetJALOrderStatusType(JOb,ORr.OrderClass) & "'>" & status & "</div>");
     WebOutString("<div class='message_date'>" & GetMessageDate(OMr) & "</div></div></div>");
   end;
 
@@ -523,15 +544,22 @@ begin
   record ORMessageVc OMr;
   Boolean TrHs;
   vector Boolean vOrder;
+  record JALOrderSetBlock JOb;
+  vector string 255 vClass;
+  record ORVc ORr;
 
   WebOutString("<div class='order_messages_wrap'>");
 
   WebOutString("<div class='order_title'>" & ToolWebNGTranslateText2(89306) & "</div>");
   WebOutString("<div class='order_search_wrap'><input type='text' class='order_search' placeholder='" & ToolWebNGTranslateText2(89315) & "'></div>");
 
-  WebOutString("<div class='message_line header'><div class='message_info'><div class='message_name'>" & ToolWebNGTranslateText2(89307) & "</div><div class='message_order'>" & ToolWebNGTranslateText2(89308) & "</div><div class='message_link'>&nbsp;</div><div class='message_date'>" & ToolWebNGTranslateText2(89309) & "</div></div></div>");
+  WebOutString("<div class='message_line header'><div class='message_info'><div class='message_name'>" & ToolWebNGTranslateText2(89307) & "</div><div class='message_order'>" & ToolWebNGTranslateText2(89308) & "</div><div class='message_link'>&nbsp;</div>");
+  WebOutString("<div class='message_status'>" & ToolWebNGTranslateText2(89265) & "</div>");
+  WebOutString("<div class='message_date'>" & ToolWebNGTranslateText2(89309) & "</div></div></div>");
 
 
+  BlockLoad(JOb);
+  LoadOrderClasses(vClass);
 
   WebOutString("<div class='smu_messagelist_hidden'>");
   TrHs = true;
@@ -543,7 +571,9 @@ begin
       TrHs = false;
     end else begin
       if (vOrder[OMr.OrderNr]==false) then begin
-        ShowSingleOrderMessage(base,OMr,false,SMFr);
+        ORr.SerNr = OMr.OrderNr;
+        ReadFirstMain(ORr,1,true);
+        ShowSingleOrderMessage(base,OMr,false,SMFr,JOb,vClass[ORr.OrderClass]);
         vOrder[OMr.OrderNr] = true;
       end;
     end;
@@ -559,7 +589,9 @@ begin
       TrHs = false;
     end else begin
       if (vOrder[OMr.OrderNr]==false) then begin
-        ShowSingleOrderMessage(base,OMr,false,SMFr);
+        ORr.SerNr = OMr.OrderNr;
+        ReadFirstMain(ORr,1,true);
+        ShowSingleOrderMessage(base,OMr,false,SMFr,JOb,vClass[ORr.OrderClass]);
         vOrder[OMr.OrderNr] = true;
       end;
     end;
@@ -970,12 +1002,16 @@ begin
   record ORMessageVc OMr;
   string 255 base;
   record SMFVc SMFr;
+  record JALOrderSetBlock JOb;
+  vector string 255 vClass;
   
   email = WebGetArg("email");
   smfcode = WebGetArg("smfcode");
   ORr.SerNr = StringToLongint(WebGetArg("ordernr"));
   if (ReadFirstMain(ORr,1,true)) then begin
     if (ORr.Addr2==email and ORr.SMFCodeHeader==smfcode) then begin
+      BlockLoad(JOb);
+      LoadOrderClasses(vClass);
       base = GetLinkToOrders;
       OMr.OrderNr = ORr.SerNr;
       ShowOrderTableHeader2;
@@ -983,12 +1019,12 @@ begin
       ReadFirstMain(SMFr,1,true);
       PutSessionString("authemail",ORr.Addr2);
       if (ReadFirstKey("OrderDate",OMr,1,true)) then begin
-        ShowSingleOrderMessage(base,OMr,true,SMFr);
+        ShowSingleOrderMessage(base,OMr,true,SMFr,JOb,vClass[ORr.OrderClass]);
       end else begin
         OMr.OrderNr = ORr.SerNr;
         OMr.TransDate = ORr.OrdDate;
         OMr.TransTime = ORr.RegTime;
-        ShowSingleOrderMessage(base,OMr,true,SMFr);
+        ShowSingleOrderMessage(base,OMr,true,SMFr,JOb,vClass[ORr.OrderClass]);
       end;
     end;
   end;

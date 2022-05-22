@@ -749,8 +749,8 @@ longint curt;;
   WindowBegin("Jaunumu saņēmēji",NewsEmailTClass,CGHBL,-);
   SetWRect(80,80,500,280);
   SetBlid(NewsEmailBlock);
-  MatrixBegin(10,20,-30,-10,-,999);
-  MatCol(1,25,"E-pasts",0,Email,false,0);
+  MatrixBegin(10,20,-30,-10,-,10000);
+  MatCol(1,45,"E-pasts",0,Email,false,0);
   EndMatrix;
   EndWindow;
 end;
@@ -3099,4 +3099,127 @@ begin
   TextField(h-2,v+=vs,-28,-30,Text,0);
 
   EndWindow;
+end;
+
+window SMSReminderLClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+
+  WindowBegin("Atgādinājumi",SMSReminderLClass,CGmList,-);
+  Sizeable(-1,-1,0,0);
+  SetWRect(64,80,600,298);
+  SpawnClass(SMSReminderDClass);
+  UseView(SMSReminderVc);
+  RecordList(4,17,-21,-39);
+  RlColKey(4,4,"Sēr nr.",SerNr,false,SerNr);
+  RlCol   (101,101,"Tips",Type,false);
+  RlCol   (201,201,"Komentārs",Comment,false);
+  RlColKeyTL(-50,-50,"Aktīvs",M4Mark,ActiveFlag,false,ActiveFlag);
+  EndWindow;
+end;
+
+window SMSReminderDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,h2,h3,v,vs,vm;
+
+  WindowBegin("Reminder",SMSReminderDClass,CGview,-);
+  SetWRect(20,80,760,380);
+  h = 120; h2 = 300; h3 = 440; v = 6; vs=20;
+  UseView(SMSReminderVc);
+  EditField(h,v,80,"Sēr. nr.",Normal,SerNr,false,0);
+  CheckBox(h2-50,v,0,"Aktīvs",ActiveFlag);
+  EditField(h,v+=vs,180,"Komentārs",Normal,Comment,false,0);
+  EditField(h,v+=vs,100,"Atg. tips",Normal,ReminderType,false,SetSClass);
+  EditField(h2,v,70,"Tips",Normal,Type,false,SetSClass);
+  EditField(h,v+=vs,100,"Dienas",Normal,Days,false,0);
+  EditField(h2,v,70,"SMU",Normal,CustCode,false,SMFSClass);
+  EditField(h,v+=vs,100,"Nosūtīts",Normal,LastSentDate,false,0);
+  EditField(h2,v,70,"Filtrs",Normal,FilterString,false,OrderClassSClass);
+  //EditField(h2,v,70,"Up to EUR",Normal,MinAmount,false,0);//Very confusing label
+  //EditField(h,v+=vs,100,"Language",Normal,LangCode,false,LangSClass);
+  CheckBox(h,v+=vs,0,"Pirmdien",Day1);
+  EditField(h2,v,70,"Laiks",Normal,Time1,false,PasteCurTime);
+  CheckBox(h,v+=vs,0,"Otrdien",Day2);
+  EditField(h2,v,70,"Laiks",Normal,Time2,false,PasteCurTime);
+  CheckBox(h,v+=vs,0,"Trešdien",Day3);
+  EditField(h2,v,70,"Laiks",Normal,Time3,false,PasteCurTime);
+  CheckBox(h,v+=vs,0,"Ceturtdien",Day4);
+  EditField(h2,v,70,"Laiks",Normal,Time4,false,PasteCurTime);
+  CheckBox(h,v+=vs,0,"Piektdien",Day5);
+  EditField(h2,v,70,"Laiks",Normal,Time5,false,PasteCurTime);
+  CheckBox(h,v+=vs,0,"Sestdien",Day6);
+  EditField(h2,v,70,"Laiks",Normal,Time6,false,PasteCurTime);
+  CheckBox(h,v+=vs,0,"Svētdien",Day7);
+  EditField(h2,v,70,"Laiks",Normal,Time7,false,PasteCurTime);
+
+  CheckBox(h,v+=vs,0,"Brīvdienās",BankHolidays);
+  //CheckBox(h,v+=30,0,"Send Reminder per Bank Account",PerBankAcc);
+  //CheckBox(h,v+=vs,0,"Include only overdue Invoices",OnlyOverdueInvoices);
+
+  ButtonFrame(h,v=v+40,320,4,"Neizdevušies atgādinājumi");
+  CheckBox(h,v,0,"Veidot aktivitāti, ja neizdevās nosūtīt",CreateActivity);
+  EditField(h+50,v+=vs,70,"Persona",Normal,ActPerson,false,UserSClass);
+  EditField(h2,v,70,"Tips",Normal,ActType,false,ActTypeSClass);
+  EditField(h+50,v+=vs,250,"Teksts",Normal,ActText,false,0);
+
+  
+
+  EditField(h2=420,v=10,-20,"E-pasta virsraksts",Normal,Subject,false,0);
+  EditField(h2=420,v+=vs,-20,"Std. teksts",Normal,StdText,false,LTxtSClass);
+  
+  StaticText(h2,v+=30,"Teksts",false);
+  TextField(h2,v+=10,-20,190,Message,0);
+  SpecialMenu("Izpildīt",' ',0,"SMSRemindersDoDsm");
+
+  EndWindow;
+end;
+
+window SMSReminderQueueLClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,h2,h3,v,vs,vm;
+
+  WindowBegin("Atgādinājumu rinda",SMSReminderQueueLClass,CGmList,-);
+  Sizeable(-1,-1,0,0);
+  SetWRect(64,80,740,298);
+  UseView(SMSReminderQueueVc);
+  SpawnClass(SMSReminderQueueDClass);
+  RecordList(4,17,-21,-39);
+  RlColKey(4,4,"Sēr. nr.",SerNr,false,SerNr);
+  RlCol   (101,101,"Pas. datums",InvDate,false);
+  RlCol   (201,201,"Pas. nr.",InvoiceNr,false);
+  RlCol   (321,321,"Pas. saraksts",InvoiceList,false);
+  RlCol   (440,440,"Atgādinājums",ReminderNr,false);
+  RlColKeyTL(-30,-30,"Nosūtīts",M4Mark,SentFlag,false,SentFlag);
+  EndWindow;
+  return;
+end;
+
+window SMSReminderQueueDClass:1
+  wtag("language","LAT"), wtag("product","*"), wtag("productcode","*"), wtag("device","computer")
+begin
+  real h,h2,h3,v,vs,vm;
+
+  WindowBegin("Atgādinājumu rinda",SMSReminderQueueDClass,CGview,-);
+  SetWRect(20,80,460,380);
+  h = 120; h2 = 300; h3 = 440; v = 6; vs=20;
+  UseView(SMSReminderQueueVc);
+  EditField(h,v,120,"Sēr. nr.",ViewOnly,SerNr,false,0);
+  EditField(h,v+=vs,120,"Pas. datums",ViewOnly,InvDate,false,0);
+  EditField(h,v+=vs,120,"Pas. numurs",ViewOnly,InvoiceNr,false,0);
+  EditField(h,v+=vs,120,"Atgādinājums",ViewOnly,ReminderNr,false,0);
+  EditField(h,v+=vs,120,"Pas. saraksts",ViewOnly,InvoiceList,false,0);
+  EditField(h,v+=vs,120,"Dienas",ViewOnly,CheckDays,false,0);
+  EditField(h,v+=vs,120,"Sākuma datums",ViewOnly,StartDate,false,0);
+  EditField(h,v+=vs,120,"Beigu datums",ViewOnly,EndDate,false,0);
+
+  ButtonFrame(h,v=v+40,150,3,"Statuss");
+  RadioButton(h,v,0,0,"Izveidots",SentFlag);
+  RadioButton(h,v+=16,1,0,"Nosūtīts",SentFlag);
+  //RadioButton(h,v+=16,2,0,"Paid before sending",SentFlag);  
+  RadioButton(h,v+=16,3,0,"Kļūda",SentFlag);  
+  EndWindow;
+  
+  return;
 end;

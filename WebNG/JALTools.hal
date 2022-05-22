@@ -395,7 +395,7 @@ begin
         if (cnt==1) then begin
           opac = 1;
         end;
-        WebOutString("<div class='slide' style='background-image:url(/WebShowContentImage.hal?s=" & WCr.SerNr & ") !important;box-shadow: inset 0 0 0 1000px rgba(0,0,0,0.65); opacity: " & opac & "; z-index: 1;'>");      
+        WebOutString("<div onclick=""window.location=$(this).find('a').attr('href');"" class='slide' style='background-image:url(/WebShowContentImage.hal?s=" & WCr.SerNr & ") !important; opacity: " & opac & "; z-index: 1;'>");//box-shadow: inset 0 0 0 1000px rgba(0,0,0,0.65);
 				WebOutString("<h2><a href='" & link & "'>" & WTr.Comment & "</a></h2>");
         WebOutString("</div>");
       end;

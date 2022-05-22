@@ -127,3 +127,28 @@ begin
   ORVcRecordUpdateAfter = res;
   return;
 end;
+
+global
+function LongInt ORVcRecordSave(record ORVc ORr,record ORVc OR2r,LongInt long3,LongInt check)
+begin
+  Longint res;
+
+  res = inner.ORVcRecordSave(ORr,OR2r,long3,check);
+  ORr.ClassChangeDate = CurrentDate;
+
+  ORVcRecordSave = res;
+  return;
+end;
+global
+function LongInt ORVcRecordUpdate(record ORVc ORr,record ORVc OR2r,LongInt long3,LongInt check)
+begin
+  Longint res;
+
+  res = inner.ORVcRecordUpdate(ORr,OR2r,long3,check);
+  if (ORr.OrderClass!=OR2r.OrderClass) then begin
+    ORr.ClassChangeDate = CurrentDate;
+  end;
+
+  ORVcRecordUpdate = res;
+  return;
+end;
